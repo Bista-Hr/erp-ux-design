@@ -91,12 +91,12 @@ function Sidebar({ current, onNavigate, collapsed = false, onToggle, perms }) {
       transition: "width .22s ease, flex-basis .22s ease",
     }}>
       {/* oil-droplet watermark — blended into the yellow (soft-light + radial fade) */}
-      <div style={{ position: "absolute", left: 0, right: 0, top: 80,
-        height: 380, backgroundImage: "url(../../assets/oil-droplet-bg.png)",
-        backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundPosition: "center",
+      <div style={{ position: "absolute", inset: 0,
+        backgroundImage: "url(../../assets/oil-droplet-bg.png)",
+        backgroundSize: "auto 100%", backgroundRepeat: "no-repeat", backgroundPosition: "center",
         mixBlendMode: "soft-light", opacity: .7, pointerEvents: "none", zIndex: 0,
-        WebkitMaskImage: "radial-gradient(120% 90% at 50% 40%, #000 26%, rgba(0,0,0,.35) 60%, transparent 82%)",
-        maskImage: "radial-gradient(120% 90% at 50% 40%, #000 26%, rgba(0,0,0,.35) 60%, transparent 82%)" }} />
+        WebkitMaskImage: "radial-gradient(120% 90% at 50% 45%, #000 30%, rgba(0,0,0,.35) 62%, transparent 84%)",
+        maskImage: "radial-gradient(120% 90% at 50% 45%, #000 30%, rgba(0,0,0,.35) 62%, transparent 84%)" }} />
       {/* nav (collapse toggle now lives in the header) */}
       <nav style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, overflowY: "auto", overflowX: "hidden", minHeight: 0, position: "relative", zIndex: 1, paddingTop: 8 }}>
         {visibleMain.map(it => {
