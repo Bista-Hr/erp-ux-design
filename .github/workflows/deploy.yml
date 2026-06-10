@@ -1,0 +1,44 @@
+name: Deploy to GitHub Pages
+
+# Static-site deploy: publishes the repo root to GitHub Pages on every push to main.
+# No build step — the files are already plain HTML/CSS/JS.
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch: # lets you trigger a deploy manually from the Actions tab
+
+# These permissions are REQUIRED for actions/deploy-pages — without
+# `pages: write` + `id-token: write` you get "Error: Requires authentication" (401).
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment; don't cancel an in-progress run.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Publish the whole repo root (index.html is the entry point).
+          path: "."
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
