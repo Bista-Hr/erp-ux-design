@@ -54,8 +54,33 @@ const CONFIRM_COPY = {
   archive: { verb: "Archive", icon: "archive-line",  done: "Archived" },
 };
 
+// kind ("list"/"info"/"dashboard") of the top section that owns `parent`
+const sectionKindOf = (parent) => {
+  const t = NAV_MAIN.find(n => n.name === parent) || (parent === NAV_ADMIN.name ? NAV_ADMIN : null);
+  return (t && t.kind) || "list";
+};
+
+// first nav destination the given permission-set can actually open (role landing)
+function firstDestination(perms) {
+  const tryNode = (node, parent, kind) => {
+    if (node.tabs && node.tabs.length) {
+      const t = firstAllowedTab(perms, kind, node.tabs);
+      return t ? { node, parent, tab: t } : null;
+    }
+    return tabAllowed(perms, kind, node.name) ? { node, parent, tab: null } : null;
+  };
+  for (const top of NAV_MAIN) {
+    if (top.children) { for (const c of top.children) { const d = tryNode(c, top.name, top.kind); if (d) return d; } }
+    else { const d = tryNode(top, top.name, top.kind); if (d) return d; }
+  }
+  for (const c of NAV_ADMIN.children) { const d = tryNode(c, NAV_ADMIN.name, NAV_ADMIN.kind); if (d) return d; }
+  return null;
+}
+
 function App() {
-  const [route, setRoute] = useS("login");
+  const [route, setRoute] = useS("role-select");
+  const [rbac, setRbac] = useStore(window.HRStores.rbac);
+  const perms = React.useMemo(() => permsForRole(rbac.roleId, rbac.roles), [rbac.roleId, rbac.roles]);
   const [nav, setNav] = useS({ node: CORE_HR, parent: "HR Management", tab: "Departments" });
   const [data, setData] = useS({ ...SEED, Employees: EMPLOYEES });
   const [form, setForm] = useS(null);       // { mode: 'create'|'edit', row? }
@@ -83,10 +108,19 @@ function App() {
 
   const navigate = (node, parent) => {
     const tabs = tabsFor(node);
-    setNav({ node, parent: parent || node.name, tab: tabs ? tabs[0] : null });
+    const kind = sectionKindOf(parent || node.name);
+    const tab = tabs ? (firstAllowedTab(perms, kind, tabs) || tabs[0]) : null;
+    setNav({ node, parent: parent || node.name, tab });
     setForm(null); setConfirm(null); setEmployee(null); setImportOpen(false); setPreview(null); setAnnounce(null); setSubPage(null); setOrgTree(false);
   };
-  const setTab = (tab) => { setEmployee(null); setAnnounce(null); setSubPage(null); setOrgTree(false); setNav(n => ({ ...n, tab })); };
+  // live role switch (top bar) — reshape nav + jump to a page the role can open
+  const switchRole = (roleId) => {
+    setRbac(s => ({ ...s, roleId }));
+    const dest = firstDestination(permsForRole(roleId, rbac.roles));
+    if (dest) setNav(dest);
+    setForm(null); setConfirm(null); setEmployee(null); setImportOpen(false); setPreview(null); setAnnounce(null); setSubPage(null); setOrgTree(false);
+  };
+  const goDashboard = () => { const d = NAV_MAIN[0]; navigate(d, d.name); };  const setTab = (tab) => { setEmployee(null); setAnnounce(null); setSubPage(null); setOrgTree(false); setNav(n => ({ ...n, tab })); };
 
   // profile menu → open My Info; sign out → back to the login screen
   const goProfile = () => {
@@ -95,7 +129,7 @@ function App() {
     setForm(null); setConfirm(null); setEmployee(null); setImportOpen(false); setPreview(null); setAnnounce(null);
   };
   const signOut = () => {
-    setRoute("login");
+    setRoute("role-select");
     setForm(null); setConfirm(null); setEmployee(null); setImportOpen(false); setPreview(null); setAnnounce(null); setToasts([]);
   };
 
@@ -104,6 +138,10 @@ function App() {
   const kind = (topNode && topNode.kind) || "list";
   const tabs = tabsFor(nav.node);
   const pageName = nav.tab || nav.node.name;
+  const visTabs = tabs ? tabs.filter(t => tabAllowed(perms, kind, t)) : tabs;
+  const allowed = tabAllowed(perms, kind, pageName);
+  // hide the sidebar entirely when the role has only one nav destination (e.g. ESS → Dashboard)
+  const showSidebar = visibleNavCount(perms) > 1;
   const isList = kind === "list";
   const cfg = isList ? (CONFIGS[pageName] || genConfig(pageName)) : null;
   // lookups derived from LIVE data → managed Departments/Grades/etc. feed every dropdown
@@ -128,6 +166,11 @@ function App() {
   const isAccommodation = isList && pageName === "Accommodation";
   const isWelfare = isList && pageName === "Welfare";
   const isDisciplinary = isList && pageName === "Disciplinary Cycle";
+  // System Administration ▸ User Management ▸ Roles / Users (RBAC management)
+  const isRoles = isList && pageName === "Roles";
+  const isUsers = isList && pageName === "Users";
+  // Recruitment ▸ Job Posts (admin posting details + applicant pipeline)
+  const isJobPosts = isList && pageName === "Job Posts";
 
   // ---- phase transitions ----
   const openCreate = () => setForm({ mode: "create" });
@@ -174,29 +217,37 @@ function App() {
     pushToast(status === "approved" ? "Request Accepted" : "Request Rejected", { tone: status === "approved" ? "success" : "error" });
   };
 
-  if (route === "login") return <LoginScreen onContinue={() => setRoute("app")} />;
+  if (route === "role-select") return <RoleSelectScreen roles={rbac.roles} initial={rbac.roleId}
+    onContinue={(roleId) => { setRbac(s => ({ ...s, roleId })); setRoute("login"); }} />;
+  if (route === "login") return <LoginScreen onContinue={() => {
+    const dest = firstDestination(perms);
+    if (dest) setNav(dest);
+    setRoute("app");
+  }} />;
 
   // Overview & My Info manage their own internal scrolling (so the announcements rail can
   // scroll independently of the page); every other screen scrolls in the content wrapper.
   const selfScroll = kind === "dashboard" && (pageName === "Overview" || pageName === "My Info" || pageName === "Leave Requests" || pageName === "Target Requests" || pageName === "Appraisals" || pageName === "Requests");
-  const showTabs = (tabs || subPage) && !viewingEmployee && !preview;
+  const showTabs = ((visTabs && visTabs.length) || subPage) && !viewingEmployee && !preview;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden", background: "var(--gray-75)" }}>
-      <TopNav title={nav.node.name} onToggleNav={() => setCollapsed(c => !c)}
+      <TopNav title={nav.node.name} onToggleNav={showSidebar ? () => setCollapsed(c => !c) : null}
         user={{ name: ME.name, email: ME.email, org: ME.dept }} onProfile={goProfile} onSignOut={signOut} />
       <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
-        <Sidebar current={nav.node.name} onNavigate={navigate} collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} />
+        {showSidebar && <Sidebar current={nav.node.name} onNavigate={navigate} collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} perms={perms} />}
         <div style={{ flex: 1, minWidth: 0, minHeight: 0, display: "flex", flexDirection: "column" }}>
           {showTabs && (
             <div className="tabbar">
               {subPage
                 ? <Breadcrumb trail={subPage.trail} style={{ marginBottom: 0, paddingBottom: 13 }} />
-                : <Tabs items={tabs} active={nav.tab} onChange={setTab} />}
+                : <Tabs items={visTabs} active={nav.tab} onChange={setTab} />}
             </div>
           )}
           <div style={{ flex: 1, minHeight: 0, minWidth: 0, overflow: selfScroll ? "hidden" : "auto", padding: selfScroll ? 0 : "var(--page-pad, 32px)", boxSizing: "border-box" }}>
-            {!isList
+            {!allowed
+              ? <ForbiddenScreen onHome={goDashboard} />
+              : !isList
               ? (kind === "dashboard"
                   ? <DashboardArea tab={pageName} requests={requests} onAddRequest={addRequest} onResolve={resolveRequest} onToast={pushToast}
                       announce={announce}
@@ -231,8 +282,15 @@ function App() {
                             ? <WelfareScreen onToast={pushToast} onSubPage={setSubPage} departments={lookups.departments} />
                             : isDisciplinary
                               ? <DisciplinaryScreen onToast={pushToast} onSubPage={setSubPage} departments={lookups.departments} />
-                              : <CrudScreen key={pageName} config={cfg} rows={rows}
-                                  onCreate={openCreate} onEdit={openEdit} onArchive={askArchive} onMenuAction={handleMenuAction} />}
+                              : isJobPosts
+                                ? <JobPostsScreen onToast={pushToast} />
+                                : isRoles
+                                ? <RolesScreen onToast={pushToast} canCreate={pageCan(perms, "Roles", "Create")} canEdit={pageCan(perms, "Roles", "Update")} canDelete={pageCan(perms, "Roles", "Delete")} />
+                                : isUsers
+                                  ? <UsersScreen onToast={pushToast} roles={rbac.roles} canEdit={pageCan(perms, "Users", "Update")} />
+                                  : <CrudScreen key={pageName} config={cfg} rows={rows}
+                                  onCreate={openCreate} onEdit={openEdit} onArchive={askArchive} onMenuAction={handleMenuAction}
+                                  canCreate={pageCan(perms, pageName, "Create")} canEdit={pageCan(perms, pageName, "Update")} canArchive={pageCan(perms, pageName, "Delete")} />}
             {!selfScroll && <div aria-hidden="true" style={{ height: 56 }} />}
           </div>
         </div>

@@ -38,7 +38,21 @@ function NavRow({ it, expanded, onClick, chevDir, collapsed }) {
   );
 }
 
-function Sidebar({ current, onNavigate, collapsed = false, onToggle }) {
+function Sidebar({ current, onNavigate, collapsed = false, onToggle, perms }) {
+  // ---- permission filtering: hide sections/groups the role can't read ----
+  const allow = (kind, name) => (perms ? tabAllowed(perms, kind, name) : true);
+  const showChild = (kind, c) => (c.tabs && c.tabs.length ? c.tabs.some(t => allow(kind, t)) : allow(kind, c.name));
+  const visibleMain = NAV_MAIN.map(top => {
+    if (top.children) {
+      const children = top.children.filter(c => showChild(top.kind, c));
+      return children.length ? { ...top, children } : null;
+    }
+    if (top.tabs && top.tabs.length) return top.tabs.some(t => allow(top.kind, t)) ? top : null;
+    return allow(top.kind, top.name) ? top : null;
+  }).filter(Boolean);
+  const adminChildren = NAV_ADMIN.children.filter(c => showChild(NAV_ADMIN.kind, c));
+  const visibleAdmin = adminChildren.length ? { ...NAV_ADMIN, children: adminChildren } : null;
+
   const sectionOf = (name) => {
     const top = NAV_MAIN.find(it => it.children && it.children.some(c => c.name === name));
     if (top) return top.name;
@@ -85,7 +99,7 @@ function Sidebar({ current, onNavigate, collapsed = false, onToggle }) {
         maskImage: "radial-gradient(120% 90% at 50% 40%, #000 26%, rgba(0,0,0,.35) 60%, transparent 82%)" }} />
       {/* nav (collapse toggle now lives in the header) */}
       <nav style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, overflowY: "auto", overflowX: "hidden", minHeight: 0, position: "relative", zIndex: 1, paddingTop: 8 }}>
-        {NAV_MAIN.map(it => {
+        {visibleMain.map(it => {
           if (!it.children) return topLeaf(it);
           const expanded = !collapsed && openKey === it.name;
           return (
@@ -96,9 +110,9 @@ function Sidebar({ current, onNavigate, collapsed = false, onToggle }) {
           );
         })}
       </nav>
-      <div style={{ borderTop: "1px solid rgba(0,0,0,.18)", marginTop: 8, paddingTop: 12, flexShrink: 0, position: "relative", zIndex: 1 }}>
-        {!collapsed && <SubMenu items={NAV_ADMIN.children} open={adminOpen} current={current} parent={NAV_ADMIN.name} onSelect={onNavigate} />}
-        <NavRow it={NAV_ADMIN} expanded={adminOpen} onClick={() => onGroup(NAV_ADMIN.name)} chevDir="up" collapsed={collapsed} />
+      <div style={{ borderTop: "1px solid rgba(0,0,0,.18)", marginTop: 8, paddingTop: 12, flexShrink: 0, position: "relative", zIndex: 1, display: visibleAdmin ? "block" : "none" }}>
+        {!collapsed && visibleAdmin && <SubMenu items={visibleAdmin.children} open={adminOpen} current={current} parent={NAV_ADMIN.name} onSelect={onNavigate} />}
+        {visibleAdmin && <NavRow it={visibleAdmin} expanded={adminOpen} onClick={() => onGroup(NAV_ADMIN.name)} chevDir="up" collapsed={collapsed} />}
       </div>
     </aside>
   );

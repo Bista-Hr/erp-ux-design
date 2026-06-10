@@ -3,7 +3,8 @@
 // Row "⋯" opens an action menu (Edit / Archive). Empty data AND no-search-results both
 // use the shared <EmptyState> (one canonical illustration across the project).
 
-function CrudScreen({ config, rows, onCreate, onEdit, onArchive, onMenuAction }) {
+function CrudScreen({ config, rows, onCreate, onEdit, onArchive, onMenuAction, canCreate = true, canEdit = true, canArchive = true }) {
+  const hasRowMenu = canEdit || canArchive || (config.menu || []).length > 0;
   const [filter, setFilter] = useState("All");
   const [q, setQ] = useState("");
   const [menu, setMenu] = useState(null);
@@ -24,7 +25,7 @@ function CrudScreen({ config, rows, onCreate, onEdit, onArchive, onMenuAction })
             <Button variant="stroke" icon={config.headerAction.icon}
               onClick={() => onMenuAction && onMenuAction(config.headerAction.key)}>{config.headerAction.label}</Button>
           )}
-          <Button variant="primary" icon="add-line" onClick={onCreate}>{config.cta}</Button>
+          {canCreate && <Button variant="primary" icon="add-line" onClick={onCreate}>{config.cta}</Button>}
         </div>
       </div>
 
@@ -48,12 +49,12 @@ function CrudScreen({ config, rows, onCreate, onEdit, onArchive, onMenuAction })
         </div>
 
         {rows.length === 0
-          ? <EmptyState title="Nothing here yet" subtitle={`Get started by adding your first ${config.noun.toLowerCase()}.`} cta={config.cta} onAction={onCreate} />
+          ? <EmptyState title="Nothing here yet" subtitle={canCreate ? `Get started by adding your first ${config.noun.toLowerCase()}.` : `There is no data to show you right now.`} cta={canCreate ? config.cta : null} onAction={canCreate ? onCreate : null} />
           : <React.Fragment>
             <table className="bh">
               <thead><tr>
                 {config.cols.map(c => <th key={c.key}>{c.label}</th>)}
-                {!config.hideStatus && <th>Status</th>}<th style={{ width: 48 }}></th>
+                {!config.hideStatus && <th>Status</th>}{hasRowMenu && <th style={{ width: 48 }}></th>}
               </tr></thead>
               <tbody>
                 {pg.pageItems.map(r => (
@@ -68,7 +69,7 @@ function CrudScreen({ config, rows, onCreate, onEdit, onArchive, onMenuAction })
                       </td>
                     ))}
                     {!config.hideStatus && <td><StatusDot active={r.active} /></td>}
-                    <td style={{ position: "relative", textAlign: "right" }}>
+                    {hasRowMenu && <td style={{ position: "relative", textAlign: "right" }}>
                       <button className="btn btn-icon btn-ghost" style={{ width: 28, height: 28, padding: 0 }}
                         onClick={() => setMenu(menu === r.id ? null : r.id)}>
                         <Icon name="more-fill" size={18} color="var(--gray-400)" />
@@ -77,18 +78,18 @@ function CrudScreen({ config, rows, onCreate, onEdit, onArchive, onMenuAction })
                         <div onMouseLeave={() => setMenu(null)} style={{ position: "absolute", right: 16, top: 40, zIndex: 20,
                           background: "#fff", borderRadius: "var(--radius-md)", boxShadow: "var(--shadow-pop)",
                           padding: 6, minWidth: 170, display: "flex", flexDirection: "column" }}>
-                          <button className="menu-item" onClick={() => { setMenu(null); onEdit(r); }}><Icon name="edit-2-line" size={16} />Edit {config.noun}</button>
+                          {canEdit && <button className="menu-item" onClick={() => { setMenu(null); onEdit(r); }}><Icon name="edit-2-line" size={16} />Edit {config.noun}</button>}
                           {(config.menu || []).map(m => (
                             <button key={m.key} className="menu-item" onClick={() => { setMenu(null); onMenuAction && onMenuAction(m.key, r); }}><Icon name={m.icon} size={16} />{m.label}</button>
                           ))}
-                          <button className="menu-item danger" onClick={() => { setMenu(null); onArchive(r); }}><Icon name="archive-line" size={16} />Archive {config.noun}</button>
+                          {canArchive && <button className="menu-item danger" onClick={() => { setMenu(null); onArchive(r); }}><Icon name="archive-line" size={16} />Archive {config.noun}</button>}
                         </div>
                       )}
-                    </td>
+                    </td>}
                   </tr>
                 ))}
                 {shown.length === 0 && (
-                  <tr><td colSpan={config.cols.length + (config.hideStatus ? 1 : 2)} style={{ padding: 0 }}>
+                  <tr><td colSpan={config.cols.length + (config.hideStatus ? 0 : 1) + (hasRowMenu ? 1 : 0)} style={{ padding: 0 }}>
                     <EmptyState compact title="No results found" subtitle={`No ${config.noun.toLowerCase()} matches your search.`} />
                   </td></tr>
                 )}
@@ -151,4 +152,18 @@ function OrgTreeModal({ units = [], onClose }) {
   );
 }
 
-Object.assign(window, { CrudScreen, InfoPage, OrgTreeModal });
+/* /forbidden — shown when the current role lacks access to a hard-navigated page */
+function ForbiddenScreen({ onHome }) {
+  return (
+    <div className="card" style={{ padding: 72, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, textAlign: "center" }}>
+      <div style={{ width: 88, height: 88, borderRadius: "50%", background: "var(--error-tint)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Icon name="lock-2-line" size={38} color="var(--error)" />
+      </div>
+      <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 20, color: "var(--gray-900)", marginTop: 6 }}>Access Denied</div>
+      <div className="bh-body" style={{ maxWidth: 420 }}>You don't have permission to view this page with your current role. Switch roles from the top bar, or contact your administrator.</div>
+      {onHome && <Button variant="primary" icon="home-4-line" onClick={onHome}>Go to Dashboard</Button>}
+    </div>
+  );
+}
+
+Object.assign(window, { CrudScreen, InfoPage, OrgTreeModal, ForbiddenScreen });

@@ -28,6 +28,8 @@ const STATUS_CONFIG = {
   current:   { shape: "check", bg: "#10B981", text: "Current" },
   past:      { shape: "minus", bg: "#64748B", text: "Past" },
   draft:     { shape: "clock", bg: "#3B82F6", text: "Draft" },
+  open:        { shape: "check", bg: "#38C793", text: "Open" },
+  shortlisted: { shape: "check", bg: "#38C793", text: "Shortlisted" },
   closed:    { shape: "x",     bg: "#EF4444", text: "Closed" },
   info:      { shape: "clock", bg: "#3B82F6", text: "Info" },
   error:     { shape: "x",     bg: "#EF4444", text: "Error" },
