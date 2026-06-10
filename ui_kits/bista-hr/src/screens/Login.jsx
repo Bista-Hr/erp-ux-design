@@ -32,8 +32,8 @@ function LoginScreen({ onContinue }) {
     return (
       <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "var(--brand-yellow)", overflow: "hidden" }}>
         <div style={{ flexShrink: 0, position: "relative", overflow: "hidden", padding: "52px 24px 40px", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-          <div style={{ position: "absolute", inset: 0, backgroundImage: "url(../../assets/oil-droplet-bg.png)", backgroundSize: "280px",
-            backgroundRepeat: "no-repeat", backgroundPosition: "center -30px", mixBlendMode: "soft-light", opacity: .7, pointerEvents: "none" }} />
+          <div style={{ position: "absolute", inset: 0, backgroundImage: "url(../../assets/oil-droplet-bg.png)", backgroundSize: "100% auto",
+            backgroundRepeat: "no-repeat", backgroundPosition: "center", mixBlendMode: "soft-light", opacity: .7, pointerEvents: "none" }} />
           <img src="../../assets/logo/gcb-logo.svg" alt="GCB" style={{ width: 60, height: 60, position: "relative" }} />
           <div style={{ position: "relative", marginTop: 18, fontFamily: "var(--font-ui)", fontWeight: 800, fontSize: 23, lineHeight: 1.15, letterSpacing: "-0.02em", color: "var(--brand-ink)", maxWidth: 320 }}>{slide.title}</div>
           <div style={{ position: "relative", display: "flex", gap: 7, marginTop: 16 }}>
@@ -65,12 +65,12 @@ function LoginScreen({ onContinue }) {
       {/* LEFT — yellow auto-swiping carousel */}
       <div className="login-carousel" style={{ flex: 1, position: "relative", overflow: "hidden", background: "var(--brand-yellow)",
         display: "flex", flexDirection: "column", justifyContent: "center", padding: "56px 64px" }}>
-        <div style={{ position: "absolute", left: "-8%", top: "50%", transform: "translateY(-50%)",
-          width: 600, height: 760, backgroundImage: "url(../../assets/oil-droplet-bg.png)",
-          backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundPosition: "center",
+        <div style={{ position: "absolute", inset: 0,
+          backgroundImage: "url(../../assets/oil-droplet-bg.png)",
+          backgroundSize: "auto 100%", backgroundRepeat: "no-repeat", backgroundPosition: "center",
           mixBlendMode: "soft-light", opacity: .7, pointerEvents: "none",
-          WebkitMaskImage: "radial-gradient(115% 85% at 45% 42%, #000 30%, rgba(0,0,0,.35) 62%, transparent 84%)",
-          maskImage: "radial-gradient(115% 85% at 45% 42%, #000 30%, rgba(0,0,0,.35) 62%, transparent 84%)" }} />
+          WebkitMaskImage: "radial-gradient(115% 85% at 50% 45%, #000 34%, rgba(0,0,0,.35) 64%, transparent 86%)",
+          maskImage: "radial-gradient(115% 85% at 50% 45%, #000 34%, rgba(0,0,0,.35) 64%, transparent 86%)" }} />
 
         <div style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: 560, margin: "0 auto" }}>
           <div style={{ overflow: "hidden", borderRadius: "var(--radius-xl)" }}>
