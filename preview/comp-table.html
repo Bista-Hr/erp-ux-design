@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Components" name="Data Table" subtitle="Departments table — toolbar, status tags, pagination" viewport="700x240" -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/mona-sans@latest/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../bista-components.css">
+<style>
+  html,body{margin:0}
+  body{background:var(--gray-75);padding:28px}
+  .page{max-width:1180px;margin:0 auto}
+  .table-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="table-card">
+      <div class="table-head">
+        <div>
+          <h2 class="bh-h2">Departments</h2>
+          <p>Manage your organization&rsquo;s departments</p>
+        </div>
+        <button class="btn btn-primary"><i class="ri-add-line"></i>Add Department</button>
+      </div>
+      <div class="toolbar">
+        <div class="seg">
+          <button class="active">All</button>
+          <button>Active</button>
+          <button>Inactive</button>
+        </div>
+        <div class="tb-right">
+          <div class="search">
+            <div class="input-wrap">
+              <i class="ri-search-line"></i>
+              <input type="text" placeholder="Search...">
+            </div>
+          </div>
+          <button class="btn btn-stroke"><i class="ri-equalizer-line"></i>Show Filter</button>
+        </div>
+      </div>
+
+      <table class="bh">
+        <thead>
+          <tr>
+            <th>Name</th><th>Code</th><th>Organizational Unit</th><th>Head of Department</th><th>Status</th><th style="width:48px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Finance</td><td>FIN</td><td>Operations</td><td>Franklin Brobbey</td>
+            <td><span class="tag tag-active"><i class="ri-checkbox-circle-fill"></i>Active</span></td>
+            <td><button class="row-act"><i class="ri-more-2-fill"></i></button></td>
+          </tr>
+          <tr>
+            <td>Human Resource</td><td>HR</td><td>Operations</td><td>Emmanuel Ansah</td>
+            <td><span class="tag tag-active"><i class="ri-checkbox-circle-fill"></i>Active</span></td>
+            <td><button class="row-act"><i class="ri-more-2-fill"></i></button></td>
+          </tr>
+          <tr>
+            <td>Information Technology</td><td>IT</td><td>Technology</td><td>Bright Manu</td>
+            <td><span class="tag tag-active"><i class="ri-checkbox-circle-fill"></i>Active</span></td>
+            <td><button class="row-act"><i class="ri-more-2-fill"></i></button></td>
+          </tr>
+          <tr>
+            <td>Marketing</td><td>MKT</td><td>Technology</td><td>Samuel Boateng</td>
+            <td><span class="tag tag-inactive"><i class="ri-close-circle-fill"></i>Inactive</span></td>
+            <td><button class="row-act"><i class="ri-more-2-fill"></i></button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="tfoot">
+        <span class="page-label">Page 1 of 1</span>
+        <div class="pager">
+          <button class="btn btn-stroke btn-sm" disabled>Previous</button>
+          <button class="btn btn-stroke btn-sm" disabled>Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

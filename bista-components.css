@@ -1,0 +1,296 @@
+/* ============================================================================
+   BISTA HR — Component primitives. Import AFTER colors_and_type.css.
+   Faithful, mostly-cosmetic recreations of the Figma component library.
+   ============================================================================ */
+
+/* Density knobs — Tweaks panel overrides these on :root to scale padding globally. */
+:root{
+  --page-pad: 32px;   /* main content area gutter         */
+  --card-pad: 24px;   /* padded card / form container      */
+  --bh-cell-py: 16px; /* table body cell vertical padding  */
+  --bh-cell-px: 20px; /* table cell horizontal padding     */
+}
+
+/* ---- BUTTONS -------------------------------------------------------------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  font-family:var(--font-control);font-weight:500;font-size:14px;line-height:20px;
+  letter-spacing:-0.006em;border-radius:var(--radius-md);border:1px solid transparent;
+  padding:8px 14px;cursor:pointer;white-space:nowrap;user-select:none;
+  transition:background .15s ease,border-color .15s ease,color .15s ease;
+}
+.btn i{font-size:18px;line-height:1}
+.btn-sm{padding:8px 12px;border-radius:var(--radius-md);font-size:13px}
+.btn-xs{padding:6px 10px;font-size:12px}
+.btn-block{width:100%}
+.btn-icon{padding:10px;width:40px;height:40px}
+
+/* primary CTA = yellow with black text (the in-app convention) */
+.btn-primary{background:var(--brand-yellow);color:var(--brand-ink);box-shadow:0 1px 2px rgba(16,24,40,.05)}
+.btn-primary:hover{background:var(--brand-yellow-dark)}
+.btn-primary:active{background:#B89A00}
+
+/* blue primary (used for some flows / the marketing-side primary) */
+.btn-blue{background:var(--brand-blue);color:#fff;box-shadow:var(--shadow-btn)}
+.btn-blue:hover{background:var(--brand-blue-dark)}
+
+/* auth / login full-width CTA — dark teal */
+.btn-auth{background:#103B4F;color:#fff;width:100%;font-size:15px;font-weight:600;padding:10px 14px}
+.btn-auth:hover{background:#0B2C3C}
+
+/* primary-outlined stroke button — border uses the brand color, not gray */
+.btn-stroke{background:#fff;color:var(--gray-900);border-color:var(--brand-yellow);box-shadow:var(--shadow-input)}
+.btn-stroke:hover{background:var(--brand-yellow-tint);border-color:var(--brand-yellow-dark)}
+
+/* ghost / tertiary */
+.btn-ghost{background:transparent;color:var(--gray-500)}
+.btn-ghost:hover{background:var(--gray-100)}
+
+/* destructive */
+.btn-danger{background:var(--error);color:#fff}
+.btn-danger:hover{background:#A6182F}
+
+.btn:disabled,.btn[disabled]{opacity:.5;cursor:not-allowed}
+
+/* ---- INPUTS --------------------------------------------------------------- */
+.field{display:flex;flex-direction:column;gap:6px}
+.field > label{font-family:var(--font-control);font-weight:500;font-size:14px;color:var(--gray-900)}
+.field > label .opt{color:var(--gray-400);font-weight:400}
+.input-wrap{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--gray-200);
+  border-radius:var(--radius-md);padding:10px 12px;box-shadow:var(--shadow-input);transition:border-color .15s,box-shadow .15s}
+.input-wrap:focus-within{border-color:var(--brand-yellow-dark);box-shadow:0 0 0 3px rgba(255,216,0,.35)}
+.input-wrap i{font-size:20px;color:var(--icon-default)}
+.input-wrap input,.input-wrap textarea{flex:1;border:0;outline:0;background:transparent;
+  font-family:var(--font-control);font-size:14px;line-height:20px;letter-spacing:-0.006em;color:var(--gray-900)}
+.input-wrap input::placeholder,.input-wrap textarea::placeholder{color:var(--gray-400)}
+.input-wrap textarea{resize:none;min-height:60px}
+.hint{font-family:var(--font-ui);font-size:12px;color:var(--gray-400)}
+
+/* ---- STATUS PILLS / BADGES ------------------------------------------------ */
+.pill{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--gray-200);background:#fff;
+  border-radius:var(--radius-xs);padding:4px 8px 4px 6px;font-family:var(--font-control);
+  font-weight:500;font-size:12px;line-height:16px;color:var(--gray-500)}
+.pill i{font-size:16px}
+.pill-pending i{color:#F79009}
+.pill-completed i{color:var(--success-bright)}
+.pill-failed i{color:var(--error)}
+
+/* table status: dot + word */
+.status{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-ui);font-size:13px;font-weight:500}
+.status::before{content:"";width:8px;height:8px;border-radius:50%}
+.status-active{color:var(--success-deep)}
+.status-active::before{background:var(--success-bright)}
+.status-inactive{color:var(--error)}
+.status-inactive::before{background:var(--error)}
+
+/* ---- TABS ----------------------------------------------------------------- */
+.tabs{display:flex;gap:24px;border-bottom:1px solid var(--border);flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;white-space:nowrap;font-family:var(--font-ui);font-weight:500;font-size:14px;color:var(--gray-400);
+  padding:0 0 12px;border-bottom:2px solid transparent;cursor:pointer;margin-bottom:-1px;background:none;border-top:0;border-left:0;border-right:0}
+.tab.active{color:var(--brand-yellow-dark);border-bottom-color:var(--brand-yellow-dark)}
+.tab:hover:not(.active){color:var(--gray-700)}
+
+/* tabs hosted in the static white header bar (full-width border lives on the bar) */
+.tabbar{background:#fff;border-bottom:1px solid var(--border);padding:16px 32px 0}
+.tabbar .tabs{border-bottom:0}
+
+/* ---- Job Title: floating bulk-assign bar (fixed, bottom-right, animated) -- */
+.jt-assignbar{position:fixed;right:28px;bottom:28px;z-index:60;display:flex;align-items:center;gap:14px;
+  background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 14px 36px rgba(16,24,40,.20);
+  padding:12px 14px 12px 16px;transform:translateY(0);opacity:1;
+  transition:transform .42s cubic-bezier(.34,1.56,.64,1),opacity .26s ease}
+.jt-assignbar.hidden{transform:translateY(180%);opacity:0;pointer-events:none}
+.jt-assignbar .jt-count{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 8px;
+  border-radius:999px;background:var(--brand-yellow);color:#3a2a00;font-family:var(--font-head);font-weight:700;font-size:14px;
+  animation:jtCountPop .34s cubic-bezier(.34,1.56,.64,1)}
+.jt-assignbar .jt-clear{border:0;background:none;cursor:pointer;font-family:var(--font-ui);font-weight:600;font-size:13px;color:var(--gray-500);padding:6px 8px}
+.jt-assignbar .jt-clear:hover{color:var(--gray-700)}
+@keyframes jtCountPop{0%{transform:scale(1.7)}55%{transform:scale(.88)}100%{transform:scale(1)}}
+/* selected row in the roster gently lifts */
+.jt-roster-row{transition:background .18s ease}
+
+/* ---- DASHBOARD responsive grids (container queries) ---------------------- */
+/* The scroll column is the query container; grids reflow to the column width
+   (which changes when the sidebar collapses or the announcements rail is shown),
+   not the viewport. */
+.dash-scroll{container-type:inline-size;container-name:dash}
+.dash-hero{display:grid;grid-template-columns:minmax(260px,1fr) 1.45fr;gap:24px}
+.dash-greet{display:flex;flex-direction:column;gap:24px}
+.dash-greet > *{flex:1;min-width:0}
+.dash-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.dash-2{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+@container dash (max-width: 880px){
+  /* hero/video takes full width and stacks under the greeting+tip block, which —
+     now full width — lays the greeting and tip side by side */
+  .dash-hero{grid-template-columns:1fr}
+  .dash-greet{flex-direction:row}
+  .dash-3{grid-template-columns:repeat(2,1fr)}
+}
+@container dash (max-width: 560px){
+  .dash-greet{flex-direction:column}
+  .dash-3{grid-template-columns:1fr}
+  .dash-2{grid-template-columns:1fr}
+}
+
+/* announcements rail → floating button on small screens */
+.ann-fab{display:none}
+@media (max-width: 920px){
+  .ann-rail{display:none !important}
+  .ann-fab{display:inline-flex;position:fixed;right:20px;bottom:20px;z-index:50;width:56px;height:56px;
+    border-radius:50%;background:var(--brand-yellow);border:0;cursor:pointer;align-items:center;justify-content:center;
+    box-shadow:0 8px 24px -6px rgba(16,24,40,.45)}
+  .ann-fab-dot{position:absolute;top:13px;right:14px;width:9px;height:9px;border-radius:50%;background:var(--error);border:2px solid var(--brand-yellow)}
+}
+
+/* ---- EMPLOYEE DETAIL / MY INFO responsive (container queries) ------------- */
+/* Two complementary query containers:
+   1. .ed-root — the detail PAGE is a container so the two-column card layout
+      (.ed-twocol) reflows to the available column width.
+   2. .ed-panel-wrap — EVERY detail panel / person-field grid is ALSO its own
+      container, so the item grid inside rearranges to the panel's own width (i.e.
+      the card it sits in) — anywhere it is used (employee detail, Promotions,
+      Transfers, request drawers …), not just inside .ed-root. */
+.ed-root{container-type:inline-size;container-name:ed}
+.ed-twocol{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@container ed (max-width: 900px){
+  .ed-twocol{grid-template-columns:1fr}
+}
+
+.ed-panel-wrap{container-type:inline-size}
+.ed-panel{display:grid;gap:0}
+.ed-panel.cols-4{grid-template-columns:repeat(4,1fr)}
+.ed-panel.cols-3{grid-template-columns:repeat(3,1fr)}
+.ed-panel.cols-2{grid-template-columns:repeat(2,1fr)}
+.ed-personfields{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+/* unnamed queries resolve to the nearest container = .ed-panel-wrap (the panel itself) */
+@container (max-width: 680px){
+  .ed-panel.cols-4{grid-template-columns:repeat(3,1fr)}
+  .ed-personfields{grid-template-columns:repeat(3,1fr)}
+}
+@container (max-width: 520px){
+  .ed-panel.cols-4{grid-template-columns:repeat(2,1fr)}
+  .ed-panel.cols-3{grid-template-columns:repeat(2,1fr)}
+  .ed-personfields{grid-template-columns:repeat(2,1fr)}
+}
+@container (max-width: 320px){
+  .ed-panel.cols-4,.ed-panel.cols-3,.ed-panel.cols-2{grid-template-columns:1fr}
+  .ed-personfields{grid-template-columns:1fr}
+}
+
+/* ---- TARGET REQUESTS (appraisal) ------------------------------------------ */
+.tgt-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(460px,1fr));gap:20px}
+.tgt-obj-row{display:grid;grid-template-columns:1fr 1fr 120px;gap:14px;align-items:start}
+.tgt-goal-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 100px auto;gap:12px;align-items:start}
+.tgt-d-row{display:grid;grid-template-columns:1.8fr 1fr 1fr 90px;gap:16px;padding:13px 16px}
+@media (max-width: 720px){
+  .tgt-obj-row{grid-template-columns:1fr}
+  .tgt-goal-row{grid-template-columns:1fr 1fr;gap:12px}
+  .tgt-goal-row>:last-child{grid-column:1 / -1;justify-self:start}
+  .tgt-d-row{grid-template-columns:1fr 1fr}
+}
+
+/* announcements listing grid */
+.ann-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px}
+
+/* ---- LEAVE PLANNER -------------------------------------------------------- */
+/* the main column is a query container so tiles + cards reflow with available width */
+.leave-page{container-type:inline-size;container-name:leave}
+.leave-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.leave-stat{border-radius:14px;padding:18px 18px 16px}
+.leave-stat--a{background:#FDF4F4}
+.leave-stat--b{background:#FEFBEF}
+/* active leave request card */
+.leave-active{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  border:1px solid var(--border);border-radius:14px;padding:18px 20px;background:#fff}
+.leave-active-fields{flex:1;min-width:0;display:grid;grid-template-columns:repeat(6,auto);gap:22px 32px;align-items:center}
+/* inline schedule builder row */
+.leave-build-row{display:grid;grid-template-columns:1fr 1fr 1.4fr auto;gap:14px;align-items:start}
+@container leave (max-width: 760px){
+  .leave-stats{grid-template-columns:repeat(2,1fr)}
+  .leave-active-fields{grid-template-columns:repeat(3,1fr)}
+  .leave-build-row{grid-template-columns:1fr 1fr;gap:12px}
+}
+@container leave (max-width: 440px){
+  .leave-stats{grid-template-columns:1fr}
+  .leave-active{flex-direction:column;align-items:stretch}
+  .leave-active-fields{grid-template-columns:repeat(2,1fr)}
+  .leave-build-row{grid-template-columns:1fr}
+}
+
+/* ---- LEAVE ADMIN (Leave Management) --------------------------------------- */
+.leave-admin{container-type:inline-size;container-name:ladm}
+.lt-policies{display:flex;gap:48px;flex-wrap:wrap}
+.lt-approval{display:grid;grid-template-columns:1fr 1fr;gap:24px 40px}
+.alloc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 24px}
+.lb-upload{display:grid;grid-template-columns:1.4fr 120px 1.4fr auto;gap:16px;align-items:end}
+@container ladm (max-width: 900px){
+  .alloc-grid{grid-template-columns:repeat(3,1fr)}
+  .lt-approval{grid-template-columns:1fr}
+  .lb-upload{grid-template-columns:1fr 1fr;align-items:start}
+  .lb-upload>:last-child{grid-column:1 / -1}
+}
+@container ladm (max-width: 600px){
+  .alloc-grid{grid-template-columns:repeat(2,1fr)}
+  .lt-policies{gap:16px;flex-direction:column}
+  .lb-upload{grid-template-columns:1fr}
+}
+
+/* segmented filter */
+.seg{display:inline-flex;background:var(--gray-50);border:0;border-radius:var(--radius-md);padding:4px;gap:2px}
+.seg button{border:0;background:none;font-family:var(--font-ui);font-weight:600;font-size:14px;color:var(--gray-500);
+  padding:7px 22px;border-radius:7px;cursor:pointer;transition:background .15s,color .15s}
+.seg button:hover:not(.active){color:var(--gray-700)}
+.seg button.active{background:rgba(255,216,0,.20);color:var(--gray-900)}
+
+/* ---- TABLE TOOLBAR -------------------------------------------------------- */
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid var(--divider)}
+.toolbar .tb-right{display:flex;align-items:center;gap:12px}
+.toolbar .search{width:300px;max-width:42vw}
+.search .input-wrap{width:100%}
+
+/* table header row: title + primary action, inside the card */
+.table-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 20px 4px}
+.table-head h2{margin:0 0 4px}
+.table-head p{margin:0;font-family:var(--font-ui);font-size:14px;color:var(--gray-500)}
+
+/* status TAG (bordered pill + filled glyph) — table convention */
+.tag{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--gray-200);background:#fff;
+  border-radius:var(--radius-md);padding:5px 11px 5px 8px;font-family:var(--font-ui);font-weight:600;
+  font-size:13px;color:var(--gray-700);box-shadow:var(--shadow-input)}
+.tag i{font-size:16px}
+.tag-active i{color:var(--success-bright)}
+.tag-inactive i{color:var(--error)}
+
+/* table footer / pagination */
+.tfoot{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid var(--divider)}
+.tfoot .page-label{font-family:var(--font-ui);font-weight:600;font-size:14px;color:var(--gray-900)}
+.pager{display:flex;gap:10px}
+
+/* row action trigger */
+.row-act{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--radius-sm);
+  border:0;background:none;color:var(--gray-400);cursor:pointer}
+.row-act:hover{background:var(--gray-100);color:var(--gray-700)}
+
+/* ---- EMPTY STATE ---------------------------------------------------------- */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:72px 24px}
+.empty .ill{margin-bottom:24px}
+.empty h3{font-family:var(--font-head);font-weight:700;font-size:18px;line-height:26px;color:var(--gray-900);margin:0;white-space:nowrap}
+.empty p{font-family:var(--font-ui);font-size:14px;color:var(--gray-500);margin:6px 0 0}
+.empty .btn{margin-top:20px}
+
+/* ---- TOAST ---------------------------------------------------------------- */
+.toast{display:inline-flex;align-items:center;gap:8px;border-radius:var(--radius-sm);
+  padding:8px 10px;font-family:var(--font-head);font-size:13px;color:#fff}
+.toast i{font-size:16px}
+.toast-success{background:var(--success)}
+.toast-error{background:var(--error)}
+
+/* ---- CARD / TABLE --------------------------------------------------------- */
+.card{background:#fff;border-radius:var(--radius-lg)}
+table.bh{width:100%;border-collapse:collapse;font-family:var(--font-ui)}
+table.bh th{font-family:var(--font-head);font-weight:600;font-size:12px;color:var(--gray-500);text-align:left;
+  padding:12px var(--bh-cell-px);background:var(--gray-50);border-bottom:1px solid var(--border)}
+table.bh td{font-size:14px;color:var(--gray-900);padding:var(--bh-cell-py) var(--bh-cell-px);border-bottom:1px solid var(--divider)}
+table.bh tbody tr:hover{background:var(--gray-50)}
+table.bh tr:last-child td{border-bottom:0}

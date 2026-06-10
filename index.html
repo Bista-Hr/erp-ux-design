@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BISTA HR — Design System</title>
+<meta name="description" content="Brand-accurate design foundations, components and UI kit for BISTA HR, Bistasol's HR & Workforce Management ERP.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="bista-components.css">
+<style>
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{ margin:0; background:var(--bg-canvas); color:var(--text-primary); }
+  a{ color:inherit; text-decoration:none; }
+
+  /* ---- top bar ---- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; gap:var(--space-4);
+    height:64px; padding:0 var(--space-8);
+    background:var(--bg-surface);
+    border-bottom:1px solid var(--border);
+  }
+  .brandmark{
+    width:34px; height:34px; border-radius:9px; flex:none;
+    background:var(--brand-blue);
+    box-shadow:inset 0 -4px 8px rgba(255,255,255,.5), 0 2px 6px rgba(55,93,251,.28);
+    display:grid; place-items:center;
+  }
+  .brandmark img{ width:20px; height:20px; }
+  .brandmark i{ color:#fff; font-size:19px; }
+  .topbar .wordmark{ font-family:var(--font-head); font-weight:700; font-size:16px; letter-spacing:-0.01em; }
+  .topbar .wordmark small{ display:block; font-family:var(--font-ui); font-weight:500; font-size:12px; color:var(--text-muted); letter-spacing:0; }
+  .topnav{ margin-left:auto; display:flex; gap:var(--space-5); }
+  .topnav a{ font-family:var(--font-ui); font-weight:600; font-size:13px; color:var(--text-secondary); padding:6px 2px; border-bottom:2px solid transparent; }
+  .topnav a:hover{ color:var(--text-primary); }
+  .topbar .ghpages{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:var(--font-control); font-weight:600; font-size:13px;
+    padding:8px 14px; border-radius:var(--radius-md);
+    background:var(--brand-yellow); color:var(--brand-ink);
+    box-shadow:var(--shadow-btn);
+  }
+  .topbar .ghpages:hover{ background:var(--brand-yellow-dark); }
+
+  /* ---- hero ---- */
+  .hero{
+    position:relative; overflow:hidden;
+    padding:var(--space-16) var(--space-8) var(--space-12);
+    background:
+      radial-gradient(120% 140% at 88% -10%, rgba(255,216,0,.20), transparent 46%),
+      var(--bg-surface);
+    border-bottom:1px solid var(--border);
+  }
+  .hero-inner{ max-width:1180px; margin:0 auto; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-ui); font-weight:700; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--warning-deep); white-space:nowrap;
+    background:var(--brand-yellow-tint); border:1px solid #F2E6A8;
+    padding:5px 12px; border-radius:var(--radius-full); margin-bottom:var(--space-5);
+  }
+  .eyebrow .dot{ width:7px; height:7px; border-radius:50%; background:var(--brand-yellow); }
+  .hero h1{
+    font-family:var(--font-head); font-weight:800; font-size:52px; line-height:1.04; letter-spacing:-0.025em;
+    margin:0 0 var(--space-4); max-width:16ch; text-wrap:balance; color:var(--gray-900);
+  }
+  .hero p.lede{
+    font-family:var(--font-ui); font-weight:400; font-size:18px; line-height:1.55;
+    color:var(--text-secondary); max-width:62ch; margin:0 0 var(--space-8); text-wrap:pretty;
+  }
+  .hero-cta{ display:flex; flex-wrap:wrap; gap:var(--space-3); }
+  .btn{
+    display:inline-flex; align-items:center; gap:9px;
+    font-family:var(--font-control); font-weight:600; font-size:15px;
+    padding:13px 22px; border-radius:var(--radius-md); border:1px solid transparent; cursor:pointer;
+  }
+  .btn i{ font-size:19px; }
+  .btn-primary{ background:var(--brand-yellow); color:var(--brand-ink); box-shadow:var(--shadow-btn); }
+  .btn-primary:hover{ background:var(--brand-yellow-dark); }
+  .btn-ghost{ background:var(--bg-surface); color:var(--text-primary); border-color:var(--border-strong); }
+  .btn-ghost:hover{ background:var(--gray-50); }
+
+  .hero-stats{
+    display:flex; flex-wrap:wrap; gap:var(--space-10);
+    margin-top:var(--space-12); padding-top:var(--space-8);
+    border-top:1px solid var(--divider);
+  }
+  .stat .n{ font-family:var(--font-head); font-weight:800; font-size:30px; letter-spacing:-0.02em; color:var(--gray-900); }
+  .stat .l{ font-family:var(--font-ui); font-weight:500; font-size:13px; color:var(--text-muted); margin-top:2px; }
+
+  /* ---- main ---- */
+  main{ max-width:1180px; margin:0 auto; padding:var(--space-12) var(--space-8) var(--space-16); }
+
+  /* featured ui kit */
+  .featured{
+    display:grid; grid-template-columns:1.05fr 1.35fr; gap:0;
+    background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-xl);
+    overflow:hidden; box-shadow:var(--shadow-card); margin-bottom:var(--space-16);
+  }
+  .featured-copy{ padding:var(--space-10); display:flex; flex-direction:column; justify-content:center; }
+  .featured-copy .tag{
+    font-family:var(--font-ui); font-weight:700; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--brand-blue); margin-bottom:var(--space-3);
+  }
+  .featured-copy h3{ font-family:var(--font-head); font-weight:700; font-size:26px; letter-spacing:-0.015em; margin:0 0 var(--space-3); color:var(--gray-900); }
+  .featured-copy p{ font-family:var(--font-ui); font-size:15px; line-height:1.55; color:var(--text-secondary); margin:0 0 var(--space-6); text-wrap:pretty; }
+  .featured-copy .btn{ align-self:flex-start; }
+  .featured-prev{ position:relative; border-left:1px solid var(--border); background:var(--gray-75); overflow:hidden; min-height:380px; }
+  .featured-prev iframe{
+    position:absolute; top:0; left:0; width:1440px; height:900px;
+    transform:scale(0.46); transform-origin:top left; border:0; pointer-events:none;
+  }
+
+  /* group sections */
+  .group{ margin-bottom:var(--space-12); scroll-margin-top:84px; }
+  .group-head{ display:flex; align-items:center; gap:var(--space-3); margin-bottom:var(--space-5); }
+  .group-head h2{ margin:0; }
+  .group-count{
+    font-family:var(--font-ui); font-weight:700; font-size:12px; color:var(--text-muted);
+    background:var(--gray-100); border-radius:var(--radius-full); padding:2px 10px;
+  }
+  .spec-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:var(--space-5); }
+  .spec{
+    display:flex; flex-direction:column;
+    background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+    overflow:hidden; transition:box-shadow .15s ease, transform .15s ease, border-color .15s ease;
+  }
+  .spec:hover{ box-shadow:var(--shadow-pop); transform:translateY(-2px); border-color:var(--border-strong); }
+  .thumb{ position:relative; overflow:hidden; background:var(--gray-75); border-bottom:1px solid var(--divider); width:100%; }
+  .thumb iframe{ position:absolute; top:0; left:0; border:0; transform-origin:top left; pointer-events:none; background:#fff; }
+  .spec-meta{ padding:var(--space-4); display:flex; flex-direction:column; gap:3px; }
+  .spec-name{ font-family:var(--font-head); font-weight:700; font-size:15px; color:var(--text-primary); }
+  .spec-sub{ font-family:var(--font-ui); font-weight:400; font-size:12.5px; line-height:1.45; color:var(--text-muted); }
+
+  footer{
+    border-top:1px solid var(--border); background:var(--bg-surface);
+    padding:var(--space-10) var(--space-8);
+  }
+  .footer-inner{ max-width:1180px; margin:0 auto; display:flex; flex-wrap:wrap; align-items:center; gap:var(--space-4); }
+  .footer-inner .fnote{ font-family:var(--font-ui); font-size:13px; color:var(--text-muted); }
+  .footer-inner a.flink{ font-family:var(--font-control); font-weight:600; font-size:13px; color:var(--brand-blue); }
+  .footer-inner a.flink:hover{ color:var(--brand-blue-dark); }
+  .footer-inner .spacer{ margin-left:auto; }
+
+  @media (max-width:880px){
+    .topnav{ display:none; }
+    .hero h1{ font-size:38px; }
+    .featured{ grid-template-columns:1fr; }
+    .featured-prev{ border-left:0; border-top:1px solid var(--border); min-height:300px; }
+    .featured-prev iframe{ transform:scale(0.34); }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <span class="brandmark"><i class="ri-drop-fill"></i></span>
+    <span class="wordmark">BISTA HR<small>Bistasol ERP · Design System</small></span>
+    <nav class="topnav">
+        <a href="#colors">Colors</a>
+        <a href="#type">Type</a>
+        <a href="#spacing">Spacing</a>
+        <a href="#components">Components</a>
+        <a href="#brand">Brand</a>
+        <a href="ui_kits/bista-hr/index.html">UI Kit</a>
+    </nav>
+    <a class="ghpages" href="ui_kits/bista-hr/index.html"><i class="ri-layout-masonry-line"></i>Open UI Kit</a>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow"><span class="dot"></span>Workforce Management ERP</span>
+      <h1>The BISTA&nbsp;HR design system.</h1>
+      <p class="lede">Brand-accurate foundations, components, and a high-fidelity UI kit for BISTA&nbsp;HR — Bistasol's recruitment, onboarding, and employee-relations platform. Everything here is lifted directly from source, ready to build on-brand interfaces and prototypes.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="ui_kits/bista-hr/index.html"><i class="ri-window-line"></i>Explore the UI Kit</a>
+        <a class="btn btn-ghost" href="#colors"><i class="ri-palette-line"></i>Browse Foundations</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="n">21</div><div class="l">Specimen cards</div></div>
+        <div class="stat"><div class="n">4</div><div class="l">Typefaces</div></div>
+        <div class="stat"><div class="n">76</div><div class="l">Design tokens</div></div>
+        <div class="stat"><div class="n">#FFD800</div><div class="l">Brand primary</div></div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <a class="featured" href="ui_kits/bista-hr/index.html" target="_blank" rel="noopener">
+      <div class="featured-copy">
+        <span class="tag">Interactive · High fidelity</span>
+        <h3>BISTA HR — Core HR Admin</h3>
+        <p>A working recreation of the admin app: yellow sidebar shell, top nav, data tables, filters, modals, forms and the login — all wired to the design tokens on this page.</p>
+        <span class="btn btn-primary"><i class="ri-arrow-right-line"></i>Launch the app</span>
+      </div>
+      <div class="featured-prev">
+        <iframe src="ui_kits/bista-hr/index.html" tabindex="-1" title="BISTA HR UI Kit preview"></iframe>
+      </div>
+    </a>
+
+    <section class="group" id="colors">
+      <div class="group-head">
+        <h2 class="bh-h3">Colors</h2>
+        <span class="group-count">3</span>
+      </div>
+      <div class="spec-grid">
+      <a class="spec" href="preview/colors-brand.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:98px">
+          <iframe src="preview/colors-brand.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:180px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Brand Colors</span>
+          <span class="spec-sub">Yellow primary + blue signature</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/colors-neutral.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:98px">
+          <iframe src="preview/colors-neutral.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:180px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Neutral Ramp</span>
+          <span class="spec-sub">Cool gray scale 50–900</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/colors-semantic.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:87px">
+          <iframe src="preview/colors-semantic.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:160px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Semantic Colors</span>
+          <span class="spec-sub">Success · error · warning · info + tints</span>
+        </div>
+      </a>
+      </div>
+    </section>
+    <section class="group" id="type">
+      <div class="group-head">
+        <h2 class="bh-h3">Type</h2>
+        <span class="group-count">2</span>
+      </div>
+      <div class="spec-grid">
+      <a class="spec" href="preview/type-families.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:163px">
+          <iframe src="preview/type-families.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:300px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Typefaces</span>
+          <span class="spec-sub">Manrope · Mona Sans · Inter · Bricolage</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/type-scale.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:185px">
+          <iframe src="preview/type-scale.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:340px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Type Scale</span>
+          <span class="spec-sub">Semantic roles H2 → overline</span>
+        </div>
+      </a>
+      </div>
+    </section>
+    <section class="group" id="spacing">
+      <div class="group-head">
+        <h2 class="bh-h3">Spacing</h2>
+        <span class="group-count">3</span>
+      </div>
+      <div class="spec-grid">
+      <a class="spec" href="preview/spacing-elevation.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:92px">
+          <iframe src="preview/spacing-elevation.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:170px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Elevation</span>
+          <span class="spec-sub">Border-first; shadow reserved for overlays</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/spacing-radii.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:87px">
+          <iframe src="preview/spacing-radii.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:160px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Corner Radii</span>
+          <span class="spec-sub">6 · 8 · 10 · 12 · 16 · full</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/spacing-tokens.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:130px">
+          <iframe src="preview/spacing-tokens.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:240px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Spacing Scale</span>
+          <span class="spec-sub">4px base grid</span>
+        </div>
+      </a>
+      </div>
+    </section>
+    <section class="group" id="components">
+      <div class="group-head">
+        <h2 class="bh-h3">Components</h2>
+        <span class="group-count">7</span>
+      </div>
+      <div class="spec-grid">
+      <a class="spec" href="preview/comp-badges.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:71px">
+          <iframe src="preview/comp-badges.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:130px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Status Pills & Dots</span>
+          <span class="spec-sub">Pending/Completed/Failed + Active/Inactive</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/comp-buttons.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:81px">
+          <iframe src="preview/comp-buttons.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:150px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Buttons</span>
+          <span class="spec-sub">Yellow CTA · blue · stroke · ghost · danger</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/comp-inputs.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:81px">
+          <iframe src="preview/comp-inputs.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:150px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Inputs</span>
+          <span class="spec-sub">Labelled field · icon · hint · textarea</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/comp-modal.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:136px">
+          <iframe src="preview/comp-modal.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:250px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Confirm Modal</span>
+          <span class="spec-sub">Warning icon · Cancel / confirm</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/comp-nav.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:185px">
+          <iframe src="preview/comp-nav.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:340px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Side-Nav Items</span>
+          <span class="spec-sub">Active=solid gold · hover=dark wash · child indent + left bar</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/comp-table.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:130px">
+          <iframe src="preview/comp-table.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:240px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Data Table</span>
+          <span class="spec-sub">Departments table — toolbar, status tags, pagination</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/comp-toasts.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:54px">
+          <iframe src="preview/comp-toasts.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:100px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Toasts</span>
+          <span class="spec-sub">Solid success / error</span>
+        </div>
+      </a>
+      </div>
+    </section>
+    <section class="group" id="brand">
+      <div class="group-head">
+        <h2 class="bh-h3">Brand</h2>
+        <span class="group-count">5</span>
+      </div>
+      <div class="spec-grid">
+      <a class="spec" href="preview/brand-imagery.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:109px">
+          <iframe src="preview/brand-imagery.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:200px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Imagery & Surfaces</span>
+          <span class="spec-sub">Oil-droplet hero · yellow · canvas</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/brand-logo.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:65px">
+          <iframe src="preview/brand-logo.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:120px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Logo / Apex Mark</span>
+          <span class="spec-sub">On light, yellow, blue</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/comp-empty.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:174px">
+          <iframe src="preview/comp-empty.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:320px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Empty State</span>
+          <span class="spec-sub">Nothing here yet — illustration, copy, primary action</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/comp-segmented.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:174px">
+          <iframe src="preview/comp-segmented.html" tabindex="-1" scrolling="no"
+            style="width:700px;height:320px;transform:scale(0.5429);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Segmented Filter</span>
+          <span class="spec-sub">Filter pill group + search + Show Filter toolbar</span>
+        </div>
+      </a>
+      <a class="spec" href="preview/comp-tabs.html" target="_blank" rel="noopener">
+        <div class="thumb" style="height:95px">
+          <iframe src="preview/comp-tabs.html" tabindex="-1" scrolling="no"
+            style="width:960px;height:240px;transform:scale(0.3958);"></iframe>
+        </div>
+        <div class="spec-meta">
+          <span class="spec-name">Horizontal Tabs</span>
+          <span class="spec-sub">Sub-menu tab bar on white, gold active underline</span>
+        </div>
+      </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span class="brandmark" style="width:28px;height:28px;border-radius:7px;"><i class="ri-drop-fill" style="font-size:15px;"></i></span>
+      <span class="fnote">BISTA HR Design System · Bistasol ERP</span>
+      <span class="spacer"></span>
+      <a class="flink" href="README.md">README & guidelines</a>
+      <a class="flink" href="https://github.com/Bista-Hr/erp-ux-design" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      function fitThumbs(){
+        document.querySelectorAll('.thumb iframe').forEach(function(f){
+          var w = parseFloat(f.style.width), h = parseFloat(f.style.height);
+          if(!w || !h) return;
+          var cw = f.parentElement.clientWidth;
+          var s = cw / w;
+          f.style.transform = 'scale(' + s + ')';
+          f.parentElement.style.height = Math.round(h * s) + 'px';
+        });
+      }
+      var t;
+      window.addEventListener('resize', function(){ clearTimeout(t); t = setTimeout(fitThumbs, 120); });
+      if(document.readyState === 'loading'){
+        document.addEventListener('DOMContentLoaded', fitThumbs);
+      } else { fitThumbs(); }
+      window.addEventListener('load', fitThumbs);
+    })();
+  </script>
+</body>
+</html>

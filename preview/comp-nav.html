@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Components" name="Side-Nav Items" subtitle="Active=solid gold · hover=dark wash · child indent + left bar" viewport="700x340" -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0}
+  body{padding:0;background:var(--brand-yellow);display:flex}
+  .nav{position:relative;width:248px;align-self:stretch;overflow:hidden;
+    background:var(--brand-yellow);padding:16px 12px;display:flex;flex-direction:column;gap:6px}
+  /* large central oil-droplet watermark — blended into the yellow as a faint texture */
+  .nav::before{content:"";position:absolute;left:50%;top:60px;transform:translateX(-50%);
+    width:260px;height:340px;background:url(../assets/oil-droplet-bg.png) center/contain no-repeat;
+    mix-blend-mode:soft-light;opacity:.7;pointer-events:none;
+    -webkit-mask-image:radial-gradient(120% 90% at 50% 38%, #000 28%, rgba(0,0,0,.35) 60%, transparent 82%);
+            mask-image:radial-gradient(120% 90% at 50% 38%, #000 28%, rgba(0,0,0,.35) 60%, transparent 82%)}
+  .item{position:relative;z-index:1;display:flex;align-items:center;gap:8px;
+    border-radius:var(--radius-sm);font-family:var(--font-ui);font-weight:700;font-size:14px;
+    letter-spacing:.01em;color:var(--brand-ink);padding:9px 12px}
+  .item i{font-size:18px}
+  .item .chev{margin-left:auto}
+  /* active top-level = solid gold fill */
+  .item.active{background:var(--brand-yellow-dark)}
+
+  /* ---- collapsible sub-items: line + indicator live INSIDE the container ---- */
+  .subgroup{position:relative;z-index:1;margin-top:4px;display:flex;flex-direction:column}
+  /* each sub-item is a link; its OWN left border builds the continuous guide line */
+  .child{position:relative;display:block;text-decoration:none;padding-left:16px;
+    border-radius:6px;font-family:var(--font-ui);font-weight:500;font-size:14px;color:var(--brand-ink)}
+  .child .label{display:flex;align-items:center;height:32px;
+    border-left:1px solid rgba(0,0,0,.18);padding-left:8px;transition:border-color .2s}
+  .child:hover{background:rgba(0,0,0,.10)}
+  .child:hover .label{border-left-color:#898989}
+  .child.active{background:rgba(0,0,0,.20);font-weight:600}
+  .child.active .label{border-left-color:#898989}
+  /* single moving indicator: 4×14 gray pill, slides to active row (index*32 + 9) */
+  .indicator{position:absolute;left:14px;width:4px;height:14px;border-radius:3px;
+    background:#898989;z-index:10;transition:top .3s ease-in-out}
+  .legend{flex:1;padding:18px 20px;background:#fff;font-family:var(--font-ui);font-size:12px;color:var(--gray-500);display:flex;flex-direction:column;gap:12px}
+  .legend b{font-family:var(--font-head);font-weight:700;color:var(--gray-900);font-size:13px;display:block;margin-bottom:2px}
+  .legend .sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px}
+</style>
+</head>
+<body>
+  <div class="nav">
+    <div class="item active"><i class="ri-function-line"></i>Overview</div>
+    <div class="item"><i class="ri-dashboard-line"></i>Dashboard</div>
+    <div class="item"><i class="ri-team-line"></i>HR Management<i class="chev ri-arrow-up-s-line"></i></div>
+    <div class="subgroup">
+      <div class="indicator" style="top:9px"></div>
+      <a class="child active"><span class="label">Employees</span></a>
+      <a class="child"><span class="label">Departments</span></a>
+      <a class="child"><span class="label">Job Grades</span></a>
+    </div>
+    <div class="item"><i class="ri-bar-chart-2-line"></i>Performance<i class="chev ri-arrow-down-s-line"></i></div>
+  </div>
+  <div class="legend">
+    <div><b>States</b></div>
+    <div><span class="sw" style="background:var(--brand-yellow-dark)"></span>Active — solid gold #C8A900</div>
+    <div><span class="sw" style="background:rgba(0,0,0,.2)"></span>Active sub-item — black/20 wash + #898989 line &amp; indicator</div>
+    <div><span class="sw" style="background:rgba(0,0,0,.1)"></span>Hover — black/10 wash</div>
+    <div><span class="sw" style="background:var(--brand-yellow);border:1px solid rgba(0,0,0,.15)"></span>Default — flat on yellow</div>
+    <div style="color:var(--gray-400)">Sub-items live in a collapsible container. The guide line is each item's own <b style="display:inline">border-left</b> — active/hover turns it #898989. A single 4×14 indicator pill sits inside the container and slides to the active row (index × 32 + 9px). Active row = rounded <code>black/20</code> fill, no separate left bar.</div>
+  </div>
+</body>
+</html>

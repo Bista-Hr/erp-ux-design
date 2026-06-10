@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Colors" name="Neutral Ramp" subtitle="Cool gray scale 50–900" viewport="700x180" -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/mona-sans@latest/index.css">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0}
+  body{background:var(--white);padding:22px}
+  .ramp{display:flex;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border)}
+  .cell{flex:1;height:88px;display:flex;flex-direction:column;justify-content:flex-end;padding:8px 9px}
+  .cell .h{font-family:var(--font-control);font-size:11px;font-weight:600}
+  .lbl{display:flex;margin-top:10px}
+  .lbl div{flex:1;font-family:var(--font-head);font-size:11px;font-weight:700;color:var(--text-primary)}
+  .lbl div span{display:block;font-family:var(--font-control);font-weight:400;font-size:10px;color:var(--text-muted)}
+</style>
+</head>
+<body>
+  <div class="ramp">
+    <div class="cell" style="background:var(--gray-50)"></div>
+    <div class="cell" style="background:var(--gray-75)"></div>
+    <div class="cell" style="background:var(--gray-100)"></div>
+    <div class="cell" style="background:var(--gray-150)"></div>
+    <div class="cell" style="background:var(--gray-200)"></div>
+    <div class="cell" style="background:var(--gray-400)"><span class="h" style="color:#fff">Aa</span></div>
+    <div class="cell" style="background:var(--gray-500)"><span class="h" style="color:#fff">Aa</span></div>
+    <div class="cell" style="background:var(--gray-800)"><span class="h" style="color:#fff">Aa</span></div>
+    <div class="cell" style="background:var(--gray-900)"><span class="h" style="color:#fff">Aa</span></div>
+  </div>
+  <div class="lbl">
+    <div>50<span>F9FAFB</span></div>
+    <div>75<span>F6F8FA</span></div>
+    <div>100<span>F2F2F7</span></div>
+    <div>150<span>EAECF0</span></div>
+    <div>200<span>E2E4E9</span></div>
+    <div>400<span>868C98</span></div>
+    <div>500<span>525866</span></div>
+    <div>800<span>101828</span></div>
+    <div>900<span>0A0D14</span></div>
+  </div>
+</body>
+</html>

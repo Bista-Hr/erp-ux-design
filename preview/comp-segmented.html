@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Brand" name="Segmented Filter" subtitle="Filter pill group + search + Show Filter toolbar" -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../bista-components.css">
+<style>
+  html,body{margin:0}
+  body{background:#fff;padding:28px;display:flex;flex-direction:column;align-items:flex-start;gap:30px}
+  .lbl{font-family:var(--font-ui);font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--gray-400);margin-bottom:12px}
+  .demo{width:100%}
+  .toolbar-demo{border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+</style>
+</head>
+<body>
+  <!-- 1. The control on its own -->
+  <div>
+    <div class="lbl">Segmented filter</div>
+    <div class="seg">
+      <button class="active">All</button>
+      <button>Active</button>
+      <button>Inactive</button>
+    </div>
+  </div>
+
+  <!-- 2. In context: the table toolbar — filter + search + Show Filter -->
+  <div class="demo">
+    <div class="lbl">In context — table toolbar</div>
+    <div class="toolbar-demo">
+      <div class="toolbar">
+        <div class="seg">
+          <button class="active">All</button>
+          <button>Active</button>
+          <button>Inactive</button>
+        </div>
+        <div class="tb-right">
+          <div class="search">
+            <div class="input-wrap">
+              <i class="ri-search-line"></i>
+              <input type="text" placeholder="Search...">
+            </div>
+          </div>
+          <button class="btn btn-stroke"><i class="ri-equalizer-line"></i>Show Filter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Colors" name="Semantic Colors" subtitle="Success · error · warning · info + tints" viewport="700x160" -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/mona-sans@latest/index.css">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0}
+  body{background:var(--white);padding:22px}
+  .row{display:flex;gap:14px}
+  .sw{flex:1;display:flex;flex-direction:column;gap:7px}
+  .pair{display:flex;gap:6px}
+  .solid{flex:2;height:56px;border-radius:var(--radius-sm)}
+  .tint{flex:1;height:56px;border-radius:var(--radius-sm);border:1px solid rgba(16,24,40,.05)}
+  .nm{font-family:var(--font-head);font-weight:700;font-size:13px;color:var(--text-primary)}
+  .hex{font-family:var(--font-control);font-size:11px;color:var(--text-muted)}
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="sw">
+      <div class="pair"><div class="solid" style="background:var(--success)"></div><div class="tint" style="background:var(--success-tint)"></div></div>
+      <div class="nm">Success</div><div class="hex">#007839 · tint #ECFDF3</div>
+    </div>
+    <div class="sw">
+      <div class="pair"><div class="solid" style="background:var(--error)"></div><div class="tint" style="background:var(--error-tint)"></div></div>
+      <div class="nm">Error</div><div class="hex">#C11E39 · tint #FFECEB</div>
+    </div>
+    <div class="sw">
+      <div class="pair"><div class="solid" style="background:var(--warning)"></div><div class="tint" style="background:var(--warning-tint)"></div></div>
+      <div class="nm">Warning</div><div class="hex">#F87A25 · tint #FEF3EB</div>
+    </div>
+    <div class="sw">
+      <div class="pair"><div class="solid" style="background:var(--info)"></div><div class="tint" style="background:#EBEFFF"></div></div>
+      <div class="nm">Info</div><div class="hex">#375DFB</div>
+    </div>
+  </div>
+</body>
+</html>

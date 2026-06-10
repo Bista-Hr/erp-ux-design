@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+  <defs>
+    <linearGradient id="apexbg" x1="20" y1="0" x2="20" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4D6FFC"></stop><stop offset="1" stop-color="#375DFB"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="40" height="40" rx="20" fill="url(#apexbg)"></rect>
+  <g transform="translate(11.026,16.068)" fill="#fff" opacity="0.78">
+    <path d="M 4.508 9.164 C 4.139 9.164 3.795 9.347 3.588 9.653 L 1.173 13.224 C 0.673 13.962 1.202 14.957 2.093 14.957 L 13.823 14.957 C 14.192 14.957 14.537 14.774 14.744 14.469 L 23.357 1.734 C 23.856 0.996 23.328 0 22.437 0 L 14.482 0 C 14.113 0 13.768 0.183 13.562 0.489 L 8.52 7.942 C 8.003 8.706 7.141 9.164 6.219 9.164 L 4.508 9.164 Z" fill-rule="nonzero"></path>
+  </g>
+  <g transform="translate(4.444,8.889)" fill="#fff">
+    <path d="M 9.479 0.975 C 9.892 0.365 10.581 0 11.318 0 L 21.836 0 C 22.727 0 23.256 0.997 22.756 1.735 L 14.453 13.982 C 14.039 14.592 13.351 14.957 12.614 14.957 L 2.096 14.957 C 1.204 14.957 0.676 13.96 1.176 13.223 L 9.479 0.975 Z" fill-rule="nonzero"></path>
+  </g>
+</svg>

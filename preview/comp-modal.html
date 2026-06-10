@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Components" name="Confirm Modal" subtitle="Warning icon · Cancel / confirm" viewport="700x250" -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/mona-sans@latest/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../bista-components.css">
+<style>
+  html,body{margin:0}body{background:var(--gray-75);padding:22px;display:flex;justify-content:center}
+  .modal{width:400px;background:#fff;border-radius:var(--radius-xl);box-shadow:var(--shadow-modal);
+    padding:24px 20px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+  .ic{width:40px;height:40px;border-radius:50%;background:var(--warning-tint);display:flex;align-items:center;justify-content:center}
+  .ic i{font-size:24px;color:var(--warning)}
+  .actions{display:flex;gap:12px;margin-top:8px}
+</style>
+</head>
+<body>
+  <div class="modal">
+    <div class="ic"><i class="ri-error-warning-fill"></i></div>
+    <div>
+      <div class="bh-title">Archive Job Grade</div>
+      <div class="bh-body" style="margin-top:4px">Are you sure you want to archive this job grade?</div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-stroke">Cancel</button>
+      <button class="btn btn-primary">Yes, Archive</button>
+    </div>
+  </div>
+</body>
+</html>

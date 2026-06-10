@@ -1,0 +1,137 @@
+/* ============================================================================
+   BISTA HR — Bistasol ERP  ·  Color + Type Foundations
+   Source of truth: "Bistasol ERP.fig" (UI-Revamp + Recruitment pages)
+   ----------------------------------------------------------------------------
+   Load fonts (Manrope, Inter, Bricolage Grotesque) from Google Fonts and
+   Mona Sans from the GitHub/Fontsource CDN BEFORE this file, e.g.:
+
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/mona-sans@latest/index.css">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+   ============================================================================ */
+
+/* ----------------------------------------------------------------------------
+   Mona Sans — titles / headers (see --font-head, --font-display, etc.)
+   GitHub's open-source variable font. Drop the font file in at the path below
+   (the sidebar banner prompts for the upload). Until it lands, the token's
+   fallback stack ("Manrope", system-ui) renders — no substitute family.
+   ---------------------------------------------------------------------------- */
+@font-face {
+  font-family: "Mona Sans";
+  src: url("assets/fonts/MonaSans.woff2") format("woff2");
+  font-weight: 200 900;
+  font-stretch: 75% 125%;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ---- BRAND ------------------------------------------------------------- */
+  --brand-yellow:        #FFD800;  /* rgb(255,216,0)  — sidebar, primary CTA  */
+  --brand-yellow-dark:   #C8A900;  /* rgb(200,169,0)  — active nav / hover    */
+  --brand-yellow-tint:   #FFFCF5;  /* rgb(255,252,245)— soft yellow surface   */
+  --brand-blue:          #375DFB;  /* rgb(55,93,251)  — logo, info-primary    */
+  --brand-blue-dark:     #2244D3;  /* rgb(34,68,211)  — pressed / logo shadow */
+  --brand-ink:           #101010;  /* near-black on yellow                    */
+
+  /* ---- NEUTRALS (gray ramp) --------------------------------------------- */
+  --white:        #FFFFFF;
+  --gray-25:      #FCFCFD;
+  --gray-50:      #F9FAFB;   /* rgb(249,250,251) light fill                   */
+  --gray-75:      #F6F8FA;   /* rgb(246,248,250) APP CANVAS / page background */
+  --gray-100:     #F2F2F7;   /* rgb(242,242,247) dividers, subtle fills       */
+  --gray-150:     #EAECF0;   /* rgb(234,236,240) DEFAULT BORDER (most used)   */
+  --gray-200:     #E2E4E9;   /* rgb(226,228,233) input / card border          */
+  --gray-300:     #CFD1D3;   /* rgb(207,209,211) disabled icon                */
+  --gray-400:     #868C98;   /* rgb(134,140,152) muted text / placeholder     */
+  --gray-450:     #8A8F93;   /* rgb(138,143,147) input icon                   */
+  --gray-500:     #525866;   /* rgb(82,88,102)   secondary text               */
+  --gray-700:     #475467;   /* rgb(71,84,103)   body text                    */
+  --gray-800:     #101828;   /* rgb(16,24,40)    heading                      */
+  --gray-900:     #0A0D14;   /* rgb(10,13,20)    primary heading / near-black */
+  --black:        #010508;   /* rgb(1,5,8)       maximum-contrast text        */
+
+  /* ---- SEMANTIC --------------------------------------------------------- */
+  --success:        #007839;  /* rgb(0,120,57)   toast / success solid        */
+  --success-deep:   #086333;  /* rgb(8,99,51)    success text                 */
+  --success-bright: #2CC95B;  /* rgb(44,201,91)  status dot / accent          */
+  --success-tint:   #ECFDF3;  /* success surface                              */
+
+  --error:          #C11E39;  /* rgb(193,30,57)  error toast / destructive    */
+  --error-tint:     #FFECEB;  /* rgb(255,236,235) error surface               */
+
+  --warning:        #F87A25;  /* rgb(248,122,37) alert icon                   */
+  --warning-deep:   #C2540A;  /* rgb(194,84,10)  warning text                 */
+  --warning-tint:   #FEF3EB;  /* rgb(254,243,235) warning icon surface        */
+
+  --info:           #375DFB;  /* shares brand blue                            */
+
+  /* purple — used only in empty-state illustrations */
+  --purple-tint:    #F9F5FF;  /* rgb(249,245,255)                             */
+  --purple-200:     #E9D7FE;  /* rgb(233,215,254)                             */
+  --purple-300:     #C2C2FF;  /* rgb(202,194,255)                             */
+
+  /* ---- SEMANTIC TOKENS (use these in product UI) ------------------------ */
+  --bg-canvas:      var(--gray-75);
+  --bg-surface:     var(--white);
+  --bg-subtle:      var(--gray-50);
+  --border:         var(--gray-150);
+  --border-strong:  var(--gray-200);
+  --divider:        var(--gray-100);
+
+  --text-primary:   var(--gray-900);
+  --text-heading:   var(--gray-800);
+  --text-secondary: var(--gray-500);
+  --text-muted:     var(--gray-400);
+  --text-on-brand:  var(--brand-ink);   /* black text on yellow CTA          */
+  --text-on-blue:   var(--white);
+  --icon-default:   var(--gray-450);
+
+  /* ---- TYPE FAMILIES ----------------------------------------------------- */
+  --font-ui:      "Mona Sans", "Manrope", system-ui, -apple-system, sans-serif; /* nav, labels, body */
+  --font-head:    "Mona Sans", "Manrope", system-ui, sans-serif;                /* top-nav titles, modal titles */
+  --font-control: "Mona Sans", "Inter", system-ui, sans-serif;                  /* inputs, buttons */
+  --font-display: "Mona Sans", "Bricolage Grotesque", sans-serif;               /* rare big display */
+
+  /* ---- RADII ------------------------------------------------------------- */
+  --radius-xs:   6px;    /* status pills, badges, toast        */
+  --radius-sm:   8px;    /* nav item, toast, small chips       */
+  --radius-md:   10px;   /* buttons, inputs                    */
+  --radius-lg:   12px;   /* media cards, login hero            */
+  --radius-xl:   16px;   /* modals, large cards                */
+  --radius-full: 999px;  /* avatars, dots                      */
+
+  /* ---- ELEVATION --------------------------------------------------------- */
+  --shadow-input:  0px 1px 2px 0px rgba(228,229,231,0.24);
+  --shadow-btn:    0px 1px 2px 0px rgba(55,93,251,0.08);
+  --shadow-card:   0px 1px 3px 0px rgba(16,24,40,0.10), 0px 1px 2px 0px rgba(16,24,40,0.06);
+  --shadow-pop:    0px 12px 16px -4px rgba(16,24,40,0.08), 0px 4px 6px -2px rgba(16,24,40,0.03);
+  --shadow-modal:  0px 16px 32px -12px rgba(88,92,95,0.10);
+
+  /* ---- SPACING (4px base grid) ------------------------------------------ */
+  --space-1: 4px;   --space-2: 8px;   --space-3: 12px;  --space-4: 16px;
+  --space-5: 20px;  --space-6: 24px;  --space-8: 32px;  --space-10: 40px;
+  --space-12: 48px; --space-16: 64px;
+}
+
+/* ============================================================================
+   SEMANTIC TYPE ROLES  (font / size / weight / line-height / tracking)
+   Sizes verified against the .fig (14px is the workhorse UI size).
+   ============================================================================ */
+
+.bh-display   { font-family: var(--font-display); font-weight: 700; font-size: 32px; line-height: 40px; letter-spacing: -0.02em; color: var(--text-primary); }
+.bh-h1        { font-family: var(--font-ui);   font-weight: 700; font-size: 32px; line-height: 40px; letter-spacing: -0.01em; color: var(--text-primary); }   /* login welcome */
+.bh-h2        { font-family: var(--font-head); font-weight: 700; font-size: 24px; line-height: 32px; letter-spacing: -0.011em; color: var(--text-heading); }
+.bh-h3        { font-family: var(--font-head); font-weight: 700; font-size: 20px; line-height: 28px; color: var(--text-primary); }   /* top-nav page title */
+.bh-h4        { font-family: var(--font-head); font-weight: 600; font-size: 18px; line-height: 26px; color: var(--text-primary); }
+.bh-title     { font-family: var(--font-head); font-weight: 700; font-size: 16px; line-height: 24px; letter-spacing: -0.011em; color: var(--text-primary); }  /* modal / card title */
+.bh-body      { font-family: var(--font-ui);   font-weight: 400; font-size: 14px; line-height: 20px; letter-spacing: -0.006em; color: var(--text-secondary); }
+.bh-body-strong { font-family: var(--font-head); font-weight: 500; font-size: 14px; line-height: 20px; letter-spacing: -0.006em; color: var(--text-primary); }
+.bh-label     { font-family: var(--font-control); font-weight: 500; font-size: 14px; line-height: 20px; color: var(--text-primary); } /* input labels */
+.bh-nav       { font-family: var(--font-ui);   font-weight: 700; font-size: 14px; line-height: 16px; letter-spacing: 0.010em; color: var(--brand-ink); } /* side-nav label */
+.bh-button    { font-family: var(--font-control); font-weight: 500; font-size: 14px; line-height: 20px; letter-spacing: -0.006em; }
+.bh-caption   { font-family: var(--font-ui);   font-weight: 400; font-size: 12px; line-height: 16px; color: var(--text-secondary); }
+.bh-overline  { font-family: var(--font-ui);   font-weight: 700; font-size: 12px; line-height: 16px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
+
+body { font-family: var(--font-ui); color: var(--text-primary); -webkit-font-smoothing: antialiased; }

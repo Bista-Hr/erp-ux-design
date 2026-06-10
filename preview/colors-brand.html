@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Colors" name="Brand Colors" subtitle="Yellow primary + blue signature" viewport="700x180" -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/mona-sans@latest/index.css">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0}
+  body{background:var(--white);padding:22px}
+  .row{display:flex;gap:14px}
+  .sw{flex:1;display:flex;flex-direction:column;gap:8px}
+  .chip{height:74px;border-radius:var(--radius-md);border:1px solid rgba(16,24,40,.06)}
+  .nm{font-family:var(--font-head);font-weight:700;font-size:13px;color:var(--text-primary)}
+  .hex{font-family:var(--font-control);font-size:12px;color:var(--text-muted)}
+  .use{font-family:var(--font-ui);font-size:11px;color:var(--text-secondary)}
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="sw">
+      <div class="chip" style="background:var(--brand-yellow)"></div>
+      <div class="nm">Brand Yellow</div><div class="hex">#FFD800</div><div class="use">Sidebar · primary CTA (black text)</div>
+    </div>
+    <div class="sw">
+      <div class="chip" style="background:var(--brand-yellow-dark)"></div>
+      <div class="nm">Yellow Dark</div><div class="hex">#C8A900</div><div class="use">Active nav · hover</div>
+    </div>
+    <div class="sw">
+      <div class="chip" style="background:var(--brand-blue)"></div>
+      <div class="nm">Brand Blue</div><div class="hex">#375DFB</div><div class="use">Logo · info / primary-blue</div>
+    </div>
+    <div class="sw">
+      <div class="chip" style="background:var(--brand-blue-dark)"></div>
+      <div class="nm">Blue Dark</div><div class="hex">#2244D3</div><div class="use">Pressed</div>
+    </div>
+    <div class="sw">
+      <div class="chip" style="background:var(--brand-yellow-tint);border-color:var(--border)"></div>
+      <div class="nm">Yellow Tint</div><div class="hex">#FFFCF5</div><div class="use">Soft surface</div>
+    </div>
+  </div>
+</body>
+</html>
