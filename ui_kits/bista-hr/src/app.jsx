@@ -81,6 +81,9 @@ function App() {
   const [route, setRoute] = useS("role-select");
   const [rbac, setRbac] = useStore(window.HRStores.rbac);
   const perms = React.useMemo(() => permsForRole(rbac.roleId, rbac.roles), [rbac.roleId, rbac.roles]);
+  const vw = useViewportWidth();
+  const isMobile = vw <= 860;
+  const [mobileNav, setMobileNav] = useS(false);
   const [nav, setNav] = useS({ node: CORE_HR, parent: "HR Management", tab: "Departments" });
   const [data, setData] = useS({ ...SEED, Employees: EMPLOYEES });
   const [form, setForm] = useS(null);       // { mode: 'create'|'edit', row? }
@@ -111,7 +114,7 @@ function App() {
     const kind = sectionKindOf(parent || node.name);
     const tab = tabs ? (firstAllowedTab(perms, kind, tabs) || tabs[0]) : null;
     setNav({ node, parent: parent || node.name, tab });
-    setForm(null); setConfirm(null); setEmployee(null); setImportOpen(false); setPreview(null); setAnnounce(null); setSubPage(null); setOrgTree(false);
+    setForm(null); setConfirm(null); setEmployee(null); setImportOpen(false); setPreview(null); setAnnounce(null); setSubPage(null); setOrgTree(false); setMobileNav(false);
   };
   // live role switch (top bar) — reshape nav + jump to a page the role can open
   const switchRole = (roleId) => {
@@ -232,10 +235,20 @@ function App() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden", background: "var(--gray-75)" }}>
-      <TopNav title={nav.node.name} onToggleNav={showSidebar ? () => setCollapsed(c => !c) : null}
+      <TopNav title={nav.node.name} compact={isMobile}
+        onToggleNav={showSidebar ? () => (isMobile ? setMobileNav(o => !o) : setCollapsed(c => !c)) : null}
         user={{ name: ME.name, email: ME.email, org: ME.dept }} onProfile={goProfile} onSignOut={signOut} />
       <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
-        {showSidebar && <Sidebar current={nav.node.name} onNavigate={navigate} collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} perms={perms} />}
+        {showSidebar && (isMobile
+          ? <React.Fragment>
+              {mobileNav && <div onClick={() => setMobileNav(false)} style={{ position: "fixed", inset: 0, background: "rgba(16,24,40,.45)", zIndex: 190 }} />}
+              <div style={{ position: "fixed", top: 0, left: 0, bottom: 0, zIndex: 200,
+                transform: mobileNav ? "none" : "translateX(-100%)", transition: "transform .25s ease",
+                boxShadow: mobileNav ? "0 0 48px rgba(16,24,40,.35)" : "none" }}>
+                <Sidebar current={nav.node.name} onNavigate={navigate} collapsed={false} onToggle={() => setMobileNav(false)} perms={perms} />
+              </div>
+            </React.Fragment>
+          : <Sidebar current={nav.node.name} onNavigate={navigate} collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} perms={perms} />)}
         <div style={{ flex: 1, minWidth: 0, minHeight: 0, display: "flex", flexDirection: "column" }}>
           {showTabs && (
             <div className="tabbar">
@@ -244,7 +257,7 @@ function App() {
                 : <Tabs items={visTabs} active={nav.tab} onChange={setTab} />}
             </div>
           )}
-          <div style={{ flex: 1, minHeight: 0, minWidth: 0, overflow: selfScroll ? "hidden" : "auto", padding: selfScroll ? 0 : "var(--page-pad, 32px)", boxSizing: "border-box" }}>
+          <div className="bh-main" style={{ flex: 1, minHeight: 0, minWidth: 0, overflow: selfScroll ? "hidden" : "auto", padding: selfScroll ? 0 : (isMobile ? 16 : "var(--page-pad, 32px)"), boxSizing: "border-box" }}>
             {!allowed
               ? <ForbiddenScreen onHome={goDashboard} />
               : !isList

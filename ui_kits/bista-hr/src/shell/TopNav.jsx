@@ -4,7 +4,7 @@
 // The profile cluster is a button that opens a dropdown (Profile · Sign out).
 const { useState: useTopState, useRef: useTopRef, useEffect: useTopEffect } = React;
 
-function ProfileMenu({ user, onProfile, onSignOut }) {
+function ProfileMenu({ user, onProfile, onSignOut, compact = false }) {
   const [open, setOpen] = useTopState(false);
   const ref = useTopRef(null);
   useTopEffect(() => {
@@ -24,11 +24,11 @@ function ProfileMenu({ user, onProfile, onSignOut }) {
         onMouseEnter={e => { if (!open) e.currentTarget.style.background = "var(--gray-50)"; }}
         onMouseLeave={e => { if (!open) e.currentTarget.style.background = "transparent"; }}>
         <Avatar name={user.name} size={32} />
-        <div style={{ display: "flex", flexDirection: "column", whiteSpace: "nowrap", textAlign: "left" }}>
+        {!compact && <div style={{ display: "flex", flexDirection: "column", whiteSpace: "nowrap", textAlign: "left" }}>
           <span style={{ fontFamily: "var(--font-head)", fontWeight: 500, fontSize: 14, lineHeight: "20px", color: "var(--gray-900)" }}>{user.name}</span>
           <span style={{ fontFamily: "var(--font-head)", fontSize: 12, lineHeight: "16px", color: "var(--gray-500)" }}>{user.email}</span>
-        </div>
-        <Icon name={open ? "arrow-up-s-line" : "arrow-down-s-line"} size={18} color="var(--gray-400)" />
+        </div>}
+        {!compact && <Icon name={open ? "arrow-up-s-line" : "arrow-down-s-line"} size={18} color="var(--gray-400)" />}
       </button>
 
       {open && (
@@ -132,30 +132,30 @@ function RoleSwitcher({ roles = [], roleId, onSwitchRole }) {
   );
 }
 
-function TopNav({ title, onToggleNav, user = ME, onProfile, onSignOut, roles, roleId, onSwitchRole }) {
+function TopNav({ title, onToggleNav, user = ME, onProfile, onSignOut, compact = false }) {
   return (
     <header style={{
       height: 72, flex: "0 0 72px", boxSizing: "border-box", background: "#fff",
-      display: "flex", alignItems: "center", gap: 18, padding: "16px 24px", borderBottom: "1px solid var(--border)",
+      display: "flex", alignItems: "center", gap: compact ? 10 : 18, padding: compact ? "12px 14px" : "16px 24px", borderBottom: "1px solid var(--border)",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-        <img src="../../assets/logo/gcb-logo.svg" alt="GCB logo" style={{ width: 42, height: 42 }} />
-        <div style={{ display: "flex", flexDirection: "column", whiteSpace: "nowrap" }}>
+        <img src="../../assets/logo/gcb-logo.svg" alt="GCB logo" style={{ width: compact ? 34 : 42, height: compact ? 34 : 42 }} />
+        {!compact && <div style={{ display: "flex", flexDirection: "column", whiteSpace: "nowrap" }}>
           <span style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 14, lineHeight: "20px", color: "var(--gray-900)" }}>JoeSam Ltd.</span>
           <span style={{ fontFamily: "var(--font-head)", fontSize: 12, lineHeight: "16px", color: "var(--gray-500)" }}>Main Office</span>
-        </div>
+        </div>}
       </div>
-      <div style={{ width: 1, height: 40, background: "var(--gray-100)", flexShrink: 0 }} />
+      {!compact && <div style={{ width: 1, height: 40, background: "var(--gray-100)", flexShrink: 0 }} />}
       {onToggleNav && <button onClick={onToggleNav} title="Toggle sidebar" style={{
         width: 38, height: 38, flexShrink: 0, padding: 0, borderRadius: 9, cursor: "pointer",
         border: 0, background: "transparent", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
         onMouseEnter={e => e.currentTarget.style.background = "var(--brand-yellow-tint)"}
         onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-        <Icon name="layout-left-line" size={20} color="var(--gray-700)" />
+        <Icon name={compact ? "menu-line" : "layout-left-line"} size={20} color="var(--gray-700)" />
       </button>}
-      <span className="bh-h3" style={{ flex: 1 }}>{title}</span>
-      <button className="btn btn-icon btn-ghost"><Icon name="notification-3-line" size={20} color="var(--gray-800)" /></button>
-      <ProfileMenu user={user} onProfile={onProfile} onSignOut={onSignOut} />
+      <span className="bh-h3" style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: compact ? 17 : undefined }}>{title}</span>
+      {!compact && <button className="btn btn-icon btn-ghost"><Icon name="notification-3-line" size={20} color="var(--gray-800)" /></button>}
+      <ProfileMenu user={user} onProfile={onProfile} onSignOut={onSignOut} compact={compact} />
     </header>
   );
 }

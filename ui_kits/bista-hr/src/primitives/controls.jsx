@@ -140,6 +140,17 @@ function Pagination({ page = 1, pages = 1, onPrev, onNext }) {
   );
 }
 
+/* viewport width hook — reusable responsive breakpoints (shell, login, etc.) */
+function useViewportWidth() {
+  const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1280);
+  useEffect(() => {
+    const on = () => setW(window.innerWidth);
+    window.addEventListener("resize", on);
+    return () => window.removeEventListener("resize", on);
+  }, []);
+  return w;
+}
+
 /* paginate any list at `perPage` (default 10); resets to page 1 when the list size changes */
 function usePaged(items, perPage = 10) {
   const [page, setPage] = useState(1);
@@ -167,4 +178,4 @@ function BulkBar({ count, noun = "selected", visible, onClear, children }) {
   );
 }
 
-Object.assign(window, { Icon, Button, ViewDetailsButton, Field, Input, Textarea, Select, Checkbox, Tabs, Segmented, Pagination, usePaged, Avatar, getStringColor, BulkBar });
+Object.assign(window, { Icon, Button, ViewDetailsButton, Field, Input, Textarea, Select, Checkbox, Tabs, Segmented, Pagination, usePaged, useViewportWidth, Avatar, getStringColor, BulkBar });
