@@ -73,7 +73,7 @@ const TRANSFER_SEED = [
 /* ---------- requests list (approval queue) ---------- */
 function TransfersList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment, setSegment, sel, setSel }) {
   const [menu, setMenu] = useTr(null);
-  const byTab = rows.filter(r => tab === "All" || r.status === tab);
+  const byTab = rows.filter(r => tab.length === 0 || tab.includes(r.status));
   const shown = byTab.filter(r => q === "" || r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newLocation.toLowerCase().includes(q.toLowerCase()));
   const pg = usePaged(shown, 10);
   const pendingShown = shown.filter(r => r.status === "Pending");
@@ -85,11 +85,11 @@ function TransfersList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment,
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 18, flexWrap: "wrap" }}>
         <Segmented items={["Requests", "Approvals"]} active={segment} onChange={setSegment} />
         <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <Segmented items={["All", "Approved", "Pending"]} active={tab} onChange={setTab} />
           <div className="input-wrap" style={{ width: 260, padding: "9px 12px" }}>
             <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
             <input placeholder="Search transfers…" value={q} onChange={e => setQ(e.target.value)} />
           </div>
+          <StatusFilter value={tab} onChange={setTab} />
         </div>
       </div>
 
@@ -303,6 +303,7 @@ function TransferForm({ lookups, initialEmployees, onCancel, onSubmit }) {
   const [form, setForm] = useTr({ classification: "", newLocation: "", newDepartment: "", newUnit: "", newJobTitle: "",
     effectiveDate: "", reason: "" });
   const [docs, setDocs] = useTr([]);
+  const [approvers, setApprovers] = useTr([]);
   const [mails, setMails] = useTr([""]);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
   // Intra-Departmental stays within the same department → hide New Department (and clear it).
@@ -311,6 +312,8 @@ function TransferForm({ lookups, initialEmployees, onCancel, onSubmit }) {
 
   const primary = employees[0] ? DIR[employees[0]] : null;
   const staffIds = employees.map(n => (DIR[n] || {}).staffId).filter(Boolean).join(", ");
+  // approvers are chosen from staff, excluding the employees being transferred (no self-approval)
+  const approverOptions = empOptions.filter(n => !employees.includes(n));
   const autoItems = primary ? [
     { label: "Staff ID(s)", value: staffIds },
     { label: "Current Job Title", value: primary.title },
@@ -320,7 +323,7 @@ function TransferForm({ lookups, initialEmployees, onCancel, onSubmit }) {
     { label: "Zone", value: primary.zone },
   ] : [];
 
-  const valid = employees.length > 0 && form.classification && form.newLocation && form.effectiveDate && form.reason.trim() && docs.length > 0;
+  const valid = employees.length > 0 && form.classification && form.newLocation && form.effectiveDate && form.reason.trim() && docs.length > 0 && approvers.length > 0;
 
   const sectionTitle = (t, sub) => (
     <div style={{ marginTop: 4 }}>
@@ -369,6 +372,12 @@ function TransferForm({ lookups, initialEmployees, onCancel, onSubmit }) {
         <SupportingDocsUploader files={docs} onChange={setDocs} />
 
         <div style={{ height: 1, background: "var(--border)" }} />
+        {sectionTitle("Approval Routing", "Select the approver(s) who must sign off on this transfer.")}
+        <Field label="Approvers">
+          <MultiSelectCombobox value={approvers} onChange={setApprovers} options={approverOptions} placeholder="Select one or more approvers" avatar />
+        </Field>
+
+        <div style={{ height: 1, background: "var(--border)" }} />
         {sectionTitle("Stakeholder Notification")}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Notify Stakeholders <span style={{ color: "var(--gray-400)", fontWeight: 400 }}>(Department / stakeholder mails)</span></label>
@@ -386,7 +395,7 @@ function TransferForm({ lookups, initialEmployees, onCancel, onSubmit }) {
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employees, primary, staffIds, ...form, documents: docs, notifyMails: mails.filter(Boolean) })}>Create Transfer</Button>
+        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employees, primary, staffIds, ...form, approvers, documents: docs, notifyMails: mails.filter(Boolean) })}>Create Transfer</Button>
       </div>
     </div>
   );
@@ -460,6 +469,21 @@ function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
       </div>
 
       <div className="card" style={{ padding: 0 }}>
+        <DetailCard icon="user-follow-line" title="Approvers">
+          {t.approvers && t.approvers.length > 0
+            ? <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                {t.approvers.map(n => (
+                  <span key={n} style={{ display: "inline-flex", alignItems: "center", gap: 8, border: "1px solid var(--border)", borderRadius: 999, padding: "5px 12px 5px 5px" }}>
+                    <Avatar name={n} size={26} />
+                    <span style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 13.5, color: "var(--gray-900)" }}>{n}</span>
+                  </span>
+                ))}
+              </div>
+            : <EmptyState compact title="No approvers" subtitle="No approvers were assigned to this transfer." />}
+        </DetailCard>
+      </div>
+
+      <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="shield-check-line" title="Approval Information"><DetailPanel items={approvalInfo} tint="gray" cols={3} /></DetailCard>
       </div>
 
@@ -478,14 +502,13 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
   const [approvalSel, setApprovalSel] = useTr([]);   // selected pending rows in Approvals queue
   const [lastCount, setLastCount] = useTr(0);
   const [q, setQ] = useTr("");
-  const [tab, setTab] = useTr("All");
+  const [tab, setTab] = useTr([]);
   const [view, setView] = useTr({ name: "list" });   // list | add | details
   const [confirm, setConfirm] = useTr(null);
 
   useTrEffect(() => {
     if (!onSubPage) return;
     if (view.name === "add") onSubPage({ trail: [{ label: "Transfers", onClick: () => setView({ name: "list" }) }, { label: "Create Transfer" }] });
-    else if (view.name === "assign") onSubPage({ trail: [{ label: "Transfers", onClick: () => setView({ name: "list" }) }, { label: "Assign Transfer" }] });
     else if (view.name === "details") onSubPage({ trail: [{ label: "Transfers", onClick: () => setView({ name: "list" }) }, { label: "Transfer Approval" }] });
     else onSubPage(null);
     return () => onSubPage(null);
@@ -508,7 +531,7 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
         previousUnit: p.dept || "—", currentTitle: p.title || "—", newTitle: f.newJobTitle || "",
         grade: p.grade || "—", zone: p.zone || "—",
         effectiveDate: f.effectiveDate, dateSubmitted: todayTr(), status: "Pending",
-        reason: f.reason, documents: f.documents,
+        reason: f.reason, documents: f.documents, approvers: f.approvers || [],
         approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
       }, ...ts]);
       onToast("Transfer Submitted", { tone: "success" });
@@ -565,7 +588,6 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
 
   let body;
   if (view.name === "add") body = <TransferForm lookups={lookups} initialEmployees={view.initialEmployees} onCancel={() => setView({ name: "list" })} onSubmit={submitTransfer} />;
-  else if (view.name === "assign") body = <BulkTransferForm names={view.names} lookups={lookups} onCancel={() => setView({ name: "list" })} onSubmit={submitBulk} />;
   else if (view.name === "details" && current) body = <TransferDetails transfer={current}
     onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={(r) => setConfirm({ kind: "reject", row: r })}
     onUpdate={(partial) => setTransfers(ts => ts.map(t => t.id === current.id ? { ...t, ...partial } : t))} onToast={onToast} />;
@@ -573,10 +595,7 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <PageHeader title="Transfers" subtitle="Transfer or bulk-transfer staff, and track approval status."
         actions={
-          <React.Fragment>
-            <Button variant="stroke" icon="download-2-line" onClick={() => onToast("Import Transfers — coming soon")}>Import Transfers</Button>
-            <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add" })}>Add Transfer</Button>
-          </React.Fragment>
+          <Button variant="stroke" icon="download-2-line" onClick={() => onToast("Import Transfers — coming soon")}>Import Transfers</Button>
         } />
       {segment === "Requests"
         ? <TransferRoster q={rosterQ} setQ={setRosterQ} selected={selected} setSelected={setSelected}
@@ -623,7 +642,7 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
         <span className="jt-count" key={barCount}>{barCount}</span>
         <span style={{ fontFamily: "var(--font-ui)", fontSize: 14, color: "var(--gray-700)" }}>staff selected</span>
         <button className="jt-clear" onClick={() => setSelected([])}>Clear</button>
-        <Button variant="primary" icon="exchange-line" onClick={() => setView({ name: "assign", names: selected })}>Assign Transfer</Button>
+        <Button variant="primary" icon="exchange-line" onClick={() => setView({ name: "add", initialEmployees: selected })}>Create Transfer</Button>
       </div>
 
       {/* floating bulk-approval bar (Approvals queue) */}

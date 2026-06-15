@@ -20,7 +20,7 @@ const todayPromo = () => new Date().toLocaleDateString("en-GB", { day: "2-digit"
 /* ---------- requests list (approval queue) ---------- */
 function PromotionsList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment, setSegment, sel, setSel }) {
   const [menu, setMenu] = usePromo(null);
-  const byTab = rows.filter(r => tab === "All" || r.status === tab);
+  const byTab = rows.filter(r => tab.length === 0 || tab.includes(r.status));
   const shown = byTab.filter(r => q === "" || r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newRole.toLowerCase().includes(q.toLowerCase()));
   const pg = usePaged(shown, 10);
   const pendingShown = shown.filter(r => r.status === "Pending");
@@ -32,11 +32,11 @@ function PromotionsList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 18, flexWrap: "wrap" }}>
         <Segmented items={["Request", "Approval"]} active={segment} onChange={setSegment} />
         <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <Segmented items={["All", "Approved", "Pending"]} active={tab} onChange={setTab} />
           <div className="input-wrap" style={{ width: 260, padding: "9px 12px" }}>
             <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
             <input placeholder="Search promotions…" value={q} onChange={e => setQ(e.target.value)} />
           </div>
+          <StatusFilter value={tab} onChange={setTab} />
         </div>
       </div>
 
@@ -247,6 +247,7 @@ function PromotionForm({ lookups, initialEmployees, onCancel, onSubmit }) {
   const [form, setForm] = usePromo({ newJobTitle: "", grade: "", effectiveDate: "", salary: "", performanceRating: "",
     includeTransfer: false, newBranch: "", newZone: "", newDepartment: "", justification: "", budgetConfirmed: false });
   const [docs, setDocs] = usePromo([]);
+  const [approvers, setApprovers] = usePromo([]);
   const [mails, setMails] = usePromo([""]);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
 
@@ -256,6 +257,8 @@ function PromotionForm({ lookups, initialEmployees, onCancel, onSubmit }) {
     if (primary && !form.performanceRating) set("performanceRating", primary.rating);
   }, [employees]);
   const staffIds = employees.map(n => (DIR[n] || {}).staffId).filter(Boolean).join(", ");
+  // approvers are chosen from staff, excluding the employees being promoted (no self-approval)
+  const approverOptions = empOptions.filter(n => !employees.includes(n));
   const autoItems = primary ? [
     { label: "Staff ID(s)", value: staffIds },
     { label: "Current Job Title", value: primary.title },
@@ -267,7 +270,7 @@ function PromotionForm({ lookups, initialEmployees, onCancel, onSubmit }) {
   ] : [];
 
   const valid = employees.length > 0 && form.newJobTitle && form.grade && form.effectiveDate
-    && form.performanceRating && form.justification.trim() && form.budgetConfirmed && docs.length > 0;
+    && form.performanceRating && form.justification.trim() && form.budgetConfirmed && docs.length > 0 && approvers.length > 0;
 
   const sectionTitle = (t, sub) => (
     <div style={{ marginTop: 4 }}>
@@ -325,6 +328,12 @@ function PromotionForm({ lookups, initialEmployees, onCancel, onSubmit }) {
         <SupportingDocsUploader files={docs} onChange={setDocs} />
 
         <div style={{ height: 1, background: "var(--border)" }} />
+        {sectionTitle("Approval Routing", "Select the approver(s) who must sign off on this promotion.")}
+        <Field label="Approvers">
+          <MultiSelectCombobox value={approvers} onChange={setApprovers} options={approverOptions} placeholder="Select one or more approvers" avatar />
+        </Field>
+
+        <div style={{ height: 1, background: "var(--border)" }} />
         {sectionTitle("Notification")}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Notify Departments <span style={{ color: "var(--gray-400)", fontWeight: 400 }}>(Department mails only)</span></label>
@@ -342,7 +351,7 @@ function PromotionForm({ lookups, initialEmployees, onCancel, onSubmit }) {
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employees, primary, staffIds, ...form, documents: docs, notifyMails: mails.filter(Boolean) })}>Create Promotion</Button>
+        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employees, primary, staffIds, ...form, approvers, documents: docs, notifyMails: mails.filter(Boolean) })}>Create Promotion</Button>
       </div>
     </div>
   );
@@ -417,6 +426,21 @@ function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
       </div>
 
       <div className="card" style={{ padding: 0 }}>
+        <DetailCard icon="user-follow-line" title="Approvers">
+          {promo.approvers && promo.approvers.length > 0
+            ? <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                {promo.approvers.map(n => (
+                  <span key={n} style={{ display: "inline-flex", alignItems: "center", gap: 8, border: "1px solid var(--border)", borderRadius: 999, padding: "5px 12px 5px 5px" }}>
+                    <Avatar name={n} size={26} />
+                    <span style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 13.5, color: "var(--gray-900)" }}>{n}</span>
+                  </span>
+                ))}
+              </div>
+            : <EmptyState compact title="No approvers" subtitle="No approvers were assigned to this promotion." />}
+        </DetailCard>
+      </div>
+
+      <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="shield-check-line" title="Approval Information"><DetailPanel items={approvalInfo} tint="gray" cols={3} /></DetailCard>
       </div>
 
@@ -435,14 +459,13 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
   const [approvalSel, setApprovalSel] = usePromo([]);
   const [lastCount, setLastCount] = usePromo(0);
   const [q, setQ] = usePromo("");
-  const [tab, setTab] = usePromo("All");
+  const [tab, setTab] = usePromo([]);
   const [view, setView] = usePromo({ name: "list" });   // list | add | details
   const [confirm, setConfirm] = usePromo(null);
 
   usePromoEffect(() => {
     if (!onSubPage) return;
     if (view.name === "add") onSubPage({ trail: [{ label: "Promotions", onClick: () => setView({ name: "list" }) }, { label: "Create Promotion" }] });
-    else if (view.name === "assign") onSubPage({ trail: [{ label: "Promotions", onClick: () => setView({ name: "list" }) }, { label: "Assign Promotion" }] });
     else if (view.name === "details") onSubPage({ trail: [{ label: "Promotions", onClick: () => setView({ name: "list" }) }, { label: "Promotion Approval" }] });
     else onSubPage(null);
     return () => onSubPage(null);
@@ -468,7 +491,7 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
         branch: f.includeTransfer && f.newBranch ? f.newBranch : (p.branch || "—"),
         previousSalary: p.salary || "—", salary: f.salary || "—", performanceRating: f.performanceRating,
         effectiveDate: f.effectiveDate, dateSubmitted: todayPromo(), status: "Pending",
-        justification: f.justification, allowances: [], documents: f.documents,
+        justification: f.justification, allowances: [], documents: f.documents, approvers: f.approvers || [],
         approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
       }, ...ps]);
       onToast("Promotion Submitted", { tone: "success" });
@@ -524,7 +547,6 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
 
   let body;
   if (view.name === "add") body = <PromotionForm lookups={lookups} initialEmployees={view.initialEmployees} onCancel={() => setView({ name: "list" })} onSubmit={submitPromo} />;
-  else if (view.name === "assign") body = <BulkPromoteForm names={view.names} lookups={lookups} onCancel={() => setView({ name: "list" })} onSubmit={submitBulk} />;
   else if (view.name === "details" && current) body = <PromotionDetails promo={current}
     onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={(r) => setConfirm({ kind: "reject", row: r })}
     onUpdate={(partial) => setPromos(ps => ps.map(p => p.id === current.id ? { ...p, ...partial } : p))} onToast={onToast} />;
@@ -532,10 +554,7 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <PageHeader title="Promotions" subtitle="Promote or bulk-promote staff, and track approval status."
         actions={
-          <React.Fragment>
-            <Button variant="stroke" icon="download-2-line" onClick={() => onToast("Import Promotions — coming soon")}>Import Promotions</Button>
-            <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add" })}>Add Promotion</Button>
-          </React.Fragment>
+          <Button variant="stroke" icon="download-2-line" onClick={() => onToast("Import Promotions — coming soon")}>Import Promotions</Button>
         } />
       {segment === "Request"
         ? <PromotionRoster q={rosterQ} setQ={setRosterQ} selected={selected} setSelected={setSelected}
@@ -583,7 +602,7 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
         <span className="jt-count" key={barCount}>{barCount}</span>
         <span style={{ fontFamily: "var(--font-ui)", fontSize: 14, color: "var(--gray-700)" }}>staff selected</span>
         <button className="jt-clear" onClick={() => setSelected([])}>Clear</button>
-        <Button variant="primary" icon="arrow-up-circle-line" onClick={() => setView({ name: "assign", names: selected })}>Assign Promotion</Button>
+        <Button variant="primary" icon="arrow-up-circle-line" onClick={() => setView({ name: "add", initialEmployees: selected })}>Create Promotion</Button>
       </div>
 
       {/* floating bulk-approval bar (Approval queue) */}

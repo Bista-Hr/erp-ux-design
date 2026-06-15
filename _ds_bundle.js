@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":3,"namespace":"BISTAHRDesignSystem_c5941c","components":[],"sourceHashes":{"components.jsx":"bda283696d64","preview/tweaks-panel.jsx":"6591467622ed","screens.jsx":"6dda81d09774","ui_kits/bista-hr/src/admin/Configurations.jsx":"9725bc9746f4","ui_kits/bista-hr/src/app.jsx":"e5d6f4e87320","ui_kits/bista-hr/src/appraisal/AppraisalDetails.jsx":"d9fb9d83f303","ui_kits/bista-hr/src/appraisal/AppraisalScoring.jsx":"b15f0ecb1fb6","ui_kits/bista-hr/src/appraisal/Appraisals.jsx":"02ff64b2431f","ui_kits/bista-hr/src/appraisal/data.jsx":"145574f83dbb","ui_kits/bista-hr/src/approvals/Approvals.jsx":"1c9b0154fe60","ui_kits/bista-hr/src/crud/CrudScreen.jsx":"3b733f492953","ui_kits/bista-hr/src/crud/FormModal.jsx":"32c16a31f34f","ui_kits/bista-hr/src/crud/config.jsx":"f751da3c61ab","ui_kits/bista-hr/src/dashboard/Announcements.jsx":"05b9a57e5810","ui_kits/bista-hr/src/dashboard/Dashboard.jsx":"89f909e9d2d3","ui_kits/bista-hr/src/dashboard/EmployeeRequests.jsx":"abe5fe918af7","ui_kits/bista-hr/src/dashboard/Overview.jsx":"10c17ef92b5f","ui_kits/bista-hr/src/data/lookups.jsx":"f63344609b62","ui_kits/bista-hr/src/data/store.jsx":"5a2365017f76","ui_kits/bista-hr/src/employee/DetailCard.jsx":"5d8a555da9d4","ui_kits/bista-hr/src/employee/Documents.jsx":"7a132ec0552e","ui_kits/bista-hr/src/employee/EmployeeDetail.jsx":"0c697d296cba","ui_kits/bista-hr/src/employee/EmployeesScreen.jsx":"539cfe47771c","ui_kits/bista-hr/src/employee/ImportEmployees.jsx":"ff4ddf5c4fcd","ui_kits/bista-hr/src/employee/ProfilePictureModal.jsx":"a2db090388c2","ui_kits/bista-hr/src/employee/data.jsx":"d55fe13fc9e2","ui_kits/bista-hr/src/engagement/accommodation/Accommodation.jsx":"1e3e24b7200e","ui_kits/bista-hr/src/engagement/accommodation/AccommodationScreen.jsx":"0b0319c6a01f","ui_kits/bista-hr/src/engagement/apartments/ApartmentsTable.jsx":"4d3d482e213a","ui_kits/bista-hr/src/engagement/data.jsx":"76929ca76d13","ui_kits/bista-hr/src/engagement/disciplinary/CaseFlow.jsx":"767c45c134ef","ui_kits/bista-hr/src/engagement/disciplinary/Disciplinary.jsx":"85fd9d832d13","ui_kits/bista-hr/src/engagement/disciplinary/DisciplinaryScreen.jsx":"0b5dd1d9086b","ui_kits/bista-hr/src/engagement/welfare/Welfare.jsx":"ce80f382393a","ui_kits/bista-hr/src/exit/Exit.jsx":"e9e05dc05c05","ui_kits/bista-hr/src/forms/Combobox.jsx":"692d588748fa","ui_kits/bista-hr/src/forms/SupportingDocsUploader.jsx":"1d518b2e7497","ui_kits/bista-hr/src/jobtitle/JobTitle.jsx":"a2242afe68b1","ui_kits/bista-hr/src/leave-admin/AdminLeaveRequests.jsx":"7857bc085962","ui_kits/bista-hr/src/leave-admin/HolidaysBalances.jsx":"7f9a51358e28","ui_kits/bista-hr/src/leave-admin/LeaveAllocations.jsx":"ab34b63d77a0","ui_kits/bista-hr/src/leave-admin/LeaveManagement.jsx":"332aa7c7354c","ui_kits/bista-hr/src/leave-admin/LeaveTypes.jsx":"016139d6f697","ui_kits/bista-hr/src/leave-admin/data.jsx":"3ddc32a1ebe7","ui_kits/bista-hr/src/leave/LeaveForms.jsx":"0e851916fb9a","ui_kits/bista-hr/src/leave/LeavePlanner.jsx":"88015ad5d686","ui_kits/bista-hr/src/leave/data.jsx":"e1ada603284c","ui_kits/bista-hr/src/overlays/ConfirmModal.jsx":"885929bac37d","ui_kits/bista-hr/src/overlays/Drawer.jsx":"e6583b7b830d","ui_kits/bista-hr/src/overlays/Modal.jsx":"dcee272af5ca","ui_kits/bista-hr/src/overlays/Toast.jsx":"51d951260553","ui_kits/bista-hr/src/primitives/EmptyState.jsx":"595db63bcee7","ui_kits/bista-hr/src/primitives/FileIcon.jsx":"16b9ee631c61","ui_kits/bista-hr/src/primitives/PageHeader.jsx":"49b0e21826ee","ui_kits/bista-hr/src/primitives/StatusBadge.jsx":"0c1d6ca83a01","ui_kits/bista-hr/src/primitives/controls.jsx":"3d0310ec92ac","ui_kits/bista-hr/src/promotions/Promotions.jsx":"649857d6cd4d","ui_kits/bista-hr/src/promotions/data.jsx":"aba6c79ac010","ui_kits/bista-hr/src/screens/Login.jsx":"e5bf37b9408a","ui_kits/bista-hr/src/shell/Sidebar.jsx":"8c0f4af56277","ui_kits/bista-hr/src/shell/TopNav.jsx":"906de5ea1adf","ui_kits/bista-hr/src/shell/nav.jsx":"ecce2ca5d423","ui_kits/bista-hr/src/target/AssessmentDetails.jsx":"885f0021c4da","ui_kits/bista-hr/src/target/AssessmentWizard.jsx":"780654ac34f7","ui_kits/bista-hr/src/target/TargetRequests.jsx":"f37429e1be50","ui_kits/bista-hr/src/target/data.jsx":"f0590f70b16d","ui_kits/bista-hr/src/transfers/Transfers.jsx":"066926aef511","ui_kits/bista-hr/src/workflow/Workflow.jsx":"0f01215da93b","ui_kits/bista-hr/src/workflow/WorkflowPanel.jsx":"e44d578f4356","ui_kits/bista-hr/tweaks-panel.jsx":"6591467622ed"},"inlinedExternals":[],"unexposedExports":[]} */
+/* @ds-bundle: {"format":3,"namespace":"BISTAHRDesignSystem_c5941c","components":[],"sourceHashes":{"components.jsx":"bda283696d64","preview/tweaks-panel.jsx":"6591467622ed","screens.jsx":"6dda81d09774","ui_kits/bista-hr/src/admin/Configurations.jsx":"9725bc9746f4","ui_kits/bista-hr/src/admin/RolesUsers.jsx":"4564ee1d6f17","ui_kits/bista-hr/src/app.jsx":"4811c745a13c","ui_kits/bista-hr/src/appraisal/AppraisalDetails.jsx":"d9fb9d83f303","ui_kits/bista-hr/src/appraisal/AppraisalScoring.jsx":"b15f0ecb1fb6","ui_kits/bista-hr/src/appraisal/Appraisals.jsx":"02ff64b2431f","ui_kits/bista-hr/src/appraisal/data.jsx":"145574f83dbb","ui_kits/bista-hr/src/approvals/Approvals.jsx":"1c9b0154fe60","ui_kits/bista-hr/src/careers/Careers.jsx":"f93ce7aa393c","ui_kits/bista-hr/src/careers/PostingDetails.jsx":"cc9c6b254fcd","ui_kits/bista-hr/src/careers/data.jsx":"f248572cc44d","ui_kits/bista-hr/src/crud/CrudScreen.jsx":"4d8a6f02f622","ui_kits/bista-hr/src/crud/FormModal.jsx":"32c16a31f34f","ui_kits/bista-hr/src/crud/config-extra.jsx":"58b282fe575d","ui_kits/bista-hr/src/crud/config.jsx":"f751da3c61ab","ui_kits/bista-hr/src/dashboard/Announcements.jsx":"05b9a57e5810","ui_kits/bista-hr/src/dashboard/Dashboard.jsx":"47caa719e1ea","ui_kits/bista-hr/src/dashboard/EmployeeRequests.jsx":"abe5fe918af7","ui_kits/bista-hr/src/dashboard/Overview.jsx":"10c17ef92b5f","ui_kits/bista-hr/src/data/lookups.jsx":"f63344609b62","ui_kits/bista-hr/src/data/permissions.jsx":"5f28bdb96eb6","ui_kits/bista-hr/src/data/store.jsx":"5a2365017f76","ui_kits/bista-hr/src/employee/DetailCard.jsx":"5d8a555da9d4","ui_kits/bista-hr/src/employee/Documents.jsx":"7a132ec0552e","ui_kits/bista-hr/src/employee/EmployeeDetail.jsx":"0c697d296cba","ui_kits/bista-hr/src/employee/EmployeesScreen.jsx":"539cfe47771c","ui_kits/bista-hr/src/employee/ImportEmployees.jsx":"ff4ddf5c4fcd","ui_kits/bista-hr/src/employee/ProfilePictureModal.jsx":"a2db090388c2","ui_kits/bista-hr/src/employee/data.jsx":"d55fe13fc9e2","ui_kits/bista-hr/src/engagement/accommodation/Accommodation.jsx":"1e3e24b7200e","ui_kits/bista-hr/src/engagement/accommodation/AccommodationScreen.jsx":"0b0319c6a01f","ui_kits/bista-hr/src/engagement/apartments/ApartmentsTable.jsx":"4d3d482e213a","ui_kits/bista-hr/src/engagement/data.jsx":"76929ca76d13","ui_kits/bista-hr/src/engagement/disciplinary/CaseFlow.jsx":"767c45c134ef","ui_kits/bista-hr/src/engagement/disciplinary/Disciplinary.jsx":"85fd9d832d13","ui_kits/bista-hr/src/engagement/disciplinary/DisciplinaryScreen.jsx":"0b5dd1d9086b","ui_kits/bista-hr/src/engagement/welfare/Welfare.jsx":"ce80f382393a","ui_kits/bista-hr/src/exit/Exit.jsx":"a0c2569b1e07","ui_kits/bista-hr/src/forms/Combobox.jsx":"692d588748fa","ui_kits/bista-hr/src/forms/StatusFilter.jsx":"7435de57d23f","ui_kits/bista-hr/src/forms/SupportingDocsUploader.jsx":"1d518b2e7497","ui_kits/bista-hr/src/jobtitle/JobTitle.jsx":"03e2d9a46f27","ui_kits/bista-hr/src/leave-admin/AdminLeaveRequests.jsx":"7857bc085962","ui_kits/bista-hr/src/leave-admin/HolidaysBalances.jsx":"7f9a51358e28","ui_kits/bista-hr/src/leave-admin/LeaveAllocations.jsx":"ab34b63d77a0","ui_kits/bista-hr/src/leave-admin/LeaveManagement.jsx":"332aa7c7354c","ui_kits/bista-hr/src/leave-admin/LeaveTypes.jsx":"016139d6f697","ui_kits/bista-hr/src/leave-admin/data.jsx":"3ddc32a1ebe7","ui_kits/bista-hr/src/leave/LeaveForms.jsx":"0e851916fb9a","ui_kits/bista-hr/src/leave/LeavePlanner.jsx":"88015ad5d686","ui_kits/bista-hr/src/leave/data.jsx":"e1ada603284c","ui_kits/bista-hr/src/overlays/ConfirmModal.jsx":"885929bac37d","ui_kits/bista-hr/src/overlays/Drawer.jsx":"e6583b7b830d","ui_kits/bista-hr/src/overlays/Modal.jsx":"dcee272af5ca","ui_kits/bista-hr/src/overlays/Toast.jsx":"51d951260553","ui_kits/bista-hr/src/primitives/EmptyState.jsx":"595db63bcee7","ui_kits/bista-hr/src/primitives/FileIcon.jsx":"16b9ee631c61","ui_kits/bista-hr/src/primitives/PageHeader.jsx":"49b0e21826ee","ui_kits/bista-hr/src/primitives/StatusBadge.jsx":"461cd772d635","ui_kits/bista-hr/src/primitives/controls.jsx":"96a5b81eeadb","ui_kits/bista-hr/src/promotions/Promotions.jsx":"e86320d47859","ui_kits/bista-hr/src/promotions/data.jsx":"aba6c79ac010","ui_kits/bista-hr/src/screens/Login.jsx":"e97141fa1f31","ui_kits/bista-hr/src/screens/RoleSelect.jsx":"a6c5c03777da","ui_kits/bista-hr/src/shell/Sidebar.jsx":"72de0afe8ab2","ui_kits/bista-hr/src/shell/TopNav.jsx":"60334700586d","ui_kits/bista-hr/src/shell/nav.jsx":"b5a8eb169bcd","ui_kits/bista-hr/src/target/AssessmentDetails.jsx":"885f0021c4da","ui_kits/bista-hr/src/target/AssessmentWizard.jsx":"780654ac34f7","ui_kits/bista-hr/src/target/TargetRequests.jsx":"f37429e1be50","ui_kits/bista-hr/src/target/data.jsx":"f0590f70b16d","ui_kits/bista-hr/src/transfers/Transfers.jsx":"71bb63df9f3f","ui_kits/bista-hr/src/workflow/Workflow.jsx":"0f01215da93b","ui_kits/bista-hr/src/workflow/WorkflowPanel.jsx":"b8609fd0a016","ui_kits/bista-hr/tweaks-panel.jsx":"6591467622ed"},"inlinedExternals":[],"unexposedExports":[]} */
 
 (() => {
 
@@ -2451,6 +2451,892 @@ Object.assign(window, {
 });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/admin/Configurations.jsx", error: String((e && e.message) || e) }); }
 
+// ui_kits/bista-hr/src/admin/RolesUsers.jsx
+try { (() => {
+// BISTA HR · admin/RolesUsers — System Administration ▸ User Management.
+//   RolesScreen : list + create/edit roles with a full permission matrix. Writes to
+//                 the shared window.HRStores.rbac store, so new/edited roles appear
+//                 instantly in the login picker and the top-bar role switcher.
+//   UsersScreen : directory of users, each assigned a role (changeable inline).
+// This is the "extensible roles & permissions" surface — the six defaults are seeds.
+
+const {
+  useState: useRU
+} = React;
+const ROLE_COLORS = ["#375DFB", "#007839", "#7A5AF8", "#C2540A", "#0C7792", "#C11E39", "#525866", "#B54708"];
+const ROLE_ICONS = ["shield-star-line", "user-settings-line", "briefcase-line", "team-line", "user-search-line", "shield-keyhole-line", "key-2-line", "group-line"];
+function groupResources() {
+  const out = [];
+  const seen = {};
+  for (const r of window.RBAC.resources) {
+    if (!seen[r.group]) {
+      seen[r.group] = {
+        group: r.group,
+        items: []
+      };
+      out.push(seen[r.group]);
+    }
+    seen[r.group].items.push(r);
+  }
+  return out;
+}
+
+// ---- small toggle pill for an action ----------------------------------------
+function PermPill({
+  label,
+  on,
+  onClick,
+  disabled
+}) {
+  return /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: disabled ? undefined : onClick,
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontWeight: 600,
+      fontSize: 12,
+      padding: "5px 11px",
+      borderRadius: 999,
+      cursor: disabled ? "not-allowed" : "pointer",
+      opacity: disabled ? 0.5 : 1,
+      border: on ? "1px solid var(--brand-yellow-dark)" : "1px solid var(--border-strong)",
+      background: on ? "var(--brand-yellow-tint)" : "#fff",
+      color: on ? "var(--gray-900)" : "var(--gray-500)",
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 5,
+      transition: "all .12s"
+    }
+  }, on && /*#__PURE__*/React.createElement(Icon, {
+    name: "check-line",
+    size: 13,
+    color: "var(--brand-yellow-dark)"
+  }), label);
+}
+
+// ---- role create / edit modal with permission matrix ------------------------
+function RoleEditor({
+  mode,
+  role,
+  onClose,
+  onSave
+}) {
+  const [name, setName] = useRU(role ? role.name : "");
+  const [description, setDescription] = useRU(role ? role.description : "");
+  const [color, setColor] = useRU(role ? role.color : ROLE_COLORS[0]);
+  const [icon, setIcon] = useRU(role ? role.icon : ROLE_ICONS[5]);
+  const [perms, setPerms] = useRU(new Set(role ? role.permissions : []));
+  const groups = groupResources();
+  const isSystem = role && role.system;
+  const has = p => perms.has(p);
+  const toggle = p => setPerms(s => {
+    const n = new Set(s);
+    n.has(p) ? n.delete(p) : n.add(p);
+    return n;
+  });
+  const setResource = (res, on) => setPerms(s => {
+    const n = new Set(s);
+    res.actions.forEach(a => {
+      const p = `${res.key}:${a}`;
+      on ? n.add(p) : n.delete(p);
+    });
+    return n;
+  });
+  const resAllOn = res => res.actions.every(a => has(`${res.key}:${a}`));
+  const setGroup = (g, on) => setPerms(s => {
+    const n = new Set(s);
+    g.items.forEach(res => res.actions.forEach(a => {
+      const p = `${res.key}:${a}`;
+      on ? n.add(p) : n.delete(p);
+    }));
+    return n;
+  });
+  const groupCount = g => g.items.reduce((acc, res) => acc + res.actions.filter(a => has(`${res.key}:${a}`)).length, 0);
+  const save = () => {
+    const id = role ? role.id : (name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "role") + "-" + Date.now() % 100000;
+    onSave({
+      id,
+      name: name.trim() || "Untitled Role",
+      description: description.trim(),
+      color,
+      icon,
+      permissions: [...perms],
+      system: role ? role.system : false
+    });
+  };
+  return /*#__PURE__*/React.createElement(Modal, {
+    onClose: onClose,
+    width: 760
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      padding: "24px 24px 0"
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 700,
+      fontSize: 20,
+      color: "var(--gray-900)"
+    }
+  }, mode === "edit" ? "Edit Role" : "Create Role"), /*#__PURE__*/React.createElement("div", {
+    className: "bh-body",
+    style: {
+      marginTop: 4
+    }
+  }, "Name the role and choose exactly what it can access.")), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-icon btn-ghost",
+    onClick: onClose,
+    style: {
+      width: 32,
+      height: 32,
+      padding: 0
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "close-line",
+    size: 20,
+    color: "var(--gray-500)"
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "20px 24px 0",
+      display: "flex",
+      gap: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Role Name"
+  }, /*#__PURE__*/React.createElement(Input, {
+    placeholder: "Eg. Payroll Officer",
+    value: name,
+    onChange: e => setName(e.target.value)
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 200
+    }
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Colour"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 6,
+      flexWrap: "wrap",
+      paddingTop: 4
+    }
+  }, ROLE_COLORS.map(c => /*#__PURE__*/React.createElement("button", {
+    key: c,
+    type: "button",
+    onClick: () => setColor(c),
+    "aria-label": c,
+    style: {
+      width: 26,
+      height: 26,
+      borderRadius: "50%",
+      background: c,
+      cursor: "pointer",
+      border: color === c ? "2px solid var(--gray-900)" : "2px solid #fff",
+      boxShadow: "0 0 0 1px var(--border)"
+    }
+  })))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "0 24px"
+    }
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Description"
+  }, /*#__PURE__*/React.createElement(Input, {
+    placeholder: "What is this role for?",
+    value: description,
+    onChange: e => setDescription(e.target.value)
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "8px 24px 0"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-control)",
+      fontWeight: 500,
+      fontSize: 14,
+      color: "var(--gray-800)"
+    }
+  }, "Permissions ", /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--gray-400)"
+    }
+  }, "\xB7 ", perms.size, " selected")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-ghost btn-sm",
+    onClick: () => setPerms(new Set(window.RBAC.allPerms))
+  }, "Select all"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-ghost btn-sm",
+    onClick: () => setPerms(new Set())
+  }, "Clear"))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxHeight: 320,
+      overflowY: "auto",
+      border: "1px solid var(--border)",
+      borderRadius: "var(--radius-lg)"
+    }
+  }, groups.map((g, gi) => {
+    const cnt = groupCount(g);
+    const total = g.items.reduce((a, r) => a + r.actions.length, 0);
+    return /*#__PURE__*/React.createElement("div", {
+      key: g.group,
+      style: {
+        borderTop: gi ? "1px solid var(--divider)" : 0
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "10px 16px",
+        background: "var(--gray-50)"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontFamily: "var(--font-head)",
+        fontWeight: 700,
+        fontSize: 12.5,
+        letterSpacing: ".02em",
+        textTransform: "uppercase",
+        color: "var(--gray-500)"
+      }
+    }, g.group), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 10
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontFamily: "var(--font-ui)",
+        fontSize: 11.5,
+        color: "var(--gray-400)"
+      }
+    }, cnt, "/", total), /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-ghost btn-sm",
+      onClick: () => setGroup(g, cnt < total)
+    }, cnt < total ? "Enable all" : "Disable all"))), g.items.map(res => /*#__PURE__*/React.createElement("div", {
+      key: res.key,
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        padding: "11px 16px",
+        borderTop: "1px solid var(--divider)"
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      type: "button",
+      onClick: () => setResource(res, !resAllOn(res)),
+      title: "Toggle all",
+      style: {
+        width: 18,
+        height: 18,
+        flexShrink: 0,
+        borderRadius: 5,
+        cursor: "pointer",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        border: resAllOn(res) ? "0" : "1.5px solid var(--border-strong)",
+        background: resAllOn(res) ? "var(--brand-yellow)" : "#fff"
+      }
+    }, resAllOn(res) && /*#__PURE__*/React.createElement(Icon, {
+      name: "check-line",
+      size: 13,
+      color: "var(--brand-ink)"
+    })), /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        minWidth: 0
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontFamily: "var(--font-head)",
+        fontWeight: 600,
+        fontSize: 13.5,
+        color: "var(--gray-900)"
+      }
+    }, res.label), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontFamily: "var(--font-ui)",
+        fontSize: 11,
+        color: "var(--gray-400)"
+      }
+    }, res.key)), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 6,
+        flexWrap: "wrap",
+        justifyContent: "flex-end",
+        maxWidth: 360
+      }
+    }, res.actions.map(a => /*#__PURE__*/React.createElement(PermPill, {
+      key: a,
+      label: a,
+      on: has(`${res.key}:${a}`),
+      onClick: () => toggle(`${res.key}:${a}`)
+    }))))));
+  })), isSystem && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 10,
+      fontFamily: "var(--font-ui)",
+      fontSize: 12.5,
+      color: "var(--warning-deep)",
+      display: "flex",
+      alignItems: "center",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "information-line",
+    size: 15,
+    color: "var(--warning-deep)"
+  }), "This is a system role \u2014 edits apply, but it can't be deleted.")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "flex-end",
+      gap: 12,
+      padding: 24
+    }
+  }, /*#__PURE__*/React.createElement(Button, {
+    variant: "stroke",
+    onClick: onClose
+  }, "Cancel"), /*#__PURE__*/React.createElement(Button, {
+    variant: "primary",
+    icon: mode === "edit" ? "check-line" : "add-line",
+    disabled: !name.trim(),
+    onClick: save
+  }, mode === "edit" ? "Save Changes" : "Create Role")));
+}
+function RolesScreen({
+  onToast,
+  canCreate = true,
+  canEdit = true,
+  canDelete = true
+}) {
+  const [rbac, setRbac] = useStore(window.HRStores.rbac);
+  const [editor, setEditor] = useRU(null);
+  const [confirm, setConfirm] = useRU(null);
+  const [q, setQ] = useRU("");
+  const roles = rbac.roles.filter(r => r.name.toLowerCase().includes(q.toLowerCase()));
+  const saveRole = role => {
+    const isEdit = rbac.roles.some(r => r.id === role.id);
+    setRbac(s => ({
+      ...s,
+      roles: isEdit ? s.roles.map(r => r.id === role.id ? role : r) : [...s.roles, role]
+    }));
+    onToast && onToast(`Role ${isEdit ? "Updated" : "Created"}`, {
+      tone: "success"
+    });
+    setEditor(null);
+  };
+  const removeRole = role => {
+    setRbac(s => ({
+      ...s,
+      roles: s.roles.filter(r => r.id !== role.id),
+      roleId: s.roleId === role.id ? "super-admin" : s.roleId
+    }));
+    onToast && onToast("Role Deleted", {
+      tone: "error"
+    });
+    setConfirm(null);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      overflow: "visible",
+      padding: "var(--card-pad, 24px)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      gap: 16,
+      marginBottom: 20
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "bh-h2",
+    style: {
+      fontSize: 24
+    }
+  }, "Roles"), /*#__PURE__*/React.createElement("div", {
+    className: "bh-body",
+    style: {
+      marginTop: 4
+    }
+  }, "Define roles and the permissions each one grants. Changes apply across the app instantly.")), canCreate && /*#__PURE__*/React.createElement(Button, {
+    variant: "primary",
+    icon: "add-line",
+    onClick: () => setEditor({
+      mode: "create",
+      role: null
+    })
+  }, "Create Role")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      border: "1px solid var(--border)",
+      borderRadius: "var(--radius-lg)",
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 12,
+      padding: "16px 20px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "input-wrap",
+    style: {
+      width: 280,
+      padding: "8px 12px"
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "search-2-line",
+    size: 18,
+    style: {
+      color: "var(--icon-default)"
+    }
+  }), /*#__PURE__*/React.createElement("input", {
+    placeholder: "Search roles\u2026",
+    value: q,
+    onChange: e => setQ(e.target.value)
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontSize: 13,
+      color: "var(--gray-500)"
+    }
+  }, rbac.roles.length, " roles")), /*#__PURE__*/React.createElement("table", {
+    className: "bh"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Role"), /*#__PURE__*/React.createElement("th", null, "Description"), /*#__PURE__*/React.createElement("th", null, "Permissions"), /*#__PURE__*/React.createElement("th", null, "Type"), /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: 48
+    }
+  }))), /*#__PURE__*/React.createElement("tbody", null, roles.map(r => /*#__PURE__*/React.createElement("tr", {
+    key: r.id
+  }, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 30,
+      height: 30,
+      borderRadius: "50%",
+      background: (r.color || "#375DFB") + "1f",
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: r.icon || "shield-keyhole-line",
+    size: 16,
+    color: r.color || "#375DFB"
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 600,
+      color: "var(--gray-900)"
+    }
+  }, r.name))), /*#__PURE__*/React.createElement("td", {
+    style: {
+      maxWidth: 360,
+      color: "var(--gray-500)"
+    }
+  }, r.description), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("span", {
+    className: "bh-chip"
+  }, (r.permissions || []).length)), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement(StatusBadge, {
+    variant: r.system ? "info" : "completed",
+    text: r.system ? "System" : "Custom",
+    size: "sm"
+  })), /*#__PURE__*/React.createElement("td", {
+    style: {
+      position: "relative",
+      textAlign: "right"
+    }
+  }, /*#__PURE__*/React.createElement(RoleRowMenu, {
+    role: r,
+    canEdit: canEdit,
+    canDelete: canDelete && !r.system,
+    onEdit: () => setEditor({
+      mode: "edit",
+      role: r
+    }),
+    onDelete: () => setConfirm(r)
+  }))))))), editor && /*#__PURE__*/React.createElement(RoleEditor, {
+    mode: editor.mode,
+    role: editor.role,
+    onClose: () => setEditor(null),
+    onSave: saveRole
+  }), confirm && /*#__PURE__*/React.createElement(ConfirmModal, {
+    title: "Delete Role",
+    message: `Are you sure you want to delete the "${confirm.name}" role? Users on this role will fall back to Super Admin.`,
+    confirmLabel: "Yes, Delete",
+    confirmIcon: "delete-bin-line",
+    cancelLabel: "Cancel",
+    tone: "error",
+    onConfirm: () => removeRole(confirm),
+    onClose: () => setConfirm(null)
+  }));
+}
+function RoleRowMenu({
+  role,
+  canEdit,
+  canDelete,
+  onEdit,
+  onDelete
+}) {
+  const [open, setOpen] = useRU(false);
+  if (!canEdit && !canDelete) return null;
+  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-icon btn-ghost",
+    style: {
+      width: 28,
+      height: 28,
+      padding: 0
+    },
+    onClick: () => setOpen(o => !o)
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "more-fill",
+    size: 18,
+    color: "var(--gray-400)"
+  })), open && /*#__PURE__*/React.createElement("div", {
+    onMouseLeave: () => setOpen(false),
+    style: {
+      position: "absolute",
+      right: 16,
+      top: 40,
+      zIndex: 20,
+      background: "#fff",
+      borderRadius: "var(--radius-md)",
+      boxShadow: "var(--shadow-pop)",
+      padding: 6,
+      minWidth: 160,
+      display: "flex",
+      flexDirection: "column"
+    }
+  }, canEdit && /*#__PURE__*/React.createElement("button", {
+    className: "menu-item",
+    onClick: () => {
+      setOpen(false);
+      onEdit();
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "edit-2-line",
+    size: 16
+  }), "Edit Role"), canDelete && /*#__PURE__*/React.createElement("button", {
+    className: "menu-item danger",
+    onClick: () => {
+      setOpen(false);
+      onDelete();
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "delete-bin-line",
+    size: 16
+  }), "Delete Role")));
+}
+
+// ---- Users ------------------------------------------------------------------
+const USERS_SEED = [{
+  id: 1,
+  name: "Leslie Alexandre",
+  email: "leslie.alexandre@joesam.com",
+  dept: "Human Resource",
+  role: "super-admin",
+  status: "Active"
+}, {
+  id: 2,
+  name: "Emmanuel Ansah",
+  email: "emmanuel.ansah@joesam.com",
+  dept: "Human Resource",
+  role: "hr-admin",
+  status: "Active"
+}, {
+  id: 3,
+  name: "Olivia Bennett",
+  email: "olivia.bennett@joesam.com",
+  dept: "Finance",
+  role: "hrbp",
+  status: "Active"
+}, {
+  id: 4,
+  name: "Franklin Brobbey",
+  email: "franklin.brobbey@joesam.com",
+  dept: "Finance",
+  role: "line-manager",
+  status: "Active"
+}, {
+  id: 5,
+  name: "Bright Manu",
+  email: "bright.manu@joesam.com",
+  dept: "Information Technology",
+  role: "line-manager",
+  status: "Active"
+}, {
+  id: 6,
+  name: "Samuel Boateng",
+  email: "samuel.boateng@joesam.com",
+  dept: "Marketing",
+  role: "recruiter",
+  status: "Active"
+}, {
+  id: 7,
+  name: "Phoenix Carter",
+  email: "phoenix.carter@joesam.com",
+  dept: "Finance",
+  role: "employee",
+  status: "Active"
+}, {
+  id: 8,
+  name: "Ama Mensah",
+  email: "ama.mensah@joesam.com",
+  dept: "Support Services",
+  role: "employee",
+  status: "Active"
+}, {
+  id: 9,
+  name: "Kofi Owusu",
+  email: "kofi.owusu@joesam.com",
+  dept: "Information Technology",
+  role: "employee",
+  status: "Invited"
+}, {
+  id: 10,
+  name: "Demi Owusu",
+  email: "demi.owusu@joesam.com",
+  dept: "Human Resource",
+  role: "hr-admin",
+  status: "Active"
+}];
+window.HRStores.users = window.HRStores.users || makeStore(USERS_SEED);
+function UsersScreen({
+  onToast,
+  roles = [],
+  canEdit = true
+}) {
+  const [users, setUsers] = useStore(window.HRStores.users);
+  const [q, setQ] = useRU("");
+  const [openRole, setOpenRole] = useRU(null);
+  const roleOf = id => roles.find(r => r.id === id) || {
+    name: "—",
+    color: "#868C98",
+    icon: "user-3-line"
+  };
+  const shown = users.filter(u => u.name.toLowerCase().includes(q.toLowerCase()) || u.email.toLowerCase().includes(q.toLowerCase()));
+  const setRole = (uid, roleId) => {
+    setUsers(list => list.map(u => u.id === uid ? {
+      ...u,
+      role: roleId
+    } : u));
+    setOpenRole(null);
+    onToast && onToast("Role Assigned", {
+      tone: "success"
+    });
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      overflow: "visible",
+      padding: "var(--card-pad, 24px)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      gap: 16,
+      marginBottom: 20
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "bh-h2",
+    style: {
+      fontSize: 24
+    }
+  }, "Users"), /*#__PURE__*/React.createElement("div", {
+    className: "bh-body",
+    style: {
+      marginTop: 4
+    }
+  }, "People with access to BISTA HR and the role assigned to each.")), canEdit && /*#__PURE__*/React.createElement(Button, {
+    variant: "primary",
+    icon: "user-add-line",
+    onClick: () => onToast && onToast("Invite sent", {
+      tone: "success"
+    })
+  }, "Invite User")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      border: "1px solid var(--border)",
+      borderRadius: "var(--radius-lg)",
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 12,
+      padding: "16px 20px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "input-wrap",
+    style: {
+      width: 280,
+      padding: "8px 12px"
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "search-2-line",
+    size: 18,
+    style: {
+      color: "var(--icon-default)"
+    }
+  }), /*#__PURE__*/React.createElement("input", {
+    placeholder: "Search users\u2026",
+    value: q,
+    onChange: e => setQ(e.target.value)
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontSize: 13,
+      color: "var(--gray-500)"
+    }
+  }, users.length, " users")), /*#__PURE__*/React.createElement("table", {
+    className: "bh"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "User"), /*#__PURE__*/React.createElement("th", null, "Email"), /*#__PURE__*/React.createElement("th", null, "Department"), /*#__PURE__*/React.createElement("th", null, "Role"), /*#__PURE__*/React.createElement("th", null, "Status"))), /*#__PURE__*/React.createElement("tbody", null, shown.map(u => {
+    const role = roleOf(u.role);
+    return /*#__PURE__*/React.createElement("tr", {
+      key: u.id
+    }, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 8
+      }
+    }, /*#__PURE__*/React.createElement(Avatar, {
+      name: u.name,
+      size: 28
+    }), u.name)), /*#__PURE__*/React.createElement("td", {
+      style: {
+        color: "var(--gray-500)"
+      }
+    }, u.email), /*#__PURE__*/React.createElement("td", null, u.dept), /*#__PURE__*/React.createElement("td", {
+      style: {
+        position: "relative"
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      onClick: () => canEdit && setOpenRole(openRole === u.id ? null : u.id),
+      style: {
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 7,
+        border: "1px solid var(--border-strong)",
+        background: "#fff",
+        borderRadius: 999,
+        padding: "5px 10px 5px 8px",
+        cursor: canEdit ? "pointer" : "default"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 18,
+        height: 18,
+        borderRadius: "50%",
+        background: role.color + "1f",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }
+    }, /*#__PURE__*/React.createElement(Icon, {
+      name: role.icon,
+      size: 11,
+      color: role.color
+    })), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontFamily: "var(--font-ui)",
+        fontWeight: 600,
+        fontSize: 12.5,
+        color: "var(--gray-900)"
+      }
+    }, role.name), canEdit && /*#__PURE__*/React.createElement(Icon, {
+      name: "arrow-down-s-line",
+      size: 15,
+      color: "var(--gray-400)"
+    })), openRole === u.id && /*#__PURE__*/React.createElement("div", {
+      onMouseLeave: () => setOpenRole(null),
+      style: {
+        position: "absolute",
+        left: 0,
+        top: 40,
+        zIndex: 30,
+        background: "#fff",
+        border: "1px solid var(--border)",
+        borderRadius: 12,
+        boxShadow: "var(--shadow-pop)",
+        padding: 6,
+        minWidth: 220,
+        maxHeight: 280,
+        overflowY: "auto"
+      }
+    }, roles.map(r => /*#__PURE__*/React.createElement("button", {
+      key: r.id,
+      className: "menu-item",
+      onClick: () => setRole(u.id, r.id),
+      style: {
+        justifyContent: "flex-start"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 18,
+        height: 18,
+        borderRadius: "50%",
+        background: (r.color || "#375DFB") + "1f",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }
+    }, /*#__PURE__*/React.createElement(Icon, {
+      name: r.icon || "user-3-line",
+      size: 11,
+      color: r.color || "#375DFB"
+    })), r.name, r.id === u.role && /*#__PURE__*/React.createElement(Icon, {
+      name: "check-line",
+      size: 15,
+      color: "var(--brand-yellow-dark)",
+      style: {
+        marginLeft: "auto"
+      }
+    }))))), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement(StatusBadge, {
+      variant: u.status === "Active" ? "active" : "pending",
+      text: u.status,
+      size: "sm"
+    })));
+  })))));
+}
+Object.assign(window, {
+  RolesScreen,
+  UsersScreen,
+  RoleEditor
+});
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/admin/RolesUsers.jsx", error: String((e && e.message) || e) }); }
+
 // ui_kits/bista-hr/src/app.jsx
 try { (() => {
 // BISTA HR · app — root orchestrator.
@@ -2563,8 +3449,54 @@ const CONFIRM_COPY = {
     done: "Archived"
   }
 };
+
+// kind ("list"/"info"/"dashboard") of the top section that owns `parent`
+const sectionKindOf = parent => {
+  const t = NAV_MAIN.find(n => n.name === parent) || (parent === NAV_ADMIN.name ? NAV_ADMIN : null);
+  return t && t.kind || "list";
+};
+
+// first nav destination the given permission-set can actually open (role landing)
+function firstDestination(perms) {
+  const tryNode = (node, parent, kind) => {
+    if (node.tabs && node.tabs.length) {
+      const t = firstAllowedTab(perms, kind, node.tabs);
+      return t ? {
+        node,
+        parent,
+        tab: t
+      } : null;
+    }
+    return tabAllowed(perms, kind, node.name) ? {
+      node,
+      parent,
+      tab: null
+    } : null;
+  };
+  for (const top of NAV_MAIN) {
+    if (top.children) {
+      for (const c of top.children) {
+        const d = tryNode(c, top.name, top.kind);
+        if (d) return d;
+      }
+    } else {
+      const d = tryNode(top, top.name, top.kind);
+      if (d) return d;
+    }
+  }
+  for (const c of NAV_ADMIN.children) {
+    const d = tryNode(c, NAV_ADMIN.name, NAV_ADMIN.kind);
+    if (d) return d;
+  }
+  return null;
+}
 function App() {
-  const [route, setRoute] = useS("login");
+  const [route, setRoute] = useS("role-select");
+  const [rbac, setRbac] = useStore(window.HRStores.rbac);
+  const perms = React.useMemo(() => permsForRole(rbac.roleId, rbac.roles), [rbac.roleId, rbac.roles]);
+  const vw = useViewportWidth();
+  const isMobile = vw <= 860;
+  const [mobileNav, setMobileNav] = useS(false);
   const [nav, setNav] = useS({
     node: CORE_HR,
     parent: "HR Management",
@@ -2615,10 +3547,12 @@ function App() {
   const dismissToast = id => setToasts(t => t.filter(x => x.id !== id));
   const navigate = (node, parent) => {
     const tabs = tabsFor(node);
+    const kind = sectionKindOf(parent || node.name);
+    const tab = tabs ? firstAllowedTab(perms, kind, tabs) || tabs[0] : null;
     setNav({
       node,
       parent: parent || node.name,
-      tab: tabs ? tabs[0] : null
+      tab
     });
     setForm(null);
     setConfirm(null);
@@ -2628,6 +3562,28 @@ function App() {
     setAnnounce(null);
     setSubPage(null);
     setOrgTree(false);
+    setMobileNav(false);
+  };
+  // live role switch (top bar) — reshape nav + jump to a page the role can open
+  const switchRole = roleId => {
+    setRbac(s => ({
+      ...s,
+      roleId
+    }));
+    const dest = firstDestination(permsForRole(roleId, rbac.roles));
+    if (dest) setNav(dest);
+    setForm(null);
+    setConfirm(null);
+    setEmployee(null);
+    setImportOpen(false);
+    setPreview(null);
+    setAnnounce(null);
+    setSubPage(null);
+    setOrgTree(false);
+  };
+  const goDashboard = () => {
+    const d = NAV_MAIN[0];
+    navigate(d, d.name);
   };
   const setTab = tab => {
     setEmployee(null);
@@ -2656,7 +3612,7 @@ function App() {
     setAnnounce(null);
   };
   const signOut = () => {
-    setRoute("login");
+    setRoute("role-select");
     setForm(null);
     setConfirm(null);
     setEmployee(null);
@@ -2671,6 +3627,10 @@ function App() {
   const kind = topNode && topNode.kind || "list";
   const tabs = tabsFor(nav.node);
   const pageName = nav.tab || nav.node.name;
+  const visTabs = tabs ? tabs.filter(t => tabAllowed(perms, kind, t)) : tabs;
+  const allowed = tabAllowed(perms, kind, pageName);
+  // hide the sidebar entirely when the role has only one nav destination (e.g. ESS → Dashboard)
+  const showSidebar = visibleNavCount(perms) > 1;
   const isList = kind === "list";
   const cfg = isList ? CONFIGS[pageName] || genConfig(pageName) : null;
   // lookups derived from LIVE data → managed Departments/Grades/etc. feed every dropdown
@@ -2695,6 +3655,11 @@ function App() {
   const isAccommodation = isList && pageName === "Accommodation";
   const isWelfare = isList && pageName === "Welfare";
   const isDisciplinary = isList && pageName === "Disciplinary Cycle";
+  // System Administration ▸ User Management ▸ Roles / Users (RBAC management)
+  const isRoles = isList && pageName === "Roles";
+  const isUsers = isList && pageName === "Users";
+  // Recruitment ▸ Job Posts (admin posting details + applicant pipeline)
+  const isJobPosts = isList && pageName === "Job Posts";
 
   // ---- phase transitions ----
   const openCreate = () => setForm({
@@ -2791,14 +3756,29 @@ function App() {
       tone: status === "approved" ? "success" : "error"
     });
   };
+  if (route === "role-select") return /*#__PURE__*/React.createElement(RoleSelectScreen, {
+    roles: rbac.roles,
+    initial: rbac.roleId,
+    onContinue: roleId => {
+      setRbac(s => ({
+        ...s,
+        roleId
+      }));
+      setRoute("login");
+    }
+  });
   if (route === "login") return /*#__PURE__*/React.createElement(LoginScreen, {
-    onContinue: () => setRoute("app")
+    onContinue: () => {
+      const dest = firstDestination(perms);
+      if (dest) setNav(dest);
+      setRoute("app");
+    }
   });
 
   // Overview & My Info manage their own internal scrolling (so the announcements rail can
   // scroll independently of the page); every other screen scrolls in the content wrapper.
   const selfScroll = kind === "dashboard" && (pageName === "Overview" || pageName === "My Info" || pageName === "Leave Requests" || pageName === "Target Requests" || pageName === "Appraisals" || pageName === "Requests");
-  const showTabs = (tabs || subPage) && !viewingEmployee && !preview;
+  const showTabs = (visTabs && visTabs.length || subPage) && !viewingEmployee && !preview;
   return /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -2809,7 +3789,8 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement(TopNav, {
     title: nav.node.name,
-    onToggleNav: () => setCollapsed(c => !c),
+    compact: isMobile,
+    onToggleNav: showSidebar ? () => isMobile ? setMobileNav(o => !o) : setCollapsed(c => !c) : null,
     user: {
       name: ME.name,
       email: ME.email,
@@ -2823,12 +3804,38 @@ function App() {
       display: "flex",
       minHeight: 0
     }
+  }, showSidebar && (isMobile ? /*#__PURE__*/React.createElement(React.Fragment, null, mobileNav && /*#__PURE__*/React.createElement("div", {
+    onClick: () => setMobileNav(false),
+    style: {
+      position: "fixed",
+      inset: 0,
+      background: "rgba(16,24,40,.45)",
+      zIndex: 190
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      bottom: 0,
+      zIndex: 200,
+      transform: mobileNav ? "none" : "translateX(-100%)",
+      transition: "transform .25s ease",
+      boxShadow: mobileNav ? "0 0 48px rgba(16,24,40,.35)" : "none"
+    }
   }, /*#__PURE__*/React.createElement(Sidebar, {
     current: nav.node.name,
     onNavigate: navigate,
+    collapsed: false,
+    onToggle: () => setMobileNav(false),
+    perms: perms
+  }))) : /*#__PURE__*/React.createElement(Sidebar, {
+    current: nav.node.name,
+    onNavigate: navigate,
     collapsed: collapsed,
-    onToggle: () => setCollapsed(c => !c)
-  }), /*#__PURE__*/React.createElement("div", {
+    onToggle: () => setCollapsed(c => !c),
+    perms: perms
+  })), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
       minWidth: 0,
@@ -2845,19 +3852,22 @@ function App() {
       paddingBottom: 13
     }
   }) : /*#__PURE__*/React.createElement(Tabs, {
-    items: tabs,
+    items: visTabs,
     active: nav.tab,
     onChange: setTab
   })), /*#__PURE__*/React.createElement("div", {
+    className: "bh-main",
     style: {
       flex: 1,
       minHeight: 0,
       minWidth: 0,
       overflow: selfScroll ? "hidden" : "auto",
-      padding: selfScroll ? 0 : "var(--page-pad, 32px)",
+      padding: selfScroll ? 0 : isMobile ? 16 : "var(--page-pad, 32px)",
       boxSizing: "border-box"
     }
-  }, !isList ? kind === "dashboard" ? /*#__PURE__*/React.createElement(DashboardArea, {
+  }, !allowed ? /*#__PURE__*/React.createElement(ForbiddenScreen, {
+    onHome: goDashboard
+  }) : !isList ? kind === "dashboard" ? /*#__PURE__*/React.createElement(DashboardArea, {
     tab: pageName,
     requests: requests,
     onAddRequest: addRequest,
@@ -2929,6 +3939,17 @@ function App() {
     onToast: pushToast,
     onSubPage: setSubPage,
     departments: lookups.departments
+  }) : isJobPosts ? /*#__PURE__*/React.createElement(JobPostsScreen, {
+    onToast: pushToast
+  }) : isRoles ? /*#__PURE__*/React.createElement(RolesScreen, {
+    onToast: pushToast,
+    canCreate: pageCan(perms, "Roles", "Create"),
+    canEdit: pageCan(perms, "Roles", "Update"),
+    canDelete: pageCan(perms, "Roles", "Delete")
+  }) : isUsers ? /*#__PURE__*/React.createElement(UsersScreen, {
+    onToast: pushToast,
+    roles: rbac.roles,
+    canEdit: pageCan(perms, "Users", "Update")
   }) : /*#__PURE__*/React.createElement(CrudScreen, {
     key: pageName,
     config: cfg,
@@ -2936,7 +3957,10 @@ function App() {
     onCreate: openCreate,
     onEdit: openEdit,
     onArchive: askArchive,
-    onMenuAction: handleMenuAction
+    onMenuAction: handleMenuAction,
+    canCreate: pageCan(perms, pageName, "Create"),
+    canEdit: pageCan(perms, pageName, "Update"),
+    canArchive: pageCan(perms, pageName, "Delete")
   }), !selfScroll && /*#__PURE__*/React.createElement("div", {
     "aria-hidden": "true",
     style: {
@@ -4495,6 +5519,1854 @@ Object.assign(window, {
 });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/approvals/Approvals.jsx", error: String((e && e.message) || e) }); }
 
+// ui_kits/bista-hr/src/careers/Careers.jsx
+try { (() => {
+// BISTA HR · careers/Careers — ESS careers flow (Dashboard ▸ Careers).
+// list (with filters) → detail → apply (résumé / cover letter / pre-screening) → success.
+// Applying pushes a Submitted application into the shared careers store, so it appears
+// live on the admin side (Recruitment ▸ Job Posts ▸ Posting Details).
+const {
+  useState: useCS
+} = React;
+function TypePill({
+  type,
+  size = "sm"
+}) {
+  const c = empColor(type);
+  const pad = size === "lg" ? "4px 12px" : "3px 9px";
+  const fs = size === "lg" ? 13 : 12;
+  return /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      fontFamily: "var(--font-ui)",
+      fontWeight: 600,
+      fontSize: fs,
+      padding: pad,
+      borderRadius: 999,
+      background: c.bg,
+      color: c.fg,
+      border: `1px solid ${c.bd}`
+    }
+  }, empLabel(type));
+}
+function MetaRow({
+  type,
+  department,
+  closingDate,
+  size = "sm"
+}) {
+  const fs = size === "lg" ? 14 : 12.5;
+  const ico = size === "lg" ? 16 : 14;
+  const item = (icon, txt) => /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 6,
+      fontFamily: "var(--font-ui)",
+      fontSize: fs,
+      color: "var(--gray-500)"
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: icon,
+    size: ico,
+    color: "var(--gray-400)"
+  }), txt);
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 18
+    }
+  }, item("briefcase-line", empLabel(type)), item("building-2-line", department), item("time-line", "Closes " + closingDate));
+}
+function CareerCardView({
+  posting,
+  onOpen
+}) {
+  return /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => onOpen(posting.id),
+    style: {
+      textAlign: "left",
+      cursor: "pointer",
+      background: "#fff",
+      border: "1px solid var(--border)",
+      borderRadius: "var(--radius-lg)",
+      padding: 20,
+      display: "flex",
+      flexDirection: "column",
+      gap: 12,
+      transition: "box-shadow .15s, border-color .15s"
+    },
+    onMouseEnter: e => {
+      e.currentTarget.style.boxShadow = "var(--shadow-pop)";
+      e.currentTarget.style.borderColor = "var(--border-strong)";
+    },
+    onMouseLeave: e => {
+      e.currentTarget.style.boxShadow = "none";
+      e.currentTarget.style.borderColor = "var(--border)";
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      flexWrap: "wrap"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 700,
+      fontSize: 18,
+      color: "var(--gray-900)"
+    }
+  }, posting.designation), /*#__PURE__*/React.createElement(TypePill, {
+    type: posting.employmentType
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontSize: 12,
+      color: "var(--gray-400)",
+      whiteSpace: "nowrap"
+    }
+  }, posting.postedAgo, " ago")), /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontSize: 13.5,
+      lineHeight: 1.5,
+      color: "var(--gray-600)",
+      margin: 0,
+      display: "-webkit-box",
+      WebkitLineClamp: 2,
+      WebkitBoxOrient: "vertical",
+      overflow: "hidden"
+    }
+  }, posting.description), /*#__PURE__*/React.createElement(MetaRow, {
+    type: posting.employmentType,
+    department: posting.department,
+    closingDate: posting.closingDate
+  }));
+}
+function HtmlSection({
+  title,
+  children
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 24
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 700,
+      fontSize: 16,
+      color: "var(--gray-900)",
+      marginBottom: 10
+    }
+  }, title), children);
+}
+const Bullets = ({
+  items
+}) => /*#__PURE__*/React.createElement("ul", {
+  style: {
+    margin: 0,
+    paddingLeft: 20,
+    display: "flex",
+    flexDirection: "column",
+    gap: 7
+  }
+}, items.map((t, i) => /*#__PURE__*/React.createElement("li", {
+  key: i,
+  style: {
+    fontFamily: "var(--font-ui)",
+    fontSize: 14,
+    lineHeight: 1.5,
+    color: "var(--gray-700)"
+  }
+}, t)));
+function CareerDetailView({
+  posting,
+  onBack,
+  onApply
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxWidth: 880,
+      margin: "0 auto"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-ghost btn-sm",
+    onClick: onBack,
+    style: {
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "arrow-left-line",
+    size: 16
+  }), "Back to Careers"), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: 28
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      gap: 16,
+      flexWrap: "wrap"
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 12,
+      flexWrap: "wrap",
+      marginBottom: 10
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "bh-h2",
+    style: {
+      fontSize: 24
+    }
+  }, posting.designation), /*#__PURE__*/React.createElement(TypePill, {
+    type: posting.employmentType,
+    size: "lg"
+  })), /*#__PURE__*/React.createElement(MetaRow, {
+    type: posting.employmentType,
+    department: posting.department,
+    closingDate: posting.closingDate,
+    size: "lg"
+  })), posting.status === "Active" ? /*#__PURE__*/React.createElement(Button, {
+    variant: "primary",
+    icon: "arrow-right-line",
+    onClick: () => onApply(posting.id)
+  }, "Apply Now") : /*#__PURE__*/React.createElement(StatusBadge, {
+    variant: "closed",
+    text: "Closed"
+  })), /*#__PURE__*/React.createElement(HtmlSection, {
+    title: "Job Description"
+  }, /*#__PURE__*/React.createElement("p", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontSize: 14,
+      lineHeight: 1.6,
+      color: "var(--gray-700)",
+      margin: 0
+    }
+  }, posting.jobDescription)), /*#__PURE__*/React.createElement(HtmlSection, {
+    title: "Key Duties"
+  }, /*#__PURE__*/React.createElement(Bullets, {
+    items: posting.keyDuties
+  })), /*#__PURE__*/React.createElement(HtmlSection, {
+    title: "Qualifications & Experience"
+  }, /*#__PURE__*/React.createElement(Bullets, {
+    items: posting.qualifications
+  })), /*#__PURE__*/React.createElement(HtmlSection, {
+    title: "Skills Required"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 8
+    }
+  }, posting.skills.map((s, i) => /*#__PURE__*/React.createElement("span", {
+    key: i,
+    className: "bh-chip"
+  }, s))))));
+}
+function FileDrop({
+  label,
+  value,
+  onChange
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 220
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-control)",
+      fontWeight: 500,
+      fontSize: 14,
+      color: "var(--gray-800)",
+      marginBottom: 8
+    }
+  }, label), value ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      border: "1px solid var(--border-strong)",
+      borderRadius: "var(--radius-md)",
+      padding: "12px 14px",
+      background: "var(--gray-25)"
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "file-pdf-2-line",
+    size: 20,
+    color: "var(--error)"
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      flex: 1,
+      fontFamily: "var(--font-ui)",
+      fontSize: 13.5,
+      color: "var(--gray-800)"
+    }
+  }, value), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-icon btn-ghost",
+    style: {
+      width: 26,
+      height: 26,
+      padding: 0
+    },
+    onClick: () => onChange(null)
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "close-line",
+    size: 16,
+    color: "var(--gray-500)"
+  }))) : /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: () => onChange(label.toLowerCase().includes("resume") ? "resume.pdf" : "cover-letter.pdf"),
+    style: {
+      width: "100%",
+      cursor: "pointer",
+      border: "1.5px dashed var(--border-strong)",
+      borderRadius: "var(--radius-md)",
+      padding: "20px 14px",
+      background: "var(--gray-25)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "upload-cloud-2-line",
+    size: 24,
+    color: "var(--gray-400)"
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontWeight: 600,
+      fontSize: 13,
+      color: "var(--gray-700)"
+    }
+  }, "Upload ", label.toLowerCase()), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontSize: 11.5,
+      color: "var(--gray-400)"
+    }
+  }, "PDF, DOC, DOCX")));
+}
+function ApplyForm({
+  posting,
+  onBack,
+  onSubmit
+}) {
+  const [name, setName] = useCS(ME.name);
+  const [email, setEmail] = useCS(ME.email);
+  const [cv, setCv] = useCS(null);
+  const [cover, setCover] = useCS(null);
+  const [answers, setAnswers] = useCS({});
+  const qs = posting.preScreeningQuestions || [];
+  const ready = email.trim() && cv && cover && qs.every((_, i) => (answers[i] || "").trim());
+  const setA = (i, v) => setAnswers(a => ({
+    ...a,
+    [i]: v
+  }));
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxWidth: 880,
+      margin: "0 auto"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-ghost btn-sm",
+    onClick: onBack,
+    style: {
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "arrow-left-line",
+    size: 16
+  }), "Back to role"), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: 28
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 12,
+      flexWrap: "wrap",
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "bh-h2",
+    style: {
+      fontSize: 22
+    }
+  }, posting.designation), /*#__PURE__*/React.createElement(TypePill, {
+    type: posting.employmentType,
+    size: "lg"
+  })), /*#__PURE__*/React.createElement(MetaRow, {
+    type: posting.employmentType,
+    department: posting.department,
+    closingDate: posting.closingDate
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: 16,
+      marginTop: 24
+    }
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Full Name"
+  }, /*#__PURE__*/React.createElement(Input, {
+    placeholder: "Enter your full name",
+    value: name,
+    onChange: e => setName(e.target.value)
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Email"
+  }, /*#__PURE__*/React.createElement(Input, {
+    placeholder: "Enter your email",
+    value: email,
+    onChange: e => setEmail(e.target.value)
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 20,
+      marginTop: 16
+    }
+  }, /*#__PURE__*/React.createElement(FileDrop, {
+    label: "Resume",
+    value: cv,
+    onChange: setCv
+  }), /*#__PURE__*/React.createElement(FileDrop, {
+    label: "Cover Letter",
+    value: cover,
+    onChange: setCover
+  })), qs.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 24,
+      paddingTop: 20,
+      borderTop: "1px solid var(--divider)",
+      display: "flex",
+      flexDirection: "column",
+      gap: 18
+    }
+  }, qs.map((q, i) => /*#__PURE__*/React.createElement("div", {
+    key: i
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-control)",
+      fontWeight: 500,
+      fontSize: 14,
+      color: "var(--gray-800)",
+      marginBottom: 8
+    }
+  }, q.text), q.type === "yesno" ? /*#__PURE__*/React.createElement(Segmented, {
+    items: ["Yes", "No"],
+    active: answers[i] || "",
+    onChange: v => setA(i, v)
+  }) : /*#__PURE__*/React.createElement(Input, {
+    placeholder: "e.g. BSc. Accounting",
+    value: answers[i] || "",
+    onChange: e => setA(i, e.target.value)
+  })))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "flex-end",
+      gap: 12,
+      marginTop: 24,
+      paddingTop: 20,
+      borderTop: "1px solid var(--divider)"
+    }
+  }, /*#__PURE__*/React.createElement(Button, {
+    variant: "stroke",
+    onClick: onBack
+  }, "Cancel"), /*#__PURE__*/React.createElement(Button, {
+    variant: "primary",
+    icon: "send-plane-line",
+    disabled: !ready,
+    onClick: () => onSubmit({
+      name,
+      email,
+      answers: qs.map((_, i) => answers[i] || "")
+    })
+  }, "Apply Now"))));
+}
+function ApplySuccess({
+  onDone
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      maxWidth: 560,
+      margin: "40px auto 0"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: 56,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 14,
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 64,
+      height: 64,
+      borderRadius: "50%",
+      background: "var(--success-tint)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "checkbox-circle-fill",
+    size: 36,
+    color: "var(--success)"
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 700,
+      fontSize: 20,
+      color: "var(--gray-900)"
+    }
+  }, "Application Submitted"), /*#__PURE__*/React.createElement("div", {
+    className: "bh-body",
+    style: {
+      maxWidth: 380
+    }
+  }, "Your application has been submitted successfully. The hiring team will review it and get back to you."), /*#__PURE__*/React.createElement(Button, {
+    variant: "primary",
+    icon: "briefcase-line",
+    onClick: onDone
+  }, "Go To Careers")));
+}
+function CareersFlow({
+  onToast
+}) {
+  const [careers, setCareers] = useStore(window.HRStores.careers);
+  const [view, setView] = useCS({
+    mode: "list"
+  });
+  const [jobTitle, setJobTitle] = useCS("");
+  const [dept, setDept] = useCS("");
+  const [type, setType] = useCS("All");
+  const postings = careers.postings.filter(p => p.status === "Active");
+  const designations = [...new Set(postings.map(p => p.designation))].map(d => ({
+    value: d,
+    label: d
+  }));
+  const departments = [...new Set(postings.map(p => p.department))].map(d => ({
+    value: d,
+    label: d
+  }));
+  const filtered = postings.filter(p => (!jobTitle || p.designation === jobTitle) && (!dept || p.department === dept) && (type === "All" || empLabel(p.employmentType) === type));
+  const posting = id => careers.postings.find(p => p.id === id);
+  const submit = (id, data) => {
+    setCareers(s => {
+      const apps = {
+        ...s.applications
+      };
+      const list = apps[id] ? [...apps[id]] : [];
+      apps[id] = [{
+        id: "me-" + Date.now(),
+        applicantName: data.name || ME.name,
+        applicantEmail: data.email || ME.email,
+        applicantPhone: "+233 24 123 4567",
+        status: 0,
+        matchScore: null,
+        createdAt: "Just now",
+        cv: "resume.pdf",
+        coverLetter: "cover-letter.pdf",
+        employmentHistory: [{
+          employer: "Bistasol",
+          title: ME.role,
+          start: "Sep 2025",
+          end: null,
+          note: "Current role."
+        }],
+        education: [{
+          institution: "University of Ghana",
+          degree: "BSc",
+          field: "Accounting",
+          start: "2016",
+          end: "2020",
+          grade: "Second Upper"
+        }],
+        skills: ["Excel", "Reporting", "Analysis"],
+        certifications: ["—"],
+        preScreeningAnswers: data.answers
+      }, ...list];
+      return {
+        ...s,
+        applications: apps
+      };
+    });
+    onToast && onToast("Application Submitted", {
+      tone: "success"
+    });
+    setView({
+      mode: "success"
+    });
+  };
+  if (view.mode === "detail") return /*#__PURE__*/React.createElement(CareerDetailView, {
+    posting: posting(view.id),
+    onBack: () => setView({
+      mode: "list"
+    }),
+    onApply: id => setView({
+      mode: "apply",
+      id
+    })
+  });
+  if (view.mode === "apply") return /*#__PURE__*/React.createElement(ApplyForm, {
+    posting: posting(view.id),
+    onBack: () => setView({
+      mode: "detail",
+      id: view.id
+    }),
+    onSubmit: d => submit(view.id, d)
+  });
+  if (view.mode === "success") return /*#__PURE__*/React.createElement(ApplySuccess, {
+    onDone: () => setView({
+      mode: "list"
+    })
+  });
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center",
+      marginBottom: 28
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bh-h2",
+    style: {
+      fontSize: 26
+    }
+  }, "Grow Your Career with Us"), /*#__PURE__*/React.createElement("div", {
+    className: "bh-body",
+    style: {
+      marginTop: 6,
+      fontSize: 15
+    }
+  }, "Explore current opportunities across the organization and apply for roles that match your skills.")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 24,
+      alignItems: "flex-start"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      width: 280,
+      flexShrink: 0,
+      padding: 20,
+      display: "flex",
+      flexDirection: "column",
+      gap: 18,
+      position: "sticky",
+      top: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 700,
+      fontSize: 16,
+      color: "var(--gray-900)"
+    }
+  }, "Filters"), /*#__PURE__*/React.createElement(Field, {
+    label: "Job Title"
+  }, /*#__PURE__*/React.createElement(Combobox, {
+    value: jobTitle,
+    onChange: setJobTitle,
+    options: designations,
+    placeholder: "Select a job title"
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Department"
+  }, /*#__PURE__*/React.createElement(Combobox, {
+    value: dept,
+    onChange: setDept,
+    options: departments,
+    placeholder: "Select a department"
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-control)",
+      fontWeight: 500,
+      fontSize: 14,
+      color: "var(--gray-800)",
+      marginBottom: 8
+    }
+  }, "Job Type"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 6
+    }
+  }, ["All", "Permanent", "Contract", "Internship", "Temporary"].map(t => /*#__PURE__*/React.createElement("button", {
+    key: t,
+    type: "button",
+    onClick: () => setType(t),
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontWeight: 600,
+      fontSize: 12.5,
+      padding: "6px 12px",
+      borderRadius: 999,
+      cursor: "pointer",
+      border: type === t ? "1px solid var(--brand-ink)" : "1px solid var(--border-strong)",
+      background: type === t ? "var(--brand-yellow-tint)" : "#fff",
+      color: "var(--gray-800)"
+    }
+  }, t))))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0
+    }
+  }, filtered.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: 8
+    }
+  }, /*#__PURE__*/React.createElement(EmptyState, {
+    title: "No Open Positions",
+    subtitle: "There are no open positions matching your filters. Please check back later."
+  })) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+      gap: 16
+    }
+  }, filtered.map(p => /*#__PURE__*/React.createElement(CareerCardView, {
+    key: p.id,
+    posting: p,
+    onOpen: id => setView({
+      mode: "detail",
+      id
+    })
+  }))))));
+}
+Object.assign(window, {
+  CareersFlow,
+  TypePill,
+  MetaRow
+});
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/careers/Careers.jsx", error: String((e && e.message) || e) }); }
+
+// ui_kits/bista-hr/src/careers/PostingDetails.jsx
+try { (() => {
+// BISTA HR · careers/PostingDetails — admin side (Recruitment ▸ Job Posts).
+// JobPostsScreen: list of postings → click View → PostingDetailScreen:
+//   posting summary + applicant count, status pipeline tabs (Applications → Shortlisted →
+//   Assessment → Offer → Hired / Rejected), applicant table, and an applicant review modal
+//   whose actions advance the application through the pipeline (writing to the shared store).
+const {
+  useState: usePD
+} = React;
+const scoreColor = s => s == null ? "var(--gray-400)" : s >= 80 ? "var(--success-deep)" : s >= 50 ? "var(--warning-deep)" : "var(--error)";
+
+// next-step actions available for each pipeline status
+function actionsFor(status) {
+  switch (status) {
+    case 0:
+      return [{
+        label: "Shortlist",
+        icon: "user-star-line",
+        to: 1,
+        tone: "primary"
+      }, {
+        label: "Reject",
+        icon: "close-line",
+        to: 5,
+        tone: "danger"
+      }];
+    case 1:
+      return [{
+        label: "Move to Assessment",
+        icon: "clipboard-line",
+        to: 2,
+        tone: "primary"
+      }, {
+        label: "Reject",
+        icon: "close-line",
+        to: 5,
+        tone: "danger"
+      }];
+    case 2:
+      return [{
+        label: "Send Offer",
+        icon: "mail-send-line",
+        to: 3,
+        tone: "primary"
+      }, {
+        label: "Reject",
+        icon: "close-line",
+        to: 5,
+        tone: "danger"
+      }];
+    case 3:
+      return [{
+        label: "Mark Hired",
+        icon: "checkbox-circle-line",
+        to: 4,
+        tone: "primary"
+      }, {
+        label: "Reject",
+        icon: "close-line",
+        to: 5,
+        tone: "danger"
+      }];
+    case 5:
+      return [{
+        label: "Reopen",
+        icon: "refresh-line",
+        to: 0,
+        tone: "stroke"
+      }];
+    default:
+      return [];
+  }
+}
+function ApplicantReview({
+  app,
+  posting,
+  onClose,
+  onAction
+}) {
+  const st = APP_STATUS[app.status];
+  const actions = actionsFor(app.status);
+  const Section = ({
+    title,
+    children
+  }) => /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 18
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 700,
+      fontSize: 13,
+      letterSpacing: ".02em",
+      textTransform: "uppercase",
+      color: "var(--gray-500)",
+      marginBottom: 8
+    }
+  }, title), children);
+  return /*#__PURE__*/React.createElement(Modal, {
+    onClose: onClose,
+    width: 720
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      padding: "24px 24px 0"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    name: app.applicantName,
+    size: 44
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 700,
+      fontSize: 18,
+      color: "var(--gray-900)"
+    }
+  }, app.applicantName), /*#__PURE__*/React.createElement("div", {
+    className: "bh-caption"
+  }, app.applicantEmail, " \xB7 ", app.applicantPhone))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement(StatusBadge, {
+    variant: st.variant,
+    text: st.label
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-icon btn-ghost",
+    onClick: onClose,
+    style: {
+      width: 32,
+      height: 32,
+      padding: 0
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "close-line",
+    size: 20,
+    color: "var(--gray-500)"
+  })))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "16px 24px 8px",
+      maxHeight: "60vh",
+      overflowY: "auto"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      flexWrap: "wrap"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "bh-chip"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "briefcase-line",
+    size: 13,
+    color: "var(--gray-500)",
+    style: {
+      marginRight: 5
+    }
+  }), posting.designation), /*#__PURE__*/React.createElement("span", {
+    className: "bh-chip"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "building-2-line",
+    size: 13,
+    color: "var(--gray-500)",
+    style: {
+      marginRight: 5
+    }
+  }), posting.department), /*#__PURE__*/React.createElement("span", {
+    className: "bh-chip"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "calendar-line",
+    size: 13,
+    color: "var(--gray-500)",
+    style: {
+      marginRight: 5
+    }
+  }), "Applied ", app.createdAt), app.matchScore != null && /*#__PURE__*/React.createElement("span", {
+    className: "bh-chip",
+    style: {
+      color: scoreColor(app.matchScore),
+      fontWeight: 700
+    }
+  }, "Match ", app.matchScore, "%")), /*#__PURE__*/React.createElement(Section, {
+    title: "Documents"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      flexWrap: "wrap"
+    }
+  }, [{
+    n: app.cv,
+    l: "Résumé"
+  }, {
+    n: app.coverLetter,
+    l: "Cover Letter"
+  }].map((d, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 9,
+      border: "1px solid var(--border)",
+      borderRadius: "var(--radius-md)",
+      padding: "9px 12px",
+      background: "#fff"
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "file-pdf-2-line",
+    size: 20,
+    color: "var(--error)"
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 600,
+      fontSize: 13,
+      color: "var(--gray-900)"
+    }
+  }, d.l), /*#__PURE__*/React.createElement("div", {
+    className: "bh-caption"
+  }, d.n)), /*#__PURE__*/React.createElement(Icon, {
+    name: "download-2-line",
+    size: 16,
+    color: "var(--gray-400)",
+    style: {
+      marginLeft: 6
+    }
+  }))))), app.preScreeningAnswers && posting.preScreeningQuestions && /*#__PURE__*/React.createElement(Section, {
+    title: "Pre-screening"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 10
+    }
+  }, posting.preScreeningQuestions.map((q, i) => /*#__PURE__*/React.createElement("div", {
+    key: i
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontSize: 13,
+      color: "var(--gray-500)"
+    }
+  }, q.text), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 600,
+      fontSize: 14,
+      color: "var(--gray-900)"
+    }
+  }, app.preScreeningAnswers[i] || "—"))))), /*#__PURE__*/React.createElement(Section, {
+    title: "Employment History"
+  }, app.employmentHistory.map((e, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 600,
+      fontSize: 14,
+      color: "var(--gray-900)"
+    }
+  }, e.title, " \xB7 ", e.employer), /*#__PURE__*/React.createElement("div", {
+    className: "bh-caption"
+  }, e.start, " \u2013 ", e.end || "Present")))), /*#__PURE__*/React.createElement(Section, {
+    title: "Education"
+  }, app.education.map((e, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      marginBottom: 8
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 600,
+      fontSize: 14,
+      color: "var(--gray-900)"
+    }
+  }, e.degree, " ", e.field, " \xB7 ", e.institution), /*#__PURE__*/React.createElement("div", {
+    className: "bh-caption"
+  }, e.start, " \u2013 ", e.end || "Present", " \xB7 ", e.grade)))), /*#__PURE__*/React.createElement(Section, {
+    title: "Skills"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 8
+    }
+  }, app.skills.map((s, i) => /*#__PURE__*/React.createElement("span", {
+    key: i,
+    className: "bh-chip"
+  }, s))))), actions.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "flex-end",
+      gap: 12,
+      padding: 20,
+      borderTop: "1px solid var(--divider)"
+    }
+  }, actions.map(a => /*#__PURE__*/React.createElement(Button, {
+    key: a.label,
+    variant: a.tone === "danger" ? "stroke" : a.tone,
+    icon: a.icon,
+    onClick: () => onAction(app.id, a.to),
+    style: a.tone === "danger" ? {
+      color: "var(--error)",
+      borderColor: "var(--error-tint)"
+    } : undefined
+  }, a.label))));
+}
+function PostingDetailScreen({
+  postingId,
+  onBack,
+  onToast
+}) {
+  const [careers, setCareers] = useStore(window.HRStores.careers);
+  const [tab, setTab] = usePD("all");
+  const [review, setReview] = usePD(null);
+  const posting = careers.postings.find(p => p.id === postingId);
+  const apps = careers.applications[postingId] || [];
+  if (!posting) return null;
+  const counts = APP_TABS.reduce((m, t) => {
+    m[t.value] = apps.filter(a => a.status === t.status).length;
+    return m;
+  }, {});
+  const activeStatus = APP_TABS.find(t => t.value === tab).status;
+  const shown = apps.filter(a => a.status === activeStatus);
+  const setStatus = (appId, status) => {
+    setCareers(s => {
+      const ap = {
+        ...s.applications
+      };
+      ap[postingId] = ap[postingId].map(a => a.id === appId ? {
+        ...a,
+        status
+      } : a);
+      return {
+        ...s,
+        applications: ap
+      };
+    });
+    setReview(null);
+    onToast && onToast(`Applicant ${APP_STATUS[status].label}`, {
+      tone: status === 5 ? "error" : "success"
+    });
+  };
+  const togglePosting = () => {
+    setCareers(s => ({
+      ...s,
+      postings: s.postings.map(p => p.id === postingId ? {
+        ...p,
+        status: p.status === "Closed" ? "Active" : "Closed"
+      } : p)
+    }));
+    onToast && onToast(posting.status === "Closed" ? "Posting Reopened" : "Posting Closed", {
+      tone: "success"
+    });
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 16
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-ghost btn-sm",
+    onClick: onBack,
+    style: {
+      alignSelf: "flex-start"
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "arrow-left-line",
+    size: 16
+  }), "Back to Job Posts"), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: "18px 24px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 16
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "bh-h2",
+    style: {
+      fontSize: 22
+    }
+  }, "Posting Details"), /*#__PURE__*/React.createElement(Button, {
+    variant: posting.status === "Closed" ? "primary" : "stroke",
+    icon: posting.status === "Closed" ? "lock-unlock-line" : "lock-line",
+    onClick: togglePosting
+  }, posting.status === "Closed" ? "Open Posting" : "Close Posting")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 16,
+      flexWrap: "wrap"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      flex: 1,
+      minWidth: 320,
+      padding: 22
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 12,
+      marginBottom: 14
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 700,
+      fontSize: 18,
+      color: "var(--gray-900)"
+    }
+  }, posting.designation), /*#__PURE__*/React.createElement(StatusBadge, {
+    variant: posting.status === "Closed" ? "closed" : "active",
+    text: posting.status
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 1fr)",
+      gap: 16
+    }
+  }, [["Department/Unit", posting.department], ["Employment Type", empLabel(posting.employmentType)], ["Closing Date", posting.closingDate]].map(([l, v]) => /*#__PURE__*/React.createElement("div", {
+    key: l
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bh-caption"
+  }, l), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 600,
+      fontSize: 14,
+      color: "var(--gray-900)",
+      marginTop: 2
+    }
+  }, v))))), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      width: 220,
+      padding: 22,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "bh-caption"
+  }, "Number of Applicants"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 800,
+      fontSize: 36,
+      color: "var(--gray-900)",
+      lineHeight: 1.1
+    }
+  }, apps.length))), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: 0,
+      overflow: "visible"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 4,
+      padding: "12px 16px",
+      borderBottom: "1px solid var(--border)",
+      flexWrap: "wrap"
+    }
+  }, APP_TABS.map(t => {
+    const on = t.value === tab;
+    return /*#__PURE__*/React.createElement("button", {
+      key: t.value,
+      onClick: () => setTab(t.value),
+      style: {
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 7,
+        border: 0,
+        cursor: "pointer",
+        fontFamily: "var(--font-ui)",
+        fontWeight: 600,
+        fontSize: 13,
+        padding: "7px 12px",
+        borderRadius: 8,
+        background: on ? "var(--brand-yellow-tint)" : "transparent",
+        color: on ? "var(--gray-900)" : "var(--gray-500)"
+      }
+    }, t.label, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontFamily: "var(--font-ui)",
+        fontWeight: 700,
+        fontSize: 11,
+        padding: "1px 7px",
+        borderRadius: 999,
+        background: on ? "var(--brand-yellow)" : "var(--gray-100)",
+        color: on ? "var(--brand-ink)" : "var(--gray-500)"
+      }
+    }, counts[t.value]));
+  })), shown.length === 0 ? /*#__PURE__*/React.createElement(EmptyState, {
+    compact: true,
+    title: "No applicants",
+    subtitle: `No applications in the ${APP_TABS.find(t => t.value === tab).label} stage.`
+  }) : /*#__PURE__*/React.createElement("table", {
+    className: "bh"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Name"), /*#__PURE__*/React.createElement("th", null, "Email"), /*#__PURE__*/React.createElement("th", null, "Contact"), /*#__PURE__*/React.createElement("th", null, "Status"), /*#__PURE__*/React.createElement("th", null, "Match Score"), /*#__PURE__*/React.createElement("th", null, "Application Date"), /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: 48
+    }
+  }))), /*#__PURE__*/React.createElement("tbody", null, shown.map(a => /*#__PURE__*/React.createElement("tr", {
+    key: a.id,
+    style: {
+      cursor: "pointer"
+    },
+    onClick: () => setReview(a)
+  }, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    name: a.applicantName,
+    size: 28
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: 600
+    }
+  }, a.applicantName))), /*#__PURE__*/React.createElement("td", {
+    style: {
+      color: "var(--gray-500)"
+    }
+  }, a.applicantEmail), /*#__PURE__*/React.createElement("td", {
+    style: {
+      color: "var(--gray-500)"
+    }
+  }, a.applicantPhone), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement(StatusBadge, {
+    variant: APP_STATUS[a.status].variant,
+    text: APP_STATUS[a.status].label,
+    size: "sm"
+  })), /*#__PURE__*/React.createElement("td", null, a.matchScore == null ? /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--gray-400)"
+    }
+  }, "\u2014") : /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: 700,
+      color: scoreColor(a.matchScore)
+    }
+  }, a.matchScore, "%")), /*#__PURE__*/React.createElement("td", {
+    style: {
+      color: "var(--gray-500)"
+    }
+  }, a.createdAt), /*#__PURE__*/React.createElement("td", {
+    style: {
+      textAlign: "right"
+    }
+  }, /*#__PURE__*/React.createElement(Button, {
+    variant: "stroke",
+    size: "sm",
+    icon: "eye-line",
+    onClick: e => {
+      e.stopPropagation();
+      setReview(a);
+    }
+  }, "View"))))))), review && /*#__PURE__*/React.createElement(ApplicantReview, {
+    app: review,
+    posting: posting,
+    onClose: () => setReview(null),
+    onAction: setStatus
+  }));
+}
+function JobPostsScreen({
+  onToast
+}) {
+  const [careers] = useStore(window.HRStores.careers);
+  const [detailId, setDetailId] = usePD(null);
+  const [q, setQ] = usePD("");
+  if (detailId) return /*#__PURE__*/React.createElement(PostingDetailScreen, {
+    postingId: detailId,
+    onBack: () => setDetailId(null),
+    onToast: onToast
+  });
+  const rows = careers.postings.filter(p => p.designation.toLowerCase().includes(q.toLowerCase()));
+  const countFor = id => (careers.applications[id] || []).length;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      overflow: "visible",
+      padding: "var(--card-pad, 24px)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      gap: 16,
+      marginBottom: 20
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "bh-h2",
+    style: {
+      fontSize: 24
+    }
+  }, "Job Posts"), /*#__PURE__*/React.createElement("div", {
+    className: "bh-body",
+    style: {
+      marginTop: 4
+    }
+  }, "Published vacancies and their applicant pipelines. Open a posting to review applicants.")), /*#__PURE__*/React.createElement(Button, {
+    variant: "primary",
+    icon: "add-line",
+    onClick: () => onToast && onToast("Opening create posting", {})
+  }, "Create Job Post")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      border: "1px solid var(--border)",
+      borderRadius: "var(--radius-lg)",
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 12,
+      padding: "16px 20px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "input-wrap",
+    style: {
+      width: 280,
+      padding: "8px 12px"
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "search-2-line",
+    size: 18,
+    style: {
+      color: "var(--icon-default)"
+    }
+  }), /*#__PURE__*/React.createElement("input", {
+    placeholder: "Search postings\u2026",
+    value: q,
+    onChange: e => setQ(e.target.value)
+  })), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontSize: 13,
+      color: "var(--gray-500)"
+    }
+  }, careers.postings.length, " postings")), /*#__PURE__*/React.createElement("table", {
+    className: "bh"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Title"), /*#__PURE__*/React.createElement("th", null, "Department"), /*#__PURE__*/React.createElement("th", null, "Type"), /*#__PURE__*/React.createElement("th", null, "Applicants"), /*#__PURE__*/React.createElement("th", null, "Closing Date"), /*#__PURE__*/React.createElement("th", null, "Status"), /*#__PURE__*/React.createElement("th", {
+    style: {
+      width: 48
+    }
+  }))), /*#__PURE__*/React.createElement("tbody", null, rows.map(p => /*#__PURE__*/React.createElement("tr", {
+    key: p.id,
+    style: {
+      cursor: "pointer"
+    },
+    onClick: () => setDetailId(p.id)
+  }, /*#__PURE__*/React.createElement("td", {
+    style: {
+      fontWeight: 600
+    }
+  }, p.designation), /*#__PURE__*/React.createElement("td", null, p.department), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement(TypePill, {
+    type: p.employmentType
+  })), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("span", {
+    className: "bh-chip"
+  }, countFor(p.id))), /*#__PURE__*/React.createElement("td", {
+    style: {
+      color: "var(--gray-500)"
+    }
+  }, p.closingDate), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement(StatusBadge, {
+    variant: p.status === "Closed" ? "closed" : "active",
+    text: p.status,
+    size: "sm"
+  })), /*#__PURE__*/React.createElement("td", {
+    style: {
+      textAlign: "right"
+    }
+  }, /*#__PURE__*/React.createElement(Button, {
+    variant: "stroke",
+    size: "sm",
+    icon: "eye-line",
+    onClick: e => {
+      e.stopPropagation();
+      setDetailId(p.id);
+    }
+  }, "View"))))))));
+}
+Object.assign(window, {
+  JobPostsScreen,
+  PostingDetailScreen,
+  ApplicantReview
+});
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/careers/PostingDetails.jsx", error: String((e && e.message) || e) }); }
+
+// ui_kits/bista-hr/src/careers/data.jsx
+try { (() => {
+// BISTA HR · careers/data — shared careers store powering BOTH the ESS careers flow
+// (Dashboard ▸ Careers) and the admin pipeline (Recruitment ▸ Job Posts ▸ Posting Details).
+// Mirrors the codebase: a JobPosting has rich detail + pre-screening questions; applications
+// move through Submitted → Shortlisted → Assessment → Offer → Hired (or Rejected). When an
+// employee applies on the ESS side, the application is pushed here and shows up live on the
+// admin side under the "Applications" (Submitted) tab.
+
+// ---- employment-type label + pill colour (mirrors CareerCard.tsx) ----
+const EMP_LABEL = {
+  permanent: "Permanent",
+  fulltime: "Permanent",
+  contract: "Contract",
+  temporary: "Temporary",
+  parttime: "Part Time",
+  internship: "Internship",
+  intern: "Internship"
+};
+const EMP_COLOR = {
+  permanent: {
+    bg: "#ECFDF3",
+    fg: "#067647",
+    bd: "#ABEFC6"
+  },
+  contract: {
+    bg: "#EFF4FF",
+    fg: "#3538CD",
+    bd: "#C7D7FE"
+  },
+  internship: {
+    bg: "#F9F5FF",
+    fg: "#6941C6",
+    bd: "#E9D7FE"
+  },
+  temporary: {
+    bg: "#FFFAEB",
+    fg: "#B54708",
+    bd: "#FEDF89"
+  },
+  parttime: {
+    bg: "#F2F4F7",
+    fg: "#475467",
+    bd: "#E4E7EC"
+  }
+};
+const empLabel = t => EMP_LABEL[String(t).toLowerCase().replace(/\s/g, "")] || t;
+const empColor = t => EMP_COLOR[String(t).toLowerCase().replace(/\s/g, "")] || EMP_COLOR.parttime;
+
+// ---- application status pipeline (mirrors ApplicationStatus enum) ----
+const APP_STATUS = {
+  0: {
+    key: "Submitted",
+    label: "Submitted",
+    variant: "pending"
+  },
+  1: {
+    key: "Shortlisted",
+    label: "Shortlisted",
+    variant: "info"
+  },
+  2: {
+    key: "Assessment",
+    label: "Assessment",
+    variant: "review"
+  },
+  3: {
+    key: "Offer",
+    label: "Offer",
+    variant: "warning"
+  },
+  4: {
+    key: "Hired",
+    label: "Hired",
+    variant: "success"
+  },
+  5: {
+    key: "Rejected",
+    label: "Rejected",
+    variant: "rejected"
+  }
+};
+const APP_TABS = [{
+  value: "all",
+  label: "Applications",
+  status: 0
+}, {
+  value: "shortlisted",
+  label: "Shortlisted",
+  status: 1
+}, {
+  value: "assessment",
+  label: "Assessment",
+  status: 2
+}, {
+  value: "offer",
+  label: "Offer",
+  status: 3
+}, {
+  value: "hired",
+  label: "Hired",
+  status: 4
+}, {
+  value: "rejected",
+  label: "Rejected",
+  status: 5
+}];
+const PRESCREEN = [{
+  text: "What is your highest qualification?",
+  type: "text"
+}, {
+  text: "Do you have at least 3 years of relevant experience?",
+  type: "yesno"
+}, {
+  text: "Are you willing to relocate if required?",
+  type: "yesno"
+}];
+let _cid = 5000;
+const _app = a => ({
+  id: ++_cid,
+  applicantPhone: a.applicantPhone || "+233 24 000 0000",
+  matchScore: a.matchScore ?? null,
+  cv: "resume.pdf",
+  coverLetter: "cover-letter.pdf",
+  employmentHistory: a.employmentHistory || [{
+    employer: "Prior Co. Ltd",
+    title: "Officer",
+    start: "Jan 2021",
+    end: "Dec 2024",
+    note: "Handled day-to-day operations and reporting."
+  }],
+  education: a.education || [{
+    institution: "University of Ghana",
+    degree: "BSc",
+    field: "Administration",
+    start: "2016",
+    end: "2020",
+    grade: "First Class"
+  }],
+  skills: a.skills || ["Communication", "MS Excel", "Analysis"],
+  certifications: a.certifications || ["—"],
+  preScreeningAnswers: a.preScreeningAnswers || ["BSc. Accounting", "Yes", "Yes"],
+  ...a
+});
+const CAREER_POSTINGS = [{
+  id: "jp-1",
+  designation: "Senior Accountant",
+  department: "Finance",
+  employmentType: "Permanent",
+  closingDate: "28 Feb, 2025",
+  postedAgo: "3 days",
+  status: "Active",
+  description: "Own the monthly close, financial reporting and controls for the Finance function.",
+  jobDescription: "The Senior Accountant leads monthly and year-end close, ensures accuracy in financial reporting, and strengthens internal controls across the Finance function. You will partner with department heads on budgets and variance analysis.",
+  keyDuties: ["Lead month-end and year-end close", "Prepare statutory and management accounts", "Own balance-sheet reconciliations", "Support audits and tax filings", "Drive process automation across reporting"],
+  qualifications: ["BSc Accounting / Finance", "ICA / ACCA part- or fully-qualified", "5+ years in a similar role", "Strong IFRS knowledge"],
+  skills: ["IFRS", "Financial Reporting", "Excel modelling", "ERP (SAP/Oracle)", "Reconciliations"],
+  preScreeningQuestions: PRESCREEN
+}, {
+  id: "jp-2",
+  designation: "Software Engineer",
+  department: "Information Technology",
+  employmentType: "Contract",
+  closingDate: "05 Mar, 2025",
+  postedAgo: "1 day",
+  status: "Active",
+  description: "Build and maintain internal HR and operations platforms used across the group.",
+  jobDescription: "As a Software Engineer you will design, build and ship features across our internal platforms, working closely with product and operations to deliver reliable, well-tested software.",
+  keyDuties: ["Build features end-to-end", "Write tested, maintainable code", "Review peers' pull requests", "Collaborate with product on scope", "Support production systems"],
+  qualifications: ["BSc Computer Science or equivalent", "3+ years building web apps", "Strong JavaScript/TypeScript", "Experience with React & Node"],
+  skills: ["TypeScript", "React", "Node.js", "SQL", "CI/CD"],
+  preScreeningQuestions: PRESCREEN
+}, {
+  id: "jp-3",
+  designation: "HR Officer",
+  department: "Human Resource",
+  employmentType: "Permanent",
+  closingDate: "20 Mar, 2025",
+  postedAgo: "5 days",
+  status: "Active",
+  description: "Support the full employee lifecycle — onboarding, records, leave and engagement.",
+  jobDescription: "The HR Officer supports day-to-day HR operations including onboarding, employee records, leave administration and engagement initiatives, ensuring a smooth experience for all staff.",
+  keyDuties: ["Coordinate onboarding & offboarding", "Maintain accurate employee records", "Administer leave and benefits", "Support engagement programs", "Respond to employee queries"],
+  qualifications: ["BSc HR Management or related", "2+ years in HR operations", "Knowledge of labour law", "Excellent interpersonal skills"],
+  skills: ["HRIS", "Onboarding", "Employee Relations", "MS Office"],
+  preScreeningQuestions: PRESCREEN
+}, {
+  id: "jp-4",
+  designation: "Marketing Lead",
+  department: "Marketing",
+  employmentType: "Permanent",
+  closingDate: "12 Mar, 2025",
+  postedAgo: "2 days",
+  status: "Active",
+  description: "Lead brand and growth marketing across channels for the Bistasol portfolio.",
+  jobDescription: "The Marketing Lead owns brand strategy and demand generation across digital and trade channels, managing campaigns end-to-end and a small team of specialists.",
+  keyDuties: ["Own the marketing calendar", "Lead brand & growth campaigns", "Manage agency & media partners", "Report on funnel performance", "Mentor marketing specialists"],
+  qualifications: ["BSc Marketing / Communications", "6+ years, 2+ leading teams", "FMCG experience a plus", "Data-driven mindset"],
+  skills: ["Brand Strategy", "Performance Marketing", "Analytics", "Content", "Leadership"],
+  preScreeningQuestions: PRESCREEN
+}, {
+  id: "jp-5",
+  designation: "Graduate Trainee",
+  department: "Operations",
+  employmentType: "Internship",
+  closingDate: "26 Mar, 2025",
+  postedAgo: "6 days",
+  status: "Active",
+  description: "12-month rotational program across Operations, Finance and Supply Chain.",
+  jobDescription: "Our Graduate Trainee program is a structured 12-month rotation designed to build well-rounded future leaders across Operations, Finance and Supply Chain.",
+  keyDuties: ["Rotate across core functions", "Support live projects", "Complete a capstone project", "Present to leadership", "Build cross-functional skills"],
+  qualifications: ["Recent graduate (0–2 yrs)", "Minimum Second Class Upper", "Strong analytical ability", "Eagerness to learn"],
+  skills: ["Analysis", "Communication", "Teamwork", "Adaptability"],
+  preScreeningQuestions: PRESCREEN
+}, {
+  id: "jp-6",
+  designation: "Procurement Officer",
+  department: "Operations",
+  employmentType: "Temporary",
+  closingDate: "18 Feb, 2025",
+  postedAgo: "8 days",
+  status: "Closed",
+  description: "Manage sourcing, supplier relationships and purchase orders for the Tema depot.",
+  jobDescription: "The Procurement Officer manages sourcing, supplier evaluation and purchase orders, ensuring value for money and continuity of supply for the Tema depot.",
+  keyDuties: ["Raise and track purchase orders", "Evaluate and onboard suppliers", "Negotiate pricing and terms", "Maintain procurement records", "Ensure policy compliance"],
+  qualifications: ["BSc Procurement / Supply Chain", "3+ years in procurement", "CIPS certification a plus", "Negotiation skills"],
+  skills: ["Sourcing", "Negotiation", "Vendor Management", "ERP"],
+  preScreeningQuestions: PRESCREEN
+}];
+const CAREER_APPLICATIONS = {
+  "jp-1": [_app({
+    applicantName: "Daniel Quaye",
+    applicantEmail: "daniel.quaye@email.com",
+    status: 4,
+    matchScore: 88,
+    createdAt: "08 Feb, 2025"
+  }), _app({
+    applicantName: "Selina Owusu",
+    applicantEmail: "selina.owusu@email.com",
+    status: 3,
+    matchScore: 81,
+    createdAt: "10 Feb, 2025"
+  }), _app({
+    applicantName: "Michael Asare",
+    applicantEmail: "michael.asare@email.com",
+    status: 2,
+    matchScore: 74,
+    createdAt: "11 Feb, 2025"
+  }), _app({
+    applicantName: "Linda Mensah",
+    applicantEmail: "linda.mensah@email.com",
+    status: 1,
+    matchScore: null,
+    createdAt: "12 Feb, 2025"
+  }), _app({
+    applicantName: "Joseph Nkrumah",
+    applicantEmail: "joseph.nkrumah@email.com",
+    status: 0,
+    matchScore: null,
+    createdAt: "13 Feb, 2025"
+  }), _app({
+    applicantName: "Patience Darko",
+    applicantEmail: "patience.darko@email.com",
+    status: 0,
+    matchScore: null,
+    createdAt: "14 Feb, 2025"
+  }), _app({
+    applicantName: "Kwame Adjei",
+    applicantEmail: "kwame.adjei@email.com",
+    status: 5,
+    matchScore: 42,
+    createdAt: "09 Feb, 2025"
+  })],
+  "jp-2": [_app({
+    applicantName: "Kofi Boadu",
+    applicantEmail: "kofi.boadu@email.com",
+    status: 2,
+    matchScore: 91,
+    createdAt: "03 Mar, 2025"
+  }), _app({
+    applicantName: "Grace Adjei",
+    applicantEmail: "grace.adjei@email.com",
+    status: 1,
+    matchScore: null,
+    createdAt: "04 Mar, 2025"
+  }), _app({
+    applicantName: "Emmanuel Tetteh",
+    applicantEmail: "emmanuel.tetteh@email.com",
+    status: 0,
+    matchScore: null,
+    createdAt: "05 Mar, 2025"
+  }), _app({
+    applicantName: "Abena Sarpong",
+    applicantEmail: "abena.sarpong@email.com",
+    status: 0,
+    matchScore: null,
+    createdAt: "05 Mar, 2025"
+  }), _app({
+    applicantName: "Yaw Darko",
+    applicantEmail: "yaw.darko@email.com",
+    status: 5,
+    matchScore: 38,
+    createdAt: "02 Mar, 2025"
+  })],
+  "jp-3": [_app({
+    applicantName: "Adwoa Nyarko",
+    applicantEmail: "adwoa.nyarko@email.com",
+    status: 3,
+    matchScore: 84,
+    createdAt: "16 Mar, 2025"
+  }), _app({
+    applicantName: "Kwabena Adjei",
+    applicantEmail: "kwabena.adjei@email.com",
+    status: 1,
+    matchScore: null,
+    createdAt: "17 Mar, 2025"
+  }), _app({
+    applicantName: "Efua Tetteh",
+    applicantEmail: "efua.tetteh@email.com",
+    status: 0,
+    matchScore: null,
+    createdAt: "18 Mar, 2025"
+  })],
+  "jp-4": [_app({
+    applicantName: "Nana Addo",
+    applicantEmail: "nana.addo@email.com",
+    status: 2,
+    matchScore: 79,
+    createdAt: "09 Mar, 2025"
+  }), _app({
+    applicantName: "Maabena Asare",
+    applicantEmail: "maabena.asare@email.com",
+    status: 0,
+    matchScore: null,
+    createdAt: "10 Mar, 2025"
+  }), _app({
+    applicantName: "Kwesi Frimpong",
+    applicantEmail: "kwesi.frimpong@email.com",
+    status: 0,
+    matchScore: null,
+    createdAt: "11 Mar, 2025"
+  })],
+  "jp-5": [_app({
+    applicantName: "Akua Bonsu",
+    applicantEmail: "akua.bonsu@email.com",
+    status: 1,
+    matchScore: null,
+    createdAt: "21 Mar, 2025"
+  }), _app({
+    applicantName: "Yaw Mensah",
+    applicantEmail: "yaw.mensah@email.com",
+    status: 0,
+    matchScore: null,
+    createdAt: "22 Mar, 2025"
+  }), _app({
+    applicantName: "Ama Serwaa",
+    applicantEmail: "ama.serwaa@email.com",
+    status: 0,
+    matchScore: null,
+    createdAt: "22 Mar, 2025"
+  })],
+  "jp-6": [_app({
+    applicantName: "Esi Quartey",
+    applicantEmail: "esi.quartey@email.com",
+    status: 4,
+    matchScore: 86,
+    createdAt: "12 Feb, 2025"
+  })]
+};
+window.HRStores = window.HRStores || {};
+window.HRStores.careers = window.HRStores.careers || makeStore({
+  postings: CAREER_POSTINGS,
+  applications: CAREER_APPLICATIONS
+});
+Object.assign(window, {
+  empLabel,
+  empColor,
+  APP_STATUS,
+  APP_TABS,
+  CAREER_POSTINGS,
+  CAREER_APPLICATIONS
+});
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/careers/data.jsx", error: String((e && e.message) || e) }); }
+
 // ui_kits/bista-hr/src/crud/CrudScreen.jsx
 try { (() => {
 // BISTA HR · crud/CrudScreen — list page: header (title + primary action) inside an
@@ -4508,8 +7380,12 @@ function CrudScreen({
   onCreate,
   onEdit,
   onArchive,
-  onMenuAction
+  onMenuAction,
+  canCreate = true,
+  canEdit = true,
+  canArchive = true
 }) {
+  const hasRowMenu = canEdit || canArchive || (config.menu || []).length > 0;
   const [filter, setFilter] = useState("All");
   const [q, setQ] = useState("");
   const [menu, setMenu] = useState(null);
@@ -4549,7 +7425,7 @@ function CrudScreen({
     variant: "stroke",
     icon: config.headerAction.icon,
     onClick: () => onMenuAction && onMenuAction(config.headerAction.key)
-  }, config.headerAction.label), /*#__PURE__*/React.createElement(Button, {
+  }, config.headerAction.label), canCreate && /*#__PURE__*/React.createElement(Button, {
     variant: "primary",
     icon: "add-line",
     onClick: onCreate
@@ -4615,14 +7491,14 @@ function CrudScreen({
     icon: "equalizer-line"
   }, "Show Filter"))), rows.length === 0 ? /*#__PURE__*/React.createElement(EmptyState, {
     title: "Nothing here yet",
-    subtitle: `Get started by adding your first ${config.noun.toLowerCase()}.`,
-    cta: config.cta,
-    onAction: onCreate
+    subtitle: canCreate ? `Get started by adding your first ${config.noun.toLowerCase()}.` : `There is no data to show you right now.`,
+    cta: canCreate ? config.cta : null,
+    onAction: canCreate ? onCreate : null
   }) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("table", {
     className: "bh"
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, config.cols.map(c => /*#__PURE__*/React.createElement("th", {
     key: c.key
-  }, c.label)), !config.hideStatus && /*#__PURE__*/React.createElement("th", null, "Status"), /*#__PURE__*/React.createElement("th", {
+  }, c.label)), !config.hideStatus && /*#__PURE__*/React.createElement("th", null, "Status"), hasRowMenu && /*#__PURE__*/React.createElement("th", {
     style: {
       width: 48
     }
@@ -4645,7 +7521,7 @@ function CrudScreen({
     size: "sm"
   }) : r[c.key])), !config.hideStatus && /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement(StatusDot, {
     active: r.active
-  })), /*#__PURE__*/React.createElement("td", {
+  })), hasRowMenu && /*#__PURE__*/React.createElement("td", {
     style: {
       position: "relative",
       textAlign: "right"
@@ -4677,7 +7553,7 @@ function CrudScreen({
       display: "flex",
       flexDirection: "column"
     }
-  }, /*#__PURE__*/React.createElement("button", {
+  }, canEdit && /*#__PURE__*/React.createElement("button", {
     className: "menu-item",
     onClick: () => {
       setMenu(null);
@@ -4696,7 +7572,7 @@ function CrudScreen({
   }, /*#__PURE__*/React.createElement(Icon, {
     name: m.icon,
     size: 16
-  }), m.label)), /*#__PURE__*/React.createElement("button", {
+  }), m.label)), canArchive && /*#__PURE__*/React.createElement("button", {
     className: "menu-item danger",
     onClick: () => {
       setMenu(null);
@@ -4706,7 +7582,7 @@ function CrudScreen({
     name: "archive-line",
     size: 16
   }), "Archive ", config.noun))))), shown.length === 0 && /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
-    colSpan: config.cols.length + (config.hideStatus ? 1 : 2),
+    colSpan: config.cols.length + (config.hideStatus ? 0 : 1) + (hasRowMenu ? 1 : 0),
     style: {
       padding: 0
     }
@@ -4868,10 +7744,59 @@ function OrgTreeModal({
     }, u.type));
   })));
 }
+
+/* /forbidden — shown when the current role lacks access to a hard-navigated page */
+function ForbiddenScreen({
+  onHome
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: 72,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 12,
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 88,
+      height: 88,
+      borderRadius: "50%",
+      background: "var(--error-tint)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "lock-2-line",
+    size: 38,
+    color: "var(--error)"
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 700,
+      fontSize: 20,
+      color: "var(--gray-900)",
+      marginTop: 6
+    }
+  }, "Access Denied"), /*#__PURE__*/React.createElement("div", {
+    className: "bh-body",
+    style: {
+      maxWidth: 420
+    }
+  }, "You don't have permission to view this page with your current role. Switch roles from the top bar, or contact your administrator."), onHome && /*#__PURE__*/React.createElement(Button, {
+    variant: "primary",
+    icon: "home-4-line",
+    onClick: onHome
+  }, "Go to Dashboard"));
+}
 Object.assign(window, {
   CrudScreen,
   InfoPage,
-  OrgTreeModal
+  OrgTreeModal,
+  ForbiddenScreen
 });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/crud/CrudScreen.jsx", error: String((e && e.message) || e) }); }
 
@@ -5063,6 +7988,1252 @@ Object.assign(window, {
   FormModal
 });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/crud/FormModal.jsx", error: String((e && e.message) || e) }); }
+
+// ui_kits/bista-hr/src/crud/config-extra.jsx
+try { (() => {
+// BISTA HR · crud/config-extra — additional entity configs + ~10-row demo seed
+// for the pages added to match the real app (Recruitment, Objectives, KPI/Measures,
+// Performance Ratings, Reporting Managers). Merged into the global CONFIGS / SEED so
+// the generic CrudScreen renders them with data. Loads AFTER config.jsx and BEFORE app.jsx.
+
+let _xid = 2000;
+const _rows = arr => arr.map(r => ({
+  id: ++_xid,
+  active: r.active !== false,
+  ...r
+}));
+const EXTRA_CONFIGS = {
+  // ---------- Recruitment ----------
+  "Hiring Requests": {
+    title: "Hiring Requests",
+    subtitle: "Manager requests to fill a role — routed for HR approval.",
+    cta: "New Hiring Request",
+    noun: "Hiring Request",
+    verb: "Create",
+    hideStatus: true,
+    hideSegment: true,
+    hideActive: true,
+    cols: [{
+      key: "position",
+      label: "Position"
+    }, {
+      key: "department",
+      label: "Department"
+    }, {
+      key: "grade",
+      label: "Grade"
+    }, {
+      key: "requestedBy",
+      label: "Requested By",
+      type: "avatar"
+    }, {
+      key: "date",
+      label: "Date"
+    }, {
+      key: "status",
+      label: "Status",
+      type: "badge"
+    }],
+    fields: [{
+      key: "position",
+      label: "Position",
+      placeholder: "Eg. Finance Analyst",
+      full: true
+    }, {
+      key: "department",
+      label: "Department",
+      type: "select",
+      lookup: "departments",
+      placeholder: "Select department"
+    }, {
+      key: "grade",
+      label: "Job Grade",
+      type: "select",
+      lookup: "jobGrades",
+      placeholder: "Select grade",
+      optional: true
+    }, {
+      key: "requestedBy",
+      label: "Requested By",
+      type: "select",
+      lookup: "employees",
+      icon: "search-line",
+      placeholder: "Select requester",
+      optional: true
+    }, {
+      key: "status",
+      label: "Status",
+      type: "select",
+      options: ["Pending", "Approved", "Rejected"],
+      placeholder: "Select status",
+      optional: true
+    }]
+  },
+  "Job Requests": {
+    title: "Job Requests",
+    subtitle: "Approved hiring needs formalized into job requisitions.",
+    cta: "New Job Request",
+    noun: "Job Request",
+    verb: "Create",
+    hideStatus: true,
+    hideSegment: true,
+    hideActive: true,
+    cols: [{
+      key: "title",
+      label: "Job Title"
+    }, {
+      key: "department",
+      label: "Department"
+    }, {
+      key: "type",
+      label: "Type"
+    }, {
+      key: "vacancies",
+      label: "Vacancies"
+    }, {
+      key: "requestedBy",
+      label: "Requested By",
+      type: "avatar"
+    }, {
+      key: "status",
+      label: "Status",
+      type: "badge"
+    }],
+    fields: [{
+      key: "title",
+      label: "Job Title",
+      placeholder: "Eg. Software Engineer",
+      full: true
+    }, {
+      key: "department",
+      label: "Department",
+      type: "select",
+      lookup: "departments",
+      placeholder: "Select department"
+    }, {
+      key: "type",
+      label: "Employment Type",
+      type: "select",
+      options: ["Permanent", "Contract", "Temporary", "Internship"],
+      placeholder: "Select type",
+      optional: true
+    }, {
+      key: "vacancies",
+      label: "Vacancies",
+      placeholder: "Eg. 2",
+      optional: true
+    }, {
+      key: "status",
+      label: "Status",
+      type: "select",
+      options: ["Pending", "Approved", "Rejected"],
+      placeholder: "Select status",
+      optional: true
+    }]
+  },
+  "Job Posts": {
+    title: "Job Posts",
+    subtitle: "Published vacancies open to internal and external applicants.",
+    cta: "Create Job Post",
+    noun: "Job Post",
+    verb: "Create",
+    hideStatus: true,
+    hideSegment: true,
+    hideActive: true,
+    cols: [{
+      key: "title",
+      label: "Title"
+    }, {
+      key: "department",
+      label: "Department"
+    }, {
+      key: "location",
+      label: "Location"
+    }, {
+      key: "applicants",
+      label: "Applicants"
+    }, {
+      key: "closing",
+      label: "Closing Date"
+    }, {
+      key: "status",
+      label: "Status",
+      type: "badge"
+    }],
+    fields: [{
+      key: "title",
+      label: "Title",
+      placeholder: "Eg. Senior Accountant",
+      full: true
+    }, {
+      key: "department",
+      label: "Department",
+      type: "select",
+      lookup: "departments",
+      placeholder: "Select department"
+    }, {
+      key: "location",
+      label: "Location",
+      placeholder: "Eg. Accra — Main Office",
+      optional: true
+    }, {
+      key: "closing",
+      label: "Closing Date",
+      placeholder: "DD / MM / YYYY",
+      optional: true
+    }, {
+      key: "status",
+      label: "Status",
+      type: "select",
+      options: ["Open", "Closed", "Draft"],
+      placeholder: "Select status",
+      optional: true
+    }]
+  },
+  "Job Reopenings": {
+    title: "Job Reopenings",
+    subtitle: "Previously closed postings reopened to source more candidates.",
+    cta: "Reopen Posting",
+    noun: "Job Reopening",
+    verb: "Reopen",
+    hideStatus: true,
+    hideSegment: true,
+    hideActive: true,
+    cols: [{
+      key: "title",
+      label: "Title"
+    }, {
+      key: "department",
+      label: "Department"
+    }, {
+      key: "originalClose",
+      label: "Originally Closed"
+    }, {
+      key: "reopenedBy",
+      label: "Reopened By",
+      type: "avatar"
+    }, {
+      key: "status",
+      label: "Status",
+      type: "badge"
+    }],
+    fields: [{
+      key: "title",
+      label: "Title",
+      placeholder: "Eg. Senior Accountant",
+      full: true
+    }, {
+      key: "department",
+      label: "Department",
+      type: "select",
+      lookup: "departments",
+      placeholder: "Select department"
+    }, {
+      key: "originalClose",
+      label: "Originally Closed",
+      placeholder: "DD / MM / YYYY",
+      optional: true
+    }, {
+      key: "status",
+      label: "Status",
+      type: "select",
+      options: ["Open", "Pending", "Closed"],
+      placeholder: "Select status",
+      optional: true
+    }]
+  },
+  "Assessments": {
+    title: "Assessments",
+    subtitle: "Interview and evaluation stages assigned to assessors.",
+    cta: "Add Assessment",
+    noun: "Assessment",
+    verb: "Add",
+    hideStatus: true,
+    hideSegment: true,
+    hideActive: true,
+    cols: [{
+      key: "candidate",
+      label: "Candidate",
+      type: "avatar"
+    }, {
+      key: "position",
+      label: "Position"
+    }, {
+      key: "stage",
+      label: "Stage"
+    }, {
+      key: "assessor",
+      label: "Assessor"
+    }, {
+      key: "score",
+      label: "Score"
+    }, {
+      key: "status",
+      label: "Status",
+      type: "badge"
+    }],
+    fields: [{
+      key: "candidate",
+      label: "Candidate",
+      placeholder: "Candidate full name",
+      full: true
+    }, {
+      key: "position",
+      label: "Position",
+      placeholder: "Eg. Finance Analyst",
+      optional: true
+    }, {
+      key: "stage",
+      label: "Stage",
+      type: "select",
+      options: ["Screening", "Technical", "Panel", "Final"],
+      placeholder: "Select stage",
+      optional: true
+    }, {
+      key: "assessor",
+      label: "Assessor",
+      type: "select",
+      lookup: "employees",
+      icon: "search-line",
+      placeholder: "Select assessor",
+      optional: true
+    }, {
+      key: "status",
+      label: "Status",
+      type: "select",
+      options: ["Pending", "Completed"],
+      placeholder: "Select status",
+      optional: true
+    }]
+  },
+  "Talent Pool": {
+    title: "Talent Pool",
+    subtitle: "Shortlisted and prospective candidates kept for future roles.",
+    cta: "Add Candidate",
+    noun: "Candidate",
+    verb: "Add",
+    hideStatus: true,
+    hideSegment: true,
+    hideActive: true,
+    cols: [{
+      key: "name",
+      label: "Candidate",
+      type: "avatar"
+    }, {
+      key: "role",
+      label: "Target Role"
+    }, {
+      key: "source",
+      label: "Source"
+    }, {
+      key: "experience",
+      label: "Experience"
+    }, {
+      key: "rating",
+      label: "Rating"
+    }, {
+      key: "status",
+      label: "Status",
+      type: "badge"
+    }],
+    fields: [{
+      key: "name",
+      label: "Candidate",
+      placeholder: "Full name",
+      full: true
+    }, {
+      key: "role",
+      label: "Target Role",
+      placeholder: "Eg. Marketing Lead",
+      optional: true
+    }, {
+      key: "source",
+      label: "Source",
+      type: "select",
+      options: ["Referral", "LinkedIn", "Job Board", "Walk-in", "Agency"],
+      placeholder: "Select source",
+      optional: true
+    }, {
+      key: "experience",
+      label: "Experience",
+      placeholder: "Eg. 5 yrs",
+      optional: true
+    }, {
+      key: "status",
+      label: "Status",
+      type: "select",
+      options: ["Shortlisted", "Pending", "Rejected"],
+      placeholder: "Select status",
+      optional: true
+    }]
+  },
+  // ---------- Performance ----------
+  "Objectives": {
+    title: "Objectives",
+    subtitle: "Strategic objectives that goals and KPIs roll up to.",
+    cta: "Add Objective",
+    noun: "Objective",
+    verb: "Add",
+    hideStatus: true,
+    hideSegment: true,
+    hideActive: true,
+    cols: [{
+      key: "title",
+      label: "Objective"
+    }, {
+      key: "perspective",
+      label: "Perspective"
+    }, {
+      key: "owner",
+      label: "Owner",
+      type: "avatar"
+    }, {
+      key: "weight",
+      label: "Weight"
+    }, {
+      key: "period",
+      label: "Period"
+    }, {
+      key: "status",
+      label: "Status",
+      type: "badge"
+    }],
+    fields: [{
+      key: "title",
+      label: "Objective",
+      placeholder: "Eg. Grow market share",
+      full: true
+    }, {
+      key: "perspective",
+      label: "Perspective",
+      type: "select",
+      options: ["Financial", "Customer", "Internal Processes", "Learning & Growth"],
+      placeholder: "Select perspective"
+    }, {
+      key: "owner",
+      label: "Owner",
+      type: "select",
+      lookup: "employees",
+      icon: "search-line",
+      placeholder: "Select owner",
+      optional: true
+    }, {
+      key: "weight",
+      label: "Weight (%)",
+      placeholder: "Eg. 25%",
+      optional: true
+    }, {
+      key: "period",
+      label: "Period",
+      type: "select",
+      options: ["Quarter 1", "Quarter 2", "Quarter 3", "Quarter 4"],
+      placeholder: "Select period",
+      optional: true
+    }, {
+      key: "status",
+      label: "Status",
+      type: "select",
+      options: ["Draft", "Active", "Completed"],
+      placeholder: "Select status",
+      optional: true
+    }]
+  },
+  // ---------- System Administration ▸ Configuration ----------
+  "KPI / Measures": {
+    title: "KPIs / Measures",
+    subtitle: "Define measurable indicators used across objectives and appraisals.",
+    cta: "Add Measure",
+    noun: "Measure",
+    verb: "Add",
+    hideStatus: true,
+    hideSegment: true,
+    hideActive: true,
+    modalWidth: 560,
+    cols: [{
+      key: "name",
+      label: "Measure"
+    }, {
+      key: "perspective",
+      label: "Perspective"
+    }, {
+      key: "unit",
+      label: "Unit"
+    }, {
+      key: "target",
+      label: "Target"
+    }, {
+      key: "description",
+      label: "Description"
+    }],
+    fields: [{
+      key: "name",
+      label: "Measure Name",
+      placeholder: "Eg. Revenue Growth",
+      full: true
+    }, {
+      key: "perspective",
+      label: "Perspective",
+      type: "select",
+      options: ["Financial", "Customer", "Internal Processes", "Learning & Growth"],
+      placeholder: "Select perspective",
+      optional: true
+    }, {
+      key: "unit",
+      label: "Unit",
+      type: "select",
+      options: ["%", "GHS", "Count", "Days", "Ratio"],
+      placeholder: "Select unit",
+      optional: true
+    }, {
+      key: "target",
+      label: "Target",
+      placeholder: "Eg. 12%",
+      optional: true
+    }, {
+      key: "description",
+      label: "Description",
+      type: "textarea",
+      placeholder: "Enter description",
+      full: true,
+      optional: true
+    }]
+  },
+  "Performance Ratings": {
+    title: "Performance Ratings",
+    subtitle: "The rating scale appraisal scores are mapped to.",
+    cta: "Add Rating",
+    noun: "Rating",
+    verb: "Add",
+    hideStatus: true,
+    hideSegment: true,
+    hideActive: true,
+    modalWidth: 560,
+    cols: [{
+      key: "label",
+      label: "Rating"
+    }, {
+      key: "range",
+      label: "Score Range"
+    }, {
+      key: "weight",
+      label: "Multiplier"
+    }, {
+      key: "description",
+      label: "Description"
+    }],
+    fields: [{
+      key: "label",
+      label: "Rating Label",
+      placeholder: "Eg. Exceeds Expectations",
+      full: true
+    }, {
+      key: "range",
+      label: "Score Range",
+      placeholder: "Eg. 4.5 – 5.0",
+      optional: true
+    }, {
+      key: "weight",
+      label: "Multiplier",
+      placeholder: "Eg. 1.2",
+      optional: true
+    }, {
+      key: "description",
+      label: "Description",
+      type: "textarea",
+      placeholder: "Enter description",
+      full: true,
+      optional: true
+    }]
+  },
+  // ---------- Core HR ----------
+  "Reporting Managers": {
+    title: "Reporting Managers",
+    subtitle: "Reporting lines mapping employees to their managers.",
+    cta: "Assign Manager",
+    noun: "Reporting Line",
+    verb: "Assign",
+    hideStatus: true,
+    hideSegment: true,
+    hideActive: true,
+    cols: [{
+      key: "employee",
+      label: "Employee",
+      type: "avatar"
+    }, {
+      key: "manager",
+      label: "Reports To",
+      type: "avatar"
+    }, {
+      key: "department",
+      label: "Department"
+    }, {
+      key: "effective",
+      label: "Effective"
+    }],
+    fields: [{
+      key: "employee",
+      label: "Employee",
+      type: "select",
+      lookup: "employees",
+      icon: "search-line",
+      placeholder: "Select employee"
+    }, {
+      key: "manager",
+      label: "Reports To",
+      type: "select",
+      lookup: "employees",
+      icon: "search-line",
+      placeholder: "Select manager"
+    }, {
+      key: "department",
+      label: "Department",
+      type: "select",
+      lookup: "departments",
+      placeholder: "Select department",
+      optional: true
+    }, {
+      key: "effective",
+      label: "Effective Date",
+      placeholder: "DD / MM / YYYY",
+      optional: true
+    }]
+  }
+};
+const EXTRA_SEED = {
+  "Hiring Requests": _rows([{
+    position: "Finance Analyst",
+    department: "Finance",
+    grade: "Grade 2",
+    requestedBy: "Franklin Brobbey",
+    date: "04 Jan, 2025",
+    status: "Approved"
+  }, {
+    position: "Software Engineer",
+    department: "Information Technology",
+    grade: "Grade 2",
+    requestedBy: "Bright Manu",
+    date: "09 Jan, 2025",
+    status: "Pending"
+  }, {
+    position: "HR Officer",
+    department: "Human Resource",
+    grade: "Grade 2",
+    requestedBy: "Emmanuel Ansah",
+    date: "12 Jan, 2025",
+    status: "Approved"
+  }, {
+    position: "Marketing Lead",
+    department: "Marketing",
+    grade: "Grade 3",
+    requestedBy: "Samuel Boateng",
+    date: "15 Jan, 2025",
+    status: "Pending"
+  }, {
+    position: "Procurement Officer",
+    department: "Operations",
+    grade: "Grade 2",
+    requestedBy: "Leslie Alexandre",
+    date: "18 Jan, 2025",
+    status: "Rejected"
+  }, {
+    position: "Data Engineer",
+    department: "Information Technology",
+    grade: "Grade 3",
+    requestedBy: "Bright Manu",
+    date: "22 Jan, 2025",
+    status: "Approved"
+  }, {
+    position: "Accounts Payable Clerk",
+    department: "Finance",
+    grade: "Grade 1",
+    requestedBy: "Franklin Brobbey",
+    date: "27 Jan, 2025",
+    status: "Pending"
+  }, {
+    position: "Brand Designer",
+    department: "Marketing",
+    grade: "Grade 2",
+    requestedBy: "Samuel Boateng",
+    date: "31 Jan, 2025",
+    status: "Approved"
+  }, {
+    position: "Internal Auditor",
+    department: "Finance",
+    grade: "Grade 3",
+    requestedBy: "Olivia Bennett",
+    date: "03 Feb, 2025",
+    status: "Pending"
+  }, {
+    position: "Facilities Supervisor",
+    department: "Operations",
+    grade: "Grade 2",
+    requestedBy: "Leslie Alexandre",
+    date: "06 Feb, 2025",
+    status: "Approved"
+  }]),
+  "Job Requests": _rows([{
+    title: "Software Engineer",
+    department: "Information Technology",
+    type: "Permanent",
+    vacancies: "2",
+    requestedBy: "Bright Manu",
+    status: "Approved"
+  }, {
+    title: "Finance Analyst",
+    department: "Finance",
+    type: "Permanent",
+    vacancies: "1",
+    requestedBy: "Franklin Brobbey",
+    status: "Pending"
+  }, {
+    title: "HR Officer",
+    department: "Human Resource",
+    type: "Permanent",
+    vacancies: "1",
+    requestedBy: "Emmanuel Ansah",
+    status: "Approved"
+  }, {
+    title: "Marketing Lead",
+    department: "Marketing",
+    type: "Permanent",
+    vacancies: "1",
+    requestedBy: "Samuel Boateng",
+    status: "Pending"
+  }, {
+    title: "Graduate Trainee",
+    department: "Operations",
+    type: "Internship",
+    vacancies: "5",
+    requestedBy: "Leslie Alexandre",
+    status: "Approved"
+  }, {
+    title: "Data Engineer",
+    department: "Information Technology",
+    type: "Contract",
+    vacancies: "2",
+    requestedBy: "Bright Manu",
+    status: "Approved"
+  }, {
+    title: "Procurement Officer",
+    department: "Operations",
+    type: "Permanent",
+    vacancies: "1",
+    requestedBy: "Leslie Alexandre",
+    status: "Rejected"
+  }, {
+    title: "Brand Designer",
+    department: "Marketing",
+    type: "Contract",
+    vacancies: "1",
+    requestedBy: "Samuel Boateng",
+    status: "Pending"
+  }, {
+    title: "Internal Auditor",
+    department: "Finance",
+    type: "Permanent",
+    vacancies: "1",
+    requestedBy: "Olivia Bennett",
+    status: "Approved"
+  }, {
+    title: "Customer Support Rep",
+    department: "Operations",
+    type: "Temporary",
+    vacancies: "3",
+    requestedBy: "Phoenix Carter",
+    status: "Pending"
+  }]),
+  "Job Posts": _rows([{
+    title: "Senior Accountant",
+    department: "Finance",
+    location: "Accra — Main Office",
+    applicants: "34",
+    closing: "28 Feb, 2025",
+    status: "Open"
+  }, {
+    title: "Software Engineer",
+    department: "Information Technology",
+    location: "Accra — Main Office",
+    applicants: "82",
+    closing: "05 Mar, 2025",
+    status: "Open"
+  }, {
+    title: "HR Officer",
+    department: "Human Resource",
+    location: "Kumasi Branch",
+    applicants: "21",
+    closing: "20 Feb, 2025",
+    status: "Closed"
+  }, {
+    title: "Marketing Lead",
+    department: "Marketing",
+    location: "Accra — Main Office",
+    applicants: "47",
+    closing: "12 Mar, 2025",
+    status: "Open"
+  }, {
+    title: "Data Engineer",
+    department: "Information Technology",
+    location: "Remote — Ghana",
+    applicants: "59",
+    closing: "15 Mar, 2025",
+    status: "Open"
+  }, {
+    title: "Procurement Officer",
+    department: "Operations",
+    location: "Tema Depot",
+    applicants: "12",
+    closing: "18 Feb, 2025",
+    status: "Draft"
+  }, {
+    title: "Brand Designer",
+    department: "Marketing",
+    location: "Accra — Main Office",
+    applicants: "38",
+    closing: "22 Mar, 2025",
+    status: "Open"
+  }, {
+    title: "Internal Auditor",
+    department: "Finance",
+    location: "Accra — Main Office",
+    applicants: "16",
+    closing: "10 Mar, 2025",
+    status: "Open"
+  }, {
+    title: "Facilities Supervisor",
+    department: "Operations",
+    location: "Takoradi Branch",
+    applicants: "9",
+    closing: "08 Feb, 2025",
+    status: "Closed"
+  }, {
+    title: "Customer Support Rep",
+    department: "Operations",
+    location: "Kumasi Branch",
+    applicants: "27",
+    closing: "26 Mar, 2025",
+    status: "Open"
+  }]),
+  "Job Reopenings": _rows([{
+    title: "HR Officer",
+    department: "Human Resource",
+    originalClose: "20 Feb, 2025",
+    reopenedBy: "Emmanuel Ansah",
+    status: "Open"
+  }, {
+    title: "Facilities Supervisor",
+    department: "Operations",
+    originalClose: "08 Feb, 2025",
+    reopenedBy: "Leslie Alexandre",
+    status: "Open"
+  }, {
+    title: "Procurement Officer",
+    department: "Operations",
+    originalClose: "18 Feb, 2025",
+    reopenedBy: "Leslie Alexandre",
+    status: "Pending"
+  }, {
+    title: "Accounts Clerk",
+    department: "Finance",
+    originalClose: "01 Feb, 2025",
+    reopenedBy: "Franklin Brobbey",
+    status: "Open"
+  }, {
+    title: "Junior Designer",
+    department: "Marketing",
+    originalClose: "25 Jan, 2025",
+    reopenedBy: "Samuel Boateng",
+    status: "Closed"
+  }, {
+    title: "IT Support Officer",
+    department: "Information Technology",
+    originalClose: "30 Jan, 2025",
+    reopenedBy: "Bright Manu",
+    status: "Open"
+  }, {
+    title: "Field Officer",
+    department: "Operations",
+    originalClose: "12 Jan, 2025",
+    reopenedBy: "Phoenix Carter",
+    status: "Pending"
+  }, {
+    title: "Payroll Officer",
+    department: "Finance",
+    originalClose: "05 Feb, 2025",
+    reopenedBy: "Olivia Bennett",
+    status: "Open"
+  }, {
+    title: "Receptionist",
+    department: "Human Resource",
+    originalClose: "28 Jan, 2025",
+    reopenedBy: "Emmanuel Ansah",
+    status: "Closed"
+  }, {
+    title: "Warehouse Lead",
+    department: "Operations",
+    originalClose: "15 Feb, 2025",
+    reopenedBy: "Leslie Alexandre",
+    status: "Open"
+  }]),
+  "Assessments": _rows([{
+    candidate: "Daniel Quaye",
+    position: "Software Engineer",
+    stage: "Technical",
+    assessor: "Bright Manu",
+    score: "82%",
+    status: "Completed"
+  }, {
+    candidate: "Selina Owusu",
+    position: "Finance Analyst",
+    stage: "Panel",
+    assessor: "Franklin Brobbey",
+    score: "—",
+    status: "Pending"
+  }, {
+    candidate: "Michael Asare",
+    position: "HR Officer",
+    stage: "Screening",
+    assessor: "Emmanuel Ansah",
+    score: "74%",
+    status: "Completed"
+  }, {
+    candidate: "Grace Adjei",
+    position: "Marketing Lead",
+    stage: "Final",
+    assessor: "Samuel Boateng",
+    score: "88%",
+    status: "Completed"
+  }, {
+    candidate: "Kofi Boadu",
+    position: "Data Engineer",
+    stage: "Technical",
+    assessor: "Bright Manu",
+    score: "—",
+    status: "Pending"
+  }, {
+    candidate: "Linda Mensah",
+    position: "Internal Auditor",
+    stage: "Panel",
+    assessor: "Olivia Bennett",
+    score: "79%",
+    status: "Completed"
+  }, {
+    candidate: "Emmanuel Tetteh",
+    position: "Procurement Officer",
+    stage: "Screening",
+    assessor: "Leslie Alexandre",
+    score: "—",
+    status: "Pending"
+  }, {
+    candidate: "Patience Darko",
+    position: "Brand Designer",
+    stage: "Final",
+    assessor: "Samuel Boateng",
+    score: "91%",
+    status: "Completed"
+  }, {
+    candidate: "Joseph Nkrumah",
+    position: "Software Engineer",
+    stage: "Technical",
+    assessor: "Bright Manu",
+    score: "68%",
+    status: "Completed"
+  }, {
+    candidate: "Abena Sarpong",
+    position: "Customer Support Rep",
+    stage: "Screening",
+    assessor: "Phoenix Carter",
+    score: "—",
+    status: "Pending"
+  }]),
+  "Talent Pool": _rows([{
+    name: "Daniel Quaye",
+    role: "Software Engineer",
+    source: "Referral",
+    experience: "6 yrs",
+    rating: "4.5",
+    status: "Shortlisted"
+  }, {
+    name: "Grace Adjei",
+    role: "Marketing Lead",
+    source: "LinkedIn",
+    experience: "8 yrs",
+    rating: "4.8",
+    status: "Shortlisted"
+  }, {
+    name: "Selina Owusu",
+    role: "Finance Analyst",
+    source: "Job Board",
+    experience: "4 yrs",
+    rating: "4.1",
+    status: "Pending"
+  }, {
+    name: "Kofi Boadu",
+    role: "Data Engineer",
+    source: "Referral",
+    experience: "5 yrs",
+    rating: "4.3",
+    status: "Shortlisted"
+  }, {
+    name: "Linda Mensah",
+    role: "Internal Auditor",
+    source: "Agency",
+    experience: "7 yrs",
+    rating: "4.0",
+    status: "Pending"
+  }, {
+    name: "Patience Darko",
+    role: "Brand Designer",
+    source: "LinkedIn",
+    experience: "3 yrs",
+    rating: "4.6",
+    status: "Shortlisted"
+  }, {
+    name: "Michael Asare",
+    role: "HR Officer",
+    source: "Walk-in",
+    experience: "2 yrs",
+    rating: "3.6",
+    status: "Rejected"
+  }, {
+    name: "Joseph Nkrumah",
+    role: "Software Engineer",
+    source: "Job Board",
+    experience: "4 yrs",
+    rating: "3.9",
+    status: "Pending"
+  }, {
+    name: "Abena Sarpong",
+    role: "Customer Support Rep",
+    source: "Referral",
+    experience: "3 yrs",
+    rating: "4.2",
+    status: "Shortlisted"
+  }, {
+    name: "Emmanuel Tetteh",
+    role: "Procurement Officer",
+    source: "Agency",
+    experience: "9 yrs",
+    rating: "4.4",
+    status: "Pending"
+  }]),
+  "Objectives": _rows([{
+    title: "Grow net revenue by 12%",
+    perspective: "Financial",
+    owner: "Franklin Brobbey",
+    weight: "30%",
+    period: "Quarter 1",
+    status: "Active"
+  }, {
+    title: "Improve customer CSAT to 90%",
+    perspective: "Customer",
+    owner: "Phoenix Carter",
+    weight: "20%",
+    period: "Quarter 1",
+    status: "Active"
+  }, {
+    title: "Reduce month-end close to 3 days",
+    perspective: "Internal Processes",
+    owner: "Olivia Bennett",
+    weight: "15%",
+    period: "Quarter 1",
+    status: "Completed"
+  }, {
+    title: "Launch employee upskilling program",
+    perspective: "Learning & Growth",
+    owner: "Emmanuel Ansah",
+    weight: "15%",
+    period: "Quarter 1",
+    status: "Active"
+  }, {
+    title: "Cut operational cost by 8%",
+    perspective: "Financial",
+    owner: "Leslie Alexandre",
+    weight: "20%",
+    period: "Quarter 2",
+    status: "Draft"
+  }, {
+    title: "Increase digital adoption to 70%",
+    perspective: "Customer",
+    owner: "Bright Manu",
+    weight: "25%",
+    period: "Quarter 2",
+    status: "Active"
+  }, {
+    title: "Automate payroll reconciliation",
+    perspective: "Internal Processes",
+    owner: "Franklin Brobbey",
+    weight: "10%",
+    period: "Quarter 2",
+    status: "Active"
+  }, {
+    title: "Raise eNPS to +30",
+    perspective: "Learning & Growth",
+    owner: "Emmanuel Ansah",
+    weight: "15%",
+    period: "Quarter 2",
+    status: "Draft"
+  }, {
+    title: "Expand to 2 new branches",
+    perspective: "Financial",
+    owner: "Leslie Alexandre",
+    weight: "20%",
+    period: "Quarter 3",
+    status: "Draft"
+  }, {
+    title: "Achieve 95% policy compliance",
+    perspective: "Internal Processes",
+    owner: "Olivia Bennett",
+    weight: "10%",
+    period: "Quarter 3",
+    status: "Active"
+  }]),
+  "KPI / Measures": _rows([{
+    name: "Revenue Growth",
+    perspective: "Financial",
+    unit: "%",
+    target: "12%",
+    description: "Year-on-year net revenue growth"
+  }, {
+    name: "Cost-to-Income Ratio",
+    perspective: "Financial",
+    unit: "Ratio",
+    target: "0.45",
+    description: "Operating cost over income"
+  }, {
+    name: "Customer Satisfaction",
+    perspective: "Customer",
+    unit: "%",
+    target: "90%",
+    description: "CSAT survey score"
+  }, {
+    name: "Net Promoter Score",
+    perspective: "Customer",
+    unit: "Count",
+    target: "30",
+    description: "Customer NPS"
+  }, {
+    name: "Process Cycle Time",
+    perspective: "Internal Processes",
+    unit: "Days",
+    target: "3",
+    description: "Average end-to-end process time"
+  }, {
+    name: "First-Pass Yield",
+    perspective: "Internal Processes",
+    unit: "%",
+    target: "98%",
+    description: "Output passing without rework"
+  }, {
+    name: "Training Hours",
+    perspective: "Learning & Growth",
+    unit: "Count",
+    target: "40",
+    description: "Training hours per employee/yr"
+  }, {
+    name: "Employee Engagement",
+    perspective: "Learning & Growth",
+    unit: "%",
+    target: "85%",
+    description: "Engagement survey score"
+  }, {
+    name: "Attrition Rate",
+    perspective: "Learning & Growth",
+    unit: "%",
+    target: "8%",
+    description: "Voluntary turnover rate"
+  }, {
+    name: "On-time Delivery",
+    perspective: "Internal Processes",
+    unit: "%",
+    target: "95%",
+    description: "Deliverables met on schedule"
+  }]),
+  "Performance Ratings": _rows([{
+    label: "Outstanding",
+    range: "4.5 – 5.0",
+    weight: "1.25",
+    description: "Consistently far exceeds expectations"
+  }, {
+    label: "Exceeds Expectations",
+    range: "3.5 – 4.4",
+    weight: "1.10",
+    description: "Frequently surpasses targets"
+  }, {
+    label: "Meets Expectations",
+    range: "2.5 – 3.4",
+    weight: "1.00",
+    description: "Reliably achieves agreed targets"
+  }, {
+    label: "Partially Meets",
+    range: "1.5 – 2.4",
+    weight: "0.85",
+    description: "Meets some but not all targets"
+  }, {
+    label: "Below Expectations",
+    range: "1.0 – 1.4",
+    weight: "0.70",
+    description: "Falls short; improvement required"
+  }, {
+    label: "Unsatisfactory",
+    range: "0.0 – 0.9",
+    weight: "0.50",
+    description: "Does not meet minimum standards"
+  }]),
+  "Reporting Managers": _rows([{
+    employee: "Ama Mensah",
+    manager: "Leslie Alexandre",
+    department: "Support Services",
+    effective: "01 Jan, 2025"
+  }, {
+    employee: "Kofi Owusu",
+    manager: "Bright Manu",
+    department: "Information Technology",
+    effective: "01 Jan, 2025"
+  }, {
+    employee: "James Brown",
+    manager: "Leslie Alexandre",
+    department: "Operations",
+    effective: "15 Jan, 2025"
+  }, {
+    employee: "Yaa Asantewaa",
+    manager: "Olivia Bennett",
+    department: "Operations",
+    effective: "01 Feb, 2025"
+  }, {
+    employee: "Phoenix Carter",
+    manager: "Franklin Brobbey",
+    department: "Finance",
+    effective: "01 Jan, 2025"
+  }, {
+    employee: "Lana Mensah",
+    manager: "Samuel Boateng",
+    department: "Marketing",
+    effective: "10 Jan, 2025"
+  }, {
+    employee: "Drew Asante",
+    manager: "Bright Manu",
+    department: "Information Technology",
+    effective: "20 Jan, 2025"
+  }, {
+    employee: "Demi Owusu",
+    manager: "Emmanuel Ansah",
+    department: "Human Resource",
+    effective: "05 Feb, 2025"
+  }, {
+    employee: "Olivia Bennett",
+    manager: "Leslie Alexandre",
+    department: "Finance",
+    effective: "01 Jan, 2025"
+  }, {
+    employee: "Bright Manu",
+    manager: "Leslie Alexandre",
+    department: "Information Technology",
+    effective: "01 Jan, 2025"
+  }])
+};
+Object.assign(window.CONFIGS, EXTRA_CONFIGS);
+Object.assign(window.SEED, EXTRA_SEED);
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/crud/config-extra.jsx", error: String((e && e.message) || e) }); }
 
 // ui_kits/bista-hr/src/crud/config.jsx
 try { (() => {
@@ -6965,6 +11136,168 @@ function DashboardPlaceholder({
     subtitle: "This area is part of the self-service dashboard and is coming soon."
   }));
 }
+
+// Careers — internal opportunities the employee can browse + apply to (reads open Job Posts).
+function CareersScreen({
+  onToast
+}) {
+  const posts = (window.SEED && window.SEED["Job Posts"] || []).filter(p => String(p.status).toLowerCase() === "open");
+  const [applied, setApplied] = React.useState({});
+  const apply = p => {
+    setApplied(a => ({
+      ...a,
+      [p.id]: true
+    }));
+    onToast && onToast("Application Submitted", {
+      tone: "success"
+    });
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: 20
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: "var(--card-pad, 24px)",
+      display: "flex",
+      alignItems: "center",
+      gap: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 52,
+      height: 52,
+      borderRadius: 14,
+      background: "var(--brand-yellow-tint)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "briefcase-4-line",
+    size: 26,
+    color: "var(--brand-yellow-dark)"
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bh-h2",
+    style: {
+      fontSize: 22
+    }
+  }, "Careers"), /*#__PURE__*/React.createElement("div", {
+    className: "bh-body",
+    style: {
+      marginTop: 2
+    }
+  }, "Explore open roles across the organization and apply for internal opportunities.")), /*#__PURE__*/React.createElement("span", {
+    className: "bh-chip"
+  }, posts.length, " open roles")), posts.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: 8
+    }
+  }, /*#__PURE__*/React.createElement(EmptyState, {
+    title: "No open roles",
+    subtitle: "There are no open positions to apply for right now."
+  })) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+      gap: 16
+    }
+  }, posts.map(p => {
+    const isApplied = applied[p.id];
+    return /*#__PURE__*/React.createElement("div", {
+      key: p.id,
+      className: "card",
+      style: {
+        padding: 20,
+        display: "flex",
+        flexDirection: "column",
+        gap: 14
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "space-between",
+        gap: 10
+      }
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontFamily: "var(--font-head)",
+        fontWeight: 700,
+        fontSize: 16,
+        color: "var(--gray-900)"
+      }
+    }, p.title), /*#__PURE__*/React.createElement("div", {
+      className: "bh-caption",
+      style: {
+        marginTop: 2
+      }
+    }, p.department)), /*#__PURE__*/React.createElement(StatusBadge, {
+      variant: "open",
+      text: "Open",
+      size: "sm"
+    })), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 8
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "bh-chip"
+    }, /*#__PURE__*/React.createElement(Icon, {
+      name: "map-pin-line",
+      size: 13,
+      color: "var(--gray-500)",
+      style: {
+        marginRight: 5
+      }
+    }), p.location), /*#__PURE__*/React.createElement("span", {
+      className: "bh-chip"
+    }, /*#__PURE__*/React.createElement(Icon, {
+      name: "calendar-line",
+      size: 13,
+      color: "var(--gray-500)",
+      style: {
+        marginRight: 5
+      }
+    }), "Closes ", p.closing), /*#__PURE__*/React.createElement("span", {
+      className: "bh-chip"
+    }, /*#__PURE__*/React.createElement(Icon, {
+      name: "group-line",
+      size: 13,
+      color: "var(--gray-500)",
+      style: {
+        marginRight: 5
+      }
+    }), p.applicants, " applied")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 10,
+        marginTop: 2
+      }
+    }, /*#__PURE__*/React.createElement(Button, {
+      variant: "stroke",
+      size: "sm",
+      icon: "eye-line",
+      onClick: () => onToast && onToast("Opening role details", {})
+    }, "View"), /*#__PURE__*/React.createElement(Button, {
+      variant: "primary",
+      size: "sm",
+      icon: isApplied ? "check-line" : "send-plane-line",
+      disabled: isApplied,
+      onClick: () => apply(p)
+    }, isApplied ? "Applied" : "Apply")));
+  })));
+}
 function DashboardArea({
   tab,
   requests,
@@ -7053,6 +11386,9 @@ function DashboardArea({
     onViewAnnouncements: onViewAnnouncements,
     onOpenAnnouncement: onOpenAnnouncement,
     onSubPage: onSubPage
+  });
+  if (tab === "Careers") return /*#__PURE__*/React.createElement(CareersFlow, {
+    onToast: onToast
   });
   return /*#__PURE__*/React.createElement(DashboardPlaceholder, {
     title: tab
@@ -8811,6 +13147,460 @@ Object.assign(window, {
   deriveLookups
 });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/data/lookups.jsx", error: String((e && e.message) || e) }); }
+
+// ui_kits/bista-hr/src/data/permissions.jsx
+try { (() => {
+// BISTA HR · data/permissions — data-driven RBAC model.
+//
+// Mirrors the real app's permission scheme: granular "Resource:Action" strings
+// (e.g. "Employees:Read", "Departments:Create") bundled into ROLES. Roles are
+// stored in a reactive store so the demo can switch the signed-in role live AND
+// so new roles/permissions can be created from System Administration ▸ Roles.
+//
+//   window.RBAC.resources   → catalog of resources (grouped) + their actions
+//   window.RBAC.allPerms     → every "Resource:Action" string
+//   window.RBAC.defaultRoles → the six seeded roles (extensible)
+//   window.RBAC.pageRes      → nav page/tab name → resource key (read-gating)
+//   helpers: can / canRead / tabAllowed / firstAllowedTab / permsForRole
+//   window.HRStores.rbac     → { roleId, roles } reactive store
+//
+// Gating policy (chosen for the cleanest demo): blocked nav items & tabs are
+// HIDDEN; in-page Add/Edit/Archive buttons are hidden when the role lacks the
+// matching Create/Update/Delete permission; a hard nav to a blocked area shows
+// the /forbidden screen.
+
+const ACTIONS_CRUD = ["Read", "Create", "Update", "Delete"];
+
+// ---- Resource catalog (grouped — drives the Roles permission matrix) --------
+const RESOURCES = [
+// Dashboard / self-service
+{
+  key: "Dashboard",
+  label: "Dashboard & Self-Service",
+  group: "Dashboard",
+  actions: ["Read"]
+}, {
+  key: "DashboardReport",
+  label: "Leave Reports",
+  group: "Dashboard",
+  actions: ["Read"]
+}, {
+  key: "PerformanceReports",
+  label: "Performance Reports",
+  group: "Dashboard",
+  actions: ["Read"]
+},
+// Organization structure
+{
+  key: "Departments",
+  label: "Departments",
+  group: "Organization",
+  actions: ACTIONS_CRUD
+}, {
+  key: "Designations",
+  label: "Job Titles / Designations",
+  group: "Organization",
+  actions: ACTIONS_CRUD
+}, {
+  key: "OrganizationalUnits",
+  label: "Branches / Units",
+  group: "Organization",
+  actions: ACTIONS_CRUD
+}, {
+  key: "JobGrades",
+  label: "Job Grades",
+  group: "Organization",
+  actions: ACTIONS_CRUD
+}, {
+  key: "Zones",
+  label: "Zones",
+  group: "Organization",
+  actions: ACTIONS_CRUD
+},
+// Employees
+{
+  key: "Employees",
+  label: "Employees",
+  group: "Employees",
+  actions: ACTIONS_CRUD
+}, {
+  key: "ESS_Change_Requests",
+  label: "ESS Change Requests",
+  group: "Employees",
+  actions: ["Read", "Create", "Update", "Delete", "Approve"]
+},
+// Leave
+{
+  key: "LeaveTypes",
+  label: "Leave Types & Holidays",
+  group: "Leave",
+  actions: ACTIONS_CRUD
+}, {
+  key: "LeaveRequests",
+  label: "Leave Requests & Balances",
+  group: "Leave",
+  actions: ["Read", "Create", "Update", "Delete", "Approve"]
+}, {
+  key: "LeaveAllocations",
+  label: "Leave Allocations",
+  group: "Leave",
+  actions: ["Read", "Create", "Update"]
+}, {
+  key: "LeaveRecalls",
+  label: "Leave Recalls",
+  group: "Leave",
+  actions: ACTIONS_CRUD
+},
+// Engagement
+{
+  key: "DisciplinaryCases",
+  label: "Disciplinary Cases",
+  group: "Engagement",
+  actions: ACTIONS_CRUD
+}, {
+  key: "Accommodations",
+  label: "Accommodations",
+  group: "Engagement",
+  actions: ["Read", "Create", "Update", "Delete", "Assign"]
+}, {
+  key: "Circulars",
+  label: "Welfare / Circulars",
+  group: "Engagement",
+  actions: ["Read", "Create", "Update", "Delete", "Approve"]
+}, {
+  key: "Protocol",
+  label: "Protocols",
+  group: "Engagement",
+  actions: ACTIONS_CRUD
+},
+// Recruitment
+{
+  key: "HiringRequests",
+  label: "Hiring Requests",
+  group: "Recruitment",
+  actions: ["Read", "Create", "Update", "Approve", "Delete"]
+}, {
+  key: "JobRequests",
+  label: "Job Requests",
+  group: "Recruitment",
+  actions: ["Read", "Create", "Update", "Approve", "Delete"]
+}, {
+  key: "JobPostings",
+  label: "Job Posts & Reopenings",
+  group: "Recruitment",
+  actions: ["Read", "Create", "Update", "Delete", "Close"]
+}, {
+  key: "JobApplications",
+  label: "Talent Pool / Applications",
+  group: "Recruitment",
+  actions: ["Read", "Shortlist", "Reject"]
+}, {
+  key: "AssessorInterviews",
+  label: "Assessments",
+  group: "Recruitment",
+  actions: ["Read", "Submit"]
+},
+// People & Culture
+{
+  key: "Promotions",
+  label: "Promotions",
+  group: "People & Culture",
+  actions: ACTIONS_CRUD
+}, {
+  key: "Transfers",
+  label: "Transfers",
+  group: "People & Culture",
+  actions: ACTIONS_CRUD
+}, {
+  key: "Exits",
+  label: "Employee Exit",
+  group: "People & Culture",
+  actions: ACTIONS_CRUD
+},
+// Performance / appraisals
+{
+  key: "TargetRequests",
+  label: "Goal Setting / Targets",
+  group: "Performance",
+  actions: ["Read", "Create", "Update", "Delete", "Approve"]
+}, {
+  key: "PerformanceAppraisals",
+  label: "Appraisals / IDP / PIP",
+  group: "Performance",
+  actions: ["Read", "Create", "Update", "Delete", "Approve"]
+}, {
+  key: "Moderations",
+  label: "Moderation",
+  group: "Performance",
+  actions: ["Read", "Create"]
+}, {
+  key: "PortfolioOfEvidence",
+  label: "Portfolio of Evidence",
+  group: "Performance",
+  actions: ACTIONS_CRUD
+}, {
+  key: "AppraisalAssignments",
+  label: "360 Feedback",
+  group: "Performance",
+  actions: ["Read", "Create"]
+}, {
+  key: "Objectives",
+  label: "Objectives",
+  group: "Performance",
+  actions: ACTIONS_CRUD
+},
+// Configuration
+{
+  key: "Perspectives",
+  label: "Perspectives",
+  group: "Configuration",
+  actions: ACTIONS_CRUD
+}, {
+  key: "Competencies",
+  label: "Competencies",
+  group: "Configuration",
+  actions: ACTIONS_CRUD
+}, {
+  key: "Periods",
+  label: "Periods",
+  group: "Configuration",
+  actions: ACTIONS_CRUD
+}, {
+  key: "Measures",
+  label: "KPIs / Measures",
+  group: "Configuration",
+  actions: ACTIONS_CRUD
+}, {
+  key: "PerformanceRatings",
+  label: "Performance Ratings",
+  group: "Configuration",
+  actions: ACTIONS_CRUD
+},
+// System administration
+{
+  key: "Roles",
+  label: "Roles",
+  group: "User Management",
+  actions: ACTIONS_CRUD
+}, {
+  key: "Users",
+  label: "Users",
+  group: "User Management",
+  actions: ACTIONS_CRUD
+}, {
+  key: "Permissions",
+  label: "Permissions",
+  group: "User Management",
+  actions: ACTIONS_CRUD
+}, {
+  key: "OrganizationProfile",
+  label: "Organization Profile",
+  group: "User Management",
+  actions: ["Read", "Update"]
+}];
+const RES_BY_KEY = Object.fromEntries(RESOURCES.map(r => [r.key, r]));
+const ALL_PERMS = RESOURCES.flatMap(r => r.actions.map(a => `${r.key}:${a}`));
+
+// ---- Permission-set builders ------------------------------------------------
+const permsAll = res => (RES_BY_KEY[res]?.actions || []).map(a => `${res}:${a}`);
+const permsRead = res => [`${res}:Read`];
+const permsReadApprove = res => [`${res}:Read`, `${res}:Approve`];
+const flat = (...lists) => Array.from(new Set([].concat(...lists)));
+
+// ---- nav page/tab → resource (read-gating for "list"/"info" sections) -------
+// Dashboard-section tabs are gated by the section's own Dashboard:Read, so they
+// are intentionally NOT mapped here (avoids the "Leave Requests" name collision
+// between the ESS dashboard tab and the Leave-Management admin tab).
+const PAGE_RES = {
+  // Reports & Analytics (info)
+  "Performance": "PerformanceReports",
+  "Leave": "DashboardReport",
+  // Core HR
+  "Branches/Units": "OrganizationalUnits",
+  "Departments": "Departments",
+  "Job Titles": "Designations",
+  "Job Grades": "JobGrades",
+  "Zones": "Zones",
+  "Employees": "Employees",
+  "Reporting Managers": "Employees",
+  "Approvals": "ESS_Change_Requests",
+  // Leave Management
+  "Leave Types": "LeaveTypes",
+  "Leave Allocations": "LeaveAllocations",
+  "Leave Requests": "LeaveRequests",
+  "Leave Recalls": "LeaveRecalls",
+  "Holidays": "LeaveTypes",
+  "Leave Balances": "LeaveRequests",
+  // Employee Engagement
+  "Disciplinary Cycle": "DisciplinaryCases",
+  "Accommodation": "Accommodations",
+  "Welfare": "Circulars",
+  "Protocols": "Protocol",
+  // Recruitment
+  "Hiring Requests": "HiringRequests",
+  "Job Posts": "JobPostings",
+  "Assessments": "AssessorInterviews",
+  "Job Requests": "JobRequests",
+  "Job Reopenings": "JobPostings",
+  "Talent Pool": "JobApplications",
+  // People & Culture
+  "Promotions": "Promotions",
+  "Transfers": "Transfers",
+  "Job Title": "Designations",
+  "Employee Exit": "Exits",
+  "Talent Acquisition": "JobApplications",
+  "Onboarding": "Employees",
+  // Performance
+  "Department Perspectives": "Perspectives",
+  "Goal Setting": "TargetRequests",
+  "Performance Appraisals": "PerformanceAppraisals",
+  "Portfolio of Evidence": "PortfolioOfEvidence",
+  "360 Feedback": "AppraisalAssignments",
+  "Moderation": "Moderations",
+  "IDP": "PerformanceAppraisals",
+  "PIP": "PerformanceAppraisals",
+  "Objectives": "Objectives",
+  // System Admin ▸ Configuration
+  "Corporate Perspectives": "Perspectives",
+  "Competencies": "Competencies",
+  "Periods": "Periods",
+  "Employee Goals": "Measures",
+  "KPI / Measures": "Measures",
+  "Performance Ratings": "PerformanceRatings",
+  // System Admin ▸ User Management / Organization
+  "Roles": "Roles",
+  "Users": "Users",
+  "Organization": "OrganizationProfile"
+};
+
+// ---- Default roles (the six seeded bundles — fully editable in the UI) -------
+const DEFAULT_ROLES = [{
+  id: "super-admin",
+  name: "Super Admin",
+  icon: "shield-star-line",
+  color: "#375DFB",
+  description: "Full access to every module, configuration and user-management area.",
+  system: true,
+  permissions: ALL_PERMS.slice()
+}, {
+  id: "hr-admin",
+  name: "HR Admin / Officer",
+  icon: "user-settings-line",
+  color: "#007839",
+  description: "Day-to-day HR operations across org, employees, leave, engagement and recruitment.",
+  permissions: flat(permsRead("Dashboard"), permsAll("Departments"), permsAll("Designations"), permsAll("OrganizationalUnits"), permsAll("JobGrades"), permsAll("Zones"), permsAll("Employees"), permsAll("ESS_Change_Requests"), permsAll("LeaveTypes"), permsAll("LeaveRequests"), permsAll("LeaveAllocations"), permsAll("LeaveRecalls"), permsAll("DisciplinaryCases"), permsAll("Accommodations"), permsAll("Circulars"), permsAll("Protocol"), permsAll("Promotions"), permsAll("Transfers"), permsAll("Exits"), permsAll("HiringRequests"), permsAll("JobRequests"), permsAll("JobPostings"), permsRead("JobApplications"), permsRead("PerformanceReports"), permsRead("DashboardReport"))
+}, {
+  id: "hrbp",
+  name: "HRBP / HR Manager",
+  icon: "briefcase-line",
+  color: "#7A5AF8",
+  description: "Performance-cycle ownership — appraisals, moderation, IDP/PIP, goals and reports.",
+  permissions: flat(permsRead("Dashboard"), permsRead("Employees"), permsRead("Departments"), permsRead("JobGrades"), permsAll("TargetRequests"), permsAll("PerformanceAppraisals"), permsAll("Moderations"), permsAll("PortfolioOfEvidence"), permsAll("AppraisalAssignments"), permsAll("Objectives"), permsRead("Perspectives"), permsRead("Competencies"), permsRead("Periods"), permsRead("LeaveRequests"), permsReadApprove("LeaveRequests"), permsRead("PerformanceReports"), permsRead("DashboardReport"))
+}, {
+  id: "pc-bp",
+  name: "People & Culture (P&CBP)",
+  icon: "user-shared-2-line",
+  color: "#C11574",
+  description: "People & Culture Business Partner — owns transfers, promotions, change of job title and exits end-to-end (Head P&C approves).",
+  permissions: flat(permsRead("Dashboard"), permsRead("Employees"), ["Employees:Update"], permsRead("Departments"), permsRead("JobGrades"), permsRead("OrganizationalUnits"), permsRead("Zones"), permsAll("Designations"), permsAll("Promotions"), permsAll("Transfers"), permsAll("Exits"), permsRead("DashboardReport"))
+}, {
+  id: "line-manager",
+  name: "Line Manager",
+  icon: "team-line",
+  color: "#C2540A",
+  description: "Approves their team's leave, goals and change requests; reviews team appraisals.",
+  permissions: flat(permsRead("Dashboard"), permsRead("Employees"), permsReadApprove("LeaveRequests"), permsReadApprove("ESS_Change_Requests"), permsReadApprove("TargetRequests"), permsRead("PerformanceAppraisals"), permsRead("Objectives"), permsRead("Moderations"))
+}, {
+  id: "recruiter",
+  name: "Recruiter / Hiring Manager",
+  icon: "user-search-line",
+  color: "#0C7792",
+  description: "Owns the recruitment pipeline — hiring & job requests, postings, talent pool, assessments.",
+  permissions: flat(permsRead("Dashboard"), permsRead("Employees"), permsAll("HiringRequests"), permsAll("JobRequests"), permsAll("JobPostings"), permsAll("JobApplications"), permsAll("AssessorInterviews"))
+}, {
+  id: "employee",
+  name: "Employee (ESS)",
+  icon: "user-3-line",
+  color: "#525866",
+  description: "Self-service only — personal info, own leave, goals and submitted requests.",
+  // Dashboard:Read drives every self-service tab. We deliberately DON'T grant
+  // Read on the admin resources (LeaveRequests/TargetRequests/PerformanceAppraisals/
+  // ESS_Change_Requests) — those keys gate the admin list tabs, so granting Read
+  // would leak Core HR / Leave Management / Performance into an employee's sidebar.
+  // The :Create perms below are the genuine self-service writes and never reveal a
+  // tab (tabs gate on :Read only).
+  permissions: flat(permsRead("Dashboard"), ["ESS_Change_Requests:Create"], ["LeaveRequests:Create"])
+}];
+
+// ---- Reactive store ---------------------------------------------------------
+window.HRStores = window.HRStores || {};
+window.HRStores.rbac = makeStore({
+  roleId: "super-admin",
+  roles: DEFAULT_ROLES.map(r => ({
+    ...r
+  }))
+});
+
+// ---- Helpers ----------------------------------------------------------------
+function permsForRole(roleId, roles) {
+  const role = (roles || []).find(r => r.id === roleId);
+  return new Set(role ? role.permissions : []);
+}
+const can = (perms, res, action) => !!perms && perms.has(`${res}:${action}`);
+const canRead = (perms, res) => can(perms, res, "Read");
+const resourceOf = pageName => PAGE_RES[pageName];
+
+// tab visibility given the owning section's `kind`
+function tabAllowed(perms, kind, tabName) {
+  if (kind === "dashboard") return canRead(perms, "Dashboard");
+  const res = PAGE_RES[tabName];
+  if (!res) return true; // unmapped → visible (e.g. bespoke pages)
+  return canRead(perms, res);
+}
+const firstAllowedTab = (perms, kind, tabs) => (tabs || []).find(t => tabAllowed(perms, kind, t)) || null;
+
+// CRUD action gating for a page (resource derived from page name)
+function pageCan(perms, pageName, action) {
+  const res = PAGE_RES[pageName];
+  if (!res) return true; // bespoke/unmapped → don't restrict
+  return can(perms, res, action);
+}
+
+// number of top-level sidebar destinations a role can see (groups + leaves + admin).
+// When this is ≤ 1 (e.g. an ESS who only has the Dashboard), the sidebar is pointless
+// and we hide it — the role navigates via the Dashboard's horizontal tabs instead.
+function visibleNavCount(perms) {
+  const allow = (kind, name) => tabAllowed(perms, kind, name);
+  const showChild = (kind, c) => c.tabs && c.tabs.length ? c.tabs.some(t => allow(kind, t)) : allow(kind, c.name);
+  let count = 0;
+  for (const top of NAV_MAIN) {
+    if (top.children) {
+      if (top.children.some(c => showChild(top.kind, c))) count++;
+    } else if (top.tabs && top.tabs.length) {
+      if (top.tabs.some(t => allow(top.kind, t))) count++;
+    } else if (allow(top.kind, top.name)) count++;
+  }
+  if (NAV_ADMIN.children.some(c => showChild(NAV_ADMIN.kind, c))) count++;
+  return count;
+}
+Object.assign(window, {
+  RBAC: {
+    resources: RESOURCES,
+    resByKey: RES_BY_KEY,
+    allPerms: ALL_PERMS,
+    defaultRoles: DEFAULT_ROLES,
+    pageRes: PAGE_RES
+  },
+  permsForRole,
+  can,
+  canRead,
+  resourceOf,
+  tabAllowed,
+  firstAllowedTab,
+  pageCan,
+  visibleNavCount
+});
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/data/permissions.jsx", error: String((e && e.message) || e) }); }
 
 // ui_kits/bista-hr/src/data/store.jsx
 try { (() => {
@@ -18291,11 +23081,14 @@ function ExitForm({
     note: ""
   });
   const [docs, setDocs] = useEx([]);
+  const [approvers, setApprovers] = useEx([]);
   const [mails, setMails] = useEx([""]);
   const set = (k, v) => setForm(s => ({
     ...s,
     [k]: v
   }));
+  // approvers are chosen from staff, excluding the exiting employee (no self-approval)
+  const approverOptions = empOptions.filter(n => n !== employee);
   const meta = form.exitType ? exitMeta(form.exitType) : null;
   const primary = employee ? DIR[employee] : null;
   const autoItems = primary ? [{
@@ -18317,7 +23110,7 @@ function ExitForm({
     label: "Zone",
     value: primary.zone
   }] : [];
-  const valid = employee && form.exitType && form.exitDate && form.reason;
+  const valid = employee && form.exitType && form.exitDate && form.reason && approvers.length > 0;
   const sectionTitle = (t, sub) => /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 4
@@ -18474,6 +23267,19 @@ function ExitForm({
       height: 1,
       background: "var(--border)"
     }
+  }), sectionTitle("Approval Routing", "Select the approver(s) who must sign off on this exit."), /*#__PURE__*/React.createElement(Field, {
+    label: "Approvers"
+  }, /*#__PURE__*/React.createElement(MultiSelectCombobox, {
+    value: approvers,
+    onChange: setApprovers,
+    options: approverOptions,
+    placeholder: "Select one or more approvers",
+    avatar: true
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 1,
+      background: "var(--border)"
+    }
   }), sectionTitle("Stakeholder Notification", "P&C, Line Manager, BOBS, S&IT, Payroll, Finance, Admin, Security and Medicals are notified for closure actions."), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -18524,6 +23330,7 @@ function ExitForm({
       employee,
       primary,
       ...form,
+      approvers,
       documents: docs,
       notifyMails: mails.filter(Boolean)
     })
@@ -18604,6 +23411,44 @@ function ExitDetails({
     items: info,
     tint: "gray",
     cols: 4
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: 0
+    }
+  }, /*#__PURE__*/React.createElement(DetailCard, {
+    icon: "user-follow-line",
+    title: "Approvers"
+  }, exit.approvers && exit.approvers.length > 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 10
+    }
+  }, exit.approvers.map(n => /*#__PURE__*/React.createElement("span", {
+    key: n,
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 8,
+      border: "1px solid var(--border)",
+      borderRadius: 999,
+      padding: "5px 12px 5px 5px"
+    }
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    name: n,
+    size: 26
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontWeight: 500,
+      fontSize: 13.5,
+      color: "var(--gray-900)"
+    }
+  }, n)))) : /*#__PURE__*/React.createElement(EmptyState, {
+    compact: true,
+    title: "No approvers",
+    subtitle: "No approvers were assigned to this exit."
   }))), /*#__PURE__*/React.createElement("div", {
     className: "card",
     style: {
@@ -18999,7 +23844,8 @@ function ExitScreen({
         status: "Pending",
         interviewDone: false,
         clearance: freshClearance([]),
-        documents: f.documents
+        documents: f.documents,
+        approvers: f.approvers || []
       }, ...es]);
       onToast("Exit Initiated", {
         tone: "success"
@@ -19567,6 +24413,170 @@ Object.assign(window, {
 });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/forms/Combobox.jsx", error: String((e && e.message) || e) }); }
 
+// ui_kits/bista-hr/src/forms/StatusFilter.jsx
+try { (() => {
+// BISTA HR · forms/StatusFilter — popover multi-select status filter button.
+// Replaces the All/Approved/Pending segmented sub-tabs in the approval queues.
+// Click to toggle which statuses are shown; an empty selection means "all".
+// Trigger matches the kit's stroke Button (equalizer-line, like Welfare's filter);
+// the panel reuses the portal-popover approach from Combobox so it is never clipped.
+const STATUS_FILTER_VARIANT = {
+  Approved: "approved",
+  Pending: "pending",
+  Declined: "rejected"
+};
+function StatusFilter({
+  value = [],
+  onChange,
+  options = ["Approved", "Pending", "Declined"]
+}) {
+  const {
+    ref,
+    open,
+    setOpen,
+    rect
+  } = usePopover();
+  const opts = options.map(o => typeof o === "string" ? {
+    value: o,
+    label: o
+  } : o);
+  const count = value.length;
+  const toggle = v => onChange(value.includes(v) ? value.filter(x => x !== v) : [...value, v]);
+  const panel = rect && {
+    position: "fixed",
+    zIndex: 1001,
+    width: 224,
+    top: rect.bottom + 6,
+    left: Math.max(12, Math.min(rect.left, rect.right - 224)),
+    background: "#fff",
+    border: "1px solid var(--border)",
+    borderRadius: "var(--radius-md)",
+    boxShadow: "var(--shadow-pop)",
+    overflow: "hidden"
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    ref: ref,
+    style: {
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-stroke btn-sm",
+    onClick: () => setOpen(o => !o),
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "equalizer-line",
+    size: 16,
+    color: "var(--gray-500)"
+  }), "Status", count > 0 && /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      minWidth: 18,
+      height: 18,
+      padding: "0 5px",
+      borderRadius: 999,
+      background: "var(--brand-yellow)",
+      color: "var(--brand-ink)",
+      fontFamily: "var(--font-ui)",
+      fontWeight: 700,
+      fontSize: 11.5
+    }
+  }, count), /*#__PURE__*/React.createElement(Icon, {
+    name: "arrow-down-s-line",
+    size: 18,
+    color: "var(--gray-400)",
+    style: {
+      transition: "transform .15s",
+      transform: open ? "rotate(180deg)" : "none"
+    }
+  })), open && ReactDOM.createPortal(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    onClick: () => setOpen(false),
+    style: {
+      position: "fixed",
+      inset: 0,
+      zIndex: 1000
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: panel
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 8,
+      padding: "10px 12px",
+      borderBottom: "1px solid var(--divider)"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontWeight: 600,
+      fontSize: 12.5,
+      color: "var(--gray-500)",
+      textTransform: "uppercase",
+      letterSpacing: ".03em"
+    }
+  }, "Filter by status"), count > 0 && /*#__PURE__*/React.createElement("button", {
+    onClick: () => onChange([]),
+    style: {
+      border: 0,
+      background: "none",
+      cursor: "pointer",
+      padding: 0,
+      fontFamily: "var(--font-ui)",
+      fontWeight: 600,
+      fontSize: 12.5,
+      color: "var(--brand-yellow-dark)"
+    }
+  }, "Clear")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: 6,
+      display: "flex",
+      flexDirection: "column"
+    }
+  }, opts.map(o => {
+    const on = value.includes(o.value);
+    return /*#__PURE__*/React.createElement("button", {
+      key: o.value,
+      onClick: () => toggle(o.value),
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        width: "100%",
+        border: 0,
+        background: on ? "var(--gray-50)" : "none",
+        padding: "8px 10px",
+        borderRadius: 8,
+        cursor: "pointer",
+        textAlign: "left"
+      },
+      onMouseEnter: e => {
+        if (!on) e.currentTarget.style.background = "var(--gray-50)";
+      },
+      onMouseLeave: e => {
+        if (!on) e.currentTarget.style.background = "none";
+      }
+    }, /*#__PURE__*/React.createElement(Checkbox, {
+      checked: on,
+      onChange: () => toggle(o.value)
+    }), /*#__PURE__*/React.createElement(StatusBadge, {
+      variant: STATUS_FILTER_VARIANT[o.value] || "pending",
+      text: o.label,
+      size: "sm"
+    }));
+  })))), document.body));
+}
+Object.assign(window, {
+  StatusFilter
+});
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/forms/StatusFilter.jsx", error: String((e && e.message) || e) }); }
+
 // ui_kits/bista-hr/src/forms/SupportingDocsUploader.jsx
 try { (() => {
 // BISTA HR · forms/SupportingDocsUploader — reusable multi-file upload field for workflow
@@ -19898,11 +24908,16 @@ function AssignJobTitleModal({
 }) {
   const LK = lookups || window.LOOKUPS;
   const DIR = window.EMPLOYEE_DIRECTORY;
+  const empOptions = window.EMPLOYEE_NAMES;
+  const [people, setPeople] = useJt(names);
   const [title, setTitle] = useJt("");
   const [date, setDate] = useJt("");
   const [reason, setReason] = useJt("");
-  const valid = title && date;
-  const multi = names.length > 1;
+  const [approvers, setApprovers] = useJt([]);
+  // approvers are chosen from staff, excluding the employees being assigned (no self-approval)
+  const approverOptions = empOptions.filter(n => !people.includes(n));
+  const valid = title && date && people.length > 0 && approvers.length > 0;
+  const multi = people.length > 1;
   return /*#__PURE__*/React.createElement(Modal, {
     onClose: onClose,
     width: 620
@@ -19941,63 +24956,22 @@ function AssignJobTitleModal({
     style: {
       marginTop: 4
     }
-  }, names.length, " employee", multi ? "s" : "", " selected. Choose one job title to assign to ", multi ? "all of them" : "them", ".")), /*#__PURE__*/React.createElement("div", {
+  }, people.length, " employee", multi ? "s" : "", " selected. Choose one job title to assign to ", multi ? "all of them" : "them", ".")), /*#__PURE__*/React.createElement("div", {
     style: {
       padding: 24,
       display: "flex",
       flexDirection: "column",
       gap: 18
     }
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: "var(--font-control)",
-      fontWeight: 500,
-      fontSize: 14,
-      color: "var(--gray-900)",
-      marginBottom: 8
-    }
-  }, "Selected employees"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 8,
-      maxHeight: 220,
-      overflowY: "auto"
-    }
-  }, names.map(n => {
-    const e = DIR[n] || {};
-    return /*#__PURE__*/React.createElement("div", {
-      key: n,
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        border: "1px solid var(--border)",
-        borderRadius: 10,
-        padding: "10px 12px"
-      }
-    }, /*#__PURE__*/React.createElement(Avatar, {
-      name: n,
-      size: 36
-    }), /*#__PURE__*/React.createElement("div", {
-      style: {
-        minWidth: 0
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: "var(--font-head)",
-        fontWeight: 600,
-        fontSize: 14,
-        color: "var(--gray-900)"
-      }
-    }, n), /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontFamily: "var(--font-ui)",
-        fontSize: 12,
-        color: "var(--gray-400)"
-      }
-    }, e.staffId, " \xB7 ", e.title, e.dept ? ` · ${e.dept}` : "")));
-  }))), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(Field, {
+    label: "Selected employees"
+  }, /*#__PURE__*/React.createElement(MultiSelectCombobox, {
+    value: people,
+    onChange: setPeople,
+    options: empOptions,
+    placeholder: "Select one or more employees",
+    avatar: true
+  })), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
@@ -20024,6 +24998,14 @@ function AssignJobTitleModal({
     value: reason,
     onChange: e => setReason(e.target.value),
     placeholder: "Reason or note for this assignment\u2026"
+  })), /*#__PURE__*/React.createElement(Field, {
+    label: "Approvers"
+  }, /*#__PURE__*/React.createElement(MultiSelectCombobox, {
+    value: approvers,
+    onChange: setApprovers,
+    options: approverOptions,
+    placeholder: "Select one or more approvers",
+    avatar: true
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -20039,10 +25021,11 @@ function AssignJobTitleModal({
     icon: "user-add-line",
     disabled: !valid,
     onClick: () => valid && onSubmit({
-      names,
+      names: people,
       title,
       date,
-      reason
+      reason,
+      approvers
     })
   }, "Assign job title")));
 }
@@ -20242,7 +25225,7 @@ function JobTitleList({
   setSel
 }) {
   const [menu, setMenu] = useJt(null);
-  const byTab = rows.filter(r => tab === "All" || r.status === tab);
+  const byTab = rows.filter(r => tab.length === 0 || tab.includes(r.status));
   const shown = byTab.filter(r => q === "" || r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newTitle.toLowerCase().includes(q.toLowerCase()));
   const pg = usePaged(shown, 10);
   const pendingShown = shown.filter(r => r.status === "Pending");
@@ -20275,11 +25258,7 @@ function JobTitleList({
       gap: 12,
       flexWrap: "wrap"
     }
-  }, /*#__PURE__*/React.createElement(Segmented, {
-    items: ["All", "Approved", "Pending"],
-    active: tab,
-    onChange: setTab
-  }), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
     className: "input-wrap",
     style: {
       width: 260,
@@ -20295,7 +25274,10 @@ function JobTitleList({
     placeholder: "Search job title changes\u2026",
     value: q,
     onChange: e => setQ(e.target.value)
-  })))), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement(StatusFilter, {
+    value: tab,
+    onChange: setTab
+  }))), /*#__PURE__*/React.createElement("div", {
     style: {
       border: "1px solid var(--border)",
       borderRadius: "var(--radius-lg)",
@@ -20632,6 +25614,44 @@ function JobTitleDetails({
       padding: 0
     }
   }, /*#__PURE__*/React.createElement(DetailCard, {
+    icon: "user-follow-line",
+    title: "Approvers"
+  }, r.approvers && r.approvers.length > 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 10
+    }
+  }, r.approvers.map(n => /*#__PURE__*/React.createElement("span", {
+    key: n,
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 8,
+      border: "1px solid var(--border)",
+      borderRadius: 999,
+      padding: "5px 12px 5px 5px"
+    }
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    name: n,
+    size: 26
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontWeight: 500,
+      fontSize: 13.5,
+      color: "var(--gray-900)"
+    }
+  }, n)))) : /*#__PURE__*/React.createElement(EmptyState, {
+    compact: true,
+    title: "No approvers",
+    subtitle: "No approvers were assigned to this request."
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: 0
+    }
+  }, /*#__PURE__*/React.createElement(DetailCard, {
     icon: "shield-check-line",
     title: "Approval Information"
   }, /*#__PURE__*/React.createElement(DetailPanel, {
@@ -20661,7 +25681,7 @@ function JobTitleScreen({
   const [assign, setAssign] = useJt(null); // names[] being assigned (modal)
   const [lastCount, setLastCount] = useJt(0); // held count so the bar shows it while sliding out
   const [q, setQ] = useJt("");
-  const [tab, setTab] = useJt("All");
+  const [tab, setTab] = useJt([]);
   const [view, setView] = useJt({
     name: "list"
   }); // list | details
@@ -20709,6 +25729,7 @@ function JobTitleScreen({
           status: "Pending",
           reason: f.reason || "",
           documents: [],
+          approvers: f.approvers || [],
           approvedBy: "N/A",
           approverEmail: "N/A",
           approvedAt: "N/A",
@@ -25020,6 +30041,16 @@ const STATUS_CONFIG = {
     bg: "#3B82F6",
     text: "Draft"
   },
+  open: {
+    shape: "check",
+    bg: "#38C793",
+    text: "Open"
+  },
+  shortlisted: {
+    shape: "check",
+    bg: "#38C793",
+    text: "Shortlisted"
+  },
   closed: {
     shape: "x",
     bg: "#EF4444",
@@ -25448,6 +30479,17 @@ function Pagination({
   }, "Next")));
 }
 
+/* viewport width hook — reusable responsive breakpoints (shell, login, etc.) */
+function useViewportWidth() {
+  const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1280);
+  useEffect(() => {
+    const on = () => setW(window.innerWidth);
+    window.addEventListener("resize", on);
+    return () => window.removeEventListener("resize", on);
+  }, []);
+  return w;
+}
+
 /* paginate any list at `perPage` (default 10); resets to page 1 when the list size changes */
 function usePaged(items, perPage = 10) {
   const [page, setPage] = useState(1);
@@ -25509,6 +30551,7 @@ Object.assign(window, {
   Segmented,
   Pagination,
   usePaged,
+  useViewportWidth,
   Avatar,
   getStringColor,
   BulkBar
@@ -25561,7 +30604,7 @@ function PromotionsList({
   setSel
 }) {
   const [menu, setMenu] = usePromo(null);
-  const byTab = rows.filter(r => tab === "All" || r.status === tab);
+  const byTab = rows.filter(r => tab.length === 0 || tab.includes(r.status));
   const shown = byTab.filter(r => q === "" || r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newRole.toLowerCase().includes(q.toLowerCase()));
   const pg = usePaged(shown, 10);
   const pendingShown = shown.filter(r => r.status === "Pending");
@@ -25594,11 +30637,7 @@ function PromotionsList({
       gap: 12,
       flexWrap: "wrap"
     }
-  }, /*#__PURE__*/React.createElement(Segmented, {
-    items: ["All", "Approved", "Pending"],
-    active: tab,
-    onChange: setTab
-  }), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
     className: "input-wrap",
     style: {
       width: 260,
@@ -25614,7 +30653,10 @@ function PromotionsList({
     placeholder: "Search promotions\u2026",
     value: q,
     onChange: e => setQ(e.target.value)
-  })))), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement(StatusFilter, {
+    value: tab,
+    onChange: setTab
+  }))), /*#__PURE__*/React.createElement("div", {
     style: {
       border: "1px solid var(--border)",
       borderRadius: "var(--radius-lg)",
@@ -26169,6 +31211,7 @@ function PromotionForm({
     budgetConfirmed: false
   });
   const [docs, setDocs] = usePromo([]);
+  const [approvers, setApprovers] = usePromo([]);
   const [mails, setMails] = usePromo([""]);
   const set = (k, v) => setForm(s => ({
     ...s,
@@ -26181,6 +31224,8 @@ function PromotionForm({
     if (primary && !form.performanceRating) set("performanceRating", primary.rating);
   }, [employees]);
   const staffIds = employees.map(n => (DIR[n] || {}).staffId).filter(Boolean).join(", ");
+  // approvers are chosen from staff, excluding the employees being promoted (no self-approval)
+  const approverOptions = empOptions.filter(n => !employees.includes(n));
   const autoItems = primary ? [{
     label: "Staff ID(s)",
     value: staffIds
@@ -26203,7 +31248,7 @@ function PromotionForm({
     label: "Current Salary",
     value: primary.salary
   }] : [];
-  const valid = employees.length > 0 && form.newJobTitle && form.grade && form.effectiveDate && form.performanceRating && form.justification.trim() && form.budgetConfirmed && docs.length > 0;
+  const valid = employees.length > 0 && form.newJobTitle && form.grade && form.effectiveDate && form.performanceRating && form.justification.trim() && form.budgetConfirmed && docs.length > 0 && approvers.length > 0;
   const sectionTitle = (t, sub) => /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 4
@@ -26377,6 +31422,19 @@ function PromotionForm({
       height: 1,
       background: "var(--border)"
     }
+  }), sectionTitle("Approval Routing", "Select the approver(s) who must sign off on this promotion."), /*#__PURE__*/React.createElement(Field, {
+    label: "Approvers"
+  }, /*#__PURE__*/React.createElement(MultiSelectCombobox, {
+    value: approvers,
+    onChange: setApprovers,
+    options: approverOptions,
+    placeholder: "Select one or more approvers",
+    avatar: true
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 1,
+      background: "var(--border)"
+    }
   }), sectionTitle("Notification"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -26440,6 +31498,7 @@ function PromotionForm({
       primary,
       staffIds,
       ...form,
+      approvers,
       documents: docs,
       notifyMails: mails.filter(Boolean)
     })
@@ -26628,6 +31687,44 @@ function PromotionDetails({
       padding: 0
     }
   }, /*#__PURE__*/React.createElement(DetailCard, {
+    icon: "user-follow-line",
+    title: "Approvers"
+  }, promo.approvers && promo.approvers.length > 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 10
+    }
+  }, promo.approvers.map(n => /*#__PURE__*/React.createElement("span", {
+    key: n,
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 8,
+      border: "1px solid var(--border)",
+      borderRadius: 999,
+      padding: "5px 12px 5px 5px"
+    }
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    name: n,
+    size: 26
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontWeight: 500,
+      fontSize: 13.5,
+      color: "var(--gray-900)"
+    }
+  }, n)))) : /*#__PURE__*/React.createElement(EmptyState, {
+    compact: true,
+    title: "No approvers",
+    subtitle: "No approvers were assigned to this promotion."
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: 0
+    }
+  }, /*#__PURE__*/React.createElement(DetailCard, {
     icon: "shield-check-line",
     title: "Approval Information"
   }, /*#__PURE__*/React.createElement(DetailPanel, {
@@ -26656,7 +31753,7 @@ function PromotionsScreen({
   const [approvalSel, setApprovalSel] = usePromo([]);
   const [lastCount, setLastCount] = usePromo(0);
   const [q, setQ] = usePromo("");
-  const [tab, setTab] = usePromo("All");
+  const [tab, setTab] = usePromo([]);
   const [view, setView] = usePromo({
     name: "list"
   }); // list | add | details
@@ -26671,15 +31768,6 @@ function PromotionsScreen({
         })
       }, {
         label: "Create Promotion"
-      }]
-    });else if (view.name === "assign") onSubPage({
-      trail: [{
-        label: "Promotions",
-        onClick: () => setView({
-          name: "list"
-        })
-      }, {
-        label: "Assign Promotion"
       }]
     });else if (view.name === "details") onSubPage({
       trail: [{
@@ -26733,6 +31821,7 @@ function PromotionsScreen({
         justification: f.justification,
         allowances: [],
         documents: f.documents,
+        approvers: f.approvers || [],
         approvedBy: "N/A",
         approverEmail: "N/A",
         approvedAt: "N/A",
@@ -26875,13 +31964,6 @@ function PromotionsScreen({
       name: "list"
     }),
     onSubmit: submitPromo
-  });else if (view.name === "assign") body = /*#__PURE__*/React.createElement(BulkPromoteForm, {
-    names: view.names,
-    lookups: lookups,
-    onCancel: () => setView({
-      name: "list"
-    }),
-    onSubmit: submitBulk
   });else if (view.name === "details" && current) body = /*#__PURE__*/React.createElement(PromotionDetails, {
     promo: current,
     onApprove: r => setConfirm({
@@ -26906,17 +31988,11 @@ function PromotionsScreen({
   }, /*#__PURE__*/React.createElement(PageHeader, {
     title: "Promotions",
     subtitle: "Promote or bulk-promote staff, and track approval status.",
-    actions: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Button, {
+    actions: /*#__PURE__*/React.createElement(Button, {
       variant: "stroke",
       icon: "download-2-line",
       onClick: () => onToast("Import Promotions — coming soon")
-    }, "Import Promotions"), /*#__PURE__*/React.createElement(Button, {
-      variant: "primary",
-      icon: "add-line",
-      onClick: () => setView({
-        name: "add"
-      })
-    }, "Add Promotion"))
+    }, "Import Promotions")
   }), segment === "Request" ? /*#__PURE__*/React.createElement(PromotionRoster, {
     q: rosterQ,
     setQ: setRosterQ,
@@ -27031,10 +32107,10 @@ function PromotionsScreen({
     variant: "primary",
     icon: "arrow-up-circle-line",
     onClick: () => setView({
-      name: "assign",
-      names: selected
+      name: "add",
+      initialEmployees: selected
     })
-  }, "Assign Promotion")), /*#__PURE__*/React.createElement(BulkBar, {
+  }, "Create Promotion")), /*#__PURE__*/React.createElement(BulkBar, {
     count: approvalSel.length,
     noun: "promotions selected",
     visible: approvalBarVisible,
@@ -27343,13 +32419,148 @@ function LoginScreen({
     return () => clearInterval(t);
   }, []);
   const slide = LOGIN_SLIDES[i];
+  const narrow = useViewportWidth() <= 860;
+
+  // ---- Mobile: brand panel on top, white form card full-width below ----
+  if (narrow) {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        background: "var(--brand-yellow)",
+        overflow: "hidden"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        flexShrink: 0,
+        position: "relative",
+        overflow: "hidden",
+        padding: "52px 24px 40px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "absolute",
+        inset: 0,
+        backgroundImage: "url(../../assets/oil-droplet-bg.png)",
+        backgroundSize: "100% auto",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+        mixBlendMode: "soft-light",
+        opacity: .7,
+        pointerEvents: "none"
+      }
+    }), /*#__PURE__*/React.createElement("img", {
+      src: "../../assets/logo/gcb-logo.svg",
+      alt: "GCB",
+      style: {
+        width: 60,
+        height: 60,
+        position: "relative"
+      }
+    }), /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "relative",
+        marginTop: 18,
+        fontFamily: "var(--font-ui)",
+        fontWeight: 800,
+        fontSize: 23,
+        lineHeight: 1.15,
+        letterSpacing: "-0.02em",
+        color: "var(--brand-ink)",
+        maxWidth: 320
+      }
+    }, slide.title), /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: "relative",
+        display: "flex",
+        gap: 7,
+        marginTop: 16
+      }
+    }, LOGIN_SLIDES.map((_, idx) => /*#__PURE__*/React.createElement("span", {
+      key: idx,
+      style: {
+        height: 7,
+        width: idx === i ? 22 : 7,
+        borderRadius: 999,
+        background: idx === i ? "var(--brand-ink)" : "rgba(16,16,16,.3)",
+        transition: "width .4s ease"
+      }
+    })))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        background: "#fff",
+        borderTopLeftRadius: 28,
+        borderTopRightRadius: 28,
+        padding: "36px 24px 28px",
+        display: "flex",
+        flexDirection: "column",
+        boxShadow: "0 -8px 30px rgba(16,24,40,.08)"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 24,
+        width: "min(416px, 100%)",
+        margin: "0 auto",
+        flex: 1
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        textAlign: "center"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "bh-h1",
+      style: {
+        fontSize: 26
+      }
+    }, "Welcome"), /*#__PURE__*/React.createElement("div", {
+      className: "bh-body",
+      style: {
+        marginTop: 6,
+        fontSize: 15
+      }
+    }, "Enter your organization domain to continue")), /*#__PURE__*/React.createElement(Field, {
+      label: "Organizational Domain",
+      style: {
+        width: "100%"
+      }
+    }, /*#__PURE__*/React.createElement(Input, {
+      icon: "building-line",
+      placeholder: "eg. Starett-ltd",
+      value: domain,
+      onChange: e => setDomain(e.target.value)
+    })), /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-auth",
+      onClick: onContinue
+    }, "Continue"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginTop: "auto",
+        display: "flex",
+        justifyContent: "center",
+        gap: 20
+      }
+    }, /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-ghost btn-sm"
+    }, "Terms of Service"), /*#__PURE__*/React.createElement("button", {
+      className: "btn btn-ghost btn-sm"
+    }, "Privacy Policy")))));
+  }
   return /*#__PURE__*/React.createElement("div", {
+    className: "login-split",
     style: {
       display: "flex",
       height: "100%",
       background: "#fff"
     }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "login-carousel",
     style: {
       flex: 1,
       position: "relative",
@@ -27363,20 +32574,16 @@ function LoginScreen({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
-      left: "-8%",
-      top: "50%",
-      transform: "translateY(-50%)",
-      width: 600,
-      height: 760,
+      inset: 0,
       backgroundImage: "url(../../assets/oil-droplet-bg.png)",
-      backgroundSize: "contain",
+      backgroundSize: "auto 100%",
       backgroundRepeat: "no-repeat",
       backgroundPosition: "center",
       mixBlendMode: "soft-light",
       opacity: .7,
       pointerEvents: "none",
-      WebkitMaskImage: "radial-gradient(115% 85% at 45% 42%, #000 30%, rgba(0,0,0,.35) 62%, transparent 84%)",
-      maskImage: "radial-gradient(115% 85% at 45% 42%, #000 30%, rgba(0,0,0,.35) 62%, transparent 84%)"
+      WebkitMaskImage: "radial-gradient(115% 85% at 50% 45%, #000 34%, rgba(0,0,0,.35) 64%, transparent 86%)",
+      maskImage: "radial-gradient(115% 85% at 50% 45%, #000 34%, rgba(0,0,0,.35) 64%, transparent 86%)"
     }
   }), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -27471,7 +32678,7 @@ function LoginScreen({
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      width: 416,
+      width: "min(416px, 100%)",
       display: "flex",
       flexDirection: "column",
       gap: 30,
@@ -27526,6 +32733,87 @@ Object.assign(window, {
   LoginScreen
 });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/screens/Login.jsx", error: String((e && e.message) || e) }); }
+
+// ui_kits/bista-hr/src/screens/RoleSelect.jsx
+try { (() => {
+// BISTA HR · screens/RoleSelect — minimal "preview as" gate shown BEFORE login.
+// A single combobox to pick the role, then continue to the normal (role-free) login.
+function RoleSelectScreen({
+  roles = [],
+  initial,
+  onContinue
+}) {
+  const [sel, setSel] = useState(initial || roles[0] && roles[0].id);
+  const options = roles.map(r => ({
+    value: r.id,
+    label: r.name
+  }));
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: "100%",
+      background: "var(--gray-75)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 24,
+      boxSizing: "border-box"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: "min(416px, 100%)",
+      background: "#fff",
+      border: "1px solid var(--border)",
+      borderRadius: "var(--radius-xl)",
+      boxShadow: "var(--shadow-card)",
+      padding: 40,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: 24
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: "../../assets/logo/gcb-logo.svg",
+    alt: "GCB logo",
+    style: {
+      width: 60,
+      height: 60
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bh-h1",
+    style: {
+      fontSize: 26
+    }
+  }, "Select a role"), /*#__PURE__*/React.createElement("div", {
+    className: "bh-body",
+    style: {
+      marginTop: 6,
+      fontSize: 15
+    }
+  }, "Choose a role to preview BISTA HR with its permissions.")), /*#__PURE__*/React.createElement(Field, {
+    label: "Role",
+    style: {
+      width: "100%"
+    }
+  }, /*#__PURE__*/React.createElement(Combobox, {
+    value: sel,
+    onChange: setSel,
+    options: options,
+    placeholder: "Select a role",
+    icon: "shield-keyhole-line"
+  })), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-auth",
+    disabled: !sel,
+    onClick: () => onContinue(sel)
+  }, "Continue")));
+}
+Object.assign(window, {
+  RoleSelectScreen
+});
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/screens/RoleSelect.jsx", error: String((e && e.message) || e) }); }
 
 // ui_kits/bista-hr/src/shell/Sidebar.jsx
 try { (() => {
@@ -27614,8 +32902,28 @@ function Sidebar({
   current,
   onNavigate,
   collapsed = false,
-  onToggle
+  onToggle,
+  perms
 }) {
+  // ---- permission filtering: hide sections/groups the role can't read ----
+  const allow = (kind, name) => perms ? tabAllowed(perms, kind, name) : true;
+  const showChild = (kind, c) => c.tabs && c.tabs.length ? c.tabs.some(t => allow(kind, t)) : allow(kind, c.name);
+  const visibleMain = NAV_MAIN.map(top => {
+    if (top.children) {
+      const children = top.children.filter(c => showChild(top.kind, c));
+      return children.length ? {
+        ...top,
+        children
+      } : null;
+    }
+    if (top.tabs && top.tabs.length) return top.tabs.some(t => allow(top.kind, t)) ? top : null;
+    return allow(top.kind, top.name) ? top : null;
+  }).filter(Boolean);
+  const adminChildren = NAV_ADMIN.children.filter(c => showChild(NAV_ADMIN.kind, c));
+  const visibleAdmin = adminChildren.length ? {
+    ...NAV_ADMIN,
+    children: adminChildren
+  } : null;
   const sectionOf = name => {
     const top = NAV_MAIN.find(it => it.children && it.children.some(c => c.name === name));
     if (top) return top.name;
@@ -27693,20 +33001,17 @@ function Sidebar({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       position: "absolute",
-      left: 0,
-      right: 0,
-      top: 80,
-      height: 380,
+      inset: 0,
       backgroundImage: "url(../../assets/oil-droplet-bg.png)",
-      backgroundSize: "contain",
+      backgroundSize: "auto 100%",
       backgroundRepeat: "no-repeat",
       backgroundPosition: "center",
       mixBlendMode: "soft-light",
       opacity: .7,
       pointerEvents: "none",
       zIndex: 0,
-      WebkitMaskImage: "radial-gradient(120% 90% at 50% 40%, #000 26%, rgba(0,0,0,.35) 60%, transparent 82%)",
-      maskImage: "radial-gradient(120% 90% at 50% 40%, #000 26%, rgba(0,0,0,.35) 60%, transparent 82%)"
+      WebkitMaskImage: "radial-gradient(120% 90% at 50% 45%, #000 30%, rgba(0,0,0,.35) 62%, transparent 84%)",
+      maskImage: "radial-gradient(120% 90% at 50% 45%, #000 30%, rgba(0,0,0,.35) 62%, transparent 84%)"
     }
   }), /*#__PURE__*/React.createElement("nav", {
     style: {
@@ -27721,7 +33026,7 @@ function Sidebar({
       zIndex: 1,
       paddingTop: 8
     }
-  }, NAV_MAIN.map(it => {
+  }, visibleMain.map(it => {
     if (!it.children) return topLeaf(it);
     const expanded = !collapsed && openKey === it.name;
     return /*#__PURE__*/React.createElement("div", {
@@ -27746,16 +33051,17 @@ function Sidebar({
       paddingTop: 12,
       flexShrink: 0,
       position: "relative",
-      zIndex: 1
+      zIndex: 1,
+      display: visibleAdmin ? "block" : "none"
     }
-  }, !collapsed && /*#__PURE__*/React.createElement(SubMenu, {
-    items: NAV_ADMIN.children,
+  }, !collapsed && visibleAdmin && /*#__PURE__*/React.createElement(SubMenu, {
+    items: visibleAdmin.children,
     open: adminOpen,
     current: current,
     parent: NAV_ADMIN.name,
     onSelect: onNavigate
-  }), /*#__PURE__*/React.createElement(NavRow, {
-    it: NAV_ADMIN,
+  }), visibleAdmin && /*#__PURE__*/React.createElement(NavRow, {
+    it: visibleAdmin,
     expanded: adminOpen,
     onClick: () => onGroup(NAV_ADMIN.name),
     chevDir: "up",
@@ -27781,7 +33087,8 @@ const {
 function ProfileMenu({
   user,
   onProfile,
-  onSignOut
+  onSignOut,
+  compact = false
 }) {
   const [open, setOpen] = useTopState(false);
   const ref = useTopRef(null);
@@ -27828,7 +33135,7 @@ function ProfileMenu({
   }, /*#__PURE__*/React.createElement(Avatar, {
     name: user.name,
     size: 32
-  }), /*#__PURE__*/React.createElement("div", {
+  }), !compact && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -27850,7 +33157,7 @@ function ProfileMenu({
       lineHeight: "16px",
       color: "var(--gray-500)"
     }
-  }, user.email)), /*#__PURE__*/React.createElement(Icon, {
+  }, user.email)), !compact && /*#__PURE__*/React.createElement(Icon, {
     name: open ? "arrow-up-s-line" : "arrow-down-s-line",
     size: 18,
     color: "var(--gray-400)"
@@ -27957,12 +33264,215 @@ const menuItemStyle = {
   transition: "background .12s",
   textAlign: "left"
 };
+
+// ---- live role switcher (demo): reshapes the whole app by signed-in role ----
+function RoleSwitcher({
+  roles = [],
+  roleId,
+  onSwitchRole
+}) {
+  const [open, setOpen] = useTopState(false);
+  const ref = useTopRef(null);
+  useTopEffect(() => {
+    if (!open) return;
+    const onDoc = e => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    const onKey = e => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+  const role = roles.find(r => r.id === roleId) || roles[0];
+  if (!role) return null;
+  return /*#__PURE__*/React.createElement("div", {
+    ref: ref,
+    style: {
+      position: "relative",
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setOpen(o => !o),
+    title: "Switch role (demo)",
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 9,
+      border: "1px solid var(--border)",
+      background: open ? "var(--gray-50)" : "#fff",
+      cursor: "pointer",
+      padding: "7px 12px",
+      borderRadius: 999,
+      transition: "background .15s"
+    },
+    onMouseEnter: e => {
+      if (!open) e.currentTarget.style.background = "var(--gray-50)";
+    },
+    onMouseLeave: e => {
+      if (!open) e.currentTarget.style.background = "#fff";
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 22,
+      height: 22,
+      borderRadius: "50%",
+      background: (role.color || "#375DFB") + "1f",
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: role.icon || "user-3-line",
+    size: 13,
+    color: role.color || "#375DFB"
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      textAlign: "left",
+      whiteSpace: "nowrap"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontWeight: 700,
+      fontSize: 12.5,
+      lineHeight: "15px",
+      color: "var(--gray-900)"
+    }
+  }, role.name), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontWeight: 500,
+      fontSize: 10.5,
+      lineHeight: "13px",
+      color: "var(--gray-400)",
+      letterSpacing: ".02em"
+    }
+  }, "VIEWING AS")), /*#__PURE__*/React.createElement(Icon, {
+    name: open ? "arrow-up-s-line" : "arrow-down-s-line",
+    size: 16,
+    color: "var(--gray-400)"
+  })), open && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: "calc(100% + 10px)",
+      right: 0,
+      width: 300,
+      background: "#fff",
+      border: "1px solid var(--border)",
+      borderRadius: 14,
+      boxShadow: "0 12px 32px rgba(16,24,40,.16)",
+      overflow: "hidden",
+      zIndex: 60
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "12px 16px",
+      borderBottom: "1px solid var(--divider)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-head)",
+      fontWeight: 700,
+      fontSize: 13,
+      color: "var(--gray-900)"
+    }
+  }, "Switch role"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontSize: 11.5,
+      color: "var(--gray-500)",
+      marginTop: 2
+    }
+  }, "Preview the app as a different role & permission set.")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: 8,
+      maxHeight: 360,
+      overflowY: "auto"
+    }
+  }, roles.map(r => {
+    const on = r.id === roleId;
+    return /*#__PURE__*/React.createElement("button", {
+      key: r.id,
+      onClick: () => {
+        setOpen(false);
+        onSwitchRole && onSwitchRole(r.id);
+      },
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 11,
+        width: "100%",
+        border: 0,
+        textAlign: "left",
+        background: on ? "var(--brand-yellow-tint)" : "transparent",
+        cursor: "pointer",
+        padding: "9px 10px",
+        borderRadius: 10
+      },
+      onMouseEnter: e => {
+        if (!on) e.currentTarget.style.background = "var(--gray-50)";
+      },
+      onMouseLeave: e => {
+        if (!on) e.currentTarget.style.background = "transparent";
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 28,
+        height: 28,
+        borderRadius: "50%",
+        background: (r.color || "#375DFB") + "1f",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0
+      }
+    }, /*#__PURE__*/React.createElement(Icon, {
+      name: r.icon || "user-3-line",
+      size: 15,
+      color: r.color || "#375DFB"
+    })), /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: 1,
+        minWidth: 0
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontFamily: "var(--font-head)",
+        fontWeight: 600,
+        fontSize: 13.5,
+        color: "var(--gray-900)"
+      }
+    }, r.name), /*#__PURE__*/React.createElement("div", {
+      style: {
+        fontFamily: "var(--font-ui)",
+        fontSize: 11,
+        color: "var(--gray-500)",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
+      }
+    }, (r.permissions || []).length, " permissions")), on && /*#__PURE__*/React.createElement(Icon, {
+      name: "check-line",
+      size: 17,
+      color: "var(--brand-yellow-dark)"
+    }));
+  }))));
+}
 function TopNav({
   title,
   onToggleNav,
   user = ME,
   onProfile,
-  onSignOut
+  onSignOut,
+  compact = false
 }) {
   return /*#__PURE__*/React.createElement("header", {
     style: {
@@ -27972,8 +33482,8 @@ function TopNav({
       background: "#fff",
       display: "flex",
       alignItems: "center",
-      gap: 18,
-      padding: "16px 24px",
+      gap: compact ? 10 : 18,
+      padding: compact ? "12px 14px" : "16px 24px",
       borderBottom: "1px solid var(--border)"
     }
   }, /*#__PURE__*/React.createElement("div", {
@@ -27987,10 +33497,10 @@ function TopNav({
     src: "../../assets/logo/gcb-logo.svg",
     alt: "GCB logo",
     style: {
-      width: 42,
-      height: 42
+      width: compact ? 34 : 42,
+      height: compact ? 34 : 42
     }
-  }), /*#__PURE__*/React.createElement("div", {
+  }), !compact && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -28011,14 +33521,14 @@ function TopNav({
       lineHeight: "16px",
       color: "var(--gray-500)"
     }
-  }, "Main Office"))), /*#__PURE__*/React.createElement("div", {
+  }, "Main Office"))), !compact && /*#__PURE__*/React.createElement("div", {
     style: {
       width: 1,
       height: 40,
       background: "var(--gray-100)",
       flexShrink: 0
     }
-  }), /*#__PURE__*/React.createElement("button", {
+  }), onToggleNav && /*#__PURE__*/React.createElement("button", {
     onClick: onToggleNav,
     title: "Toggle sidebar",
     style: {
@@ -28037,15 +33547,20 @@ function TopNav({
     onMouseEnter: e => e.currentTarget.style.background = "var(--brand-yellow-tint)",
     onMouseLeave: e => e.currentTarget.style.background = "transparent"
   }, /*#__PURE__*/React.createElement(Icon, {
-    name: "layout-left-line",
+    name: compact ? "menu-line" : "layout-left-line",
     size: 20,
     color: "var(--gray-700)"
   })), /*#__PURE__*/React.createElement("span", {
     className: "bh-h3",
     style: {
-      flex: 1
+      flex: 1,
+      minWidth: 0,
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+      fontSize: compact ? 17 : undefined
     }
-  }, title), /*#__PURE__*/React.createElement("button", {
+  }, title), !compact && /*#__PURE__*/React.createElement("button", {
     className: "btn btn-icon btn-ghost"
   }, /*#__PURE__*/React.createElement(Icon, {
     name: "notification-3-line",
@@ -28054,12 +33569,14 @@ function TopNav({
   })), /*#__PURE__*/React.createElement(ProfileMenu, {
     user: user,
     onProfile: onProfile,
-    onSignOut: onSignOut
+    onSignOut: onSignOut,
+    compact: compact
   }));
 }
 Object.assign(window, {
   TopNav,
-  ProfileMenu
+  ProfileMenu,
+  RoleSwitcher
 });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/bista-hr/src/shell/TopNav.jsx", error: String((e && e.message) || e) }); }
 
@@ -28079,7 +33596,7 @@ const NAV_MAIN = [{
   name: "Dashboard",
   icon: "dashboard-line",
   kind: "dashboard",
-  tabs: ["Overview", "My Info", "Leave Requests", "Target Requests", "Appraisals", "Requests"]
+  tabs: ["Overview", "My Info", "Leave Requests", "Target Requests", "Appraisals", "Careers", "Requests"]
 }, {
   name: "Reports & Analytics",
   icon: "pie-chart-2-line",
@@ -28100,7 +33617,7 @@ const NAV_MAIN = [{
     tabs: ["Disciplinary Cycle", "Accommodation", "Welfare", "Protocols"]
   }, {
     name: "Recruitment",
-    tabs: ["Hiring Requests", "Job Posts", "Assessments"]
+    tabs: ["Hiring Requests", "Job Requests", "Job Posts", "Job Reopenings", "Assessments", "Talent Pool"]
   }, {
     name: "Talent Acquisition"
   }, {
@@ -28113,7 +33630,7 @@ const NAV_MAIN = [{
   name: "Performance",
   icon: "award-line",
   kind: "list",
-  tabs: ["Department Perspectives", "Goal Setting", "Performance Appraisals", "Portfolio of Evidence", "360 Feedback", "Moderation", "IDP", "PIP"]
+  tabs: ["Department Perspectives", "Goal Setting", "Objectives", "Performance Appraisals", "Portfolio of Evidence", "360 Feedback", "Moderation", "IDP", "PIP"]
 }];
 const NAV_ADMIN = {
   name: "System Administration",
@@ -28121,7 +33638,7 @@ const NAV_ADMIN = {
   kind: "list",
   children: [{
     name: "Configuration",
-    tabs: ["Corporate Perspectives", "Competencies", "Periods", "Employee Goals"]
+    tabs: ["Corporate Perspectives", "Competencies", "KPI / Measures", "Periods", "Performance Ratings"]
   }, {
     name: "User Management",
     tabs: ["Roles", "Users"]
@@ -29431,7 +34948,7 @@ function TransfersList({
   setSel
 }) {
   const [menu, setMenu] = useTr(null);
-  const byTab = rows.filter(r => tab === "All" || r.status === tab);
+  const byTab = rows.filter(r => tab.length === 0 || tab.includes(r.status));
   const shown = byTab.filter(r => q === "" || r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newLocation.toLowerCase().includes(q.toLowerCase()));
   const pg = usePaged(shown, 10);
   const pendingShown = shown.filter(r => r.status === "Pending");
@@ -29464,11 +34981,7 @@ function TransfersList({
       gap: 12,
       flexWrap: "wrap"
     }
-  }, /*#__PURE__*/React.createElement(Segmented, {
-    items: ["All", "Approved", "Pending"],
-    active: tab,
-    onChange: setTab
-  }), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("div", {
     className: "input-wrap",
     style: {
       width: 260,
@@ -29484,7 +34997,10 @@ function TransfersList({
     placeholder: "Search transfers\u2026",
     value: q,
     onChange: e => setQ(e.target.value)
-  })))), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement(StatusFilter, {
+    value: tab,
+    onChange: setTab
+  }))), /*#__PURE__*/React.createElement("div", {
     style: {
       border: "1px solid var(--border)",
       borderRadius: "var(--radius-lg)",
@@ -30044,6 +35560,7 @@ function TransferForm({
     reason: ""
   });
   const [docs, setDocs] = useTr([]);
+  const [approvers, setApprovers] = useTr([]);
   const [mails, setMails] = useTr([""]);
   const set = (k, v) => setForm(s => ({
     ...s,
@@ -30058,6 +35575,8 @@ function TransferForm({
   }));
   const primary = employees[0] ? DIR[employees[0]] : null;
   const staffIds = employees.map(n => (DIR[n] || {}).staffId).filter(Boolean).join(", ");
+  // approvers are chosen from staff, excluding the employees being transferred (no self-approval)
+  const approverOptions = empOptions.filter(n => !employees.includes(n));
   const autoItems = primary ? [{
     label: "Staff ID(s)",
     value: staffIds
@@ -30077,7 +35596,7 @@ function TransferForm({
     label: "Zone",
     value: primary.zone
   }] : [];
-  const valid = employees.length > 0 && form.classification && form.newLocation && form.effectiveDate && form.reason.trim() && docs.length > 0;
+  const valid = employees.length > 0 && form.classification && form.newLocation && form.effectiveDate && form.reason.trim() && docs.length > 0 && approvers.length > 0;
   const sectionTitle = (t, sub) => /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 4
@@ -30230,6 +35749,19 @@ function TransferForm({
       height: 1,
       background: "var(--border)"
     }
+  }), sectionTitle("Approval Routing", "Select the approver(s) who must sign off on this transfer."), /*#__PURE__*/React.createElement(Field, {
+    label: "Approvers"
+  }, /*#__PURE__*/React.createElement(MultiSelectCombobox, {
+    value: approvers,
+    onChange: setApprovers,
+    options: approverOptions,
+    placeholder: "Select one or more approvers",
+    avatar: true
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 1,
+      background: "var(--border)"
+    }
   }), sectionTitle("Stakeholder Notification"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -30293,6 +35825,7 @@ function TransferForm({
       primary,
       staffIds,
       ...form,
+      approvers,
       documents: docs,
       notifyMails: mails.filter(Boolean)
     })
@@ -30484,6 +36017,44 @@ function TransferDetails({
       padding: 0
     }
   }, /*#__PURE__*/React.createElement(DetailCard, {
+    icon: "user-follow-line",
+    title: "Approvers"
+  }, t.approvers && t.approvers.length > 0 ? /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 10
+    }
+  }, t.approvers.map(n => /*#__PURE__*/React.createElement("span", {
+    key: n,
+    style: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 8,
+      border: "1px solid var(--border)",
+      borderRadius: 999,
+      padding: "5px 12px 5px 5px"
+    }
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    name: n,
+    size: 26
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontFamily: "var(--font-ui)",
+      fontWeight: 500,
+      fontSize: 13.5,
+      color: "var(--gray-900)"
+    }
+  }, n)))) : /*#__PURE__*/React.createElement(EmptyState, {
+    compact: true,
+    title: "No approvers",
+    subtitle: "No approvers were assigned to this transfer."
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      padding: 0
+    }
+  }, /*#__PURE__*/React.createElement(DetailCard, {
     icon: "shield-check-line",
     title: "Approval Information"
   }, /*#__PURE__*/React.createElement(DetailPanel, {
@@ -30512,7 +36083,7 @@ function TransfersScreen({
   const [approvalSel, setApprovalSel] = useTr([]); // selected pending rows in Approvals queue
   const [lastCount, setLastCount] = useTr(0);
   const [q, setQ] = useTr("");
-  const [tab, setTab] = useTr("All");
+  const [tab, setTab] = useTr([]);
   const [view, setView] = useTr({
     name: "list"
   }); // list | add | details
@@ -30527,15 +36098,6 @@ function TransfersScreen({
         })
       }, {
         label: "Create Transfer"
-      }]
-    });else if (view.name === "assign") onSubPage({
-      trail: [{
-        label: "Transfers",
-        onClick: () => setView({
-          name: "list"
-        })
-      }, {
-        label: "Assign Transfer"
       }]
     });else if (view.name === "details") onSubPage({
       trail: [{
@@ -30585,6 +36147,7 @@ function TransfersScreen({
         status: "Pending",
         reason: f.reason,
         documents: f.documents,
+        approvers: f.approvers || [],
         approvedBy: "N/A",
         approverEmail: "N/A",
         approvedAt: "N/A",
@@ -30725,13 +36288,6 @@ function TransfersScreen({
       name: "list"
     }),
     onSubmit: submitTransfer
-  });else if (view.name === "assign") body = /*#__PURE__*/React.createElement(BulkTransferForm, {
-    names: view.names,
-    lookups: lookups,
-    onCancel: () => setView({
-      name: "list"
-    }),
-    onSubmit: submitBulk
   });else if (view.name === "details" && current) body = /*#__PURE__*/React.createElement(TransferDetails, {
     transfer: current,
     onApprove: r => setConfirm({
@@ -30756,17 +36312,11 @@ function TransfersScreen({
   }, /*#__PURE__*/React.createElement(PageHeader, {
     title: "Transfers",
     subtitle: "Transfer or bulk-transfer staff, and track approval status.",
-    actions: /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Button, {
+    actions: /*#__PURE__*/React.createElement(Button, {
       variant: "stroke",
       icon: "download-2-line",
       onClick: () => onToast("Import Transfers — coming soon")
-    }, "Import Transfers"), /*#__PURE__*/React.createElement(Button, {
-      variant: "primary",
-      icon: "add-line",
-      onClick: () => setView({
-        name: "add"
-      })
-    }, "Add Transfer"))
+    }, "Import Transfers")
   }), segment === "Requests" ? /*#__PURE__*/React.createElement(TransferRoster, {
     q: rosterQ,
     setQ: setRosterQ,
@@ -30881,10 +36431,10 @@ function TransfersScreen({
     variant: "primary",
     icon: "exchange-line",
     onClick: () => setView({
-      name: "assign",
-      names: selected
+      name: "add",
+      initialEmployees: selected
     })
-  }, "Assign Transfer")), /*#__PURE__*/React.createElement(BulkBar, {
+  }, "Create Transfer")), /*#__PURE__*/React.createElement(BulkBar, {
     count: approvalSel.length,
     noun: "transfers selected",
     visible: approvalBarVisible,
@@ -31347,152 +36897,17 @@ Object.assign(window, {
 
 // ui_kits/bista-hr/src/workflow/WorkflowPanel.jsx
 try { (() => {
-// BISTA HR · workflow/WorkflowPanel — drop-in closure manager for detail views.
-// Renders three cards (matching the DetailCard pattern): Workflow Status (phase
-// stepper), Closure Controls (mandatory-activity checklist, interactive once the
-// record is Approved), and Audit Trail. Gates "Mark as Completed" on every
-// applicable control being confirmed. Persists via onChange({ ...partial }) which
-// the host screen merges into the record; logs every action to the audit trail.
-const {
-  useState: useWfp
-} = React;
-const WF_ACTOR = "Peter Bosrotsi (P&C)";
+// BISTA HR · workflow/WorkflowPanel — audit trail for detail views.
+// Renders a single Audit Trail card (matching the DetailCard pattern): a
+// date/time · actor · action · decision log. The trail is the single source of
+// truth for what happened and when — each stage (approval, decline, etc.) is
+// stamped as it occurs, so a separate Workflow Status stepper and Closure
+// Controls checklist are no longer needed.
 function WorkflowPanel({
-  workflowType,
-  record,
-  onChange,
-  onToast,
-  readOnly
+  record
 }) {
-  const [confirm, setConfirm] = useWfp(false);
-  const applicable = (window.WF_CONTROLS[workflowType] || []).slice();
-  const status = window.wfNormalize(record.wfStatus || record.status);
-  const phase = window.wfPhase(status);
-  const closure = record.closure || {};
   const audit = record.audit || [];
-  const completed = status === "Completed";
-  const declined = status === "Declined";
-  // closure controls become actionable once the record clears approval
-  const inClosure = !readOnly && !declined && (status === "Approved" || phase === "Processing" || phase === "Closure") && !completed;
-  const allConfirmed = applicable.every(id => (closure[id] || {}).done);
-  const toggleControl = id => {
-    const cur = closure[id] || {};
-    const next = cur.done ? {
-      done: false
-    } : {
-      done: true,
-      actor: WF_ACTOR,
-      at: window.wfNow()
-    };
-    const nextClosure = {
-      ...closure,
-      [id]: next
-    };
-    const nextAudit = next.done ? [...audit, {
-      action: `${window.CLOSURE_CONTROLS[id].label} confirmed`,
-      decision: "Confirmed",
-      actor: WF_ACTOR,
-      at: window.wfNow()
-    }] : audit;
-    // advancing into the processing phase the moment the first control is confirmed
-    const bump = status === "Approved" && next.done ? {
-      wfStatus: "Submitted in HR System",
-      status: "Submitted in HR System"
-    } : {};
-    onChange({
-      closure: nextClosure,
-      audit: nextAudit,
-      ...bump
-    });
-  };
-  const doComplete = () => {
-    const entry = {
-      action: "Workflow closed",
-      decision: "Completed",
-      actor: WF_ACTOR,
-      at: window.wfNow(),
-      note: "All mandatory closure controls confirmed."
-    };
-    onChange({
-      wfStatus: "Completed",
-      status: "Completed",
-      audit: [...audit, entry]
-    });
-    setConfirm(false);
-    onToast && onToast(`${workflowType === "JobTitle" ? "Job Title" : workflowType} Workflow Completed`, {
-      tone: "success"
-    });
-  };
-  return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    className: "card",
-    style: {
-      padding: 0
-    }
-  }, /*#__PURE__*/React.createElement(DetailCard, {
-    icon: "route-line",
-    title: "Workflow Status"
-  }, /*#__PURE__*/React.createElement(WorkflowProgress, {
-    status: status
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "card",
-    style: {
-      padding: 0
-    }
-  }, /*#__PURE__*/React.createElement(DetailCard, {
-    icon: "shield-check-line",
-    title: "Closure Controls",
-    action: /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontFamily: "var(--font-ui)",
-        fontSize: 12.5,
-        color: allConfirmed ? "#16A34A" : "var(--gray-500)"
-      }
-    }, applicable.filter(id => (closure[id] || {}).done).length, " / ", applicable.length, " confirmed")
-  }, !inClosure && !completed && /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
-      marginBottom: 12,
-      fontFamily: "var(--font-ui)",
-      fontSize: 12.5,
-      color: "var(--gray-500)"
-    }
-  }, /*#__PURE__*/React.createElement(Icon, {
-    name: "lock-2-line",
-    size: 15,
-    color: "var(--gray-400)"
-  }), declined ? "Workflow was declined — closure controls do not apply." : "Closure controls unlock once the request is approved."), /*#__PURE__*/React.createElement(ClosureControls, {
-    applicable: applicable,
-    state: closure,
-    onToggle: toggleControl,
-    readOnly: !inClosure
-  }), inClosure && /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "flex-end",
-      marginTop: 16
-    }
-  }, /*#__PURE__*/React.createElement(Button, {
-    variant: "primary",
-    icon: "checkbox-circle-line",
-    disabled: !allConfirmed,
-    onClick: () => setConfirm(true)
-  }, "Mark as Completed")), completed && /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 8,
-      marginTop: 14,
-      fontFamily: "var(--font-ui)",
-      fontSize: 13,
-      color: "#16A34A"
-    }
-  }, /*#__PURE__*/React.createElement(Icon, {
-    name: "checkbox-circle-fill",
-    size: 18,
-    color: "#16A34A"
-  }), "Workflow completed \u2014 all mandatory closure controls confirmed."))), /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/React.createElement("div", {
     className: "card",
     style: {
       padding: 0
@@ -31502,15 +36917,7 @@ function WorkflowPanel({
     title: "Audit Trail"
   }, /*#__PURE__*/React.createElement(AuditTrail, {
     entries: audit
-  }))), confirm && /*#__PURE__*/React.createElement(ConfirmModal, {
-    title: "Complete Workflow",
-    message: "Confirm that all mandatory closure controls are satisfied and mark this workflow as Completed?",
-    confirmLabel: "Yes, Complete",
-    confirmIcon: "checkbox-circle-line",
-    cancelLabel: "No",
-    onConfirm: doComplete,
-    onClose: () => setConfirm(false)
-  }));
+  })));
 }
 Object.assign(window, {
   WorkflowPanel

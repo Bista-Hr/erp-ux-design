@@ -1,0 +1,26 @@
+# ─────────────────────────────────────────────────────────────
+# BISTA HR — keep the repo (and every push) lean.
+# Only the files the published site actually serves are tracked:
+#   index.html, colors_and_type.css, bista-components.css,
+#   assets/, preview/, ui_kits/, README.md
+# Everything below is NOT needed by GitHub Pages — excluding it
+# means git never uploads it and your pushes stay tiny.
+# ─────────────────────────────────────────────────────────────
+
+# Auto-generated design-system build artifacts (regenerated, ~1 MB)
+_ds_bundle.js
+_ds_manifest.json
+_adherence.oxlintrc.json
+.thumbnail
+
+# Scratch — screenshots & working captures used only while iterating
+scraps/
+
+# Raw source material — pasted images, docs, exports (not referenced by the site).
+# Delete this line if you want to keep these in the repo.
+uploads/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,8 @@
+/* ============================================================================
+   BISTA HR — global stylesheet entry.
+   Consumers (and the design-system compiler) can link this single file instead
+   of the two individually. It just pulls in the token/type foundations and the
+   component styles, in order.
+   ============================================================================ */
+@import "./colors_and_type.css";
+@import "./bista-components.css";

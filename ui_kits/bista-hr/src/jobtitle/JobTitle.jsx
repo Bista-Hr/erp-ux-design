@@ -65,11 +65,16 @@ const JOBTITLE_SEED = [
 function AssignJobTitleModal({ names, lookups, onClose, onSubmit }) {
   const LK = lookups || window.LOOKUPS;
   const DIR = window.EMPLOYEE_DIRECTORY;
+  const empOptions = window.EMPLOYEE_NAMES;
+  const [people, setPeople] = useJt(names);
   const [title, setTitle] = useJt("");
   const [date, setDate] = useJt("");
   const [reason, setReason] = useJt("");
-  const valid = title && date;
-  const multi = names.length > 1;
+  const [approvers, setApprovers] = useJt([]);
+  // approvers are chosen from staff, excluding the employees being assigned (no self-approval)
+  const approverOptions = empOptions.filter(n => !people.includes(n));
+  const valid = title && date && people.length > 0 && approvers.length > 0;
+  const multi = people.length > 1;
   return (
     <Modal onClose={onClose} width={620}>
       <div style={{ padding: "24px 24px 0" }}>
@@ -78,39 +83,26 @@ function AssignJobTitleModal({ names, lookups, onClose, onSubmit }) {
           <button className="btn btn-icon btn-ghost" onClick={onClose} style={{ width: 32, height: 32, padding: 0 }}><Icon name="close-line" size={20} color="var(--gray-500)" /></button>
         </div>
         <div className="bh-body" style={{ marginTop: 4 }}>
-          {names.length} employee{multi ? "s" : ""} selected. Choose one job title to assign to {multi ? "all of them" : "them"}.
+          {people.length} employee{multi ? "s" : ""} selected. Choose one job title to assign to {multi ? "all of them" : "them"}.
         </div>
       </div>
 
       <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 18 }}>
-        <div>
-          <div style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)", marginBottom: 8 }}>Selected employees</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 220, overflowY: "auto" }}>
-            {names.map(n => {
-              const e = DIR[n] || {};
-              return (
-                <div key={n} style={{ display: "flex", alignItems: "center", gap: 12, border: "1px solid var(--border)", borderRadius: 10, padding: "10px 12px" }}>
-                  <Avatar name={n} size={36} />
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ fontFamily: "var(--font-head)", fontWeight: 600, fontSize: 14, color: "var(--gray-900)" }}>{n}</div>
-                    <div style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>{e.staffId} · {e.title}{e.dept ? ` · ${e.dept}` : ""}</div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <Field label="Selected employees">
+          <MultiSelectCombobox value={people} onChange={setPeople} options={empOptions} placeholder="Select one or more employees" avatar />
+        </Field>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <Field label="Job Title"><Combobox value={title} onChange={setTitle} options={LK.jobTitles} placeholder="Select job title" /></Field>
           <Field label="Effective Date"><Input type="date" value={date} onChange={e => setDate(e.target.value)} /></Field>
         </div>
         <Field label="Reason / Note" optional><Textarea rows={3} value={reason} onChange={e => setReason(e.target.value)} placeholder="Reason or note for this assignment…" /></Field>
+        <Field label="Approvers"><MultiSelectCombobox value={approvers} onChange={setApprovers} options={approverOptions} placeholder="Select one or more approvers" avatar /></Field>
       </div>
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, padding: "0 24px 24px" }}>
         <Button variant="stroke" onClick={onClose}>Cancel</Button>
-        <Button variant="primary" icon="user-add-line" disabled={!valid} onClick={() => valid && onSubmit({ names, title, date, reason })}>Assign job title</Button>
+        <Button variant="primary" icon="user-add-line" disabled={!valid} onClick={() => valid && onSubmit({ names: people, title, date, reason, approvers })}>Assign job title</Button>
       </div>
     </Modal>
   );
@@ -193,7 +185,7 @@ function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, 
 /* ---------- requests list (approval queue) ---------- */
 function JobTitleList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment, setSegment, sel, setSel }) {
   const [menu, setMenu] = useJt(null);
-  const byTab = rows.filter(r => tab === "All" || r.status === tab);
+  const byTab = rows.filter(r => tab.length === 0 || tab.includes(r.status));
   const shown = byTab.filter(r => q === "" || r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newTitle.toLowerCase().includes(q.toLowerCase()));
   const pg = usePaged(shown, 10);
   const pendingShown = shown.filter(r => r.status === "Pending");
@@ -205,11 +197,11 @@ function JobTitleList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment, 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 18, flexWrap: "wrap" }}>
         <Segmented items={["Assign", "Requests"]} active={segment} onChange={setSegment} />
         <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <Segmented items={["All", "Approved", "Pending"]} active={tab} onChange={setTab} />
           <div className="input-wrap" style={{ width: 260, padding: "9px 12px" }}>
             <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
             <input placeholder="Search job title changes…" value={q} onChange={e => setQ(e.target.value)} />
           </div>
+          <StatusFilter value={tab} onChange={setTab} />
         </div>
       </div>
 
@@ -337,6 +329,21 @@ function JobTitleDetails({ record, onApprove, onReject, onUpdate, onToast }) {
       </div>
 
       <div className="card" style={{ padding: 0 }}>
+        <DetailCard icon="user-follow-line" title="Approvers">
+          {r.approvers && r.approvers.length > 0
+            ? <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                {r.approvers.map(n => (
+                  <span key={n} style={{ display: "inline-flex", alignItems: "center", gap: 8, border: "1px solid var(--border)", borderRadius: 999, padding: "5px 12px 5px 5px" }}>
+                    <Avatar name={n} size={26} />
+                    <span style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 13.5, color: "var(--gray-900)" }}>{n}</span>
+                  </span>
+                ))}
+              </div>
+            : <EmptyState compact title="No approvers" subtitle="No approvers were assigned to this request." />}
+        </DetailCard>
+      </div>
+
+      <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="shield-check-line" title="Approval Information"><DetailPanel items={approvalInfo} tint="gray" cols={3} /></DetailCard>
       </div>
 
@@ -356,7 +363,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
   const [assign, setAssign] = useJt(null);          // names[] being assigned (modal)
   const [lastCount, setLastCount] = useJt(0);        // held count so the bar shows it while sliding out
   const [q, setQ] = useJt("");
-  const [tab, setTab] = useJt("All");
+  const [tab, setTab] = useJt([]);
   const [view, setView] = useJt({ name: "list" });   // list | details
   const [confirm, setConfirm] = useJt(null);
 
@@ -382,7 +389,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
           previousTitle: e.title || "—", newTitle: f.title, grade: e.grade || "—",
           department: e.dept || "—", zone: e.zone || "—", branch: e.branch || "—",
           effectiveDate: fmtJtDate(f.date), dateSubmitted: todayJt(), status: "Pending",
-          reason: f.reason || "", documents: [],
+          reason: f.reason || "", documents: [], approvers: f.approvers || [],
           approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" };
       });
       setRecords(rs => [...recs, ...rs]);

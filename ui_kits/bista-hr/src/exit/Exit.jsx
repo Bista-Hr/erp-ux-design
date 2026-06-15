@@ -165,8 +165,11 @@ function ExitForm({ lookups, onCancel, onSubmit }) {
   const [employee, setEmployee] = useEx("");
   const [form, setForm] = useEx({ exitType: "", exitDate: "", reason: "", note: "" });
   const [docs, setDocs] = useEx([]);
+  const [approvers, setApprovers] = useEx([]);
   const [mails, setMails] = useEx([""]);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
+  // approvers are chosen from staff, excluding the exiting employee (no self-approval)
+  const approverOptions = empOptions.filter(n => n !== employee);
 
   const meta = form.exitType ? exitMeta(form.exitType) : null;
   const primary = employee ? DIR[employee] : null;
@@ -179,7 +182,7 @@ function ExitForm({ lookups, onCancel, onSubmit }) {
     { label: "Zone", value: primary.zone },
   ] : [];
 
-  const valid = employee && form.exitType && form.exitDate && form.reason;
+  const valid = employee && form.exitType && form.exitDate && form.reason && approvers.length > 0;
 
   const sectionTitle = (t, sub) => (
     <div style={{ marginTop: 4 }}>
@@ -235,6 +238,12 @@ function ExitForm({ lookups, onCancel, onSubmit }) {
         <SupportingDocsUploader files={docs} onChange={setDocs} />
 
         <div style={{ height: 1, background: "var(--border)" }} />
+        {sectionTitle("Approval Routing", "Select the approver(s) who must sign off on this exit.")}
+        <Field label="Approvers">
+          <MultiSelectCombobox value={approvers} onChange={setApprovers} options={approverOptions} placeholder="Select one or more approvers" avatar />
+        </Field>
+
+        <div style={{ height: 1, background: "var(--border)" }} />
         {sectionTitle("Stakeholder Notification", "P&C, Line Manager, BOBS, S&IT, Payroll, Finance, Admin, Security and Medicals are notified for closure actions.")}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {mails.map((m, i) => (
@@ -251,7 +260,7 @@ function ExitForm({ lookups, onCancel, onSubmit }) {
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employee, primary, ...form, documents: docs, notifyMails: mails.filter(Boolean) })}>Initiate Exit</Button>
+        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employee, primary, ...form, approvers, documents: docs, notifyMails: mails.filter(Boolean) })}>Initiate Exit</Button>
       </div>
     </div>
   );
@@ -289,6 +298,21 @@ function ExitDetails({ exit, onToggleClearance, onToggleAll, onMarkInterview, on
 
       <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="logout-box-r-line" title="Exit Information"><DetailPanel items={info} tint="gray" cols={4} /></DetailCard>
+      </div>
+
+      <div className="card" style={{ padding: 0 }}>
+        <DetailCard icon="user-follow-line" title="Approvers">
+          {exit.approvers && exit.approvers.length > 0
+            ? <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                {exit.approvers.map(n => (
+                  <span key={n} style={{ display: "inline-flex", alignItems: "center", gap: 8, border: "1px solid var(--border)", borderRadius: 999, padding: "5px 12px 5px 5px" }}>
+                    <Avatar name={n} size={26} />
+                    <span style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 13.5, color: "var(--gray-900)" }}>{n}</span>
+                  </span>
+                ))}
+              </div>
+            : <EmptyState compact title="No approvers" subtitle="No approvers were assigned to this exit." />}
+        </DetailCard>
       </div>
 
       <div className="card" style={{ padding: 0 }}>
@@ -443,7 +467,7 @@ function ExitScreen({ onToast, onSubPage, lookups }) {
         dateSubmitted: todayEx(), reason: f.reason, note: f.note,
         title: p.title || "—", dept: p.dept || "—", branch: p.branch || "—", zone: p.zone || "—", grade: p.grade || "—",
         source: meta.value === "Resignation" ? "ESS (Employee)" : meta.value === "Retirement" ? "System Auto-Trigger" : "P&C/P&CBP",
-        status: "Pending", interviewDone: false, clearance: freshClearance([]), documents: f.documents,
+        status: "Pending", interviewDone: false, clearance: freshClearance([]), documents: f.documents, approvers: f.approvers || [],
       }, ...es]);
       onToast("Exit Initiated", { tone: "success" });
       setView({ name: "list" });

@@ -24,6 +24,7 @@
               "ui_kits/bista-hr/src/admin/**",
               "ui_kits/bista-hr/src/appraisal/**",
               "ui_kits/bista-hr/src/approvals/**",
+              "ui_kits/bista-hr/src/careers/**",
               "ui_kits/bista-hr/src/crud/**",
               "ui_kits/bista-hr/src/dashboard/**",
               "ui_kits/bista-hr/src/data/**",
@@ -159,10 +160,6 @@
       "--white"
     ],
     "tokenKinds": {
-      "--page-pad": "spacing",
-      "--card-pad": "spacing",
-      "--bh-cell-py": "spacing",
-      "--bh-cell-px": "spacing",
       "--brand-yellow": "color",
       "--brand-yellow-dark": "color",
       "--brand-yellow-tint": "color",
@@ -234,7 +231,11 @@
       "--space-8": "spacing",
       "--space-10": "spacing",
       "--space-12": "spacing",
-      "--space-16": "spacing"
+      "--space-16": "spacing",
+      "--page-pad": "spacing",
+      "--card-pad": "spacing",
+      "--bh-cell-py": "spacing",
+      "--bh-cell-px": "spacing"
     },
     "fontFamilies": [
       "Mona Sans"
