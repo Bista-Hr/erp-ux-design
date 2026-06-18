@@ -61,6 +61,14 @@ const RESOURCES = [
   { key: "Transfers",         label: "Transfers",                group: "People & Culture", actions: ACTIONS_CRUD },
   { key: "Exits",             label: "Employee Exit",            group: "People & Culture", actions: ACTIONS_CRUD },
 
+  // Learning & Development
+  { key: "LDNeeds",           label: "Training Needs",           group: "Learning & Development", actions: ACTIONS_CRUD },
+  { key: "LDPrograms",        label: "Program Catalog",          group: "Learning & Development", actions: ["Read", "Create", "Update", "Delete", "Schedule"] },
+  { key: "LDEnrollments",     label: "Enrollment & Notifications", group: "Learning & Development", actions: ["Read", "Create", "Update", "Delete", "Notify"] },
+  { key: "LDEvaluations",     label: "Evaluation",               group: "Learning & Development", actions: ["Read", "Create", "Update"] },
+  { key: "LDCourses",         label: "Courses",                  group: "Learning & Development", actions: ["Read", "Create", "Update", "Delete", "Assign"] },
+  { key: "LDReports",         label: "L&D Analytics",            group: "Learning & Development", actions: ["Read"] },
+
   // Performance / appraisals
   { key: "TargetRequests",    label: "Goal Setting / Targets",   group: "Performance",    actions: ["Read", "Create", "Update", "Delete", "Approve"] },
   { key: "PerformanceAppraisals",label: "Appraisals / IDP / PIP",group: "Performance",    actions: ["Read", "Create", "Update", "Delete", "Approve"] },
@@ -115,6 +123,9 @@ const PAGE_RES = {
   // People & Culture
   "Promotions": "Promotions", "Transfers": "Transfers", "Job Title": "Designations", "Employee Exit": "Exits",
   "Talent Acquisition": "JobApplications", "Onboarding": "Employees",
+  // Learning & Development
+  "Needs Assessment": "LDNeeds", "Program Catalog": "LDPrograms", "Enrollment": "LDEnrollments",
+  "Evaluation": "LDEvaluations", "Courses": "LDCourses", "Analytics": "LDReports",
   // Performance
   "Department Perspectives": "Perspectives", "Goal Setting": "TargetRequests",
   "Performance Appraisals": "PerformanceAppraisals", "Portfolio of Evidence": "PortfolioOfEvidence",
@@ -146,6 +157,7 @@ const DEFAULT_ROLES = [
       permsAll("DisciplinaryCases"), permsAll("Accommodations"), permsAll("Circulars"), permsAll("Protocol"),
       permsAll("Promotions"), permsAll("Transfers"), permsAll("Exits"),
       permsAll("HiringRequests"), permsAll("JobRequests"), permsAll("JobPostings"), permsRead("JobApplications"),
+      permsAll("LDNeeds"), permsAll("LDPrograms"), permsAll("LDEnrollments"), permsAll("LDEvaluations"), permsAll("LDCourses"), permsRead("LDReports"),
       permsRead("PerformanceReports"), permsRead("DashboardReport"),
     ),
   },
@@ -159,6 +171,7 @@ const DEFAULT_ROLES = [
       permsAll("PortfolioOfEvidence"), permsAll("AppraisalAssignments"), permsAll("Objectives"),
       permsRead("Perspectives"), permsRead("Competencies"), permsRead("Periods"),
       permsRead("LeaveRequests"), permsReadApprove("LeaveRequests"),
+      permsRead("LDNeeds"), permsRead("LDPrograms"), permsRead("LDEvaluations"), permsRead("LDReports"),
       permsRead("PerformanceReports"), permsRead("DashboardReport"),
     ),
   },
@@ -184,6 +197,17 @@ const DEFAULT_ROLES = [
       permsReadApprove("ESS_Change_Requests"),
       permsReadApprove("TargetRequests"),
       permsRead("PerformanceAppraisals"), permsRead("Objectives"), permsRead("Moderations"),
+    ),
+  },
+  {
+    id: "ld-admin", name: "L&D Administrator", icon: "graduation-cap-line", color: "#6941C6",
+    description: "Owns the Learning & Development module — needs assessment, program catalog, enrollment, evaluation, courses and analytics.",
+    permissions: flat(
+      permsRead("Dashboard"),
+      permsRead("Employees"), permsRead("Departments"), permsRead("JobGrades"), permsRead("OrganizationalUnits"),
+      permsAll("LDNeeds"), permsAll("LDPrograms"), permsAll("LDEnrollments"), permsAll("LDEvaluations"), permsAll("LDCourses"), permsRead("LDReports"),
+      permsRead("PerformanceAppraisals"), permsRead("Objectives"),
+      permsRead("PerformanceReports"), permsRead("DashboardReport"),
     ),
   },
   {

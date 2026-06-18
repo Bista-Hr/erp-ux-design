@@ -22,7 +22,8 @@ function DisciplinaryList({ cases, q, setQ, onCreate, onOpen, departments }) {
   const reset = () => { const e = { department: "", reportStage: "", caseNumber: "" }; setF(e); setApplied(e); };
 
   return (
-    <div className="card" style={{ overflow: "visible", padding: 0 }}>
+    <div className="card" style={{ overflow: "visible", padding: 20 }}>
+      <div className="bh-tablebox">
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "14px 20px", borderBottom: "1px solid var(--border)", flexWrap: "wrap" }}>
         <div className="seg" style={{ background: "#F6F8FA" }}>
           <button className={tab === "reports" ? "active" : ""} onClick={() => { setTab("reports"); setMenu(null); }}>Reports</button>
@@ -80,6 +81,7 @@ function DisciplinaryList({ cases, q, setQ, onCreate, onOpen, departments }) {
             </tbody>
           </table>}
       {base.length > 0 && shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
+      </div>
     </div>
   );
 }

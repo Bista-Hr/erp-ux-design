@@ -166,16 +166,12 @@ function RolesScreen({ onToast, canCreate = true, canEdit = true, canDelete = tr
   };
 
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 20 }}>
-        <div>
-          <div className="bh-h2" style={{ fontSize: 24 }}>Roles</div>
-          <div className="bh-body" style={{ marginTop: 4 }}>Define roles and the permissions each one grants. Changes apply across the app instantly.</div>
-        </div>
-        {canCreate && <Button variant="primary" icon="add-line" onClick={() => setEditor({ mode: "create", role: null })}>Create Role</Button>}
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title="Roles" subtitle="Define roles and the permissions each one grants. Changes apply across the app instantly."
+        actions={canCreate && <Button variant="primary" icon="add-line" onClick={() => setEditor({ mode: "create", role: null })}>Create Role</Button>} />
 
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+      <div className="card" style={{ padding: 20 }}>
+        <div className="bh-tablebox">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 20px" }}>
           <div className="input-wrap" style={{ width: 280, padding: "8px 12px" }}>
             <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
@@ -207,6 +203,7 @@ function RolesScreen({ onToast, canCreate = true, canEdit = true, canDelete = tr
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {editor && <RoleEditor mode={editor.mode} role={editor.role} onClose={() => setEditor(null)} onSave={saveRole} />}
@@ -265,15 +262,11 @@ function UsersScreen({ onToast, roles = [], canEdit = true }) {
   };
 
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 20 }}>
-        <div>
-          <div className="bh-h2" style={{ fontSize: 24 }}>Users</div>
-          <div className="bh-body" style={{ marginTop: 4 }}>People with access to BISTA HR and the role assigned to each.</div>
-        </div>
-        {canEdit && <Button variant="primary" icon="user-add-line" onClick={() => onToast && onToast("Invite sent", { tone: "success" })}>Invite User</Button>}
-      </div>
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title="Users" subtitle="People with access to BISTA HR and the role assigned to each."
+        actions={canEdit && <Button variant="primary" icon="user-add-line" onClick={() => onToast && onToast("Invite sent", { tone: "success" })}>Invite User</Button>} />
+      <div className="card" style={{ padding: 20 }}>
+        <div className="bh-tablebox">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 20px" }}>
           <div className="input-wrap" style={{ width: 280, padding: "8px 12px" }}>
             <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
@@ -320,6 +313,7 @@ function UsersScreen({ onToast, roles = [], canEdit = true }) {
             })}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

@@ -162,6 +162,87 @@ function usePaged(items, perPage = 10) {
     prev: () => setPage(p => Math.max(1, p - 1)), next: () => setPage(p => Math.min(pages, p + 1)) };
 }
 
+/* ---- Email chip palette + hash (per-email pastel color, mirrors getEmailBadgeColor) ---- */
+const EMAIL_BADGE_COLORS = [
+  { bg: "#EAF1FF", color: "#2563EB", border: "#BFD3FF" }, // blue
+  { bg: "#F3EEFF", color: "#7C3AED", border: "#D9C9FF" }, // purple
+  { bg: "#E9FBF1", color: "#0E9F6E", border: "#BDEBD2" }, // green
+  { bg: "#FFF4E5", color: "#D97706", border: "#FBD9A5" }, // amber
+  { bg: "#FDECF3", color: "#DB2777", border: "#F8C6DD" }, // pink
+  { bg: "#E7FAF8", color: "#0D9488", border: "#BCEBE6" }, // teal
+  { bg: "#ECEEFF", color: "#4F46E5", border: "#CBD0FF" }, // indigo
+  { bg: "#FFEFEF", color: "#E11D48", border: "#FBCBD2" }, // rose
+];
+function getEmailBadgeColor(email) {
+  let hash = 0;
+  const s = (email || "").toLowerCase();
+  for (let i = 0; i < s.length; i++) hash = s.charCodeAt(i) + ((hash << 5) - hash);
+  return EMAIL_BADGE_COLORS[Math.abs(hash) % EMAIL_BADGE_COLORS.length];
+}
+const isValidEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+
+/* ---- EmailInputList — the standard multi-email entry across People & Culture ----
+   Colored chips per email (in a bordered scroll box) + an input with a "+" add button +
+   the "Press Enter or click + to add email" hint. Validates + de-dupes, surfacing an inline
+   error. Props: label, description, placeholder, emails (string[]), onChange(string[]), error. */
+function EmailInputList({ label, description, placeholder = "Enter email address", emails = [], onChange, error }) {
+  const [draft, setDraft] = React.useState("");
+  const [localError, setLocalError] = React.useState("");
+  const add = () => {
+    const v = draft.trim();
+    if (!v) return;
+    if (!isValidEmail(v)) { setLocalError("Please enter a valid email address"); return; }
+    if (emails.includes(v)) { setLocalError("This email has already been added"); return; }
+    onChange([...emails, v]);
+    setDraft("");
+    setLocalError("");
+  };
+  const remove = (t) => onChange(emails.filter(x => x !== t));
+  const shownError = (typeof error === "string" && error) || localError;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%", minWidth: 0 }}>
+      {label && (
+        <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>
+          {label}{description && <span style={{ color: "var(--gray-400)", fontWeight: 400 }}> ({description})</span>}
+        </label>
+      )}
+      {emails.length > 0 && (
+        <div style={{ display: "flex", gap: 6, padding: 6, border: "1px solid var(--gray-200)", borderRadius: "var(--radius-md)",
+          minHeight: 38, overflowX: "auto", background: "#fff" }}>
+          {emails.map(t => {
+            const c = getEmailBadgeColor(t);
+            return (
+              <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0, padding: "4px 6px 4px 10px",
+                borderRadius: 7, fontFamily: "var(--font-ui)", fontSize: 12, fontWeight: 500, whiteSpace: "nowrap",
+                background: c.bg, color: c.color, border: `1px solid ${c.border}` }}>
+                {t}
+                <span onClick={() => remove(t)} title="Remove" style={{ display: "inline-flex", cursor: "pointer", borderRadius: 999, padding: 1 }}>
+                  <Icon name="close-line" size={13} color={c.color} />
+                </span>
+              </span>
+            );
+          })}
+        </div>
+      )}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div className="input-wrap" style={{ flex: 1 }}>
+          <input type="email" placeholder={placeholder} value={draft}
+            onChange={e => { setDraft(e.target.value); if (localError) setLocalError(""); }}
+            onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); add(); } }} />
+        </div>
+        <button type="button" onClick={add} title="Add email" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center",
+          width: 38, height: 38, flexShrink: 0, border: 0, background: "none", cursor: "pointer", borderRadius: "var(--radius-md)", color: "var(--brand-yellow-dark)" }}>
+          <Icon name="add-line" size={20} color="var(--brand-yellow-dark)" />
+        </button>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+        <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>Press Enter or click + to add email</span>
+        {shownError && <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "#DC2626" }}>{shownError}</span>}
+      </div>
+    </div>
+  );
+}
+
 /* ---- Floating bulk-action bar (fixed bottom-right; reused by every multi-select table) ----
    Pass a count, the noun for the count label, an onClear, and the action Buttons as children. */
 function BulkBar({ count, noun = "selected", visible, onClear, children }) {
@@ -178,4 +259,4 @@ function BulkBar({ count, noun = "selected", visible, onClear, children }) {
   );
 }
 
-Object.assign(window, { Icon, Button, ViewDetailsButton, Field, Input, Textarea, Select, Checkbox, Tabs, Segmented, Pagination, usePaged, useViewportWidth, Avatar, getStringColor, BulkBar });
+Object.assign(window, { Icon, Button, ViewDetailsButton, Field, Input, Textarea, Select, Checkbox, Tabs, Segmented, Pagination, usePaged, useViewportWidth, Avatar, getStringColor, getEmailBadgeColor, EmailInputList, BulkBar });

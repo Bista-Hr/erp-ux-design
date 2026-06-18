@@ -18,39 +18,9 @@ function Toggle({ checked, onChange, label }) {
   );
 }
 
-/* email chip input — chips + add field, Enter or + to add */
+/* email chip input — delegates to the shared EmailInputList (kept for back-compat export) */
 function TagInput({ value = [], onChange, placeholder }) {
-  const [draft, setDraft] = useLT("");
-  const add = () => {
-    const v = draft.trim();
-    if (v && !value.includes(v)) onChange([...value, v]);
-    setDraft("");
-  };
-  const remove = (t) => onChange(value.filter(x => x !== t));
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      {value.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {value.map(t => (
-            <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--brand-yellow-tint)",
-              border: "1px solid var(--brand-yellow)", borderRadius: 7, padding: "5px 8px 5px 10px", fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-800)" }}>
-              {t}<span onClick={() => remove(t)} style={{ display: "inline-flex", cursor: "pointer" }}><Icon name="close-line" size={14} color="var(--gray-500)" /></span>
-            </span>
-          ))}
-        </div>
-      )}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <div className="input-wrap" style={{ flex: 1 }}>
-          <input placeholder={placeholder} value={draft} onChange={e => setDraft(e.target.value)}
-            onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); add(); } }} />
-        </div>
-        <button className="btn btn-icon btn-stroke" onClick={add} title="Add email" style={{ width: 42, height: 42, flexShrink: 0 }}>
-          <Icon name="add-line" size={18} />
-        </button>
-      </div>
-      <span className="hint" style={{ margin: 0 }}>Press Enter or click + to add email</span>
-    </div>
-  );
+  return <EmailInputList emails={value} onChange={onChange} placeholder={placeholder} />;
 }
 
 /* reusable row ⋯ menu (label/onClick + optional danger) */
@@ -82,15 +52,11 @@ function LeaveTypesTable({ rows, onCreate, onEdit, onArchive }) {
   const shown = rows.filter(r => q === "" || r.name.toLowerCase().includes(q.toLowerCase()));
   const pg = usePaged(shown, 10);
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 20 }}>
-        <div>
-          <div className="bh-h2" style={{ fontSize: 24 }}>Leave Types</div>
-          <div className="bh-body" style={{ marginTop: 4 }}>Manage your organization's leave types</div>
-        </div>
-        <Button variant="primary" icon="add-line" onClick={onCreate}>Create Leave Type</Button>
-      </div>
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "visible" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title="Leave Types" subtitle="Manage your organization's leave types"
+        actions={<Button variant="primary" icon="add-line" onClick={onCreate}>Create Leave Type</Button>} />
+      <div className="card" style={{ padding: 20, overflow: "visible" }}>
+        <div className="bh-tablebox">
         <div style={{ display: "flex", justifyContent: "flex-end", padding: "16px 20px" }}>
           <div className="input-wrap" style={{ width: 280, padding: "8px 12px" }}>
             <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
@@ -120,6 +86,7 @@ function LeaveTypesTable({ rows, onCreate, onEdit, onArchive }) {
           </table>
         </div>
         <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>
+        </div>
       </div>
     </div>
   );
@@ -176,8 +143,8 @@ function LeaveTypeForm({ initial, onBack, onSubmit }) {
               </button>
             </div>
             <div>
-              <FieldLabel>Notify Department <span style={{ fontWeight: 400, color: "var(--gray-400)" }}>(Department mails only)</span></FieldLabel>
-              <TagInput value={form.emails} onChange={v => set("emails", v)} placeholder="eg. financedept@starret.com" />
+              <EmailInputList label="Notify Department" description="Department mails only" placeholder="eg. financedept@starret.com"
+                emails={form.emails} onChange={v => set("emails", v)} />
             </div>
           </div>
         </div>

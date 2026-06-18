@@ -42,16 +42,32 @@ const PRESCREEN = [
 ];
 
 let _cid = 5000;
-const _app = (a) => ({
-  id: ++_cid, applicantPhone: a.applicantPhone || "+233 24 000 0000", matchScore: a.matchScore ?? null,
-  cv: "resume.pdf", coverLetter: "cover-letter.pdf",
-  employmentHistory: a.employmentHistory || [{ employer: "Prior Co. Ltd", title: "Officer", start: "Jan 2021", end: "Dec 2024", note: "Handled day-to-day operations and reporting." }],
-  education: a.education || [{ institution: "University of Ghana", degree: "BSc", field: "Administration", start: "2016", end: "2020", grade: "First Class" }],
-  skills: a.skills || ["Communication", "MS Excel", "Analysis"],
-  certifications: a.certifications || ["—"],
-  preScreeningAnswers: a.preScreeningAnswers || ["BSc. Accounting", "Yes", "Yes"],
-  ...a,
-});
+// Build an application; derive shortlist / interview / offer sub-process state from the
+// pipeline status so the admin Shortlist & Assessment views are populated realistically.
+const _app = (a) => {
+  const status = a.status ?? 0;
+  const o = {
+    id: ++_cid, applicantPhone: a.applicantPhone || "+233 24 000 0000", matchScore: a.matchScore ?? null,
+    cv: "resume.pdf", coverLetter: "cover-letter.pdf",
+    employmentHistory: a.employmentHistory || [{ employer: "Prior Co. Ltd", title: "Officer", start: "Jan 2021", end: "Dec 2024", note: "Handled day-to-day operations and reporting." }],
+    education: a.education || [{ institution: "University of Ghana", degree: "BSc", field: "Administration", start: "2016", end: "2020", grade: "First Class" }],
+    skills: a.skills || ["Communication", "MS Excel", "Analysis"],
+    certifications: a.certifications || ["—"],
+    preScreeningAnswers: a.preScreeningAnswers || ["BSc. Accounting", "Yes", "Yes"],
+    ...a,
+  };
+  if (o.shortlist === undefined)
+    o.shortlist = (status >= 1 && status <= 4) ? { status: "approved", createdAt: o.createdAt }
+      : status === 5 ? { status: "rejected", createdAt: o.createdAt } : null;
+  if (o.interview === undefined)
+    o.interview = (status >= 2 && status <= 4)
+      ? { date: o.createdAt, start: "10:00", end: "11:00", location: "Main Office — Interview Room 2", assessors: ["Bright Manu", "Franklin Brobbey"], status: o.matchScore != null ? 2 : 0 }
+      : null;
+  if (o.offer === undefined)
+    o.offer = (status >= 3 && status <= 4) ? { salary: 120000, startDate: "01 Apr, 2025", offerExpiryDate: "20 Mar, 2025" } : null;
+  o.hasShortlistRequest = !!o.shortlist;
+  return o;
+};
 
 const CAREER_POSTINGS = [
   {

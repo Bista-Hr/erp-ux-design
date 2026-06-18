@@ -25,7 +25,8 @@ function CircularsTable({ rows, q, setQ, tab, onOpen, onApprove, onReject, onArc
   const pg = usePaged(shown, 10);
 
   return (
-    <div className="card" style={{ overflow: "visible", padding: 0 }}>
+    <div className="card" style={{ overflow: "visible", padding: 20 }}>
+      <div className="bh-tablebox">
       <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 12, padding: "14px 20px", borderBottom: "1px solid var(--border)" }}>
         <div className="input-wrap" style={{ width: 260, padding: "7px 12px" }}>
           <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
@@ -81,6 +82,7 @@ function CircularsTable({ rows, q, setQ, tab, onOpen, onApprove, onReject, onArc
             </tbody>
           </table>}
       {rows.length > 0 && shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
+      </div>
     </div>
   );
 }

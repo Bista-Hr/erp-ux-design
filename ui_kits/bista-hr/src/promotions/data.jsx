@@ -13,6 +13,7 @@ const EMPLOYEE_DIRECTORY = {
   "Bright Manu":       { staffId: "EMP-10876", title: "Software Engineer",        grade: "Grade 3", dept: "Information Technology", zone: "East Zone",    branch: "Tema",         salary: "GHS 7,400.00", rating: "Outstanding" },
   "Samuel Boateng":    { staffId: "EMP-11002", title: "Sales Officer",            grade: "Grade 1", dept: "Marketing",            zone: "West Zone",    branch: "Kumasi",       salary: "GHS 4,500.00", rating: "Above Average" },
   "Samuel Asante":     { staffId: "EMP-11233", title: "Teller",                   grade: "Grade 1", dept: "Finance",              zone: "West Zone",    branch: "Takoradi",     salary: "GHS 4,200.00", rating: "Good" },
+  "Abdul-Gadaf Abubakar": { staffId: "EMP-08141", title: "Retail Sales Manager",   grade: "Grade 5", dept: "Operations",           zone: "North Zone",   branch: "Tamale",       salary: "GHS 8,600.00", rating: "Outstanding" },
 };
 const EMPLOYEE_NAMES = Object.keys(EMPLOYEE_DIRECTORY);
 
@@ -45,6 +46,7 @@ const PROMOTION_SEED = [
     effectiveDate: "Jul 08, 2026", dateSubmitted: "May 18, 2026", status: "Pending",
     justification: "Top performer in the zone; succession plan recommends elevation to relationship management.",
     allowances: [], documents: [PROMO_DOC("Talent Review Notes.docx", "DOCX", "120 KB", "Other")],
+    docUrls: ["https://files.bistasol.com/promotions/Talent-Review-Notes.docx", "https://files.bistasol.com/promotions/Recommendation.pdf"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
   { id: 4, employees: ["Aba Odum"], staffIds: "EMP-18389",
@@ -54,6 +56,7 @@ const PROMOTION_SEED = [
     effectiveDate: "May 28, 2026", dateSubmitted: "May 09, 2026", status: "Pending",
     justification: "Cross-functional impact and analytics leadership justify an acting management appointment.",
     allowances: [], documents: [PROMO_DOC("Business Case.pdf", "PDF", "2.1 MB", "Other"), PROMO_DOC("ID Verification.jpg", "JPG", "1.4 MB", "ID Card")],
+    docUrls: ["https://files.bistasol.com/promotions/Business-Case.pdf", "https://files.bistasol.com/promotions/Analytics-Summary.xlsx"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
   { id: 5, employees: ["Samuel Boateng"], staffIds: "EMP-11002",

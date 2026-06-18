@@ -17,15 +17,11 @@ function AdminLeaveRequestsView({ rows, onCreate, onOpen, onApprove, onReject })
     (q === "" || r.name.toLowerCase().includes(q.toLowerCase()) || r.type.toLowerCase().includes(q.toLowerCase())));
   const pg = usePaged(shown, 10);
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 20 }}>
-        <div>
-          <div className="bh-h2" style={{ fontSize: 24 }}>Leave Requests</div>
-          <div className="bh-body" style={{ marginTop: 4 }}>Track and manage all employee leave requests</div>
-        </div>
-        <Button variant="primary" icon="add-line" onClick={onCreate}>Create Leave Request</Button>
-      </div>
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "visible" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title="Leave Requests" subtitle="Track and manage all employee leave requests"
+        actions={<Button variant="primary" icon="add-line" onClick={onCreate}>Create Leave Request</Button>} />
+      <div className="card" style={{ padding: 20, overflow: "visible" }}>
+        <div className="bh-tablebox">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 20px", flexWrap: "wrap" }}>
           <Segmented items={["All", "Approved", "Rejected", "Recalled"]} active={filter} onChange={setFilter} />
           <div className="input-wrap" style={{ width: 280, padding: "8px 12px" }}>
@@ -62,6 +58,7 @@ function AdminLeaveRequestsView({ rows, onCreate, onOpen, onApprove, onReject })
           </table>
         </div>
         <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>
+        </div>
       </div>
     </div>
   );

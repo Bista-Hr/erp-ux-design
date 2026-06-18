@@ -14,22 +14,20 @@ function CrudScreen({ config, rows, onCreate, onEdit, onArchive, onMenuAction, c
   );
   const pg = usePaged(shown);
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 20 }}>
-        <div>
-          <div className="bh-h2" style={{ fontSize: 24 }}>{config.title}</div>
-          <div className="bh-body" style={{ marginTop: 4 }}>{config.subtitle}</div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          {config.headerAction && (
-            <Button variant="stroke" icon={config.headerAction.icon}
-              onClick={() => onMenuAction && onMenuAction(config.headerAction.key)}>{config.headerAction.label}</Button>
-          )}
-          {canCreate && <Button variant="primary" icon="add-line" onClick={onCreate}>{config.cta}</Button>}
-        </div>
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title={config.title} subtitle={config.subtitle}
+        actions={
+          <React.Fragment>
+            {config.headerAction && (
+              <Button variant="stroke" icon={config.headerAction.icon}
+                onClick={() => onMenuAction && onMenuAction(config.headerAction.key)}>{config.headerAction.label}</Button>
+            )}
+            {canCreate && <Button variant="primary" icon="add-line" onClick={onCreate}>{config.cta}</Button>}
+          </React.Fragment>
+        } />
 
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+      <div className="card" style={{ padding: 20, overflow: "visible" }}>
+        <div className="bh-tablebox">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 20px" }}>
           {config.hideSegment
             ? <div className="input-wrap" style={{ width: 280, padding: "8px 12px" }}>
@@ -97,6 +95,7 @@ function CrudScreen({ config, rows, onCreate, onEdit, onArchive, onMenuAction, c
             </table>
             <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>
           </React.Fragment>}
+        </div>
       </div>
     </div>
   );

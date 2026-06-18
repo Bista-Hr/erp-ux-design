@@ -119,16 +119,12 @@ function AdminApprovalsScreen({ onToast }) {
   };
 
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 20 }}>
-        <div>
-          <div className="bh-h2" style={{ fontSize: 24 }}>Approvals</div>
-          <div className="bh-body" style={{ marginTop: 4 }}>See and manage all updated reports.</div>
-        </div>
-        <Button variant="primary" icon="add-line" onClick={createCase}>Create a case</Button>
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title="Approvals" subtitle="See and manage all updated reports."
+        actions={<Button variant="primary" icon="add-line" onClick={createCase}>Create a case</Button>} />
 
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+      <div className="card" style={{ padding: 20 }}>
+        <div className="bh-tablebox">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 20px" }}>
           <div className="seg">
             <button className={pending ? "active" : ""} onClick={() => setTab("Pending Approvals")} style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
@@ -173,6 +169,7 @@ function AdminApprovalsScreen({ onToast }) {
               </tbody>
             </table>}
         {shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
+        </div>
       </div>
 
       {detail && (

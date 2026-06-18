@@ -90,6 +90,9 @@ function App() {
   const [confirm, setConfirm] = useS(null);  // { intent: 'add'|'update'|'archive', form?, row? }
   const [employee, setEmployee] = useS(null); // selected employee → detail page
   const [collapsed, setCollapsed] = useS(false); // sidebar collapse
+  const notifPrevCollapse = useR(false);  // remember sidebar state before the notifications page auto-collapse
+  const openNotifications = () => { notifPrevCollapse.current = collapsed; setCollapsed(true); setNotifs(true); };
+  const closeNotifications = () => { setNotifs(false); setCollapsed(notifPrevCollapse.current); };
   const [importOpen, setImportOpen] = useS(false); // bulk-import modal
   const [preview, setPreview] = useS(null);   // parsed rows awaiting import
   const [announce, setAnnounce] = useS(null);  // null | { view:'list' } | { view:'detail', a }
@@ -100,6 +103,7 @@ function App() {
     { id: 2, employee: "Kofi Owusu", type: "Profile Update", section: "Identification", change: "update", date: "10 Nov, 2025", status: "approved" },
   ]);
   const [toasts, setToasts] = useS([]);
+  const [notifs, setNotifs] = useS(false);   // notifications inbox overlay (top-bar bell)
   const seq = useR(100);
 
   const pushToast = (msg, opts = {}) => {
@@ -114,7 +118,7 @@ function App() {
     const kind = sectionKindOf(parent || node.name);
     const tab = tabs ? (firstAllowedTab(perms, kind, tabs) || tabs[0]) : null;
     setNav({ node, parent: parent || node.name, tab });
-    setForm(null); setConfirm(null); setEmployee(null); setImportOpen(false); setPreview(null); setAnnounce(null); setSubPage(null); setOrgTree(false); setMobileNav(false);
+    setForm(null); setConfirm(null); setEmployee(null); setImportOpen(false); setPreview(null); setAnnounce(null); setSubPage(null); setOrgTree(false); setMobileNav(false); if (notifs) { setCollapsed(notifPrevCollapse.current); } setNotifs(false);
   };
   // live role switch (top bar) — reshape nav + jump to a page the role can open
   const switchRole = (roleId) => {
@@ -123,13 +127,13 @@ function App() {
     if (dest) setNav(dest);
     setForm(null); setConfirm(null); setEmployee(null); setImportOpen(false); setPreview(null); setAnnounce(null); setSubPage(null); setOrgTree(false);
   };
-  const goDashboard = () => { const d = NAV_MAIN[0]; navigate(d, d.name); };  const setTab = (tab) => { setEmployee(null); setAnnounce(null); setSubPage(null); setOrgTree(false); setNav(n => ({ ...n, tab })); };
+  const goDashboard = () => { const d = NAV_MAIN[0]; navigate(d, d.name); };  const setTab = (tab) => { setEmployee(null); setAnnounce(null); setSubPage(null); setOrgTree(false); if (notifs) { setCollapsed(notifPrevCollapse.current); } setNotifs(false); setNav(n => ({ ...n, tab })); };
 
   // profile menu → open My Info; sign out → back to the login screen
   const goProfile = () => {
     const dash = NAV_MAIN[0];
     setNav({ node: dash, parent: dash.name, tab: "My Info" });
-    setForm(null); setConfirm(null); setEmployee(null); setImportOpen(false); setPreview(null); setAnnounce(null);
+    setForm(null); setConfirm(null); setEmployee(null); setImportOpen(false); setPreview(null); setAnnounce(null); setNotifs(false);
   };
   const signOut = () => {
     setRoute("role-select");
@@ -174,6 +178,14 @@ function App() {
   const isUsers = isList && pageName === "Users";
   // Recruitment ▸ Job Posts (admin posting details + applicant pipeline)
   const isJobPosts = isList && pageName === "Job Posts";
+  // Recruitment ▸ Hiring Requests (raise → approve/reject gate) + Assessments (assessor queue)
+  const isHiringRequests = isList && pageName === "Hiring Requests";
+  const isAssessments = isList && pageName === "Assessments";
+  // Performance ▸ built flows (Goal Setting, …) — route to the dedicated PerformanceSection
+  const PERF_BUILT = ["Department Perspectives", "Goal Setting", "Performance Appraisals", "Objectives", "IDP", "PIP", "360 Feedback", "Moderation", "Portfolio of Evidence"];
+  const isPerformance = isList && nav.node && nav.node.name === "Performance" && PERF_BUILT.includes(pageName);
+  // Learning & Development ▸ all six pillars route to the dedicated LearningSection
+  const isLearning = isList && nav.node && nav.node.name === "Learning & Development";
 
   // ---- phase transitions ----
   const openCreate = () => setForm({ mode: "create" });
@@ -237,7 +249,8 @@ function App() {
     <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden", background: "var(--gray-75)" }}>
       <TopNav title={nav.node.name} compact={isMobile}
         onToggleNav={showSidebar ? () => (isMobile ? setMobileNav(o => !o) : setCollapsed(c => !c)) : null}
-        user={{ name: ME.name, email: ME.email, org: ME.dept }} onProfile={goProfile} onSignOut={signOut} />
+        user={{ name: ME.name, email: ME.email, org: ME.dept }} onProfile={goProfile} onSignOut={signOut}
+        onNotifications={openNotifications} hasUnread={(window.hrUnreadCount ? window.hrUnreadCount() : 0) > 0} />
       <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
         {showSidebar && (isMobile
           ? <React.Fragment>
@@ -250,15 +263,17 @@ function App() {
             </React.Fragment>
           : <Sidebar current={nav.node.name} onNavigate={navigate} collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} perms={perms} />)}
         <div style={{ flex: 1, minWidth: 0, minHeight: 0, display: "flex", flexDirection: "column" }}>
-          {showTabs && (
+          {showTabs && !notifs && (
             <div className="tabbar">
               {subPage
                 ? <Breadcrumb trail={subPage.trail} style={{ marginBottom: 0, paddingBottom: 13 }} />
                 : <Tabs items={visTabs} active={nav.tab} onChange={setTab} />}
             </div>
           )}
-          <div className="bh-main" style={{ flex: 1, minHeight: 0, minWidth: 0, overflow: selfScroll ? "hidden" : "auto", padding: selfScroll ? 0 : (isMobile ? 16 : "var(--page-pad, 32px)"), boxSizing: "border-box" }}>
-            {!allowed
+          <div className="bh-main" style={{ flex: 1, minHeight: 0, minWidth: 0, overflow: (selfScroll || notifs) ? "hidden" : "auto", padding: (selfScroll || notifs) ? 0 : (isMobile ? 16 : "var(--page-pad, 32px)"), boxSizing: "border-box" }}>
+            {notifs
+              ? <NotificationsPage onToast={pushToast} />
+              : !allowed
               ? <ForbiddenScreen onHome={goDashboard} />
               : !isList
               ? (kind === "dashboard"
@@ -296,7 +311,15 @@ function App() {
                             : isDisciplinary
                               ? <DisciplinaryScreen onToast={pushToast} onSubPage={setSubPage} departments={lookups.departments} />
                               : isJobPosts
-                                ? <JobPostsScreen onToast={pushToast} />
+                                ? <JobPostsScreen onToast={pushToast} lookups={lookups} onSubPage={setSubPage} />
+                                : isHiringRequests
+                                ? <HiringRequestsScreen onToast={pushToast} lookups={lookups} onSubPage={setSubPage} onCreatePost={() => setTab("Job Posts")} />
+                                : isAssessments
+                                ? <AssessmentsScreen onToast={pushToast} onSubPage={setSubPage} />
+                                : isPerformance
+                                ? <PerformanceSection page={pageName} onToast={pushToast} onSubPage={setSubPage} lookups={lookups} />
+                                : isLearning
+                                ? <LearningSection page={pageName} onToast={pushToast} onSubPage={setSubPage} onTab={setTab} />
                                 : isRoles
                                 ? <RolesScreen onToast={pushToast} canCreate={pageCan(perms, "Roles", "Create")} canEdit={pageCan(perms, "Roles", "Update")} canDelete={pageCan(perms, "Roles", "Delete")} />
                                 : isUsers
@@ -304,7 +327,7 @@ function App() {
                                   : <CrudScreen key={pageName} config={cfg} rows={rows}
                                   onCreate={openCreate} onEdit={openEdit} onArchive={askArchive} onMenuAction={handleMenuAction}
                                   canCreate={pageCan(perms, pageName, "Create")} canEdit={pageCan(perms, pageName, "Update")} canArchive={pageCan(perms, pageName, "Delete")} />}
-            {!selfScroll && <div aria-hidden="true" style={{ height: 56 }} />}
+            {!selfScroll && !notifs && <div aria-hidden="true" style={{ height: 56 }} />}
           </div>
         </div>
       </div>

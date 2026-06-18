@@ -13,19 +13,17 @@ function EmployeesScreen({ employees, onOpen, onAdd, onEdit, onArchive, onImport
   );
   const pg = usePaged(shown);
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 20 }}>
-        <div>
-          <div className="bh-h2" style={{ fontSize: 24 }}>All Employees</div>
-          <div className="bh-body" style={{ marginTop: 4 }}>Manage all your employees</div>
-        </div>
-        <div style={{ display: "flex", gap: 12 }}>
-          <Button variant="stroke" icon="upload-2-line" onClick={onImport}>Import Employees</Button>
-          <Button variant="primary" icon="add-line" onClick={onAdd}>Add Employee</Button>
-        </div>
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title="All Employees" subtitle="Manage all your employees"
+        actions={
+          <React.Fragment>
+            <Button variant="stroke" icon="upload-2-line" onClick={onImport}>Import Employees</Button>
+            <Button variant="primary" icon="add-line" onClick={onAdd}>Add Employee</Button>
+          </React.Fragment>
+        } />
 
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+      <div className="card" style={{ padding: 20 }}>
+        <div className="bh-tablebox">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 20px" }}>
           <Segmented items={["All", "Active", "Inactive"]} active={filter} onChange={setFilter} />
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -84,6 +82,7 @@ function EmployeesScreen({ employees, onOpen, onAdd, onEdit, onArchive, onImport
         </table>
         </div>
         <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>
+        </div>
       </div>
 
       {/* row action menu — fixed-positioned so it escapes the table's overflow clip */}

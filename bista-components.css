@@ -110,6 +110,10 @@
 /* selected row in the roster gently lifts */
 .jt-roster-row{transition:background .18s ease}
 
+/* multi-image dropzone — the ✕ chip only shows on card hover (matches the app) */
+.bh-midz-x{opacity:0;transition:opacity .15s ease;box-shadow:0 1px 4px rgba(16,24,40,.25)}
+.bh-midz-card:hover .bh-midz-x{opacity:1}
+
 /* ---- DASHBOARD responsive grids (container queries) ---------------------- */
 /* The scroll column is the query container; grids reflow to the column width
    (which changes when the sidebar collapses or the announcements rail is shown),
@@ -288,6 +292,9 @@
 
 /* ---- CARD / TABLE --------------------------------------------------------- */
 .card{background:#fff;border-radius:var(--radius-lg)}
+/* table/list shell: search + table wrapped in ONE bordered, rounded box, inset inside a
+   padded .card (the People & Culture reference look). Use for any FilterBar + table card. */
+.bh-tablebox{border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
 table.bh{width:100%;border-collapse:collapse;font-family:var(--font-ui)}
 table.bh th{font-family:var(--font-head);font-weight:600;font-size:12px;color:var(--gray-500);text-align:left;
   padding:12px var(--bh-cell-px);background:var(--gray-50);border-bottom:1px solid var(--border)}

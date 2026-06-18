@@ -71,7 +71,7 @@ const TRANSFER_SEED = [
 ];
 
 /* ---------- requests list (approval queue) ---------- */
-function TransfersList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment, setSegment, sel, setSel }) {
+function TransfersList({ rows, q, setQ, tab, setTab, onOpen, onEdit, onArchive, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
   const [menu, setMenu] = useTr(null);
   const byTab = rows.filter(r => tab.length === 0 || tab.includes(r.status));
   const shown = byTab.filter(r => q === "" || r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newLocation.toLowerCase().includes(q.toLowerCase()));
@@ -81,19 +81,13 @@ function TransfersList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment,
   const toggle = (id) => setSel(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
   const toggleAll = () => setSel(allPendingSel ? sel.filter(id => !pendingShown.some(r => r.id === id)) : [...new Set([...sel, ...pendingShown.map(r => r.id)])]);
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 18, flexWrap: "wrap" }}>
-        <Segmented items={["Requests", "Approvals"]} active={segment} onChange={setSegment} />
-        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <div className="input-wrap" style={{ width: 260, padding: "9px 12px" }}>
-            <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
-            <input placeholder="Search transfers…" value={q} onChange={e => setQ(e.target.value)} />
-          </div>
-          <StatusFilter value={tab} onChange={setTab} />
-        </div>
-      </div>
-
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
+      <div className="card" style={{ padding: 20 }}>
+        <div className="bh-tablebox">
+        <UI.FilterBar left={<Segmented items={["Requests", "Approvals"]} active={segment} onChange={setSegment} />}
+          search={q} onSearch={setQ} searchPlaceholder="Search transfers…"
+          filters={[{ label: "Status", node: <StatusFilter value={tab} onChange={setTab} /> }]} />
         {rows.length === 0
           ? <EmptyState title="No transfers yet" subtitle="Select staff from the Transfer tab to raise a transfer." />
           : <table className="bh">
@@ -128,17 +122,12 @@ function TransfersList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment,
                     <td><span style={{ fontSize: 13, color: "var(--gray-700)" }}>{r.classification}</span></td>
                     <td><StatusBadge variant={TR_STATUS_VARIANT[r.status]} text={r.status} size="sm" /></td>
                     <td>{r.approvedBy && r.approvedBy !== "N/A" ? r.approvedBy : "—"}</td>
-                    <td style={{ position: "relative", textAlign: "right" }} onClick={e => e.stopPropagation()}>
-                      <button className="btn btn-icon btn-ghost" style={{ width: 28, height: 28, padding: 0 }} onClick={() => setMenu(menu === r.id ? null : r.id)}>
-                        <Icon name="more-fill" size={18} color="var(--gray-400)" />
-                      </button>
-                      {menu === r.id && (
-                        <div onMouseLeave={() => setMenu(null)} style={{ position: "absolute", right: 16, top: 40, zIndex: 20, background: "#fff",
-                          borderRadius: "var(--radius-md)", boxShadow: "var(--shadow-pop)", padding: 6, minWidth: 170, display: "flex", flexDirection: "column" }}>
-                          <button className="menu-item" onClick={() => { setMenu(null); onOpen(r); }}><Icon name="eye-line" size={16} />View Details</button>
-                          <button className="menu-item danger" onClick={() => { setMenu(null); onArchive(r); }}><Icon name="archive-line" size={16} />Archive Transfer</button>
-                        </div>
-                      )}
+                    <td style={{ textAlign: "right" }} onClick={e => e.stopPropagation()}>
+                      <UI.RowActions actions={[
+                        { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
+                        { label: "Edit Transfer", short: "Edit", icon: "edit-2-line", onClick: () => onEdit(r) },
+                        { label: "Archive Transfer", short: "Archive", icon: "archive-line", danger: true, onClick: () => onArchive(r) },
+                      ]} />
                     </td>
                   </tr>
                   );
@@ -147,6 +136,7 @@ function TransfersList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment,
               </tbody>
             </table>}
         {rows.length > 0 && shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
+        </div>
       </div>
     </div>
   );
@@ -222,74 +212,24 @@ function BulkTransferForm({ names, lookups, onCancel, onSubmit }) {
   );
 }
 
-/* ---------- employee roster (checkboxes; bulk action lives in the floating bar) ---------- */
-function TransferRoster({ q, setQ, selected, setSelected, onTransferOne, segment, setSegment }) {
+/* ---------- employee roster (shared EmployeeSelectionRoster — single source of truth) ---------- */
+function TransferRoster({ q, setQ, segment, setSegment, onCreate, title, subtitle, headerAction }) {
   const DIR = window.EMPLOYEE_DIRECTORY;
-  const names = window.EMPLOYEE_NAMES;
-  const [menu, setMenu] = useTr(null);
-  const shown = names.filter(n => {
-    if (q === "") return true;
-    const e = DIR[n] || {};
-    return `${n} ${e.staffId} ${e.title} ${e.dept} ${e.branch}`.toLowerCase().includes(q.toLowerCase());
-  });
-  const toggle = (n) => setSelected(s => s.includes(n) ? s.filter(x => x !== n) : [...s, n]);
-  const allShownSelected = shown.length > 0 && shown.every(n => selected.includes(n));
-  const toggleAll = () => setSelected(allShownSelected ? selected.filter(n => !shown.includes(n)) : [...new Set([...selected, ...shown])]);
-  const pg = usePaged(shown, 10);
+  const rows = window.EMPLOYEE_NAMES.map(n => ({
+    id: n, name: n, employeeNumber: DIR[n].staffId, jobTitle: DIR[n].title,
+    jobGrade: DIR[n].grade, department: DIR[n].dept, profilePictureUrl: "",
+  }));
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 18, flexWrap: "wrap" }}>
-        <Segmented items={["Requests", "Approvals"]} active={segment} onChange={setSegment} />
-        <div className="input-wrap" style={{ width: 300, padding: "9px 12px" }}>
-          <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
-          <input placeholder="Search staff…" value={q} onChange={e => setQ(e.target.value)} />
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
+      <div className="card" style={{ padding: 20 }}>
+        <div className="bh-tablebox">
+        <UI.FilterBar left={<Segmented items={["Requests", "Approvals"]} active={segment} onChange={setSegment} />}
+          search={q} onSearch={setQ} searchPlaceholder="Search staff…" />
+        <EmployeeSelectionRoster employees={rows} itemLabel="staff"
+          actionLabel="Create Transfer" onProceed={onCreate} searchQuery={q} />
         </div>
       </div>
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
-        <table className="bh">
-          <thead><tr>
-            <th style={{ width: 44 }}><Checkbox checked={allShownSelected} onChange={toggleAll} /></th>
-            <th>Full Name</th><th>Employee ID</th><th>Department</th><th>Current Location</th><th>Zone</th><th style={{ width: 48 }}></th>
-          </tr></thead>
-          <tbody>
-            {pg.pageItems.map(n => {
-              const e = DIR[n] || {};
-              const on = selected.includes(n);
-              return (
-                <tr key={n} className="jt-roster-row" style={{ cursor: "pointer", background: on ? "#FFFBEB" : undefined }} onClick={() => toggle(n)}>
-                  <td onClick={ev => ev.stopPropagation()}><Checkbox checked={on} onChange={() => toggle(n)} /></td>
-                  <td>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-                      <Avatar name={n} size={32} />
-                      <span style={{ display: "flex", flexDirection: "column" }}>
-                        <span style={{ fontWeight: 500, color: "var(--gray-900)" }}>{n}</span>
-                        <span style={{ fontSize: 12, color: "var(--gray-400)" }}>{e.title || ""}</span>
-                      </span>
-                    </span>
-                  </td>
-                  <td>{e.staffId}</td>
-                  <td>{e.dept}</td>
-                  <td>{e.branch}</td>
-                  <td>{e.zone}</td>
-                  <td style={{ position: "relative", textAlign: "right" }} onClick={ev => ev.stopPropagation()}>
-                    <button className="btn btn-icon btn-ghost" style={{ width: 28, height: 28, padding: 0 }} onClick={() => setMenu(menu === n ? null : n)}>
-                      <Icon name="more-fill" size={18} color="var(--gray-400)" />
-                    </button>
-                    {menu === n && (
-                      <div onMouseLeave={() => setMenu(null)} style={{ position: "absolute", right: 16, top: 40, zIndex: 20, background: "#fff",
-                        borderRadius: "var(--radius-md)", boxShadow: "var(--shadow-pop)", padding: 6, minWidth: 190, display: "flex", flexDirection: "column" }}>
-                        <button className="menu-item" onClick={() => { setMenu(null); onTransferOne(n); }}><Icon name="exchange-line" size={16} />Transfer (full form)</button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-            {shown.length === 0 && <tr><td colSpan={7} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No staff matches your search." /></td></tr>}
-          </tbody>
-        </table>
-      </div>
-      {shown.length > 0 && <div style={{ marginTop: 4 }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
     </div>
   );
 }
@@ -304,7 +244,7 @@ function TransferForm({ lookups, initialEmployees, onCancel, onSubmit }) {
     effectiveDate: "", reason: "" });
   const [docs, setDocs] = useTr([]);
   const [approvers, setApprovers] = useTr([]);
-  const [mails, setMails] = useTr([""]);
+  const [mails, setMails] = useTr([]);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
   // Intra-Departmental stays within the same department → hide New Department (and clear it).
   const isInter = form.classification === "Inter-Departmental";
@@ -379,23 +319,13 @@ function TransferForm({ lookups, initialEmployees, onCancel, onSubmit }) {
 
         <div style={{ height: 1, background: "var(--border)" }} />
         {sectionTitle("Stakeholder Notification")}
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Notify Stakeholders <span style={{ color: "var(--gray-400)", fontWeight: 400 }}>(Department / stakeholder mails)</span></label>
-          {mails.map((m, i) => (
-            <div key={i} className="input-wrap">
-              <input placeholder="e.g. S&IT, BOBS, line.manager@company.com" value={m} onChange={e => setMails(ms => ms.map((x, j) => j === i ? e.target.value : x))} />
-            </div>
-          ))}
-          <button onClick={() => setMails(ms => [...ms, ""])} style={{ alignSelf: "flex-start", display: "inline-flex", alignItems: "center", gap: 6,
-            border: 0, background: "none", cursor: "pointer", padding: 0, fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 13, color: "var(--brand-yellow-dark)" }}>
-            <Icon name="add-line" size={16} color="var(--brand-yellow-dark)" />Add another mail / stakeholder
-          </button>
-        </div>
+        <EmailInputList label="Notify Stakeholders" description="Department / stakeholder mails" placeholder="eg. financedept@starret.com"
+          emails={mails} onChange={setMails} />
       </div>
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employees, primary, staffIds, ...form, approvers, documents: docs, notifyMails: mails.filter(Boolean) })}>Create Transfer</Button>
+        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employees, primary, staffIds, ...form, approvers, documents: docs, notifyMails: mails })}>Create Transfer</Button>
       </div>
     </div>
   );
@@ -592,18 +522,24 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
     onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={(r) => setConfirm({ kind: "reject", row: r })}
     onUpdate={(partial) => setTransfers(ts => ts.map(t => t.id === current.id ? { ...t, ...partial } : t))} onToast={onToast} />;
   else body = (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <PageHeader title="Transfers" subtitle="Transfer or bulk-transfer staff, and track approval status."
-        actions={
-          <Button variant="stroke" icon="download-2-line" onClick={() => onToast("Import Transfers — coming soon")}>Import Transfers</Button>
-        } />
+    <React.Fragment>
       {segment === "Requests"
-        ? <TransferRoster q={rosterQ} setQ={setRosterQ} selected={selected} setSelected={setSelected}
-            onTransferOne={(n) => setView({ name: "add", initialEmployees: [n] })} segment={segment} setSegment={setSegment} />
+        ? <TransferRoster q={rosterQ} setQ={setRosterQ} segment={segment} setSegment={setSegment}
+            onCreate={(ids) => setView({ name: "add", initialEmployees: ids })}
+            title="Transfers" subtitle="Transfer or bulk-transfer staff, and track approval status."
+            headerAction={<React.Fragment>
+              <Button variant="stroke" icon="download-2-line" onClick={() => onToast("Import Transfers — coming soon")}>Import Transfers</Button>
+              <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add" })}>Add Transfer</Button>
+            </React.Fragment>} />
         : <TransfersList rows={transfers} q={q} setQ={setQ} tab={tab} setTab={setTab}
-            onOpen={(r) => setView({ name: "details", id: r.id })} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
-            segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel} />}
-    </div>
+            onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => setView({ name: "add", initialEmployees: r.employees })} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
+            segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel}
+            title="Transfers" subtitle="Transfer or bulk-transfer staff, and track approval status."
+            headerAction={<React.Fragment>
+              <Button variant="stroke" icon="download-2-line" onClick={() => onToast("Import Transfers — coming soon")}>Import Transfers</Button>
+              <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add" })}>Add Transfer</Button>
+            </React.Fragment>} />}
+    </React.Fragment>
   );
 
   const CONFIRM = {
@@ -629,21 +565,11 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
     return `Are you sure you want to ${CONFIRM[c.kind].m}?`;
   };
 
-  const barVisible = view.name === "list" && segment === "Requests" && selected.length > 0;
-  const barCount = selected.length || lastCount;
   const approvalBarVisible = view.name === "list" && segment === "Approvals" && approvalSel.length > 0;
 
   return (
     <React.Fragment>
       {body}
-
-      {/* floating bulk-transfer bar (Requests roster) */}
-      <div className={`jt-assignbar ${barVisible ? "" : "hidden"}`}>
-        <span className="jt-count" key={barCount}>{barCount}</span>
-        <span style={{ fontFamily: "var(--font-ui)", fontSize: 14, color: "var(--gray-700)" }}>staff selected</span>
-        <button className="jt-clear" onClick={() => setSelected([])}>Clear</button>
-        <Button variant="primary" icon="exchange-line" onClick={() => setView({ name: "add", initialEmployees: selected })}>Create Transfer</Button>
-      </div>
 
       {/* floating bulk-approval bar (Approvals queue) */}
       <BulkBar count={approvalSel.length} noun="transfers selected" visible={approvalBarVisible} onClear={() => setApprovalSel([])}>

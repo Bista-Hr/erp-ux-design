@@ -12,9 +12,127 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
 <link rel="stylesheet" href="../../colors_and_type.css">
 <link rel="stylesheet" href="../../bista-components.css">
+<!-- Tailwind (Play CDN) configured with the production app's exact tokens from app/custom.css -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  const _hslScale = (h) => ({ 50: `hsl(${h} 100% 98% / <alpha-value>)`, 100: `hsl(${h} 100% 94% / <alpha-value>)`, 200: `hsl(${h} 100% 88% / <alpha-value>)`, 300: `hsl(${h} 100% 78% / <alpha-value>)`, 400: `hsl(${h} 100% 62% / <alpha-value>)`, 500: `hsl(${h} 100% 46% / <alpha-value>)`, 600: `hsl(${h} 100% 38% / <alpha-value>)`, 700: `hsl(${h} 100% 33% / <alpha-value>)`, 800: `hsl(${h} 100% 25% / <alpha-value>)`, 900: `hsl(${h} 100% 15% / <alpha-value>)`, 950: `hsl(${h} 100% 8% / <alpha-value>)`, DEFAULT: `hsl(${h} 100% 46% / <alpha-value>)` });
+  const _secScale = { 50: "hsl(0 100% 98% / <alpha-value>)", 100: "hsl(0 100% 95% / <alpha-value>)", 200: "hsl(0 100% 90% / <alpha-value>)", 300: "hsl(0 100% 80% / <alpha-value>)", 400: "hsl(0 100% 70% / <alpha-value>)", 500: "hsl(0 100% 60% / <alpha-value>)", 600: "hsl(0 100% 50% / <alpha-value>)", 700: "hsl(0 100% 40% / <alpha-value>)", 800: "hsl(0 100% 30% / <alpha-value>)", 900: "hsl(0 100% 20% / <alpha-value>)", 950: "hsl(0 100% 10% / <alpha-value>)", DEFAULT: "hsl(0 100% 60% / <alpha-value>)" };
+  tailwind.config = {
+    corePlugins: { preflight: false },
+    theme: { extend: { colors: {
+      primary: { ..._hslScale(51), foreground: "oklch(0.2 0.02 85)" },
+      secondary: _secScale,
+      destructive: "hsl(0 74% 50% / <alpha-value>)",
+      "destructive-foreground": "#ffffff",
+      card: "#ffffff", "card-foreground": "hsl(0 0% 14.5%)",
+      background: "#ffffff", foreground: "hsl(0 0% 14.5%)",
+      border: "hsl(0 0% 92%)", input: "hsl(0 0% 92%)", ring: "hsl(51 100% 46%)",
+      "muted-foreground": "hsl(0 0% 45% / <alpha-value>)",
+    }, fontFamily: { sans: ["Manrope", "sans-serif"] } } },
+  };
+</script>
+<style>
+  /* preflight is off — replicate only Tailwind's border reset so `border` utilities work
+     (default width 0) without forcing stray medium borders onto every element */
+  *, ::before, ::after { border-width: 0; border-style: solid; border-color: var(--border); }
+  /* preflight is off — reset the UA default button background (light gray) so Tailwind
+     bg-* utilities (and transparent buttons) render correctly; .btn etc. set their own bg */
+  button { background-color: transparent; background-image: none; }
+  /* preflight is off — zero the UA default <p> margins (Tailwind-driven paragraphs rely on this;
+     without it, native <p> margins inflate cards like the StatCard tiles) */
+  p { margin: 0; }
+</style>
 <style>
   html, body, #root { height: 100%; margin: 0; }
   body { background: var(--gray-75); }
+  /* RichText (Quill-snow-like) placeholder + list rendering */
+  .bh-rte:empty::before { content: attr(data-ph); color: var(--gray-400); pointer-events: none; }
+  .bh-rte ul { list-style: disc; padding-left: 1.5em; margin: 0; }
+  .bh-rte ol { list-style: decimal; padding-left: 1.5em; margin: 0; }
+  .bh-rte a { color: var(--brand-blue); text-decoration: underline; }
+  .bh-rte:focus { outline: none; }
+
+  /* ---- Job Posts list: container-query responsive stats + table ---- */
+  /* DOM order: stats first, then table. Small/medium container → flex column (stats stacked on top).
+     Wide (2xl) container → flex row with the table; stats sit to the RIGHT via order. */
+  .jp-split { display: flex; flex-direction: column; gap: 20px; }
+  .jp-split > .jp-table { flex: 1 1 auto; min-width: 0; }
+  .jp-split > .jp-stats { flex: none; container-type: inline-size; }
+  .jp-stat-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  @container (min-width: 380px) { .jp-stat-grid { grid-template-columns: repeat(2, 1fr); } }
+  @container (min-width: 620px) { .jp-stat-grid { grid-template-columns: repeat(3, 1fr); } }
+  @container (min-width: 900px) { .jp-stat-grid { grid-template-columns: repeat(5, 1fr); } }
+  /* the split flips to row off the MAIN content width (.bh-main) at the 2xl (1280px) breakpoint */
+  @container (min-width: 1280px) {
+    .jp-split { flex-direction: row; align-items: flex-start; }
+    .jp-split > .jp-table { order: 1; }
+    .jp-split > .jp-stats { order: 2; width: 280px; }
+  }
+
+  /* ---- generic container-query split: a main panel + a side panel (stats/count/info) ----
+     small container → flex column (side stacked); wide container → row with side at right. */
+  .cq-split { display: flex; flex-direction: column; gap: 16px; }
+  /* `.reverse` puts the side panel (e.g. count card) ON TOP while stacked */
+  .cq-split.reverse { flex-direction: column-reverse; }
+  .cq-split > .cq-main { flex: 1 1 auto; min-width: 0; }
+  .cq-split > .cq-side { flex: none; }
+  @container (min-width: 1280px) {
+    .cq-split { flex-direction: row; align-items: stretch; }
+    .cq-split.reverse { flex-direction: row; }
+    .cq-split > .cq-side { width: var(--cq-side-w, 260px); }
+  }
+  /* responsive stat-tile grid: parent `.cq-stats` is the container, `.cq-stat-grid` is the grid */
+  .cq-stats { container-type: inline-size; }
+  .cq-stat-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  @container (min-width: 520px) { .cq-stat-grid { grid-template-columns: repeat(2, 1fr); } }
+  @container (min-width: 820px) { .cq-stat-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  /* ---- Posting detail: applications table + the two info cards as ONE group ----
+     keyed off main width (.bh-main). <1280 → the info group sits ON TOP of the table, its two cards
+     in a ROW (job-info + count) that collapses to a column-reverse stack (count on top) only once the
+     group itself gets small; ≥1280 → row with the group docked RIGHT as a vertical column. */
+  .pd-split { display: flex; flex-direction: column-reverse; gap: 16px; }
+  .pd-split > .pd-main { flex: 1 1 auto; min-width: 0; }
+  .pd-split > .pd-side { flex: none; container-type: inline-size; }
+  .pd-cards { display: flex; flex-direction: row; gap: 16px; align-items: stretch; }
+  .pd-cards > .card { container-type: inline-size; }
+  .pd-cards > .pd-info { flex: 1 1 auto; min-width: 0; }
+  .pd-cards > .pd-count { flex: 0 0 220px; }
+  /* group narrow → stack with the count on top */
+  @container (max-width: 600px) {
+    .pd-cards { flex-direction: column-reverse; }
+    .pd-cards > .pd-count { flex: none; }
+  }
+  @container (min-width: 1280px) {
+    .pd-split { flex-direction: row; align-items: flex-start; }
+    .pd-split > .pd-main { order: 1; }
+    .pd-split > .pd-side { order: 2; width: 320px; }
+  }
+  /* info card inner grid responds to the card's own width: 1 → 2 → 3 up */
+  .pd-info-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @container (min-width: 340px) { .pd-info-grid { grid-template-columns: repeat(2, 1fr); } }
+  @container (min-width: 520px) { .pd-info-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  /* ---- master-detail split (course player, notifications inbox): left rail + right pane ----
+     small main → column (rail on top); wide main → row with the rail on the LEFT at a fixed width. */
+  .md-split { display: flex; flex-direction: column; gap: 16px; }
+  .md-split > .md-rail { flex: none; min-width: 0; }
+  .md-split > .md-main { flex: 1 1 auto; min-width: 0; }
+  @container (min-width: 820px) {
+    .md-split { flex-direction: row; align-items: flex-start; }
+    .md-split > .md-rail { width: var(--md-rail-w, 340px); }
+    .md-split > .md-rail.md-rail--sticky { position: sticky; top: 0; align-self: flex-start; }
+  }
+  /* course player: on small screens the right content opens as a slide-in side drawer */
+  .cp-backdrop { position: fixed; inset: 0; background: rgba(16,24,40,.45); z-index: 290; }
+  .cp-drawer-close { display: flex; }
+  @container (min-width: 820px) { .cp-backdrop { display: none; } .cp-drawer-close { display: none; } }
+  @container (max-width: 819px) {
+    .md-split > .md-main.cp-drawer { position: fixed; top: 0; right: 0; left: 0; bottom: 0; width: 100%;
+      background: var(--gray-75, #f7f8fa); transform: translateX(100%);
+      transition: transform .25s ease; z-index: 300; overflow-y: auto; padding: 16px; box-sizing: border-box; }
+    .md-split > .md-main.cp-drawer.open { transform: none; }
+  }
   .menu-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border:0; background:none;
     border-radius:7px; font-family:var(--font-ui); font-size:13px; font-weight:500; color:var(--gray-700);
     cursor:pointer; text-align:left; white-space:nowrap; }
@@ -58,16 +176,11 @@
 </head>
 <body>
   <div id="root"></div>
-  <template id="__bundler_thumbnail">
-    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <rect width="100" height="100" rx="20" fill="#FFC20E"/>
-      <text x="50" y="58" font-family="Manrope, Arial, sans-serif" font-size="34" font-weight="800" fill="#0D2535" text-anchor="middle">HR</text>
-    </svg>
-  </template>
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
   <script type="text/babel" src="src/primitives/controls.jsx"></script>
+  <script type="text/babel" src="src/primitives/ui.jsx"></script>
   <script type="text/babel" src="src/primitives/StatusBadge.jsx"></script>
   <script type="text/babel" src="src/primitives/EmptyState.jsx"></script>
   <script type="text/babel" src="src/primitives/FileIcon.jsx"></script>
@@ -78,6 +191,10 @@
   <script type="text/babel" src="src/forms/Combobox.jsx"></script>
   <script type="text/babel" src="src/forms/StatusFilter.jsx"></script>
   <script type="text/babel" src="src/forms/SupportingDocsUploader.jsx"></script>
+  <script type="text/babel" src="src/forms/MultiImageDropZone.jsx"></script>
+  <script type="text/babel" src="src/shared/SelectionActionBar.jsx"></script>
+  <script type="text/babel" src="src/shared/EmployeeSelectionRoster.jsx"></script>
+  <script type="text/babel" src="src/overlays/RejectionReasonModal.jsx"></script>
   <script type="text/babel" src="src/overlays/Modal.jsx"></script>
   <script type="text/babel" src="src/overlays/Drawer.jsx"></script>
   <script type="text/babel" src="src/overlays/ConfirmModal.jsx"></script>
@@ -116,6 +233,23 @@
   <script type="text/babel" src="src/appraisal/AppraisalScoring.jsx"></script>
   <script type="text/babel" src="src/appraisal/AppraisalDetails.jsx"></script>
   <script type="text/babel" src="src/appraisal/Appraisals.jsx"></script>
+  <script type="text/babel" src="src/performance/data.jsx"></script>
+  <script type="text/babel" src="src/performance/PerfShared.jsx"></script>
+  <script type="text/babel" src="src/performance/DeptPerspectives.jsx"></script>
+  <script type="text/babel" src="src/performance/Objectives.jsx"></script>
+  <script type="text/babel" src="src/performance/IdpData.jsx"></script>
+  <script type="text/babel" src="src/performance/IdpWizard.jsx"></script>
+  <script type="text/babel" src="src/performance/Idp.jsx"></script>
+  <script type="text/babel" src="src/performance/Pip.jsx"></script>
+  <script type="text/babel" src="src/performance/Feedback360.jsx"></script>
+  <script type="text/babel" src="src/performance/Moderation.jsx"></script>
+  <script type="text/babel" src="src/performance/Evidence.jsx"></script>
+  <script type="text/babel" src="src/performance/GoalWizard.jsx"></script>
+  <script type="text/babel" src="src/performance/GoalSetting.jsx"></script>
+  <script type="text/babel" src="src/performance/AppraisalData.jsx"></script>
+  <script type="text/babel" src="src/performance/AppraisalWizard.jsx"></script>
+  <script type="text/babel" src="src/performance/PerformanceAppraisals.jsx"></script>
+  <script type="text/babel" src="src/performance/PerformanceSection.jsx"></script>
   <script type="text/babel" src="src/dashboard/Overview.jsx"></script>
   <script type="text/babel" src="src/dashboard/EmployeeRequests.jsx"></script>
   <script type="text/babel" src="src/dashboard/Dashboard.jsx"></script>
@@ -125,7 +259,10 @@
   <script type="text/babel" src="src/admin/RolesUsers.jsx"></script>
   <script type="text/babel" src="src/careers/data.jsx"></script>
   <script type="text/babel" src="src/careers/Careers.jsx"></script>
+  <script type="text/babel" src="src/careers/ApplicationDetail.jsx"></script>
   <script type="text/babel" src="src/careers/PostingDetails.jsx"></script>
+  <script type="text/babel" src="src/careers/HiringRequests.jsx"></script>
+  <script type="text/babel" src="src/careers/Assessments.jsx"></script>
   <script type="text/babel" src="src/promotions/data.jsx"></script>
   <script type="text/babel" src="src/promotions/Promotions.jsx"></script>
   <script type="text/babel" src="src/transfers/Transfers.jsx"></script>
@@ -140,6 +277,17 @@
   <script type="text/babel" src="src/engagement/disciplinary/Disciplinary.jsx"></script>
   <script type="text/babel" src="src/engagement/disciplinary/CaseFlow.jsx"></script>
   <script type="text/babel" src="src/engagement/disciplinary/DisciplinaryScreen.jsx"></script>
+  <script type="text/babel" src="src/learning/data.jsx"></script>
+  <script type="text/babel" src="src/learning/course-fields.jsx"></script>
+  <script type="text/babel" src="src/learning/NeedsAssessment.jsx"></script>
+  <script type="text/babel" src="src/learning/ProgramCatalog.jsx"></script>
+  <script type="text/babel" src="src/learning/Enrollment.jsx"></script>
+  <script type="text/babel" src="src/learning/Evaluation.jsx"></script>
+  <script type="text/babel" src="src/learning/Courses.jsx"></script>
+  <script type="text/babel" src="src/learning/Analytics.jsx"></script>
+  <script type="text/babel" src="src/learning/MyClassroom.jsx"></script>
+  <script type="text/babel" src="src/learning/LearningSection.jsx"></script>
+  <script type="text/babel" src="src/shell/Notifications.jsx"></script>
   <script type="text/babel" src="tweaks-panel.jsx"></script>
   <script type="text/babel" src="src/app.jsx"></script>
 </body>

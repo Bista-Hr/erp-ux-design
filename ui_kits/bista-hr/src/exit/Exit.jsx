@@ -87,24 +87,13 @@ function ExitList({ rows, q, setQ, tab, setTab, onCreate, onOpen, onArchive }) {
   const shown = byTab.filter(r => q === "" || `${r.employee} ${r.exitType}`.toLowerCase().includes(q.toLowerCase()));
   const pg = usePaged(shown, 10);
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 20 }}>
-        <div>
-          <div className="bh-h2" style={{ fontSize: 24 }}>Employee Exits</div>
-          <div className="bh-body" style={{ marginTop: 4 }}>Manage voluntary and involuntary exits and track clearance to closure.</div>
-        </div>
-        <Button variant="primary" icon="add-line" onClick={onCreate}>Initiate Exit</Button>
-      </div>
-
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 18, flexWrap: "wrap" }}>
-        <Segmented items={["All", "Pending", "In Progress", "Closed"]} active={tab} onChange={setTab} />
-        <div className="input-wrap" style={{ width: 300, padding: "9px 12px" }}>
-          <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
-          <input placeholder="Search exits…" value={q} onChange={e => setQ(e.target.value)} />
-        </div>
-      </div>
-
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title="Employee Exits" subtitle="Manage voluntary and involuntary exits and track clearance to closure."
+        actions={<Button variant="primary" icon="add-line" onClick={onCreate}>Initiate Exit</Button>} />
+      <div className="card" style={{ padding: 20, overflow: "visible" }}>
+        <div className="bh-tablebox">
+        <UI.FilterBar left={<Segmented items={["All", "Pending", "In Progress", "Closed"]} active={tab} onChange={setTab} />}
+          search={q} onSearch={setQ} searchPlaceholder="Search exits…" />
         {rows.length === 0
           ? <EmptyState title="No exits yet" subtitle="Initiate an employee exit to begin the clearance process." cta="Initiate Exit" onAction={onCreate} />
           : <table className="bh">
@@ -153,6 +142,7 @@ function ExitList({ rows, q, setQ, tab, setTab, onCreate, onOpen, onArchive }) {
               </tbody>
             </table>}
         {shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
+        </div>
       </div>
     </div>
   );
@@ -166,7 +156,7 @@ function ExitForm({ lookups, onCancel, onSubmit }) {
   const [form, setForm] = useEx({ exitType: "", exitDate: "", reason: "", note: "" });
   const [docs, setDocs] = useEx([]);
   const [approvers, setApprovers] = useEx([]);
-  const [mails, setMails] = useEx([""]);
+  const [mails, setMails] = useEx([]);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
   // approvers are chosen from staff, excluding the exiting employee (no self-approval)
   const approverOptions = empOptions.filter(n => n !== employee);
@@ -245,22 +235,13 @@ function ExitForm({ lookups, onCancel, onSubmit }) {
 
         <div style={{ height: 1, background: "var(--border)" }} />
         {sectionTitle("Stakeholder Notification", "P&C, Line Manager, BOBS, S&IT, Payroll, Finance, Admin, Security and Medicals are notified for closure actions.")}
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {mails.map((m, i) => (
-            <div key={i} className="input-wrap">
-              <input placeholder="e.g. S&IT, BOBS, payroll@company.com" value={m} onChange={e => setMails(ms => ms.map((x, j) => j === i ? e.target.value : x))} />
-            </div>
-          ))}
-          <button onClick={() => setMails(ms => [...ms, ""])} style={{ alignSelf: "flex-start", display: "inline-flex", alignItems: "center", gap: 6,
-            border: 0, background: "none", cursor: "pointer", padding: 0, fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 13, color: "var(--brand-yellow-dark)" }}>
-            <Icon name="add-line" size={16} color="var(--brand-yellow-dark)" />Add another stakeholder
-          </button>
-        </div>
+        <EmailInputList label="Notify Stakeholders" description="Department / stakeholder mails" placeholder="eg. financedept@starret.com"
+          emails={mails} onChange={setMails} />
       </div>
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employee, primary, ...form, approvers, documents: docs, notifyMails: mails.filter(Boolean) })}>Initiate Exit</Button>
+        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employee, primary, ...form, approvers, documents: docs, notifyMails: mails })}>Initiate Exit</Button>
       </div>
     </div>
   );

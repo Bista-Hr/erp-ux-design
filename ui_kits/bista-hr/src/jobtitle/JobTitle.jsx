@@ -109,7 +109,7 @@ function AssignJobTitleModal({ names, lookups, onClose, onSubmit }) {
 }
 
 /* ---------- employee roster (checkboxes; bulk action lives in the floating bar) ---------- */
-function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, setSegment }) {
+function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, setSegment, title, subtitle, headerAction }) {
   const DIR = window.EMPLOYEE_DIRECTORY;
   const names = window.EMPLOYEE_NAMES;
   const [menu, setMenu] = useJt(null);
@@ -124,16 +124,12 @@ function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, 
   const pg = usePaged(shown, 10);
 
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 18, flexWrap: "wrap" }}>
-        <Segmented items={["Assign", "Requests"]} active={segment} onChange={setSegment} />
-        <div className="input-wrap" style={{ width: 300, padding: "9px 12px" }}>
-          <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
-          <input placeholder="Search staff…" value={q} onChange={e => setQ(e.target.value)} />
-        </div>
-      </div>
-
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
+      <div className="card" style={{ padding: 20 }}>
+        <div className="bh-tablebox">
+        <UI.FilterBar left={<Segmented items={["Assign", "Requests"]} active={segment} onChange={setSegment} />}
+          search={q} onSearch={setQ} searchPlaceholder="Search staff…" />
         <table className="bh">
           <thead><tr>
             <th style={{ width: 44 }}><Checkbox checked={allShownSelected} onChange={toggleAll} /></th>
@@ -159,16 +155,8 @@ function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, 
                   <td>{e.title}</td>
                   <td>{e.dept}</td>
                   <td>{e.branch}</td>
-                  <td style={{ position: "relative", textAlign: "right" }} onClick={ev => ev.stopPropagation()}>
-                    <button className="btn btn-icon btn-ghost" style={{ width: 28, height: 28, padding: 0 }} onClick={() => setMenu(menu === n ? null : n)}>
-                      <Icon name="more-fill" size={18} color="var(--gray-400)" />
-                    </button>
-                    {menu === n && (
-                      <div onMouseLeave={() => setMenu(null)} style={{ position: "absolute", right: 16, top: 40, zIndex: 20, background: "#fff",
-                        borderRadius: "var(--radius-md)", boxShadow: "var(--shadow-pop)", padding: 6, minWidth: 160, display: "flex", flexDirection: "column" }}>
-                        <button className="menu-item" onClick={() => { setMenu(null); onAssignOne(n); }}><Icon name="user-add-line" size={16} />Assign Job Title</button>
-                      </div>
-                    )}
+                  <td style={{ textAlign: "right" }} onClick={ev => ev.stopPropagation()}>
+                    <UI.RowActions actions={[{ label: "Assign Job Title", short: "Assign", icon: "user-add-line", onClick: () => onAssignOne(n) }]} />
                   </td>
                 </tr>
               );
@@ -176,14 +164,15 @@ function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, 
             {shown.length === 0 && <tr><td colSpan={7} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No staff matches your search." /></td></tr>}
           </tbody>
         </table>
+      {shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
+        </div>
       </div>
-      {shown.length > 0 && <div style={{ marginTop: 4 }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
     </div>
   );
 }
 
 /* ---------- requests list (approval queue) ---------- */
-function JobTitleList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment, setSegment, sel, setSel }) {
+function JobTitleList({ rows, q, setQ, tab, setTab, onOpen, onEdit, onArchive, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
   const [menu, setMenu] = useJt(null);
   const byTab = rows.filter(r => tab.length === 0 || tab.includes(r.status));
   const shown = byTab.filter(r => q === "" || r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newTitle.toLowerCase().includes(q.toLowerCase()));
@@ -193,19 +182,13 @@ function JobTitleList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment, 
   const toggle = (id) => setSel(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
   const toggleAll = () => setSel(allPendingSel ? sel.filter(id => !pendingShown.some(r => r.id === id)) : [...new Set([...sel, ...pendingShown.map(r => r.id)])]);
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 18, flexWrap: "wrap" }}>
-        <Segmented items={["Assign", "Requests"]} active={segment} onChange={setSegment} />
-        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <div className="input-wrap" style={{ width: 260, padding: "9px 12px" }}>
-            <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
-            <input placeholder="Search job title changes…" value={q} onChange={e => setQ(e.target.value)} />
-          </div>
-          <StatusFilter value={tab} onChange={setTab} />
-        </div>
-      </div>
-
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
+      <div className="card" style={{ padding: 20 }}>
+        <div className="bh-tablebox">
+        <UI.FilterBar left={<Segmented items={["Assign", "Requests"]} active={segment} onChange={setSegment} />}
+          search={q} onSearch={setQ} searchPlaceholder="Search job title changes…"
+          filters={[{ label: "Status", node: <StatusFilter value={tab} onChange={setTab} /> }]} />
         {rows.length === 0
           ? <EmptyState title="No assignments yet" subtitle="Assign a job title from the Assign tab to create a request." />
           : <table className="bh">
@@ -239,17 +222,12 @@ function JobTitleList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment, 
                     <td>{r.effectiveDate}</td>
                     <td><StatusBadge variant={JT_STATUS_VARIANT[r.status]} text={r.status} size="sm" /></td>
                     <td>{r.approvedBy && r.approvedBy !== "N/A" ? r.approvedBy : "—"}</td>
-                    <td style={{ position: "relative", textAlign: "right" }} onClick={e => e.stopPropagation()}>
-                      <button className="btn btn-icon btn-ghost" style={{ width: 28, height: 28, padding: 0 }} onClick={() => setMenu(menu === r.id ? null : r.id)}>
-                        <Icon name="more-fill" size={18} color="var(--gray-400)" />
-                      </button>
-                      {menu === r.id && (
-                        <div onMouseLeave={() => setMenu(null)} style={{ position: "absolute", right: 16, top: 40, zIndex: 20, background: "#fff",
-                          borderRadius: "var(--radius-md)", boxShadow: "var(--shadow-pop)", padding: 6, minWidth: 170, display: "flex", flexDirection: "column" }}>
-                          <button className="menu-item" onClick={() => { setMenu(null); onOpen(r); }}><Icon name="eye-line" size={16} />View Details</button>
-                          <button className="menu-item danger" onClick={() => { setMenu(null); onArchive(r); }}><Icon name="archive-line" size={16} />Archive Request</button>
-                        </div>
-                      )}
+                    <td style={{ textAlign: "right" }} onClick={e => e.stopPropagation()}>
+                      <UI.RowActions actions={[
+                        { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
+                        { label: "Edit Request", short: "Edit", icon: "edit-2-line", onClick: () => onEdit(r) },
+                        { label: "Archive Request", short: "Archive", icon: "archive-line", danger: true, onClick: () => onArchive(r) },
+                      ]} />
                     </td>
                   </tr>
                   );
@@ -258,6 +236,7 @@ function JobTitleList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment, 
               </tbody>
             </table>}
         {rows.length > 0 && shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
+        </div>
       </div>
     </div>
   );
@@ -435,15 +414,18 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
   } else {
     const pendingCount = records.filter(r => r.status === "Pending").length;
     body = (
-      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-        <PageHeader title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status." />
+      <React.Fragment>
         {segment === "Assign"
           ? <JobTitleRoster q={rosterQ} setQ={setRosterQ} selected={selected} setSelected={setSelected}
-              onAssignOne={(n) => setAssign([n])} segment={segment} setSegment={setSegment} />
+              onAssignOne={(n) => setAssign([n])} segment={segment} setSegment={setSegment}
+              title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status."
+              headerAction={<Button variant="primary" icon="add-line" onClick={() => setAssign([])}>Add Job Title</Button>} />
           : <JobTitleList rows={records} q={q} setQ={setQ} tab={tab} setTab={setTab}
-              onOpen={(r) => setView({ name: "details", id: r.id })} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
-              segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel} />}
-      </div>
+              onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => setAssign(r.employees)} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
+              segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel}
+              title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status."
+              headerAction={<Button variant="primary" icon="add-line" onClick={() => setAssign([])}>Add Job Title</Button>} />}
+      </React.Fragment>
     );
   }
 

@@ -8,12 +8,11 @@ function HolidaysView({ rows, onCreate, onEdit, onArchive }) {
   const shown = rows.filter(r => q === "" || r.name.toLowerCase().includes(q.toLowerCase()));
   const pg = usePaged(shown, 10);
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 20 }}>
-        <div><div className="bh-h2" style={{ fontSize: 24 }}>Holidays</div><div className="bh-body" style={{ marginTop: 4 }}>Manage your organization's holidays</div></div>
-        <Button variant="primary" icon="add-line" onClick={onCreate}>Create Holiday</Button>
-      </div>
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "visible" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title="Holidays" subtitle="Manage your organization's holidays"
+        actions={<Button variant="primary" icon="add-line" onClick={onCreate}>Create Holiday</Button>} />
+      <div className="card" style={{ padding: 20, overflow: "visible" }}>
+        <div className="bh-tablebox">
         <div style={{ display: "flex", justifyContent: "flex-end", padding: "16px 20px" }}>
           <div className="input-wrap" style={{ width: 280, padding: "8px 12px" }}>
             <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} /><input placeholder="search..." value={q} onChange={e => setQ(e.target.value)} />
@@ -43,6 +42,7 @@ function HolidaysView({ rows, onCreate, onEdit, onArchive }) {
             <Button variant="stroke" size="sm" disabled={pg.page <= 1} onClick={pg.prev}>Previous</Button>
             <Button variant="stroke" size="sm" disabled={pg.page >= pg.pages} onClick={pg.next}>Next</Button>
           </div>
+        </div>
         </div>
       </div>
     </div>

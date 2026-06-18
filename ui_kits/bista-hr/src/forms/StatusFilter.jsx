@@ -1,9 +1,9 @@
 // BISTA HR · forms/StatusFilter — popover multi-select status filter button.
-// Replaces the All/Approved/Pending segmented sub-tabs in the approval queues.
-// Click to toggle which statuses are shown; an empty selection means "all".
-// Trigger matches the kit's stroke Button (equalizer-line, like Welfare's filter);
-// the panel reuses the portal-popover approach from Combobox so it is never clipped.
-const STATUS_FILTER_VARIANT = { Approved: "approved", Pending: "pending", Declined: "rejected" };
+// Mirrors components/shared/StatusFilter: a ListFilter trigger with a count badge + a
+// "Filter by status" popover of checkbox + label rows. Click to toggle which statuses are
+// shown; an empty selection means "all". Generic enough to reuse for any "filter by <enum>"
+// case (Promotions, Transfers, Job Title, Exit, …). The panel reuses the portal-popover
+// approach from Combobox so it is never clipped.
 
 function StatusFilter({ value = [], onChange, options = ["Approved", "Pending", "Declined"] }) {
   const { ref, open, setOpen, rect } = usePopover();
@@ -22,7 +22,7 @@ function StatusFilter({ value = [], onChange, options = ["Approved", "Pending", 
     <div ref={ref} style={{ position: "relative" }}>
       <button className="btn btn-stroke btn-sm" onClick={() => setOpen(o => !o)}
         style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-        <Icon name="equalizer-line" size={16} color="var(--gray-500)" />
+        <Icon name="filter-3-line" size={16} color="var(--gray-500)" />
         Status
         {count > 0 && (
           <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minWidth: 18, height: 18,
@@ -53,7 +53,7 @@ function StatusFilter({ value = [], onChange, options = ["Approved", "Pending", 
                     onMouseEnter={e => { if (!on) e.currentTarget.style.background = "var(--gray-50)"; }}
                     onMouseLeave={e => { if (!on) e.currentTarget.style.background = "none"; }}>
                     <Checkbox checked={on} onChange={() => toggle(o.value)} />
-                    <StatusBadge variant={STATUS_FILTER_VARIANT[o.value] || "pending"} text={o.label} size="sm" />
+                    <span style={{ fontFamily: "var(--font-ui)", fontSize: 14, color: "var(--gray-800)" }}>{o.label}</span>
                   </button>
                 );
               })}

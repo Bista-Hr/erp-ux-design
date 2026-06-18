@@ -1,25 +1,56 @@
-// BISTA HR · promotions/Promotions — HR Management ▸ Promotions.
-//   PromotionsList    : All / Approved / Pending tabs; table of promotions (employee + ID,
-//                       grade-title change, effective date, status, approver) + Import/Add.
-//   PromotionForm     : full-page "Create Promotion" matching the Electronic Promotion Form
-//                       spec — multi-select employee(s) → auto-populated current details,
-//                       proposed title/grade, effective date, performance rating, optional
-//                       transfer, justification, budget confirmation, supporting documents
-//                       (reuses SupportingDocsUploader + FileIcon) and department notify.
+// BISTA HR · promotions/Promotions — People & Culture ▸ Promotions.
+//   PromotionRequest  : "Request" tab — the shared EmployeeSelectionRoster (single source of
+//                       truth). Select staff → floating SelectionActionBar → "Create Promotion".
+//   PromotionsList    : "Approval" tab — table of promotions (employee + ID, grade-title change,
+//                       effective date, status, approver) with a StatusFilter + bulk approve/reject.
+//   PromotionForm     : full-page Create / Edit Promotion — three cards (Employee Information ·
+//                       Justification & Budget · Approval & Notification): multi-select employee(s),
+//                       new title / grade / salary / notch / rating, effective date, optional
+//                       transfer, justification + budget switch, allowances, supporting document
+//                       URLs, approvers and department notify.
 //   PromotionDetails  : "Promotion Approval" — Employee Information, Benefits & Allowances,
-//                       Supporting Documents and Approval Information, with Approve / Reject
-//                       for pending records.
-// Every create / approve / reject / archive routes through a ConfirmModal then a toast.
+//                       Approvers (per-approver status) and Approval Information, with Reason for
+//                       Rejection. Reject opens the shared RejectionReasonModal.
+// Reusable shared pieces: EmployeeSelectionRoster, SelectionActionBar, StatusFilter,
+// RejectionReasonModal, BulkBar, MultiSelectCombobox, Combobox, EmailInputList, DetailPanel.
 const { useState: usePromo, useEffect: usePromoEffect } = React;
 
 let PROMO_SEQ = 700;
 const promoId = () => ++PROMO_SEQ;
 const STATUS_VARIANT = { Approved: "approved", Pending: "pending", Declined: "rejected" };
 const todayPromo = () => new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+// Map a promotion's overall status onto each approver's at-a-glance state.
+const approverVariant = (status) => status === "Approved" ? "approved" : status === "Declined" ? "rejected" : "pending";
+const approverLabel = (status) => status === "Approved" ? "Approved" : status === "Declined" ? "Rejected" : "Pending";
 
-/* ---------- requests list (approval queue) ---------- */
-function PromotionsList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment, setSegment, sel, setSel }) {
-  const [menu, setMenu] = usePromo(null);
+// roster rows from the shared employee directory (single source of truth)
+function promoRosterRows() {
+  const DIR = window.EMPLOYEE_DIRECTORY;
+  return window.EMPLOYEE_NAMES.map(n => ({
+    id: n, name: n, employeeNumber: DIR[n].staffId, jobTitle: DIR[n].title,
+    jobGrade: DIR[n].grade, department: DIR[n].dept, profilePictureUrl: "",
+  }));
+}
+
+/* ---------- request roster (shared EmployeeSelectionRoster) ---------- */
+function PromotionRequest({ q, setQ, segment, setSegment, onCreate, title, subtitle, headerAction }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
+      <div className="card" style={{ padding: 20 }}>
+        <div className="bh-tablebox">
+          <UI.FilterBar left={<Segmented items={["Request", "Approval"]} active={segment} onChange={setSegment} />}
+            search={q} onSearch={setQ} searchPlaceholder="Search staff…" />
+          <EmployeeSelectionRoster employees={promoRosterRows()} itemLabel="staff"
+            actionLabel="Create Promotion" onProceed={onCreate} searchQuery={q} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- approval queue ---------- */
+function PromotionsList({ rows, q, setQ, tab, setTab, onOpen, onEdit, onArchive, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
   const byTab = rows.filter(r => tab.length === 0 || tab.includes(r.status));
   const shown = byTab.filter(r => q === "" || r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newRole.toLowerCase().includes(q.toLowerCase()));
   const pg = usePaged(shown, 10);
@@ -28,21 +59,15 @@ function PromotionsList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment
   const toggle = (id) => setSel(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
   const toggleAll = () => setSel(allPendingSel ? sel.filter(id => !pendingShown.some(r => r.id === id)) : [...new Set([...sel, ...pendingShown.map(r => r.id)])]);
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 18, flexWrap: "wrap" }}>
-        <Segmented items={["Request", "Approval"]} active={segment} onChange={setSegment} />
-        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <div className="input-wrap" style={{ width: 260, padding: "9px 12px" }}>
-            <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
-            <input placeholder="Search promotions…" value={q} onChange={e => setQ(e.target.value)} />
-          </div>
-          <StatusFilter value={tab} onChange={setTab} />
-        </div>
-      </div>
-
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
+      <div className="card" style={{ padding: 20 }}>
+        <div className="bh-tablebox">
+        <UI.FilterBar left={<Segmented items={["Request", "Approval"]} active={segment} onChange={setSegment} />}
+          search={q} onSearch={setQ} searchPlaceholder="Search promotions…"
+          filters={[{ label: "Status", node: <StatusFilter value={tab} onChange={setTab} /> }]} />
         {rows.length === 0
-          ? <EmptyState title="No promotions yet" subtitle="Select staff from the Promote tab to raise a promotion." />
+          ? <EmptyState title="No promotions yet" subtitle="Select staff from the Request tab to raise a promotion." />
           : <table className="bh">
               <thead><tr>
                 <th style={{ width: 44 }}><Checkbox checked={allPendingSel} onChange={toggleAll} /></th>
@@ -74,17 +99,12 @@ function PromotionsList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment
                     <td>{r.effectiveDate}</td>
                     <td><StatusBadge variant={STATUS_VARIANT[r.status]} text={r.status} size="sm" /></td>
                     <td>{r.approvedBy && r.approvedBy !== "N/A" ? r.approvedBy : "—"}</td>
-                    <td style={{ position: "relative", textAlign: "right" }} onClick={e => e.stopPropagation()}>
-                      <button className="btn btn-icon btn-ghost" style={{ width: 28, height: 28, padding: 0 }} onClick={() => setMenu(menu === r.id ? null : r.id)}>
-                        <Icon name="more-fill" size={18} color="var(--gray-400)" />
-                      </button>
-                      {menu === r.id && (
-                        <div onMouseLeave={() => setMenu(null)} style={{ position: "absolute", right: 16, top: 40, zIndex: 20, background: "#fff",
-                          borderRadius: "var(--radius-md)", boxShadow: "var(--shadow-pop)", padding: 6, minWidth: 170, display: "flex", flexDirection: "column" }}>
-                          <button className="menu-item" onClick={() => { setMenu(null); onOpen(r); }}><Icon name="eye-line" size={16} />View Details</button>
-                          <button className="menu-item danger" onClick={() => { setMenu(null); onArchive(r); }}><Icon name="archive-line" size={16} />Archive Promotion</button>
-                        </div>
-                      )}
+                    <td style={{ textAlign: "right" }} onClick={e => e.stopPropagation()}>
+                      <UI.RowActions actions={[
+                        { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
+                        { label: "Edit Promotion", short: "Edit", icon: "edit-2-line", onClick: () => onEdit(r) },
+                        { label: "Archive Promotion", short: "Archive", icon: "archive-line", danger: true, onClick: () => onArchive(r) },
+                      ]} />
                     </td>
                   </tr>
                   );
@@ -93,265 +113,151 @@ function PromotionsList({ rows, q, setQ, tab, setTab, onOpen, onArchive, segment
               </tbody>
             </table>}
         {rows.length > 0 && shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
+        </div>
       </div>
     </div>
   );
 }
 
-/* ---------- assign promotion (full page) — one promotion target → many employees ---------- */
-function BulkPromoteForm({ names, lookups, onCancel, onSubmit }) {
-  const LK = lookups || window.LOOKUPS;
-  const DIR = window.EMPLOYEE_DIRECTORY;
-  const [title, setTitle] = usePromo("");
-  const [grade, setGrade] = usePromo("");
-  const [date, setDate] = usePromo("");
-  const [rating, setRating] = usePromo("");
-  const [reason, setReason] = usePromo("");
-  const [docs, setDocs] = usePromo([]);
-  const valid = title && grade && date && reason.trim();
-  const multi = names.length > 1;
-  const sectionTitle = (t, sub) => (
-    <div style={{ marginTop: 4 }}>
-      <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 18, color: "var(--gray-900)" }}>{t}</div>
-      {sub && <div className="bh-body" style={{ marginTop: 2 }}>{sub}</div>}
-    </div>
-  );
+/* ---------- reusable section helpers (form) ---------- */
+function FormCard({ title, children }) {
   return (
     <div className="card" style={{ padding: "var(--card-pad, 24px)", overflow: "visible" }}>
-      <div style={{ marginBottom: 8 }}>
-        <div className="bh-h2" style={{ fontSize: 24 }}>Assign Promotion</div>
-        <div className="bh-body" style={{ marginTop: 4 }}>Assign one promotion target to {names.length} selected employee{multi ? "s" : ""}. Each becomes a pending request.</div>
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 880 }}>
-        {sectionTitle("Selected Employees", `${names.length} employee${multi ? "s" : ""} will receive this promotion.`)}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 10 }}>
-          {names.map(n => {
-            const e = DIR[n] || {};
-            return (
-              <div key={n} style={{ display: "flex", alignItems: "center", gap: 12, border: "1px solid var(--border)", borderRadius: 10, padding: "10px 12px", minWidth: 0 }}>
-                <Avatar name={n} size={36} />
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontFamily: "var(--font-head)", fontWeight: 600, fontSize: 14, color: "var(--gray-900)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{n}</div>
-                  <div style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{e.staffId} · {e.title}{e.grade ? ` · ${e.grade}` : ""}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Promotion Details")}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Proposed Job Title"><Combobox value={title} onChange={setTitle} options={LK.jobTitles} placeholder="Select job title" /></Field>
-          <Field label="Proposed Job Grade"><Combobox value={grade} onChange={setGrade} options={LK.jobGrades} placeholder="Select job grade" /></Field>
-          <Field label="Proposed Effective Date"><Input type="date" value={date} onChange={e => setDate(e.target.value)} /></Field>
-          <Field label="Performance Rating" optional><Combobox value={rating} onChange={setRating} options={LK.performanceRatings} placeholder="Select rating" /></Field>
-        </div>
-
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Justification & Validation")}
-        <Field label="Promotion Justification"><Textarea rows={3} value={reason} onChange={e => setReason(e.target.value)} placeholder="Explain the business justification for this promotion…" /></Field>
-
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Supporting Documents")}
-        <SupportingDocsUploader files={docs} onChange={setDocs} />
-      </div>
-
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24 }}>
-        <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" icon="arrow-up-circle-line" disabled={!valid} onClick={() => valid && onSubmit({ names, title, grade, date, rating, reason, documents: docs })}>Assign Promotion</Button>
-      </div>
+      <div className="bh-h2" style={{ fontSize: 20, marginBottom: 18 }}>{title}</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>{children}</div>
     </div>
   );
 }
-
-/* ---------- employee roster (checkboxes; bulk action lives in the floating bar) ---------- */
-function PromotionRoster({ q, setQ, selected, setSelected, onPromoteOne, segment, setSegment }) {
-  const DIR = window.EMPLOYEE_DIRECTORY;
-  const names = window.EMPLOYEE_NAMES;
-  const [menu, setMenu] = usePromo(null);
-  const shown = names.filter(n => {
-    if (q === "") return true;
-    const e = DIR[n] || {};
-    return `${n} ${e.staffId} ${e.title} ${e.dept} ${e.grade}`.toLowerCase().includes(q.toLowerCase());
-  });
-  const toggle = (n) => setSelected(s => s.includes(n) ? s.filter(x => x !== n) : [...s, n]);
-  const allShownSelected = shown.length > 0 && shown.every(n => selected.includes(n));
-  const toggleAll = () => setSelected(allShownSelected ? selected.filter(n => !shown.includes(n)) : [...new Set([...selected, ...shown])]);
-  const pg = usePaged(shown, 10);
+function AddRemoveRow({ children, onRemove }) {
   return (
-    <div className="card" style={{ overflow: "visible", padding: "var(--card-pad, 24px)" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 18, flexWrap: "wrap" }}>
-        <Segmented items={["Request", "Approval"]} active={segment} onChange={setSegment} />
-        <div className="input-wrap" style={{ width: 300, padding: "9px 12px" }}>
-          <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
-          <input placeholder="Search staff…" value={q} onChange={e => setQ(e.target.value)} />
-        </div>
-      </div>
-      <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
-        <table className="bh">
-          <thead><tr>
-            <th style={{ width: 44 }}><Checkbox checked={allShownSelected} onChange={toggleAll} /></th>
-            <th>Full Name</th><th>Employee ID</th><th>Current Job Title</th><th>Current Grade</th><th>Department</th><th style={{ width: 48 }}></th>
-          </tr></thead>
-          <tbody>
-            {pg.pageItems.map(n => {
-              const e = DIR[n] || {};
-              const on = selected.includes(n);
-              return (
-                <tr key={n} className="jt-roster-row" style={{ cursor: "pointer", background: on ? "#FFFBEB" : undefined }} onClick={() => toggle(n)}>
-                  <td onClick={ev => ev.stopPropagation()}><Checkbox checked={on} onChange={() => toggle(n)} /></td>
-                  <td>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-                      <Avatar name={n} size={32} />
-                      <span style={{ display: "flex", flexDirection: "column" }}>
-                        <span style={{ fontWeight: 500, color: "var(--gray-900)" }}>{n}</span>
-                        <span style={{ fontSize: 12, color: "var(--gray-400)" }}>{e.email || ""}</span>
-                      </span>
-                    </span>
-                  </td>
-                  <td>{e.staffId}</td>
-                  <td>{e.title}</td>
-                  <td>{e.grade}</td>
-                  <td>{e.dept}</td>
-                  <td style={{ position: "relative", textAlign: "right" }} onClick={ev => ev.stopPropagation()}>
-                    <button className="btn btn-icon btn-ghost" style={{ width: 28, height: 28, padding: 0 }} onClick={() => setMenu(menu === n ? null : n)}>
-                      <Icon name="more-fill" size={18} color="var(--gray-400)" />
-                    </button>
-                    {menu === n && (
-                      <div onMouseLeave={() => setMenu(null)} style={{ position: "absolute", right: 16, top: 40, zIndex: 20, background: "#fff",
-                        borderRadius: "var(--radius-md)", boxShadow: "var(--shadow-pop)", padding: 6, minWidth: 190, display: "flex", flexDirection: "column" }}>
-                        <button className="menu-item" onClick={() => { setMenu(null); onPromoteOne(n); }}><Icon name="arrow-up-circle-line" size={16} />Promote (full form)</button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-            {shown.length === 0 && <tr><td colSpan={7} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No staff matches your search." /></td></tr>}
-          </tbody>
-        </table>
-      </div>
-      {shown.length > 0 && <div style={{ marginTop: 4 }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
+    <div style={{ display: "flex", alignItems: "flex-end", gap: 12 }}>
+      <div style={{ flex: 1, display: "flex", gap: 12, minWidth: 0 }}>{children}</div>
+      <Button variant="stroke" size="sm" icon="delete-bin-6-line" onClick={onRemove} style={{ color: "#DC2626" }} />
     </div>
   );
 }
 
-/* ---------- create form (full page) ---------- */
-function PromotionForm({ lookups, initialEmployees, onCancel, onSubmit }) {
+/* ---------- create / edit form (full page) ---------- */
+function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSubmit }) {
   const LK = lookups || window.LOOKUPS;
-  const DIR = window.EMPLOYEE_DIRECTORY;
   const empOptions = window.EMPLOYEE_NAMES;
-  const [employees, setEmployees] = usePromo(initialEmployees || []);
-  const [form, setForm] = usePromo({ newJobTitle: "", grade: "", effectiveDate: "", salary: "", performanceRating: "",
-    includeTransfer: false, newBranch: "", newZone: "", newDepartment: "", justification: "", budgetConfirmed: false });
-  const [docs, setDocs] = usePromo([]);
-  const [approvers, setApprovers] = usePromo([]);
-  const [mails, setMails] = usePromo([""]);
+  const isEdit = !!initialData;
+  const [employees, setEmployees] = usePromo(initialData ? (initialData.employees || []) : (initialEmployees || []));
+  const [form, setForm] = usePromo({
+    newJobTitle: initialData?.newRole || "", grade: initialData?.grade || "", salary: initialData?.salary || "",
+    notch: initialData?.notch || "", performanceRating: initialData?.performanceRating || "",
+    effectiveDate: initialData?.effectiveDate || "", includeTransfer: initialData?.includeTransfer || false,
+    newBranch: initialData?.branch || "", newZone: initialData?.zone || "", newDepartment: initialData?.department || "",
+    justification: initialData?.justification || "", budgetConfirmed: initialData?.budgetConfirmed || false,
+  });
+  const [allowances, setAllowances] = usePromo(initialData?.allowances?.length ? initialData.allowances.map(a => ({ type: a.label || "", amount: a.value || "" })) : []);
+  // Supporting documents: existing URLs (edit mode) can be removed/restored; new files are added this session.
+  const [selectedFiles, setSelectedFiles] = usePromo([]);
+  const [docUrls, setDocUrls] = usePromo(initialData?.docUrls || []);          // kept existing
+  const [removedDocs, setRemovedDocs] = usePromo([]);                           // existing marked for removal
+  const [approvers, setApprovers] = usePromo(initialData?.approvers || []);
+  const [mails, setMails] = usePromo(initialData?.notifyMails || []);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
 
-  // auto-populate from the first selected employee (mirrors the spec's auto-populated fields)
-  const primary = employees[0] ? DIR[employees[0]] : null;
-  usePromoEffect(() => {
-    if (primary && !form.performanceRating) set("performanceRating", primary.rating);
-  }, [employees]);
-  const staffIds = employees.map(n => (DIR[n] || {}).staffId).filter(Boolean).join(", ");
-  // approvers are chosen from staff, excluding the employees being promoted (no self-approval)
   const approverOptions = empOptions.filter(n => !employees.includes(n));
-  const autoItems = primary ? [
-    { label: "Staff ID(s)", value: staffIds },
-    { label: "Current Job Title", value: primary.title },
-    { label: "Current Grade", value: primary.grade },
-    { label: "Department / Unit", value: primary.dept },
-    { label: "Zone", value: primary.zone },
-    { label: "Branch", value: primary.branch },
-    { label: "Current Salary", value: primary.salary },
-  ] : [];
+  const valid = employees.length > 0 && form.newJobTitle && form.grade && form.salary && form.effectiveDate
+    && form.performanceRating && form.justification.trim() && approvers.length > 0 && mails.length > 0;
 
-  const valid = employees.length > 0 && form.newJobTitle && form.grade && form.effectiveDate
-    && form.performanceRating && form.justification.trim() && form.budgetConfirmed && docs.length > 0 && approvers.length > 0;
-
-  const sectionTitle = (t, sub) => (
-    <div style={{ marginTop: 4 }}>
-      <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 18, color: "var(--gray-900)" }}>{t}</div>
-      {sub && <div className="bh-body" style={{ marginTop: 2 }}>{sub}</div>}
-    </div>
-  );
+  const submit = () => {
+    if (!valid) return;
+    onSubmit({
+      employees, ...form,
+      allowances: allowances.filter(a => a.type.trim() || a.amount).map(a => ({ label: a.type, value: a.amount })),
+      docUrls: docUrls.filter(u => !removedDocs.includes(u)),
+      newFiles: selectedFiles,
+      approvers, notifyMails: mails,
+    });
+  };
 
   return (
-    <div className="card" style={{ padding: "var(--card-pad, 24px)", overflow: "visible" }}>
-      <div style={{ marginBottom: 8 }}>
-        <div className="bh-h2" style={{ fontSize: 24 }}>Create Promotion</div>
-        <div className="bh-body" style={{ marginTop: 4 }}>Create a new promotion record. Request type: <strong style={{ color: "var(--gray-700)" }}>Employee Promotion</strong>.</div>
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title={isEdit ? "Edit Promotion" : "Create Promotion"}
+        subtitle={isEdit ? "Update the promotion details." : "Select staff, set the new role and route for approval."} />
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 880 }}>
-        {sectionTitle("Employee Information")}
-        <Field label="Employee Name(s)">
-          <MultiSelectCombobox value={employees} onChange={setEmployees} options={empOptions} placeholder="Select one or more employees" avatar />
-        </Field>
-
-        {primary && (
-          <div>
-            <div style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)", marginBottom: 6 }}>Auto-populated from employee record</div>
-            <DetailPanel items={autoItems} tint="gray" cols={4} />
-          </div>
-        )}
-
+      <FormCard title="Employee Information">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Proposed Job Title"><Combobox value={form.newJobTitle} onChange={v => set("newJobTitle", v)} options={LK.jobTitles} placeholder="Select a new job title" /></Field>
-          <Field label="Proposed Job Grade"><Combobox value={form.grade} onChange={v => set("grade", v)} options={LK.jobGrades} placeholder="Select a new job grade" /></Field>
-          <Field label="Proposed Effective Date"><Input type="date" value={form.effectiveDate} onChange={e => set("effectiveDate", e.target.value)} /></Field>
+          <Field label="Employee Name(s)">
+            <MultiSelectCombobox value={employees} onChange={setEmployees} options={empOptions} placeholder="Select one or more employees" avatar />
+          </Field>
+          <Field label="New Job Title"><Combobox value={form.newJobTitle} onChange={v => set("newJobTitle", v)} options={LK.jobTitles} placeholder="Select job title" /></Field>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <Field label="New Job Grade"><Combobox value={form.grade} onChange={v => set("grade", v)} options={LK.jobGrades} placeholder="Select job grade" /></Field>
+          <Field label="Effective Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
           <Field label="New Salary"><Input placeholder="GHS 0.00" value={form.salary} onChange={e => set("salary", e.target.value)} /></Field>
+          <Field label="Notch" optional><Input placeholder="e.g. Notch 3" value={form.notch} onChange={e => set("notch", e.target.value)} /></Field>
           <Field label="Performance Rating"><Combobox value={form.performanceRating} onChange={v => set("performanceRating", v)} options={LK.performanceRatings} placeholder="Select rating" /></Field>
         </div>
 
-        <Checkbox checked={form.includeTransfer} onChange={v => set("includeTransfer", v)} label="Include transfer (new branch / zone / department)" />
+        <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: 2 }}>
+          <UI.Switch checked={form.includeTransfer} onCheckedChange={v => set("includeTransfer", v)} />
+          <span style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Include Transfer</span>
+        </div>
         {form.includeTransfer && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20, paddingTop: 4, borderTop: "1px solid var(--divider)" }}>
             <Field label="New Branch"><Combobox value={form.newBranch} onChange={v => set("newBranch", v)} options={LK.branches} placeholder="Select branch" /></Field>
             <Field label="New Zone"><Combobox value={form.newZone} onChange={v => set("newZone", v)} options={LK.zones} placeholder="Select zone" /></Field>
             <Field label="New Department"><Combobox value={form.newDepartment} onChange={v => set("newDepartment", v)} options={LK.departments} placeholder="Select department" /></Field>
           </div>
         )}
+      </FormCard>
 
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Justification & Validation")}
-        <Field label="Promotion Justification"><Textarea rows={4} value={form.justification} onChange={e => set("justification", e.target.value)} placeholder="Explain the business justification for this promotion…" /></Field>
-        <div style={{ border: "1px solid var(--border)", borderRadius: 10, padding: "14px 16px", background: "var(--gray-50)" }}>
-          <Checkbox checked={form.budgetConfirmed} onChange={v => set("budgetConfirmed", v)} label="Budget / Grade Confirmation — I confirm budget and grade availability for this promotion." />
+      <FormCard title="Justification & Budget">
+        <Field label="Promotion Justification"><Textarea rows={4} value={form.justification} onChange={e => set("justification", e.target.value)} placeholder="Explain the rationale for this promotion…" /></Field>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <UI.Switch checked={form.budgetConfirmed} onCheckedChange={v => set("budgetConfirmed", v)} />
+          <span style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Budget confirmed for this promotion</span>
         </div>
 
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Supporting Documents", "Upload promotion recommendation, performance summary and approvals (required).")}
-        <SupportingDocsUploader files={docs} onChange={setDocs} />
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Allowances</label>
+            <Button variant="stroke" size="sm" icon="add-line" onClick={() => setAllowances(a => [...a, { type: "", amount: "" }])}>Add Allowance</Button>
+          </div>
+          {allowances.length === 0 && <span style={{ fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-400)" }}>No allowances added.</span>}
+          {allowances.map((a, i) => (
+            <AddRemoveRow key={i} onRemove={() => setAllowances(list => list.filter((_, j) => j !== i))}>
+              <Input placeholder="Type — e.g. Housing" value={a.type} onChange={e => setAllowances(list => list.map((x, j) => j === i ? { ...x, type: e.target.value } : x))} />
+              <Input placeholder="GHS 0.00" value={a.amount} onChange={e => setAllowances(list => list.map((x, j) => j === i ? { ...x, amount: e.target.value } : x))} />
+            </AddRemoveRow>
+          ))}
+        </div>
 
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Approval Routing", "Select the approver(s) who must sign off on this promotion.")}
-        <Field label="Approvers">
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Supporting Documents</label>
+          <MultiImageDropZone
+            isEditMode={isEdit}
+            selectedFiles={selectedFiles}
+            onFilesSelect={setSelectedFiles}
+            existingImages={docUrls}
+            removedImages={removedDocs}
+            onRemoveExistingImage={(url) => setRemovedDocs(r => [...r, url])}
+            onRestoreImage={(url) => setRemovedDocs(r => r.filter(u => u !== url))}
+            maxFiles={8}
+            maxSize={8 * 1024 * 1024}
+          />
+        </div>
+      </FormCard>
+
+      <FormCard title="Approval & Notification">
+        <Field label="Approvers" hint="Select the approver(s) who must sign off on this promotion.">
           <MultiSelectCombobox value={approvers} onChange={setApprovers} options={approverOptions} placeholder="Select one or more approvers" avatar />
         </Field>
+        <EmailInputList label="Notify Departments" description="Department mails only" placeholder="eg. financedept@starret.com"
+          emails={mails} onChange={setMails} />
+      </FormCard>
 
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Notification")}
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Notify Departments <span style={{ color: "var(--gray-400)", fontWeight: 400 }}>(Department mails only)</span></label>
-          {mails.map((m, i) => (
-            <div key={i} className="input-wrap">
-              <input placeholder="e.g. HR, Finance, it@company.com" value={m} onChange={e => setMails(ms => ms.map((x, j) => j === i ? e.target.value : x))} />
-            </div>
-          ))}
-          <button onClick={() => setMails(ms => [...ms, ""])} style={{ alignSelf: "flex-start", display: "inline-flex", alignItems: "center", gap: 6,
-            border: 0, background: "none", cursor: "pointer", padding: 0, fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 13, color: "var(--brand-yellow-dark)" }}>
-            <Icon name="add-line" size={16} color="var(--brand-yellow-dark)" />Add another mail / department
-          </button>
-        </div>
-      </div>
-
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24 }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employees, primary, staffIds, ...form, approvers, documents: docs, notifyMails: mails.filter(Boolean) })}>Create Promotion</Button>
+        <Button variant="primary" disabled={!valid} onClick={submit}>{isEdit ? "Save Changes" : "Create Promotion"}</Button>
       </div>
     </div>
   );
@@ -359,6 +265,7 @@ function PromotionForm({ lookups, initialEmployees, onCancel, onSubmit }) {
 
 /* ---------- details — "Promotion Approval" ---------- */
 function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
+  const [rejectOpen, setRejectOpen] = usePromo(false);
   const empInfo = [
     { label: "Employee Name", value: promo.employees.join(", ") },
     { label: "Previous Job Title", value: promo.previousRole },
@@ -368,8 +275,8 @@ function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
     { label: "Zone", value: promo.zone },
     { label: "Branch", value: promo.branch },
     { label: "Salary", value: promo.salary },
-    { label: "Performance Rating", value: promo.performanceRating },
     { label: "Effective Date", value: promo.effectiveDate },
+    { label: "Status", value: <StatusBadge variant={STATUS_VARIANT[promo.status]} text={promo.status} size="sm" /> },
   ];
   const approvalInfo = [
     { label: "Approved By", value: promo.approvedBy }, { label: "Approver Email", value: promo.approverEmail }, { label: "Approved At", value: promo.approvedAt },
@@ -384,7 +291,7 @@ function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
             <StatusBadge variant={STATUS_VARIANT[promo.status]} text={promo.status} />
             {pending && (
               <React.Fragment>
-                <Button variant="stroke" icon="close-line" onClick={() => onReject(promo)}>Reject</Button>
+                <Button variant="stroke" icon="close-line" onClick={() => setRejectOpen(true)} style={{ color: "#DC2626", borderColor: "#F3C2C2" }}>Reject Promotion</Button>
                 <Button variant="primary" icon="check-line" onClick={() => onApprove(promo)}>Approve</Button>
               </React.Fragment>
             )}
@@ -404,36 +311,17 @@ function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
       </div>
 
       <div className="card" style={{ padding: 0 }}>
-        <DetailCard icon="attachment-2" title="Supporting Documents">
-          {promo.documents && promo.documents.length > 0
-            ? <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {promo.documents.map((doc, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 12px", border: "1px solid var(--border)", borderRadius: 10 }}>
-                    <FileIcon type={doc.docType} name={doc.name} ext={doc.ext} size={30} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>{doc.name}</div>
-                      <div style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>{doc.size} · {doc.ext}</div>
-                    </div>
-                    <button style={{ display: "inline-flex", alignItems: "center", gap: 6, border: 0, background: "none", cursor: "pointer",
-                      fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-700)" }}>
-                      <Icon name="download-2-line" size={18} color="var(--gray-500)" />Download
-                    </button>
-                  </div>
-                ))}
-              </div>
-            : <EmptyState compact title="No documents" subtitle="No supporting documents were attached." />}
-        </DetailCard>
-      </div>
-
-      <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="user-follow-line" title="Approvers">
           {promo.approvers && promo.approvers.length > 0
-            ? <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            ? <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16 }}>
                 {promo.approvers.map(n => (
-                  <span key={n} style={{ display: "inline-flex", alignItems: "center", gap: 8, border: "1px solid var(--border)", borderRadius: 999, padding: "5px 12px 5px 5px" }}>
-                    <Avatar name={n} size={26} />
-                    <span style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 13.5, color: "var(--gray-900)" }}>{n}</span>
-                  </span>
+                  <div key={n} style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                    <Avatar name={n} size={32} />
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{n}</div>
+                      <StatusBadge variant={approverVariant(promo.status)} text={approverLabel(promo.status)} size="sm" />
+                    </div>
+                  </div>
                 ))}
               </div>
             : <EmptyState compact title="No approvers" subtitle="No approvers were assigned to this promotion." />}
@@ -441,146 +329,168 @@ function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
       </div>
 
       <div className="card" style={{ padding: 0 }}>
+        <DetailCard icon="attachment-2" title="Supporting Documents">
+          {promo.docUrls && promo.docUrls.length > 0
+            ? <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+                {promo.docUrls.map((url, i) => {
+                  const fname = (() => { try { return decodeURIComponent(url.split("/").pop().split("?")[0]); } catch (e) { return url; } })();
+                  return (
+                    <a key={i} href={url} target="_blank" rel="noreferrer"
+                      style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", border: "1px solid var(--border)", borderRadius: 10, textDecoration: "none", minWidth: 220 }}>
+                      <FileIcon name={fname} size={32} />
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 13.5, color: "var(--gray-900)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 180 }}>{fname}</div>
+                        <div style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>Click to view</div>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            : <EmptyState compact title="No documents" subtitle="No supporting documents were attached to this promotion." />}
+        </DetailCard>
+      </div>
+
+      <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="shield-check-line" title="Approval Information"><DetailPanel items={approvalInfo} tint="gray" cols={3} /></DetailCard>
       </div>
 
-      <WorkflowPanel workflowType="Promotion" record={promo} onChange={(partial) => onUpdate(partial)} onToast={onToast} />
+      {promo.rejectionReason && (
+        <div className="card" style={{ padding: 0 }}>
+          <DetailCard icon="error-warning-line" title="Reason For Rejection">
+            <div style={{ background: "#FEF2F2", border: "1px solid #FBD9D9", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }}>{promo.rejectionReason}</div>
+          </DetailCard>
+        </div>
+      )}
+
+      <RejectionReasonModal open={rejectOpen} onClose={() => setRejectOpen(false)}
+        title="Reject Promotion" noun="promotion"
+        onConfirm={(reason) => { setRejectOpen(false); onReject(promo, reason); }} />
     </div>
   );
 }
 
 /* ---------- controller ---------- */
 function PromotionsScreen({ onToast, onSubPage, lookups }) {
-  const DIR = window.EMPLOYEE_DIRECTORY;
   const [promos, setPromos] = usePromo(window.PROMOTION_SEED);
   const [segment, setSegment] = usePromo("Request");   // Request (roster) | Approval
   const [rosterQ, setRosterQ] = usePromo("");
-  const [selected, setSelected] = usePromo([]);
   const [approvalSel, setApprovalSel] = usePromo([]);
-  const [lastCount, setLastCount] = usePromo(0);
   const [q, setQ] = usePromo("");
   const [tab, setTab] = usePromo([]);
-  const [view, setView] = usePromo({ name: "list" });   // list | add | details
+  const [view, setView] = usePromo({ name: "list" });   // list | add | edit | details
   const [confirm, setConfirm] = usePromo(null);
 
   usePromoEffect(() => {
     if (!onSubPage) return;
     if (view.name === "add") onSubPage({ trail: [{ label: "Promotions", onClick: () => setView({ name: "list" }) }, { label: "Create Promotion" }] });
+    else if (view.name === "edit") onSubPage({ trail: [{ label: "Promotions", onClick: () => setView({ name: "list" }) }, { label: "Edit Promotion" }] });
     else if (view.name === "details") onSubPage({ trail: [{ label: "Promotions", onClick: () => setView({ name: "list" }) }, { label: "Promotion Approval" }] });
     else onSubPage(null);
     return () => onSubPage(null);
   }, [view]);
 
-  usePromoEffect(() => { if (selected.length) setLastCount(selected.length); }, [selected.length]);
-
-  // keep the open details view in sync after approve/reject
   const current = view.name === "details" ? promos.find(p => p.id === view.id) : null;
+  const editing = view.name === "edit" ? promos.find(p => p.id === view.id) : null;
 
-  const submitPromo = (f) => setConfirm({ kind: "add", form: f });
-  const submitBulk = (f) => setConfirm({ kind: "bulk", form: f });
+  const submitPromo = (f) => setConfirm({ kind: view.name === "edit" ? "edit" : "add", form: f, id: view.id });
   const runConfirm = () => {
     const c = confirm;
     if (c.kind === "add") {
-      const f = c.form, p = f.primary || {};
+      const f = c.form;
+      const DIR = window.EMPLOYEE_DIRECTORY;
+      const primary = f.employees[0] ? DIR[f.employees[0]] : {};
+      const uploadedUrls = (f.newFiles || []).map(file => `https://files.bistasol.com/promotions/${encodeURIComponent(file.name)}`);
+      const allDocs = [...(f.docUrls || []), ...uploadedUrls];
       setPromos(ps => [{
-        id: promoId(), employees: f.employees, staffIds: f.staffIds || "—",
-        previousRole: p.title || "—", newRole: f.newJobTitle, previousGrade: p.grade || "—", grade: f.grade,
-        deptUnit: f.includeTransfer && f.newDepartment ? f.newDepartment : (p.dept || "—"),
-        department: f.includeTransfer && f.newDepartment ? f.newDepartment : (p.dept || "—"),
-        zone: f.includeTransfer && f.newZone ? f.newZone : (p.zone || "—"),
-        branch: f.includeTransfer && f.newBranch ? f.newBranch : (p.branch || "—"),
-        previousSalary: p.salary || "—", salary: f.salary || "—", performanceRating: f.performanceRating,
-        effectiveDate: f.effectiveDate, dateSubmitted: todayPromo(), status: "Pending",
-        justification: f.justification, allowances: [], documents: f.documents, approvers: f.approvers || [],
+        id: promoId(), employees: f.employees, staffIds: f.employees.map(n => (DIR[n] || {}).staffId).filter(Boolean).join(", ") || "—",
+        previousRole: primary.title || "—", newRole: f.newJobTitle, previousGrade: primary.grade || "—", grade: f.grade,
+        deptUnit: f.includeTransfer && f.newDepartment ? f.newDepartment : (primary.dept || "—"),
+        department: f.includeTransfer && f.newDepartment ? f.newDepartment : (primary.dept || "—"),
+        zone: f.includeTransfer && f.newZone ? f.newZone : (primary.zone || "—"),
+        branch: f.includeTransfer && f.newBranch ? f.newBranch : (primary.branch || "—"),
+        previousSalary: primary.salary || "—", salary: f.salary || "—", notch: f.notch, performanceRating: f.performanceRating,
+        effectiveDate: f.effectiveDate, dateSubmitted: todayPromo(), status: "Pending", includeTransfer: f.includeTransfer,
+        justification: f.justification, budgetConfirmed: f.budgetConfirmed, allowances: f.allowances || [], docUrls: allDocs, approvers: f.approvers || [], notifyMails: f.notifyMails || [],
         approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
       }, ...ps]);
       onToast("Promotion Submitted", { tone: "success" });
-      setView({ name: "list" });
-    } else if (c.kind === "bulk") {
+      setView({ name: "list" }); setSegment("Approval");
+    } else if (c.kind === "edit") {
       const f = c.form;
-      const recs = f.names.map(n => {
-        const p = DIR[n] || {};
-        return {
-          id: promoId(), employees: [n], staffIds: p.staffId || "—",
-          previousRole: p.title || "—", newRole: f.title, previousGrade: p.grade || "—", grade: f.grade,
-          deptUnit: p.dept || "—", department: p.dept || "—", zone: p.zone || "—", branch: p.branch || "—",
-          previousSalary: p.salary || "—", salary: p.salary || "—", performanceRating: f.rating || p.rating || "—",
-          effectiveDate: f.date, dateSubmitted: todayPromo(), status: "Pending",
-          justification: f.reason, allowances: [], documents: f.documents || [],
-          approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
-        };
-      });
-      setPromos(ps => [...recs, ...ps]);
-      onToast(f.names.length > 1 ? `Promotion Raised for ${f.names.length} Employees` : "Promotion Raised", { tone: "success" });
-      setSelected([]); setView({ name: "list" }); setSegment("Approval");
+      const uploadedUrls = (f.newFiles || []).map(file => `https://files.bistasol.com/promotions/${encodeURIComponent(file.name)}`);
+      const allDocs = [...(f.docUrls || []), ...uploadedUrls];
+      setPromos(ps => ps.map(p => p.id === c.id ? {
+        ...p, employees: f.employees, newRole: f.newJobTitle, grade: f.grade, salary: f.salary, notch: f.notch,
+        performanceRating: f.performanceRating, effectiveDate: f.effectiveDate, includeTransfer: f.includeTransfer,
+        department: f.includeTransfer && f.newDepartment ? f.newDepartment : p.department, deptUnit: f.includeTransfer && f.newDepartment ? f.newDepartment : p.deptUnit,
+        zone: f.includeTransfer && f.newZone ? f.newZone : p.zone, branch: f.includeTransfer && f.newBranch ? f.newBranch : p.branch,
+        justification: f.justification, budgetConfirmed: f.budgetConfirmed, allowances: f.allowances || [], docUrls: allDocs, approvers: f.approvers || [], notifyMails: f.notifyMails || [],
+      } : p));
+      onToast("Promotion Updated", { tone: "success" });
+      setView({ name: "list" });
     } else if (c.kind === "archive") {
       setPromos(ps => ps.filter(p => p.id !== c.row.id));
       onToast("Promotion Archived", { tone: "error" });
       setView({ name: "list" });
     } else if (c.kind === "approve") {
       const now = new Date().toLocaleString("en-US");
-      const stamp = window.wfNow();
-      setPromos(ps => ps.map(p => p.id === c.row.id ? { ...p, status: "Approved", wfStatus: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
-        audit: [...(p.audit || []), { action: "Promotion approved", decision: "Approved", actor: "Peter Bosrotsi (Head P&C)", at: stamp }] } : p));
+      setPromos(ps => ps.map(p => p.id === c.row.id ? { ...p, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now } : p));
       onToast("Promotion Approved", { tone: "success" });
-    } else if (c.kind === "reject") {
-      const now = new Date().toLocaleString("en-US");
-      const stamp = window.wfNow();
-      setPromos(ps => ps.map(p => p.id === c.row.id ? { ...p, status: "Declined", wfStatus: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now,
-        audit: [...(p.audit || []), { action: "Promotion declined", decision: "Declined", actor: "Peter Bosrotsi (Head P&C)", at: stamp }] } : p));
-      onToast("Promotion Rejected", { tone: "error" });
     } else if (c.kind === "bulkApprove") {
       const now = new Date().toLocaleString("en-US");
-      const ids = c.ids;
-      setPromos(ps => ps.map(p => ids.includes(p.id) ? { ...p, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now } : p));
-      onToast(`${ids.length} Promotion${ids.length > 1 ? "s" : ""} Approved`, { tone: "success" });
+      setPromos(ps => ps.map(p => c.ids.includes(p.id) ? { ...p, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now } : p));
+      onToast(`${c.ids.length} Promotion${c.ids.length > 1 ? "s" : ""} Approved`, { tone: "success" });
       setApprovalSel([]);
     } else if (c.kind === "bulkReject") {
       const now = new Date().toLocaleString("en-US");
-      const ids = c.ids;
-      setPromos(ps => ps.map(p => ids.includes(p.id) ? { ...p, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now } : p));
-      onToast(`${ids.length} Promotion${ids.length > 1 ? "s" : ""} Rejected`, { tone: "error" });
+      setPromos(ps => ps.map(p => c.ids.includes(p.id) ? { ...p, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now } : p));
+      onToast(`${c.ids.length} Promotion${c.ids.length > 1 ? "s" : ""} Rejected`, { tone: "error" });
       setApprovalSel([]);
     }
     setConfirm(null);
   };
 
+  // reject from the detail page (with a captured reason) — commits immediately
+  const rejectWithReason = (promo, reason) => {
+    const now = new Date().toLocaleString("en-US");
+    setPromos(ps => ps.map(p => p.id === promo.id ? { ...p, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now, rejectionReason: reason } : p));
+    onToast("Promotion Rejected", { tone: "error" });
+  };
+
+  const headerAction = (
+    <React.Fragment>
+      <Button variant="stroke" icon="download-2-line" onClick={() => onToast("Import Promotions — coming soon")}>Import Promotions</Button>
+      <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add" })}>Add Promotion</Button>
+    </React.Fragment>
+  );
+
   let body;
   if (view.name === "add") body = <PromotionForm lookups={lookups} initialEmployees={view.initialEmployees} onCancel={() => setView({ name: "list" })} onSubmit={submitPromo} />;
+  else if (view.name === "edit" && editing) body = <PromotionForm lookups={lookups} initialData={editing} onCancel={() => setView({ name: "list" })} onSubmit={submitPromo} />;
   else if (view.name === "details" && current) body = <PromotionDetails promo={current}
-    onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={(r) => setConfirm({ kind: "reject", row: r })}
+    onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={rejectWithReason}
     onUpdate={(partial) => setPromos(ps => ps.map(p => p.id === current.id ? { ...p, ...partial } : p))} onToast={onToast} />;
   else body = (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <PageHeader title="Promotions" subtitle="Promote or bulk-promote staff, and track approval status."
-        actions={
-          <Button variant="stroke" icon="download-2-line" onClick={() => onToast("Import Promotions — coming soon")}>Import Promotions</Button>
-        } />
-      {segment === "Request"
-        ? <PromotionRoster q={rosterQ} setQ={setRosterQ} selected={selected} setSelected={setSelected}
-            onPromoteOne={(n) => setView({ name: "add", initialEmployees: [n] })} segment={segment} setSegment={setSegment} />
-        : <PromotionsList rows={promos} q={q} setQ={setQ} tab={tab} setTab={setTab}
-            onOpen={(r) => setView({ name: "details", id: r.id })} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
-            segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel} />}
-    </div>
+    segment === "Request"
+      ? <PromotionRequest q={rosterQ} setQ={setRosterQ} segment={segment} setSegment={setSegment}
+          onCreate={(ids) => setView({ name: "add", initialEmployees: ids })}
+          title="Promotions" subtitle="Select staff to promote, and track approval status." headerAction={headerAction} />
+      : <PromotionsList rows={promos} q={q} setQ={setQ} tab={tab} setTab={setTab}
+          onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => setView({ name: "edit", id: r.id })} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
+          segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel}
+          title="Promotions" subtitle="Select staff to promote, and track approval status." headerAction={headerAction} />
   );
 
   const CONFIRM = {
     add:     { t: "Submit Promotion", m: "submit this promotion", l: "Yes, Submit", i: "check-line", c: "Cancel" },
-    bulk:    { t: "Raise Promotion", m: "raise this promotion", l: "Yes, Promote", i: "arrow-up-circle-line", c: "Cancel" },
+    edit:    { t: "Save Changes", m: "save these changes", l: "Yes, Save", i: "check-line", c: "Cancel" },
     archive: { t: "Archive Promotion", m: "archive this promotion", l: "Yes, Archive", i: "archive-line", c: "No" },
     approve: { t: "Approve Promotion", m: "approve this promotion", l: "Yes, Approve", i: "check-line", c: "No" },
-    reject:  { t: "Reject Promotion", m: "reject this promotion", l: "Yes, Reject", i: "close-line", c: "No" },
     bulkApprove: { t: "Approve Promotions", m: "approve", l: "Yes, Approve", i: "check-line", c: "No" },
     bulkReject:  { t: "Reject Promotions", m: "reject", l: "Yes, Reject", i: "close-line", c: "No" },
   };
   const confirmMsg = () => {
     const c = confirm;
-    if (c.kind === "bulk") {
-      const k = c.form.names.length;
-      return k > 1 ? `Are you sure you want to raise this promotion for ${k} employees? Each will be pending approval.`
-        : "Are you sure you want to raise this promotion? It will be pending approval.";
-    }
     if (c.kind === "bulkApprove" || c.kind === "bulkReject") {
       const k = c.ids.length;
       return `Are you sure you want to ${CONFIRM[c.kind].m} ${k} selected promotion${k > 1 ? "s" : ""}?`;
@@ -590,20 +500,9 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
 
   const approvalBarVisible = view.name === "list" && segment === "Approval" && approvalSel.length > 0;
 
-  const barVisible = view.name === "list" && segment === "Request" && selected.length > 0;
-  const barCount = selected.length || lastCount;
-
   return (
     <React.Fragment>
       {body}
-
-      {/* floating bulk-promote bar */}
-      <div className={`jt-assignbar ${barVisible ? "" : "hidden"}`}>
-        <span className="jt-count" key={barCount}>{barCount}</span>
-        <span style={{ fontFamily: "var(--font-ui)", fontSize: 14, color: "var(--gray-700)" }}>staff selected</span>
-        <button className="jt-clear" onClick={() => setSelected([])}>Clear</button>
-        <Button variant="primary" icon="arrow-up-circle-line" onClick={() => setView({ name: "add", initialEmployees: selected })}>Create Promotion</Button>
-      </div>
 
       {/* floating bulk-approval bar (Approval queue) */}
       <BulkBar count={approvalSel.length} noun="promotions selected" visible={approvalBarVisible} onClear={() => setApprovalSel([])}>

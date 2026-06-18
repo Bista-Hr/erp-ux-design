@@ -79,7 +79,7 @@ function Combobox({ value, onChange, options, placeholder = "Select option...", 
   const { ref, open, setOpen, rect } = usePopover();
   const [search, setSearch] = useState("");
   const opts = normOpts(options);
-  const sel = opts.find(o => o.value === value);
+  const sel = opts.find(o => o.value === value) || (value ? { value, label: String(value) } : null);
   const close = () => { setOpen(false); setSearch(""); };
   return (
     <div ref={ref} style={{ position: "relative" }}>

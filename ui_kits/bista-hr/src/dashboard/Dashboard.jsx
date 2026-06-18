@@ -135,6 +135,7 @@ function DashboardArea({ tab, requests, onAddRequest, onResolve, onToast, announ
   if (tab === "Leave Requests") return <LeaveRequests onToast={onToast} onViewAnnouncements={onViewAnnouncements} onOpenAnnouncement={onOpenAnnouncement} />;
   if (tab === "Target Requests") return <TargetRequests onToast={onToast} onViewAnnouncements={onViewAnnouncements} onOpenAnnouncement={onOpenAnnouncement} onSubPage={onSubPage} />;
   if (tab === "Appraisals") return <Appraisals onToast={onToast} onViewAnnouncements={onViewAnnouncements} onOpenAnnouncement={onOpenAnnouncement} onSubPage={onSubPage} />;
+  if (tab === "My Learning") return <MyClassroom onToast={onToast} onSubPage={onSubPage} />;
   if (tab === "Careers") return <CareersFlow onToast={onToast} />;
   return <DashboardPlaceholder title={tab} />;
 }

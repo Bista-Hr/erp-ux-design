@@ -132,7 +132,7 @@ function RoleSwitcher({ roles = [], roleId, onSwitchRole }) {
   );
 }
 
-function TopNav({ title, onToggleNav, user = ME, onProfile, onSignOut, compact = false }) {
+function TopNav({ title, onToggleNav, user = ME, onProfile, onSignOut, onNotifications, hasUnread = false, compact = false }) {
   return (
     <header style={{
       height: 72, flex: "0 0 72px", boxSizing: "border-box", background: "#fff",
@@ -154,7 +154,10 @@ function TopNav({ title, onToggleNav, user = ME, onProfile, onSignOut, compact =
         <Icon name={compact ? "menu-line" : "layout-left-line"} size={20} color="var(--gray-700)" />
       </button>}
       <span className="bh-h3" style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: compact ? 17 : undefined }}>{title}</span>
-      {!compact && <button className="btn btn-icon btn-ghost"><Icon name="notification-3-line" size={20} color="var(--gray-800)" /></button>}
+      {!compact && <button className="btn btn-icon btn-ghost" onClick={onNotifications} title="Notifications" style={{ position: "relative" }}>
+        <Icon name="notification-3-line" size={20} color="var(--gray-800)" />
+        {hasUnread && <span style={{ position: "absolute", top: 7, right: 8, width: 8, height: 8, borderRadius: "50%", background: "var(--error)", border: "2px solid #fff" }} />}
+      </button>}
       <ProfileMenu user={user} onProfile={onProfile} onSignOut={onSignOut} compact={compact} />
     </header>
   );
