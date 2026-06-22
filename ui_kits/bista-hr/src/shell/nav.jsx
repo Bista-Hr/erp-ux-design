@@ -28,8 +28,8 @@ const NAV_MAIN = [
   { name: "Performance", icon: "award-line", kind: "list",
     tabs: ["Department Perspectives", "Goal Setting", "Objectives", "Performance Appraisals", "Portfolio of Evidence", "360 Feedback", "Moderation", "IDP", "PIP"] },
 
-  { name: "Learning & Development", icon: "graduation-cap-line", kind: "list",
-    tabs: ["Needs Assessment", "Program Catalog", "Enrollment", "Evaluation", "Courses", "Analytics"] },
+  // { name: "Learning & Development", icon: "graduation-cap-line", kind: "list",
+  //   tabs: ["Needs Assessment", "Program Catalog", "Enrollment", "Evaluation", "Courses", "Analytics"] },
 ];
 
 const NAV_ADMIN = { name: "System Administration", icon: "settings-3-line", kind: "list", children: [
