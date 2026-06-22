@@ -63,7 +63,7 @@ function FormModal({ config, initial, onClose, onSubmit, lookups }) {
                   : fl.type === "textarea"
                     ? <Textarea placeholder={fl.placeholder} value={form[fl.key]} onChange={e => set(fl.key, e.target.value)} />
                     : fl.type === "date"
-                      ? <Input type="date" value={form[fl.key]} onChange={e => set(fl.key, e.target.value)} />
+                      ? <UI.DatePicker value={form[fl.key] || ""} onSelect={d => set(fl.key, `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`)} placeholder={fl.placeholder || "Pick a date"} />
                       : <Input placeholder={fl.placeholder} value={form[fl.key]} onChange={e => set(fl.key, e.target.value)} />}
             </Field>
           );

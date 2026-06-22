@@ -32,7 +32,7 @@ const JOBTITLE_SEED = [
     department: "Finance", zone: "Accra East", branch: "Abossey Okai",
     effectiveDate: "Jun 01, 2026", dateSubmitted: "May 14, 2026", status: "Approved",
     reason: "Confirmation in substantive role following a successful acting period.",
-    documents: [JT_DOC("Confirmation Letter.pdf", "PDF", "880 KB", "Reference Letter")],
+    documents: ["https://files.bistasol.com/jobtitle/Confirmation-Letter.pdf"],
     approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: "5/16/2026, 2:08:34 PM",
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
   { id: 2, employees: ["Bright Manu"], staffIds: "EMP-10876",
@@ -40,7 +40,7 @@ const JOBTITLE_SEED = [
     department: "Information Technology", zone: "East Zone", branch: "Tema",
     effectiveDate: "May 28, 2026", dateSubmitted: "May 10, 2026", status: "Pending",
     reason: "Re-designation to reflect expanded technical leadership responsibilities.",
-    documents: [JT_DOC("Role Justification.docx", "DOCX", "76 KB", "Other")],
+    documents: ["https://files.bistasol.com/jobtitle/Role-Justification.docx"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
   { id: 3, employees: ["Emmanuel Ansah"], staffIds: "EMP-10412",
@@ -48,7 +48,7 @@ const JOBTITLE_SEED = [
     department: "Human Resource", zone: "South Zone", branch: "Accra",
     effectiveDate: "Jul 08, 2026", dateSubmitted: "May 18, 2026", status: "Pending",
     reason: "Title alignment with the new HR operating model and job architecture.",
-    documents: [JT_DOC("Job Architecture Memo.pdf", "PDF", "1.0 MB", "Other")],
+    documents: ["https://files.bistasol.com/jobtitle/Job-Architecture-Memo.pdf"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
   { id: 4, employees: ["Samuel Asante"], staffIds: "EMP-11233",
@@ -56,34 +56,33 @@ const JOBTITLE_SEED = [
     department: "Finance", zone: "West Zone", branch: "Takoradi",
     effectiveDate: "Apr 30, 2026", dateSubmitted: "Apr 12, 2026", status: "Declined",
     reason: "Proposed re-designation; deferred pending completion of the role-banding review.",
-    documents: [JT_DOC("Banding Review.xlsx", "XLSX", "120 KB", "Other")],
+    documents: ["https://files.bistasol.com/jobtitle/Banding-Review.xlsx"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
     rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM" },
 ];
 
 /* ---------- assign modal (one job title → many employees) ---------- */
-function AssignJobTitleModal({ names, lookups, onClose, onSubmit }) {
+function AssignJobTitleModal({ names, initialData, lookups, onClose, onSubmit }) {
   const LK = lookups || window.LOOKUPS;
   const DIR = window.EMPLOYEE_DIRECTORY;
   const empOptions = window.EMPLOYEE_NAMES;
+  const isEdit = !!initialData;
   const [people, setPeople] = useJt(names);
-  const [title, setTitle] = useJt("");
+  const [title, setTitle] = useJt(initialData?.newTitle || "");
   const [date, setDate] = useJt("");
-  const [reason, setReason] = useJt("");
-  const [approvers, setApprovers] = useJt([]);
-  // approvers are chosen from staff, excluding the employees being assigned (no self-approval)
-  const approverOptions = empOptions.filter(n => !people.includes(n));
-  const valid = title && date && people.length > 0 && approvers.length > 0;
+  const [reason, setReason] = useJt(initialData?.reason || "");
+  const [docs, setDocs] = useJt({ keptUrls: initialData?.documents || [], newFiles: [] });
+  const valid = title && date && people.length > 0;
   const multi = people.length > 1;
   return (
     <Modal onClose={onClose} width={620}>
       <div style={{ padding: "24px 24px 0" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-          <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 20, lineHeight: "28px", color: "var(--gray-900)" }}>Assign job title</div>
+          <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 20, lineHeight: "28px", color: "var(--gray-900)" }}>{isEdit ? "Edit job title" : "Assign job title"}</div>
           <button className="btn btn-icon btn-ghost" onClick={onClose} style={{ width: 32, height: 32, padding: 0 }}><Icon name="close-line" size={20} color="var(--gray-500)" /></button>
         </div>
         <div className="bh-body" style={{ marginTop: 4 }}>
-          {people.length} employee{multi ? "s" : ""} selected. Choose one job title to assign to {multi ? "all of them" : "them"}.
+          {isEdit ? "Update this job title change request." : <React.Fragment>{people.length} employee{multi ? "s" : ""} selected. Choose one job title to assign to {multi ? "all of them" : "them"}.</React.Fragment>}
         </div>
       </div>
 
@@ -94,15 +93,15 @@ function AssignJobTitleModal({ names, lookups, onClose, onSubmit }) {
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <Field label="Job Title"><Combobox value={title} onChange={setTitle} options={LK.jobTitles} placeholder="Select job title" /></Field>
-          <Field label="Effective Date"><Input type="date" value={date} onChange={e => setDate(e.target.value)} /></Field>
+          <Field label="Effective Date"><UI.DatePicker value={date} onSelect={d => setDate(d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
         </div>
         <Field label="Reason / Note" optional><Textarea rows={3} value={reason} onChange={e => setReason(e.target.value)} placeholder="Reason or note for this assignment…" /></Field>
-        <Field label="Approvers"><MultiSelectCombobox value={approvers} onChange={setApprovers} options={approverOptions} placeholder="Select one or more approvers" avatar /></Field>
+        <Field label="Supporting Documents" optional><SupportingDocuments existingUrls={initialData?.documents || []} isEditMode={isEdit} onChange={setDocs} maxFiles={8} maxSizeMB={8} /></Field>
       </div>
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, padding: "0 24px 24px" }}>
         <Button variant="stroke" onClick={onClose}>Cancel</Button>
-        <Button variant="primary" icon="user-add-line" disabled={!valid} onClick={() => valid && onSubmit({ names: people, title, date, reason, approvers })}>Assign job title</Button>
+        <Button variant="primary" icon="user-add-line" disabled={!valid} onClick={() => valid && onSubmit({ names: people, title, date, reason, docs, editId: initialData?.id })}>{isEdit ? "Save Changes" : "Assign job title"}</Button>
       </div>
     </Modal>
   );
@@ -287,38 +286,7 @@ function JobTitleDetails({ record, onApprove, onReject, onUpdate, onToast }) {
 
       <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="attachment-2" title="Supporting Documents">
-          {r.documents && r.documents.length > 0
-            ? <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {r.documents.map((doc, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 12px", border: "1px solid var(--border)", borderRadius: 10 }}>
-                    <FileIcon type={doc.docType} name={doc.name} ext={doc.ext} size={30} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>{doc.name}</div>
-                      <div style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>{doc.size} · {doc.ext}</div>
-                    </div>
-                    <button style={{ display: "inline-flex", alignItems: "center", gap: 6, border: 0, background: "none", cursor: "pointer",
-                      fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-700)" }}>
-                      <Icon name="download-2-line" size={18} color="var(--gray-500)" />Download
-                    </button>
-                  </div>
-                ))}
-              </div>
-            : <EmptyState compact title="No documents" subtitle="No supporting documents were attached." />}
-        </DetailCard>
-      </div>
-
-      <div className="card" style={{ padding: 0 }}>
-        <DetailCard icon="user-follow-line" title="Approvers">
-          {r.approvers && r.approvers.length > 0
-            ? <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                {r.approvers.map(n => (
-                  <span key={n} style={{ display: "inline-flex", alignItems: "center", gap: 8, border: "1px solid var(--border)", borderRadius: 999, padding: "5px 12px 5px 5px" }}>
-                    <Avatar name={n} size={26} />
-                    <span style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 13.5, color: "var(--gray-900)" }}>{n}</span>
-                  </span>
-                ))}
-              </div>
-            : <EmptyState compact title="No approvers" subtitle="No approvers were assigned to this request." />}
+          <SupportingDocumentsList urls={r.documents} />
         </DetailCard>
       </div>
 
@@ -340,6 +308,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
   const [selected, setSelected] = useJt([]);
   const [approvalSel, setApprovalSel] = useJt([]);
   const [assign, setAssign] = useJt(null);          // names[] being assigned (modal)
+  const [editRec, setEditRec] = useJt(null);         // record being edited (modal initialData)
   const [lastCount, setLastCount] = useJt(0);        // held count so the bar shows it while sliding out
   const [q, setQ] = useJt("");
   const [tab, setTab] = useJt([]);
@@ -362,18 +331,26 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
     const c = confirm;
     if (c.kind === "assign") {
       const f = c.form;
+      const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/jobtitle/");
+      if (f.editId) {
+        setRecords(rs => rs.map(r => r.id === f.editId ? { ...r, employees: f.names, newTitle: f.title,
+          effectiveDate: fmtJtDate(f.date), reason: f.reason || "", approvers: f.approvers || [], documents: allDocs } : r));
+        onToast("Job Title Change Updated", { tone: "success" });
+        setAssign(null); setEditRec(null);
+        setConfirm(null); return;
+      }
       const recs = f.names.map(n => {
         const e = DIR[n] || {};
         return { id: jtId(), employees: [n], staffIds: e.staffId || "—",
           previousTitle: e.title || "—", newTitle: f.title, grade: e.grade || "—",
           department: e.dept || "—", zone: e.zone || "—", branch: e.branch || "—",
           effectiveDate: fmtJtDate(f.date), dateSubmitted: todayJt(), status: "Pending",
-          reason: f.reason || "", documents: [], approvers: f.approvers || [],
+          reason: f.reason || "", documents: allDocs, approvers: f.approvers || [],
           approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" };
       });
       setRecords(rs => [...recs, ...rs]);
       onToast(f.names.length > 1 ? `Job Title Assigned to ${f.names.length} Employees` : "Job Title Assigned", { tone: "success" });
-      setAssign(null); setSelected([]); setSegment("Requests");
+      setAssign(null); setEditRec(null); setSelected([]); setSegment("Requests");
     } else if (c.kind === "archive") {
       setRecords(rs => rs.filter(r => r.id !== c.row.id));
       onToast("Job Title Change Archived", { tone: "error" });
@@ -421,7 +398,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
               title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status."
               headerAction={<Button variant="primary" icon="add-line" onClick={() => setAssign([])}>Add Job Title</Button>} />
           : <JobTitleList rows={records} q={q} setQ={setQ} tab={tab} setTab={setTab}
-              onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => setAssign(r.employees)} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
+              onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => { setEditRec(r); setAssign(r.employees); }} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
               segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel}
               title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status."
               headerAction={<Button variant="primary" icon="add-line" onClick={() => setAssign([])}>Add Job Title</Button>} />}
@@ -473,7 +450,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
         <Button variant="primary" icon="check-line" onClick={() => setConfirm({ kind: "bulkApprove", ids: approvalSel })}>Approve</Button>
       </BulkBar>
 
-      {assign && <AssignJobTitleModal names={assign} lookups={lookups} onClose={() => setAssign(null)} onSubmit={submitAssign} />}
+      {assign && <AssignJobTitleModal names={assign} initialData={editRec} lookups={lookups} onClose={() => { setAssign(null); setEditRec(null); }} onSubmit={submitAssign} />}
       {confirm && (() => { const cc = CONFIRM[confirm.kind]; return (
         <ConfirmModal title={cc.t} message={confirmMsg()} confirmLabel={cc.l} confirmIcon={cc.i}
           cancelLabel={cc.c} onConfirm={runConfirm} onClose={() => setConfirm(null)} />

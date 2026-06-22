@@ -4,15 +4,11 @@
 // Both raise onSubmit(form) so the controller can show the confirm phase before committing.
 const { useState: useLeaveState } = React;
 
-// date field — native picker, styled like the kit's inputs, with a calendar affordance
+// date field — uses the kit's shared UI.DatePicker (calendar popover), emits local-ISO for date math
 function DateField({ value, onChange, placeholder }) {
   return (
-    <div className="input-wrap" style={{ cursor: "pointer" }}>
-      <input type="date" value={value || ""} onChange={e => onChange(e.target.value)}
-        style={{ flex: 1, border: 0, outline: 0, background: "transparent", fontFamily: "var(--font-control)",
-          fontSize: 14, color: value ? "var(--gray-900)" : "var(--gray-400)", cursor: "pointer" }} />
-      <Icon name="calendar-line" size={18} style={{ color: "var(--icon-default)" }} />
-    </div>
+    <UI.DatePicker value={value || ""} placeholder={placeholder || "Pick a date"}
+      onSelect={d => onChange(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`)} />
   );
 }
 

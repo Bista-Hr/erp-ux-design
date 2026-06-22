@@ -57,27 +57,30 @@ const EXIT_SEED = [
   { id: 1, employee: "Aba Odum", staffId: "EMP-18389", exitType: "Resignation", exitDate: "Jun 30, 2026", dateSubmitted: "May 02, 2026",
     reason: "Better Opportunity", note: "Accepted a senior role at another institution; serving one-month notice.",
     title: "Data Scientist", dept: "Information Technology", branch: "Ridge", zone: "Accra West", grade: "Grade 5",
-    source: "ESS (Employee)", status: "In Progress", interviewDone: true,
+    source: "ESS (Employee)", status: "In Progress", interviewRequired: true, interviewDone: true,
+    interviewLocation: "P&C Boardroom, Ridge", interviewDate: "Jun 24, 2026", interviewTime: "10:00 AM",
     clearance: freshClearance(["indebtedness", "leaveCash", "assets"]),
-    documents: [EX_DOC("Resignation Letter.pdf", "PDF", "240 KB", "Reference Letter")] },
+    documents: ["https://files.bistasol.com/exits/Resignation-Letter.pdf"] },
   { id: 2, employee: "Abass Abdul Mumin", staffId: "EMP-17431", exitType: "Retirement", exitDate: "Aug 15, 2026", dateSubmitted: "Jun 15, 2026",
     reason: "Attained Retirement Age", note: "Auto-triggered two months before attaining 60 years.",
     title: "Branch Support", dept: "Operations", branch: "Cape Coast", zone: "Central Zones", grade: "Grade 3",
-    source: "System Auto-Trigger", status: "Pending", interviewDone: false,
+    source: "System Auto-Trigger", status: "Pending", interviewRequired: true, interviewDone: false,
+    interviewLocation: "", interviewDate: "", interviewTime: "",
     clearance: freshClearance([]),
-    documents: [EX_DOC("Retirement Notice.pdf", "PDF", "180 KB", "Other")] },
+    documents: ["https://files.bistasol.com/exits/Retirement-Notice.pdf"] },
   { id: 3, employee: "Samuel Boateng", staffId: "EMP-11002", exitType: "Termination", exitDate: "May 20, 2026", dateSubmitted: "May 06, 2026",
     reason: "Performance", note: "Termination following the performance improvement process.",
     title: "Sales Officer", dept: "Marketing", branch: "Kumasi", zone: "West Zone", grade: "Grade 1",
-    source: "P&C/P&CBP", status: "Pending", interviewDone: false,
+    source: "P&C/P&CBP", status: "Pending", interviewRequired: false, interviewDone: false,
     clearance: freshClearance([]),
-    documents: [EX_DOC("Termination Approval.pdf", "PDF", "320 KB", "Contract")] },
+    documents: ["https://files.bistasol.com/exits/Termination-Approval.pdf"] },
   { id: 4, employee: "Franklin Brobbey", staffId: "EMP-10231", exitType: "Resignation", exitDate: "Mar 31, 2026", dateSubmitted: "Feb 28, 2026",
     reason: "Relocation", note: "Relocating abroad with family.",
     title: "Accountant", dept: "Finance", branch: "Accra", zone: "South Zone", grade: "Grade 2",
-    source: "ESS (Employee)", status: "Closed", interviewDone: true,
+    source: "ESS (Employee)", status: "Closed", interviewRequired: true, interviewDone: true,
+    interviewLocation: "Microsoft Teams (remote)", interviewDate: "Mar 26, 2026", interviewTime: "2:30 PM",
     clearance: freshClearance(CLEARANCE_TEMPLATE.map(c => c.key)),
-    documents: [EX_DOC("Resignation Letter.pdf", "PDF", "210 KB", "Reference Letter"), EX_DOC("Clearance Form.pdf", "PDF", "560 KB", "Other")] },
+    documents: ["https://files.bistasol.com/exits/Resignation-Letter.pdf", "https://files.bistasol.com/exits/Clearance-Form.pdf"] },
 ];
 
 /* ---------- list ---------- */
@@ -98,7 +101,7 @@ function ExitList({ rows, q, setQ, tab, setTab, onCreate, onOpen, onArchive }) {
           ? <EmptyState title="No exits yet" subtitle="Initiate an employee exit to begin the clearance process." cta="Initiate Exit" onAction={onCreate} />
           : <table className="bh">
               <thead><tr>
-                <th>Employee</th><th>Exit Type</th><th>Classification</th><th>Exit Date</th><th>Clearance</th><th>Status</th><th style={{ width: 48 }}></th>
+                <th>Employee</th><th>Exit Type</th><th>Exit Date</th><th>Clearance</th><th>Status</th><th style={{ width: 48 }}></th>
               </tr></thead>
               <tbody>
                 {pg.pageItems.map(r => {
@@ -119,7 +122,6 @@ function ExitList({ rows, q, setQ, tab, setTab, onCreate, onOpen, onArchive }) {
                           <Icon name={meta.icon} size={16} color="var(--gray-500)" />{r.exitType}
                         </span>
                       </td>
-                      <td><span style={{ fontSize: 13, color: meta.classification === "Voluntary" ? "#1F8A5B" : "#B54708" }}>{meta.classification}</span></td>
                       <td>{r.exitDate}</td>
                       <td><span style={{ fontSize: 13, color: "var(--gray-600)" }}>{clearanceCount(r.clearance)} / {CLEARANCE_TEMPLATE.length}</span></td>
                       <td><StatusBadge variant={EX_STATUS_VARIANT[r.status]} text={r.status} size="sm" /></td>
@@ -138,7 +140,7 @@ function ExitList({ rows, q, setQ, tab, setTab, onCreate, onOpen, onArchive }) {
                     </tr>
                   );
                 })}
-                {shown.length === 0 && <tr><td colSpan={7} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No exit matches your search." /></td></tr>}
+                {shown.length === 0 && <tr><td colSpan={6} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No exit matches your search." /></td></tr>}
               </tbody>
             </table>}
         {shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
@@ -153,13 +155,10 @@ function ExitForm({ lookups, onCancel, onSubmit }) {
   const DIR = window.EMPLOYEE_DIRECTORY;
   const empOptions = window.EMPLOYEE_NAMES;
   const [employee, setEmployee] = useEx("");
-  const [form, setForm] = useEx({ exitType: "", exitDate: "", reason: "", note: "" });
-  const [docs, setDocs] = useEx([]);
-  const [approvers, setApprovers] = useEx([]);
+  const [form, setForm] = useEx({ exitType: "", exitDate: "", reason: "", note: "", interviewRequired: false, interviewLocation: "", interviewDate: "", interviewTime: "" });
+  const [docs, setDocs] = useEx({ keptUrls: [], newFiles: [] });
   const [mails, setMails] = useEx([]);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
-  // approvers are chosen from staff, excluding the exiting employee (no self-approval)
-  const approverOptions = empOptions.filter(n => n !== employee);
 
   const meta = form.exitType ? exitMeta(form.exitType) : null;
   const primary = employee ? DIR[employee] : null;
@@ -172,26 +171,16 @@ function ExitForm({ lookups, onCancel, onSubmit }) {
     { label: "Zone", value: primary.zone },
   ] : [];
 
-  const valid = employee && form.exitType && form.exitDate && form.reason && approvers.length > 0;
-
-  const sectionTitle = (t, sub) => (
-    <div style={{ marginTop: 4 }}>
-      <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 18, color: "var(--gray-900)" }}>{t}</div>
-      {sub && <div className="bh-body" style={{ marginTop: 2 }}>{sub}</div>}
-    </div>
-  );
+  const valid = employee && form.exitType && form.exitDate && form.reason;
 
   return (
-    <div className="card" style={{ padding: "var(--card-pad, 24px)", overflow: "visible" }}>
-      <div style={{ marginBottom: 8 }}>
-        <div className="bh-h2" style={{ fontSize: 24 }}>Initiate Employee Exit</div>
-        <div className="bh-body" style={{ marginTop: 4 }}>Initiate a voluntary or involuntary exit and start the clearance process.</div>
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title="Initiate Employee Exit"
+        subtitle="Initiate a voluntary or involuntary exit and start the clearance process." />
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 880 }}>
-        {sectionTitle("Exit Information")}
+      <FormCard title="Exit Information">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Exit Type"><Combobox value={form.exitType} onChange={v => set("exitType", v)} options={EXIT_TYPES.map(t => t.value)} placeholder="Select exit type" /></Field>
+          <Field label="Exit Type"><Combobox value={form.exitType} onChange={v => setForm(s => ({ ...s, exitType: v, interviewRequired: exitMeta(v).interview }))} options={EXIT_TYPES.map(t => t.value)} placeholder="Select exit type" /></Field>
           <Field label="Employee Name"><Combobox value={employee} onChange={setEmployee} options={empOptions} placeholder="Select employee" avatar /></Field>
         </div>
 
@@ -201,11 +190,6 @@ function ExitForm({ lookups, onCancel, onSubmit }) {
               background: meta.classification === "Voluntary" ? "#E7F7EF" : "#FEF0E6", color: meta.classification === "Voluntary" ? "#1F8A5B" : "#B54708" }}>
               <Icon name={meta.classification === "Voluntary" ? "user-follow-line" : "government-line"} size={15} color={meta.classification === "Voluntary" ? "#1F8A5B" : "#B54708"} />
               {meta.classification} Exit
-            </span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, borderRadius: 8, padding: "6px 12px", fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 12.5,
-              background: "var(--gray-100)", color: "var(--gray-600)" }}>
-              <Icon name={meta.interview ? "chat-check-line" : "chat-off-line"} size={15} color="var(--gray-500)" />
-              {meta.interview ? "Exit interview applies" : "No exit interview"}
             </span>
           </div>
         )}
@@ -218,30 +202,41 @@ function ExitForm({ lookups, onCancel, onSubmit }) {
         )}
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Proposed / Approved Exit Date"><Input type="date" value={form.exitDate} onChange={e => set("exitDate", e.target.value)} /></Field>
+          <Field label="Proposed / Approved Exit Date"><UI.DatePicker value={form.exitDate} onSelect={d => set("exitDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
           <Field label="Reason for Exit"><Combobox value={form.reason} onChange={v => set("reason", v)} options={EXIT_REASONS} placeholder="Select reason" /></Field>
         </div>
         <Field label="Notes" optional><Textarea rows={3} value={form.note} onChange={e => set("note", e.target.value)} placeholder="Additional context for this exit…" /></Field>
+      </FormCard>
 
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Supporting Documents", "Upload resignation letter, approval memo or other supporting documentation.")}
-        <SupportingDocsUploader files={docs} onChange={setDocs} />
+      <FormCard title="Exit Interview">
+        <div className="bh-body">Indicate whether an exit interview is required. If so, you can optionally schedule a location and time.</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <UI.Switch checked={form.interviewRequired} onCheckedChange={v => set("interviewRequired", v)} />
+          <span style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Exit interview required</span>
+        </div>
+        {form.interviewRequired && (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
+            <Field label="Interview Location" optional><Input value={form.interviewLocation} onChange={e => set("interviewLocation", e.target.value)} placeholder="e.g. P&C Boardroom or Teams link" /></Field>
+            <Field label="Interview Date" optional><UI.DatePicker value={form.interviewDate} onSelect={d => set("interviewDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
+            <Field label="Interview Time" optional><Input type="time" value={form.interviewTime} onChange={e => set("interviewTime", e.target.value)} /></Field>
+          </div>
+        )}
+      </FormCard>
 
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Approval Routing", "Select the approver(s) who must sign off on this exit.")}
-        <Field label="Approvers">
-          <MultiSelectCombobox value={approvers} onChange={setApprovers} options={approverOptions} placeholder="Select one or more approvers" avatar />
-        </Field>
+      <FormCard title="Supporting Documents">
+        <div className="bh-body">Upload resignation letter, approval memo or other supporting documentation.</div>
+        <SupportingDocuments existingUrls={[]} isEditMode={false} onChange={setDocs} maxFiles={8} maxSizeMB={8} />
+      </FormCard>
 
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Stakeholder Notification", "P&C, Line Manager, BOBS, S&IT, Payroll, Finance, Admin, Security and Medicals are notified for closure actions.")}
+      <FormCard title="Notification">
+        <div className="bh-body">P&C, Line Manager, BOBS, S&IT, Payroll, Finance, Admin, Security and Medicals are notified for closure actions.</div>
         <EmailInputList label="Notify Stakeholders" description="Department / stakeholder mails" placeholder="eg. financedept@starret.com"
           emails={mails} onChange={setMails} />
-      </div>
+      </FormCard>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24 }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employee, primary, ...form, approvers, documents: docs, notifyMails: mails })}>Initiate Exit</Button>
+        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employee, primary, ...form, docs, notifyMails: mails })}>Initiate Exit</Button>
       </div>
     </div>
   );
@@ -282,21 +277,6 @@ function ExitDetails({ exit, onToggleClearance, onToggleAll, onMarkInterview, on
       </div>
 
       <div className="card" style={{ padding: 0 }}>
-        <DetailCard icon="user-follow-line" title="Approvers">
-          {exit.approvers && exit.approvers.length > 0
-            ? <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                {exit.approvers.map(n => (
-                  <span key={n} style={{ display: "inline-flex", alignItems: "center", gap: 8, border: "1px solid var(--border)", borderRadius: 999, padding: "5px 12px 5px 5px" }}>
-                    <Avatar name={n} size={26} />
-                    <span style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 13.5, color: "var(--gray-900)" }}>{n}</span>
-                  </span>
-                ))}
-              </div>
-            : <EmptyState compact title="No approvers" subtitle="No approvers were assigned to this exit." />}
-        </DetailCard>
-      </div>
-
-      <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="route-line" title="Workflow Status"><WorkflowProgress status={exit.status} /></DetailCard>
       </div>
 
@@ -308,24 +288,33 @@ function ExitDetails({ exit, onToggleClearance, onToggleAll, onMarkInterview, on
         </div>
       )}
 
-      {/* Exit interview — resignation & retirement only */}
+      {/* Exit interview — driven by the user's interviewRequired toggle */}
       <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="chat-check-line" title="Exit Interview">
-          {meta.interview
-            ? <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap",
-                background: exit.interviewDone ? "#E7F7EF" : "var(--gray-50)", border: `1px solid ${exit.interviewDone ? "#A6E9C8" : "var(--border)"}`, borderRadius: 10, padding: "14px 16px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <Icon name={exit.interviewDone ? "checkbox-circle-fill" : "chat-3-line"} size={22} color={exit.interviewDone ? "#1F8A5B" : "var(--gray-400)"} />
-                  <div>
-                    <div style={{ fontFamily: "var(--font-head)", fontWeight: 600, fontSize: 14.5, color: "var(--gray-900)" }}>{exit.interviewDone ? "Exit interview completed" : "Exit interview pending"}</div>
-                    <div className="bh-body" style={{ marginTop: 2 }}>Applicable to resignation and retirement. Feedback is captured for analytics and improvement.</div>
+          {exit.interviewRequired
+            ? <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap",
+                  background: exit.interviewDone ? "#E7F7EF" : "var(--gray-50)", border: `1px solid ${exit.interviewDone ? "#A6E9C8" : "var(--border)"}`, borderRadius: 10, padding: "14px 16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <Icon name={exit.interviewDone ? "checkbox-circle-fill" : "chat-3-line"} size={22} color={exit.interviewDone ? "#1F8A5B" : "var(--gray-400)"} />
+                    <div>
+                      <div style={{ fontFamily: "var(--font-head)", fontWeight: 600, fontSize: 14.5, color: "var(--gray-900)" }}>{exit.interviewDone ? "Exit interview completed" : "Exit interview pending"}</div>
+                      <div className="bh-body" style={{ marginTop: 2 }}>Feedback is captured for analytics and improvement.</div>
+                    </div>
                   </div>
+                  {!exit.interviewDone && !isClosed && <Button variant="stroke" size="sm" icon="check-line" onClick={() => onMarkInterview(exit)}>Mark Completed</Button>}
                 </div>
-                {!exit.interviewDone && !isClosed && <Button variant="stroke" size="sm" icon="check-line" onClick={() => onMarkInterview(exit)}>Mark Completed</Button>}
+                {(exit.interviewLocation || exit.interviewDate || exit.interviewTime) && (
+                  <DetailPanel tint="gray" cols={3} items={[
+                    { label: "Location", value: exit.interviewLocation || "—" },
+                    { label: "Date", value: exit.interviewDate || "—" },
+                    { label: "Time", value: exit.interviewTime || "—" },
+                  ]} />
+                )}
               </div>
             : <div style={{ display: "flex", alignItems: "center", gap: 12, background: "var(--gray-50)", border: "1px dashed var(--gray-300)", borderRadius: 10, padding: "14px 16px" }}>
                 <Icon name="chat-off-line" size={20} color="var(--gray-400)" />
-                <div className="bh-body">No exit interview applies to <strong style={{ color: "var(--gray-700)" }}>{exit.exitType}</strong>.</div>
+                <div className="bh-body">No exit interview is required for this exit.</div>
               </div>}
         </DetailCard>
       </div>
@@ -376,23 +365,7 @@ function ExitDetails({ exit, onToggleClearance, onToggleAll, onMarkInterview, on
       {/* Supporting documents */}
       <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="attachment-2" title="Supporting Documents">
-          {exit.documents && exit.documents.length > 0
-            ? <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {exit.documents.map((doc, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 12px", border: "1px solid var(--border)", borderRadius: 10 }}>
-                    <FileIcon type={doc.docType} name={doc.name} ext={doc.ext} size={30} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>{doc.name}</div>
-                      <div style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>{doc.size} · {doc.ext}</div>
-                    </div>
-                    <button style={{ display: "inline-flex", alignItems: "center", gap: 6, border: 0, background: "none", cursor: "pointer",
-                      fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-700)" }}>
-                      <Icon name="download-2-line" size={18} color="var(--gray-500)" />Download
-                    </button>
-                  </div>
-                ))}
-              </div>
-            : <EmptyState compact title="No documents" subtitle="No supporting documents were attached." />}
+          <SupportingDocumentsList urls={exit.documents} />
         </DetailCard>
       </div>
 
@@ -448,7 +421,9 @@ function ExitScreen({ onToast, onSubPage, lookups }) {
         dateSubmitted: todayEx(), reason: f.reason, note: f.note,
         title: p.title || "—", dept: p.dept || "—", branch: p.branch || "—", zone: p.zone || "—", grade: p.grade || "—",
         source: meta.value === "Resignation" ? "ESS (Employee)" : meta.value === "Retirement" ? "System Auto-Trigger" : "P&C/P&CBP",
-        status: "Pending", interviewDone: false, clearance: freshClearance([]), documents: f.documents, approvers: f.approvers || [],
+        status: "Pending", interviewRequired: f.interviewRequired, interviewDone: false,
+        interviewLocation: f.interviewLocation || "", interviewDate: f.interviewDate || "", interviewTime: f.interviewTime || "",
+        clearance: freshClearance([]), documents: SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/exits/"),
       }, ...es]);
       onToast("Exit Initiated", { tone: "success" });
       setView({ name: "list" });

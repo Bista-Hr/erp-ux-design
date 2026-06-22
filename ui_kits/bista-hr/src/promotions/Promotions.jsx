@@ -145,32 +145,25 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
   const [employees, setEmployees] = usePromo(initialData ? (initialData.employees || []) : (initialEmployees || []));
   const [form, setForm] = usePromo({
     newJobTitle: initialData?.newRole || "", grade: initialData?.grade || "", salary: initialData?.salary || "",
-    notch: initialData?.notch || "", performanceRating: initialData?.performanceRating || "",
-    effectiveDate: initialData?.effectiveDate || "", includeTransfer: initialData?.includeTransfer || false,
-    newBranch: initialData?.branch || "", newZone: initialData?.zone || "", newDepartment: initialData?.department || "",
+    effectiveDate: initialData?.effectiveDate || "",
     justification: initialData?.justification || "", budgetConfirmed: initialData?.budgetConfirmed || false,
   });
   const [allowances, setAllowances] = usePromo(initialData?.allowances?.length ? initialData.allowances.map(a => ({ type: a.label || "", amount: a.value || "" })) : []);
-  // Supporting documents: existing URLs (edit mode) can be removed/restored; new files are added this session.
-  const [selectedFiles, setSelectedFiles] = usePromo([]);
-  const [docUrls, setDocUrls] = usePromo(initialData?.docUrls || []);          // kept existing
-  const [removedDocs, setRemovedDocs] = usePromo([]);                           // existing marked for removal
-  const [approvers, setApprovers] = usePromo(initialData?.approvers || []);
+  // Supporting documents: self-managing field reports { keptUrls, newFiles }.
+  const [docs, setDocs] = usePromo({ keptUrls: initialData?.docUrls || [], newFiles: [] });
   const [mails, setMails] = usePromo(initialData?.notifyMails || []);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
 
-  const approverOptions = empOptions.filter(n => !employees.includes(n));
   const valid = employees.length > 0 && form.newJobTitle && form.grade && form.salary && form.effectiveDate
-    && form.performanceRating && form.justification.trim() && approvers.length > 0 && mails.length > 0;
+    && form.justification.trim() && mails.length > 0;
 
   const submit = () => {
     if (!valid) return;
     onSubmit({
       employees, ...form,
       allowances: allowances.filter(a => a.type.trim() || a.amount).map(a => ({ label: a.type, value: a.amount })),
-      docUrls: docUrls.filter(u => !removedDocs.includes(u)),
-      newFiles: selectedFiles,
-      approvers, notifyMails: mails,
+      docs,
+      notifyMails: mails,
     });
   };
 
@@ -186,27 +179,11 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
           </Field>
           <Field label="New Job Title"><Combobox value={form.newJobTitle} onChange={v => set("newJobTitle", v)} options={LK.jobTitles} placeholder="Select job title" /></Field>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
           <Field label="New Job Grade"><Combobox value={form.grade} onChange={v => set("grade", v)} options={LK.jobGrades} placeholder="Select job grade" /></Field>
+          <Field label="New Salary"><Input placeholder="GHS 0.00" value={form.salary} onChange={e => set("salary", e.target.value)} /></Field>
           <Field label="Effective Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
-          <Field label="New Salary"><Input placeholder="GHS 0.00" value={form.salary} onChange={e => set("salary", e.target.value)} /></Field>
-          <Field label="Notch" optional><Input placeholder="e.g. Notch 3" value={form.notch} onChange={e => set("notch", e.target.value)} /></Field>
-          <Field label="Performance Rating"><Combobox value={form.performanceRating} onChange={v => set("performanceRating", v)} options={LK.performanceRatings} placeholder="Select rating" /></Field>
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: 2 }}>
-          <UI.Switch checked={form.includeTransfer} onCheckedChange={v => set("includeTransfer", v)} />
-          <span style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Include Transfer</span>
-        </div>
-        {form.includeTransfer && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20, paddingTop: 4, borderTop: "1px solid var(--divider)" }}>
-            <Field label="New Branch"><Combobox value={form.newBranch} onChange={v => set("newBranch", v)} options={LK.branches} placeholder="Select branch" /></Field>
-            <Field label="New Zone"><Combobox value={form.newZone} onChange={v => set("newZone", v)} options={LK.zones} placeholder="Select zone" /></Field>
-            <Field label="New Department"><Combobox value={form.newDepartment} onChange={v => set("newDepartment", v)} options={LK.departments} placeholder="Select department" /></Field>
-          </div>
-        )}
       </FormCard>
 
       <FormCard title="Justification & Budget">
@@ -233,24 +210,11 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
 
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Supporting Documents</label>
-          <MultiImageDropZone
-            isEditMode={isEdit}
-            selectedFiles={selectedFiles}
-            onFilesSelect={setSelectedFiles}
-            existingImages={docUrls}
-            removedImages={removedDocs}
-            onRemoveExistingImage={(url) => setRemovedDocs(r => [...r, url])}
-            onRestoreImage={(url) => setRemovedDocs(r => r.filter(u => u !== url))}
-            maxFiles={8}
-            maxSize={8 * 1024 * 1024}
-          />
+          <SupportingDocuments existingUrls={initialData?.docUrls || []} isEditMode={isEdit} onChange={setDocs} maxFiles={8} maxSizeMB={8} />
         </div>
       </FormCard>
 
-      <FormCard title="Approval & Notification">
-        <Field label="Approvers" hint="Select the approver(s) who must sign off on this promotion.">
-          <MultiSelectCombobox value={approvers} onChange={setApprovers} options={approverOptions} placeholder="Select one or more approvers" avatar />
-        </Field>
+      <FormCard title="Notification">
         <EmailInputList label="Notify Departments" description="Department mails only" placeholder="eg. financedept@starret.com"
           emails={mails} onChange={setMails} />
       </FormCard>
@@ -275,6 +239,7 @@ function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
     { label: "Zone", value: promo.zone },
     { label: "Branch", value: promo.branch },
     { label: "Salary", value: promo.salary },
+    { label: "Performance Rating", value: promo.performanceRating || "—" },
     { label: "Effective Date", value: promo.effectiveDate },
     { label: "Status", value: <StatusBadge variant={STATUS_VARIANT[promo.status]} text={promo.status} size="sm" /> },
   ];
@@ -311,42 +276,8 @@ function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
       </div>
 
       <div className="card" style={{ padding: 0 }}>
-        <DetailCard icon="user-follow-line" title="Approvers">
-          {promo.approvers && promo.approvers.length > 0
-            ? <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16 }}>
-                {promo.approvers.map(n => (
-                  <div key={n} style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                    <Avatar name={n} size={32} />
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{n}</div>
-                      <StatusBadge variant={approverVariant(promo.status)} text={approverLabel(promo.status)} size="sm" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            : <EmptyState compact title="No approvers" subtitle="No approvers were assigned to this promotion." />}
-        </DetailCard>
-      </div>
-
-      <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="attachment-2" title="Supporting Documents">
-          {promo.docUrls && promo.docUrls.length > 0
-            ? <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-                {promo.docUrls.map((url, i) => {
-                  const fname = (() => { try { return decodeURIComponent(url.split("/").pop().split("?")[0]); } catch (e) { return url; } })();
-                  return (
-                    <a key={i} href={url} target="_blank" rel="noreferrer"
-                      style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", border: "1px solid var(--border)", borderRadius: 10, textDecoration: "none", minWidth: 220 }}>
-                      <FileIcon name={fname} size={32} />
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 13.5, color: "var(--gray-900)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 180 }}>{fname}</div>
-                        <div style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>Click to view</div>
-                      </div>
-                    </a>
-                  );
-                })}
-              </div>
-            : <EmptyState compact title="No documents" subtitle="No supporting documents were attached to this promotion." />}
+          <SupportingDocumentsList urls={promo.docUrls} emptySubtitle="No supporting documents were attached to this promotion." />
         </DetailCard>
       </div>
 
@@ -399,17 +330,16 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
       const f = c.form;
       const DIR = window.EMPLOYEE_DIRECTORY;
       const primary = f.employees[0] ? DIR[f.employees[0]] : {};
-      const uploadedUrls = (f.newFiles || []).map(file => `https://files.bistasol.com/promotions/${encodeURIComponent(file.name)}`);
-      const allDocs = [...(f.docUrls || []), ...uploadedUrls];
+      const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/promotions/");
       setPromos(ps => [{
         id: promoId(), employees: f.employees, staffIds: f.employees.map(n => (DIR[n] || {}).staffId).filter(Boolean).join(", ") || "—",
         previousRole: primary.title || "—", newRole: f.newJobTitle, previousGrade: primary.grade || "—", grade: f.grade,
-        deptUnit: f.includeTransfer && f.newDepartment ? f.newDepartment : (primary.dept || "—"),
-        department: f.includeTransfer && f.newDepartment ? f.newDepartment : (primary.dept || "—"),
-        zone: f.includeTransfer && f.newZone ? f.newZone : (primary.zone || "—"),
-        branch: f.includeTransfer && f.newBranch ? f.newBranch : (primary.branch || "—"),
-        previousSalary: primary.salary || "—", salary: f.salary || "—", notch: f.notch, performanceRating: f.performanceRating,
-        effectiveDate: f.effectiveDate, dateSubmitted: todayPromo(), status: "Pending", includeTransfer: f.includeTransfer,
+        deptUnit: primary.dept || "—",
+        department: primary.dept || "—",
+        zone: primary.zone || "—",
+        branch: primary.branch || "—",
+        previousSalary: primary.salary || "—", salary: f.salary || "—", performanceRating: primary.rating || "—",
+        effectiveDate: f.effectiveDate, dateSubmitted: todayPromo(), status: "Pending",
         justification: f.justification, budgetConfirmed: f.budgetConfirmed, allowances: f.allowances || [], docUrls: allDocs, approvers: f.approvers || [], notifyMails: f.notifyMails || [],
         approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
       }, ...ps]);
@@ -417,13 +347,10 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
       setView({ name: "list" }); setSegment("Approval");
     } else if (c.kind === "edit") {
       const f = c.form;
-      const uploadedUrls = (f.newFiles || []).map(file => `https://files.bistasol.com/promotions/${encodeURIComponent(file.name)}`);
-      const allDocs = [...(f.docUrls || []), ...uploadedUrls];
+      const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/promotions/");
       setPromos(ps => ps.map(p => p.id === c.id ? {
-        ...p, employees: f.employees, newRole: f.newJobTitle, grade: f.grade, salary: f.salary, notch: f.notch,
-        performanceRating: f.performanceRating, effectiveDate: f.effectiveDate, includeTransfer: f.includeTransfer,
-        department: f.includeTransfer && f.newDepartment ? f.newDepartment : p.department, deptUnit: f.includeTransfer && f.newDepartment ? f.newDepartment : p.deptUnit,
-        zone: f.includeTransfer && f.newZone ? f.newZone : p.zone, branch: f.includeTransfer && f.newBranch ? f.newBranch : p.branch,
+        ...p, employees: f.employees, newRole: f.newJobTitle, grade: f.grade, salary: f.salary,
+        effectiveDate: f.effectiveDate,
         justification: f.justification, budgetConfirmed: f.budgetConfirmed, allowances: f.allowances || [], docUrls: allDocs, approvers: f.approvers || [], notifyMails: f.notifyMails || [],
       } : p));
       onToast("Promotion Updated", { tone: "success" });

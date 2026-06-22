@@ -29,7 +29,7 @@ const TRANSFER_SEED = [
     grade: "Grade 4", zone: "Accra East",
     effectiveDate: "Jun 01, 2026", dateSubmitted: "May 14, 2026", status: "Approved",
     reason: "Workforce realignment to strengthen the Operations team at the Ridge branch.",
-    documents: [TR_DOC("Transfer Recommendation.pdf", "PDF", "1.1 MB", "Reference Letter"), TR_DOC("Handover Checklist.docx", "DOCX", "92 KB", "Other")],
+    documents: ["https://files.bistasol.com/transfers/Transfer-Recommendation.pdf", "https://files.bistasol.com/transfers/Handover-Checklist.docx"],
     approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: "5/16/2026, 2:08:34 PM",
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
   { id: 2, employees: ["Abass Abdul Mumin"], staffIds: "EMP-17431", classification: "Intra-Departmental",
@@ -38,7 +38,7 @@ const TRANSFER_SEED = [
     grade: "Grade 3", zone: "Central Zones",
     effectiveDate: "May 28, 2026", dateSubmitted: "May 10, 2026", status: "Approved",
     reason: "Relocation to cover staffing gap at the Takoradi branch within the same department.",
-    documents: [TR_DOC("Approval Memo.pdf", "PDF", "640 KB", "Contract")],
+    documents: ["https://files.bistasol.com/transfers/Approval-Memo.pdf"],
     approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: "5/12/2026, 10:22:10 AM",
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
   { id: 3, employees: ["Aba Odum"], staffIds: "EMP-18389", classification: "Inter-Departmental",
@@ -47,7 +47,7 @@ const TRANSFER_SEED = [
     grade: "Grade 5", zone: "Accra West",
     effectiveDate: "Jul 08, 2026", dateSubmitted: "May 18, 2026", status: "Pending",
     reason: "Cross-functional move to embed analytics capability within the Operations department.",
-    documents: [TR_DOC("Business Case.pdf", "PDF", "2.1 MB", "Other")],
+    documents: ["https://files.bistasol.com/transfers/Business-Case.pdf"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
   { id: 4, employees: ["Franklin Brobbey"], staffIds: "EMP-10231", classification: "Intra-Departmental",
@@ -56,7 +56,7 @@ const TRANSFER_SEED = [
     grade: "Grade 2", zone: "South Zone",
     effectiveDate: "May 28, 2026", dateSubmitted: "May 09, 2026", status: "Pending",
     reason: "Employee request to transfer closer to family; role available at the Kumasi branch.",
-    documents: [TR_DOC("Employee Request.docx", "DOCX", "64 KB", "Other"), TR_DOC("ID Verification.jpg", "JPG", "1.4 MB", "ID Card")],
+    documents: ["https://files.bistasol.com/transfers/Employee-Request.docx", "https://files.bistasol.com/transfers/ID-Verification.jpg"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
   { id: 5, employees: ["Samuel Boateng"], staffIds: "EMP-11002", classification: "Inter-Departmental",
@@ -65,7 +65,7 @@ const TRANSFER_SEED = [
     grade: "Grade 1", zone: "West Zone",
     effectiveDate: "Apr 30, 2026", dateSubmitted: "Apr 12, 2026", status: "Declined",
     reason: "Proposed move to Retail Operations; deferred pending replacement at current branch.",
-    documents: [TR_DOC("Transfer Proposal.pdf", "PDF", "210 KB", "Other")],
+    documents: ["https://files.bistasol.com/transfers/Transfer-Proposal.pdf"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
     rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM" },
 ];
@@ -142,76 +142,6 @@ function TransfersList({ rows, q, setQ, tab, setTab, onOpen, onEdit, onArchive, 
   );
 }
 
-/* ---------- bulk transfer modal (one transfer target → many employees) ---------- */
-function BulkTransferForm({ names, lookups, onCancel, onSubmit }) {
-  const LK = lookups || window.LOOKUPS;
-  const DIR = window.EMPLOYEE_DIRECTORY;
-  const [classification, setClassification] = useTr("");
-  const [location, setLocation] = useTr("");
-  const [department, setDepartment] = useTr("");
-  const [date, setDate] = useTr("");
-  const [reason, setReason] = useTr("");
-  const [docs, setDocs] = useTr([]);
-  const isInter = classification === "Inter-Departmental";
-  const setClass = (v) => { setClassification(v); if (v !== "Inter-Departmental") setDepartment(""); };
-  const valid = classification && location && date && reason.trim() && (!isInter || department);
-  const multi = names.length > 1;
-  const sectionTitle = (t, sub) => (
-    <div style={{ marginTop: 4 }}>
-      <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 18, color: "var(--gray-900)" }}>{t}</div>
-      {sub && <div className="bh-body" style={{ marginTop: 2 }}>{sub}</div>}
-    </div>
-  );
-  return (
-    <div className="card" style={{ padding: "var(--card-pad, 24px)", overflow: "visible" }}>
-      <div style={{ marginBottom: 8 }}>
-        <div className="bh-h2" style={{ fontSize: 24 }}>Assign Transfer</div>
-        <div className="bh-body" style={{ marginTop: 4 }}>Assign one transfer target to {names.length} selected employee{multi ? "s" : ""}. Each becomes a pending request.</div>
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 880 }}>
-        {sectionTitle("Selected Employees", `${names.length} employee${multi ? "s" : ""} will be transferred.`)}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 10 }}>
-          {names.map(n => {
-            const e = DIR[n] || {};
-            return (
-              <div key={n} style={{ display: "flex", alignItems: "center", gap: 12, border: "1px solid var(--border)", borderRadius: 10, padding: "10px 12px", minWidth: 0 }}>
-                <Avatar name={n} size={36} />
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontFamily: "var(--font-head)", fontWeight: 600, fontSize: 14, color: "var(--gray-900)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{n}</div>
-                  <div style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{e.staffId} · {e.dept}{e.branch ? ` · ${e.branch}` : ""}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Transfer Details")}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Transfer Classification"><Combobox value={classification} onChange={setClass} options={TRANSFER_CLASSES} placeholder="Select classification" /></Field>
-          <Field label="Proposed / New Location"><Combobox value={location} onChange={setLocation} options={LK.branches} placeholder="Select new location / branch" /></Field>
-          {isInter && <Field label="New Department"><Combobox value={department} onChange={setDepartment} options={LK.departments} placeholder="Select new department" /></Field>}
-          <Field label="Proposed Effective Transfer Date"><Input type="date" value={date} onChange={e => setDate(e.target.value)} /></Field>
-        </div>
-
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Justification")}
-        <Field label="Reason / Justification"><Textarea rows={3} value={reason} onChange={e => setReason(e.target.value)} placeholder="Explain the business justification for this transfer…" /></Field>
-
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Supporting Documents")}
-        <SupportingDocsUploader files={docs} onChange={setDocs} />
-      </div>
-
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24 }}>
-        <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" icon="exchange-line" disabled={!valid} onClick={() => valid && onSubmit({ names, classification, location, department, date, reason, documents: docs })}>Assign Transfer</Button>
-      </div>
-    </div>
-  );
-}
-
 /* ---------- employee roster (shared EmployeeSelectionRoster — single source of truth) ---------- */
 function TransferRoster({ q, setQ, segment, setSegment, onCreate, title, subtitle, headerAction }) {
   const DIR = window.EMPLOYEE_DIRECTORY;
@@ -235,25 +165,22 @@ function TransferRoster({ q, setQ, segment, setSegment, onCreate, title, subtitl
 }
 
 /* ---------- create form (full page) ---------- */
-function TransferForm({ lookups, initialEmployees, onCancel, onSubmit }) {
+function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubmit }) {
   const LK = lookups || window.LOOKUPS;
   const DIR = window.EMPLOYEE_DIRECTORY;
   const empOptions = window.EMPLOYEE_NAMES;
-  const [employees, setEmployees] = useTr(initialEmployees || []);
-  const [form, setForm] = useTr({ classification: "", newLocation: "", newDepartment: "", newUnit: "", newJobTitle: "",
-    effectiveDate: "", reason: "" });
-  const [docs, setDocs] = useTr([]);
-  const [approvers, setApprovers] = useTr([]);
+  const isEdit = !!initialData;
+  const [employees, setEmployees] = useTr(initialData ? (initialData.employees || []) : (initialEmployees || []));
+  const [form, setForm] = useTr({
+    classification: initialData?.classification || "", newLocation: initialData?.newLocation || "",
+    newDepartment: initialData?.newDept || "", newUnit: initialData?.newUnit || "", newJobTitle: initialData?.newTitle || "",
+    effectiveDate: initialData?.effectiveDate || "", reason: initialData?.reason || "" });
+  const [docs, setDocs] = useTr({ keptUrls: initialData?.documents || [], newFiles: [] });
   const [mails, setMails] = useTr([]);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
-  // Intra-Departmental stays within the same department → hide New Department (and clear it).
-  const isInter = form.classification === "Inter-Departmental";
-  const setClassification = (v) => setForm(s => ({ ...s, classification: v, newDepartment: v === "Inter-Departmental" ? s.newDepartment : "" }));
 
   const primary = employees[0] ? DIR[employees[0]] : null;
   const staffIds = employees.map(n => (DIR[n] || {}).staffId).filter(Boolean).join(", ");
-  // approvers are chosen from staff, excluding the employees being transferred (no self-approval)
-  const approverOptions = empOptions.filter(n => !employees.includes(n));
   const autoItems = primary ? [
     { label: "Staff ID(s)", value: staffIds },
     { label: "Current Job Title", value: primary.title },
@@ -263,69 +190,52 @@ function TransferForm({ lookups, initialEmployees, onCancel, onSubmit }) {
     { label: "Zone", value: primary.zone },
   ] : [];
 
-  const valid = employees.length > 0 && form.classification && form.newLocation && form.effectiveDate && form.reason.trim() && docs.length > 0 && approvers.length > 0;
-
-  const sectionTitle = (t, sub) => (
-    <div style={{ marginTop: 4 }}>
-      <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 18, color: "var(--gray-900)" }}>{t}</div>
-      {sub && <div className="bh-body" style={{ marginTop: 2 }}>{sub}</div>}
-    </div>
-  );
+  const valid = employees.length > 0 && form.classification && form.newLocation && form.effectiveDate && form.reason.trim();
 
   return (
-    <div className="card" style={{ padding: "var(--card-pad, 24px)", overflow: "visible" }}>
-      <div style={{ marginBottom: 8 }}>
-        <div className="bh-h2" style={{ fontSize: 24 }}>Create Transfer</div>
-        <div className="bh-body" style={{ marginTop: 4 }}>Create a new transfer record. Request type: <strong style={{ color: "var(--gray-700)" }}>Employee Transfer</strong>.</div>
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title={isEdit ? "Edit Transfer" : "Create Transfer"}
+        subtitle={isEdit ? "Update this transfer record." : "Select staff, set the new posting and route for approval."} />
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 880 }}>
-        {sectionTitle("Employee Information")}
+      <FormCard title="Employee Information">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Transfer Classification"><Combobox value={form.classification} onChange={setClassification} options={TRANSFER_CLASSES} placeholder="Select classification" /></Field>
+          <Field label="Transfer Classification"><Combobox value={form.classification} onChange={v => set("classification", v)} options={TRANSFER_CLASSES} placeholder="Select classification" /></Field>
           <Field label="Employee Name(s)"><MultiSelectCombobox value={employees} onChange={setEmployees} options={empOptions} placeholder="Select one or more employees" avatar /></Field>
         </div>
-
         {primary && (
           <div>
             <div style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)", marginBottom: 6 }}>Auto-populated from employee record</div>
             <DetailPanel items={autoItems} tint="gray" cols={3} />
           </div>
         )}
+      </FormCard>
 
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Transfer Details")}
+      <FormCard title="Transfer Details">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
           <Field label="Proposed / New Location"><Combobox value={form.newLocation} onChange={v => set("newLocation", v)} options={LK.branches} placeholder="Select new location / branch" /></Field>
-          {isInter && <Field label="New Department"><Combobox value={form.newDepartment} onChange={v => set("newDepartment", v)} options={LK.departments} placeholder="Select new department" /></Field>}
-          <Field label="New Unit" optional><Combobox value={form.newUnit} onChange={v => set("newUnit", v)} options={LK.orgUnits || []} placeholder="Select new unit" /></Field>
+          <Field label="New Department"><Combobox value={form.newDepartment} onChange={v => set("newDepartment", v)} options={LK.departments} placeholder="Select new department" /></Field>
+          <Field label="Unit/Branch" optional><Combobox value={form.newUnit} onChange={v => set("newUnit", v)} options={LK.orgUnits || []} placeholder="Select unit / branch" /></Field>
           <Field label="New Job Title" optional><Combobox value={form.newJobTitle} onChange={v => set("newJobTitle", v)} options={LK.jobTitles} placeholder="Select new job title (optional)" /></Field>
-          <Field label="Proposed Effective Transfer Date"><Input type="date" value={form.effectiveDate} onChange={e => set("effectiveDate", e.target.value)} /></Field>
+          <Field label="Proposed Effective Transfer Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
         </div>
+      </FormCard>
 
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Justification")}
+      <FormCard title="Justification & Documents">
         <Field label="Reason / Justification"><Textarea rows={4} value={form.reason} onChange={e => set("reason", e.target.value)} placeholder="Explain the business justification for this transfer…" /></Field>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Supporting Documents</label>
+          <SupportingDocuments existingUrls={initialData?.documents || []} isEditMode={isEdit} onChange={setDocs} maxFiles={8} maxSizeMB={8} />
+        </div>
+      </FormCard>
 
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Supporting Documents", "Upload transfer recommendation, handover and approval documents (where applicable).")}
-        <SupportingDocsUploader files={docs} onChange={setDocs} />
-
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Approval Routing", "Select the approver(s) who must sign off on this transfer.")}
-        <Field label="Approvers">
-          <MultiSelectCombobox value={approvers} onChange={setApprovers} options={approverOptions} placeholder="Select one or more approvers" avatar />
-        </Field>
-
-        <div style={{ height: 1, background: "var(--border)" }} />
-        {sectionTitle("Stakeholder Notification")}
+      <FormCard title="Notification">
         <EmailInputList label="Notify Stakeholders" description="Department / stakeholder mails" placeholder="eg. financedept@starret.com"
           emails={mails} onChange={setMails} />
-      </div>
+      </FormCard>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24 }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employees, primary, staffIds, ...form, approvers, documents: docs, notifyMails: mails })}>Create Transfer</Button>
+        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employees, primary, staffIds, ...form, docs, notifyMails: mails })}>{isEdit ? "Save Changes" : "Create Transfer"}</Button>
       </div>
     </div>
   );
@@ -378,23 +288,7 @@ function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
 
       <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="attachment-2" title="Supporting Documents">
-          {t.documents && t.documents.length > 0
-            ? <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {t.documents.map((doc, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 12px", border: "1px solid var(--border)", borderRadius: 10 }}>
-                    <FileIcon type={doc.docType} name={doc.name} ext={doc.ext} size={30} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>{doc.name}</div>
-                      <div style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>{doc.size} · {doc.ext}</div>
-                    </div>
-                    <button style={{ display: "inline-flex", alignItems: "center", gap: 6, border: 0, background: "none", cursor: "pointer",
-                      fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-700)" }}>
-                      <Icon name="download-2-line" size={18} color="var(--gray-500)" />Download
-                    </button>
-                  </div>
-                ))}
-              </div>
-            : <EmptyState compact title="No documents" subtitle="No supporting documents were attached." />}
+          <SupportingDocumentsList urls={t.documents} />
         </DetailCard>
       </div>
 
@@ -448,12 +342,13 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
 
   const current = view.name === "details" ? transfers.find(t => t.id === view.id) : null;
 
-  const submitTransfer = (f) => setConfirm({ kind: "add", form: f });
+  const submitTransfer = (f) => setConfirm({ kind: view.initialData ? "edit" : "add", form: f, id: view.initialData?.id });
   const submitBulk = (f) => setConfirm({ kind: "bulk", form: f });
   const runConfirm = () => {
     const c = confirm;
     if (c.kind === "add") {
       const f = c.form, p = f.primary || {};
+      const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/transfers/");
       setTransfers(ts => [{
         id: trId(), employees: f.employees, staffIds: f.staffIds || "—", classification: f.classification,
         previousLocation: p.branch || "—", newLocation: f.newLocation,
@@ -461,10 +356,18 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
         previousUnit: p.dept || "—", currentTitle: p.title || "—", newTitle: f.newJobTitle || "",
         grade: p.grade || "—", zone: p.zone || "—",
         effectiveDate: f.effectiveDate, dateSubmitted: todayTr(), status: "Pending",
-        reason: f.reason, documents: f.documents, approvers: f.approvers || [],
+        reason: f.reason, documents: allDocs, approvers: f.approvers || [],
         approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
       }, ...ts]);
       onToast("Transfer Submitted", { tone: "success" });
+      setView({ name: "list" });
+    } else if (c.kind === "edit") {
+      const f = c.form;
+      const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/transfers/");
+      setTransfers(ts => ts.map(t => t.id === c.id ? { ...t, employees: f.employees, classification: f.classification,
+        newLocation: f.newLocation, newDept: f.newDepartment || t.newDept, newUnit: f.newUnit, newTitle: f.newJobTitle || "",
+        effectiveDate: f.effectiveDate, reason: f.reason, documents: allDocs, approvers: f.approvers || [] } : t));
+      onToast("Transfer Updated", { tone: "success" });
       setView({ name: "list" });
     } else if (c.kind === "bulk") {
       const f = c.form;
@@ -517,7 +420,7 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
   };
 
   let body;
-  if (view.name === "add") body = <TransferForm lookups={lookups} initialEmployees={view.initialEmployees} onCancel={() => setView({ name: "list" })} onSubmit={submitTransfer} />;
+  if (view.name === "add") body = <TransferForm lookups={lookups} initialEmployees={view.initialEmployees} initialData={view.initialData} onCancel={() => setView({ name: "list" })} onSubmit={submitTransfer} />;
   else if (view.name === "details" && current) body = <TransferDetails transfer={current}
     onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={(r) => setConfirm({ kind: "reject", row: r })}
     onUpdate={(partial) => setTransfers(ts => ts.map(t => t.id === current.id ? { ...t, ...partial } : t))} onToast={onToast} />;
@@ -532,7 +435,7 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
               <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add" })}>Add Transfer</Button>
             </React.Fragment>} />
         : <TransfersList rows={transfers} q={q} setQ={setQ} tab={tab} setTab={setTab}
-            onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => setView({ name: "add", initialEmployees: r.employees })} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
+            onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => setView({ name: "add", initialData: r })} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
             segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel}
             title="Transfers" subtitle="Transfer or bulk-transfer staff, and track approval status."
             headerAction={<React.Fragment>
@@ -544,6 +447,7 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
 
   const CONFIRM = {
     add:     { t: "Submit Transfer", m: "submit this transfer", l: "Yes, Submit", i: "check-line", c: "Cancel" },
+    edit:    { t: "Save Changes", m: "save these changes", l: "Yes, Save", i: "check-line", c: "Cancel" },
     bulk:    { t: "Raise Transfer", m: "raise this transfer", l: "Yes, Transfer", i: "exchange-line", c: "Cancel" },
     archive: { t: "Archive Transfer", m: "archive this transfer", l: "Yes, Archive", i: "archive-line", c: "No" },
     approve: { t: "Approve Transfer", m: "approve this transfer", l: "Yes, Approve", i: "check-line", c: "No" },

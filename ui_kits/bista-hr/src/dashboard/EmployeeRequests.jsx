@@ -208,7 +208,7 @@ function AnnouncementForm({ launch, onCancel, onSubmit }) {
         <Field label="Title"><Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Enter circular title" /></Field>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <Field label="Announcement Type"><Combobox value={type} onChange={setType} options={ANNOUNCEMENT_TYPE_OPTS} placeholder="Select type" /></Field>
-          <Field label="Date of Event"><Input type="date" value={dateOfEvent} onChange={e => setDateOfEvent(e.target.value)} /></Field>
+          <Field label="Date of Event"><UI.DatePicker value={dateOfEvent} onSelect={d => setDateOfEvent(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`)} placeholder="Pick a date" /></Field>
         </div>
         <Field label="Send to (Department)">
           <MultiSelectCombobox value={depts} onChange={setDepts} options={REQ_DEPARTMENTS} placeholder="Select departments" />
@@ -265,8 +265,8 @@ function AccommodationRequestForm({ onCancel, onSubmit }) {
         </div>
         {temporary && (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-            <Field label="Start Date"><Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} /></Field>
-            <Field label="End Date"><Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} /></Field>
+            <Field label="Start Date"><UI.DatePicker value={startDate} onSelect={d => setStartDate(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`)} placeholder="Pick a date" /></Field>
+            <Field label="End Date"><UI.DatePicker value={endDate} onSelect={d => setEndDate(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`)} placeholder="Pick a date" /></Field>
           </div>
         )}
         <Field label="Reason"><Textarea rows={4} value={reason} onChange={e => setReason(e.target.value)} placeholder="Why do you need company accommodation?" /></Field>
@@ -315,7 +315,7 @@ function ResignationRequestForm({ onCancel, onSubmit }) {
 
       <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-          <Field label="Proposed Exit Date"><Input type="date" value={exitDate} onChange={e => setExitDate(e.target.value)} /></Field>
+          <Field label="Proposed Exit Date"><UI.DatePicker value={exitDate} onSelect={d => setExitDate(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`)} placeholder="Pick a date" /></Field>
           <Field label="Reason for Resignation"><Combobox value={reason} onChange={setReason} options={RESIGNATION_REASONS} placeholder="Select reason" /></Field>
         </div>
         <Field label="Notice Period" optional><Input value={notice} onChange={e => setNotice(e.target.value)} placeholder="Eg. 1 month" /></Field>

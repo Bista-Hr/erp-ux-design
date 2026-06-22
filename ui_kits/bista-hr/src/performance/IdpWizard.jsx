@@ -126,7 +126,7 @@ function GoalStepIdp({ goal, index, onChange, planEndDate }) {
               {goal.activities.length > 1 && <button onClick={() => delAct(a.id)} style={{ border: 0, background: "none", cursor: "pointer", color: "var(--gray-400)" }}><Icon name="close-line" size={18} /></button>}
             </div>
             <Input value={a.description} onChange={(e) => patchAct(a.id, { description: e.target.value })} placeholder="Type activity here" />
-            <div style={{ maxWidth: 280 }}><IwField label="End Date" required><Input type="date" value={a.endDate || ""} onChange={(e) => patchAct(a.id, { endDate: e.target.value })} /></IwField></div>
+            <div style={{ maxWidth: 280 }}><IwField label="End Date" required><UI.DatePicker value={a.endDate || ""} onSelect={(d) => patchAct(a.id, { endDate: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}` })} placeholder="Pick a date" /></IwField></div>
             <div style={{ fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: 11.5, letterSpacing: ".04em", textTransform: "uppercase", color: "var(--gray-400)" }}>Learning Methods — pick one per tier (70-20-10)</div>
             <ChipGroup label={LEARNING_METHODS.onJob.label} options={LEARNING_METHODS.onJob.options} value={a.onJob} onToggle={(v) => patchAct(a.id, { onJob: a.onJob === v ? "" : v })} />
             <ChipGroup label={LEARNING_METHODS.social.label} options={LEARNING_METHODS.social.options} value={a.social} onToggle={(v) => patchAct(a.id, { social: a.social === v ? "" : v })} />
