@@ -136,6 +136,53 @@ const AutoBadge = () => (
     <Icon name="sparkling-2-line" size={12} color="var(--brand-yellow-dark)" />Auto-populated
   </span>
 );
+// Shared "Resolved Role & Benefits" card — grade + notch + salary + allowances resolved from
+// the selected job title. Used identically by Promotions, Job Title and Transfers.
+function ResolvedRoleBenefits({ grade, notch, salary, allowances }) {
+  const list = allowances || [];
+  return (
+    <FormCard title="Resolved Role & Benefits" badge={<AutoBadge />}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>
+        <Icon name="information-line" size={15} color="var(--gray-400)" />
+        Grade, notch, salary and allowances are resolved automatically from the selected job title and Payroll — they are not edited here.
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+        <Field label="Job Grade">
+          <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
+            <Icon name="bar-chart-grouped-line" size={18} style={{ color: "var(--icon-default)" }} />
+            <input value={grade || ""} readOnly placeholder="Auto from job title" style={{ color: grade ? "var(--gray-900)" : "var(--gray-400)" }} />
+          </div>
+        </Field>
+        <Field label="Notch">
+          <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
+            <Icon name="stack-line" size={18} style={{ color: "var(--icon-default)" }} />
+            <input value={notch || ""} readOnly placeholder="Auto from job title" style={{ color: notch ? "var(--gray-900)" : "var(--gray-400)" }} />
+          </div>
+        </Field>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+        <Field label="Salary">
+          <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
+            <Icon name="money-dollar-circle-line" size={18} style={{ color: "var(--icon-default)" }} />
+            <input value={salary || ""} readOnly placeholder="Auto from grade & notch" style={{ color: salary ? "var(--gray-900)" : "var(--gray-400)" }} />
+          </div>
+        </Field>
+        <Field label="Allowances">
+          {list.length === 0
+            ? <div className="input-wrap" style={{ background: "var(--gray-50)" }}><span style={{ flex: 1, fontFamily: "var(--font-control)", fontSize: 14, color: "var(--gray-400)" }}>Auto from grade & notch</span></div>
+            : <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {list.map(a => (
+                  <span key={a.label} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--gray-50)", border: "1px solid var(--gray-200)", borderRadius: 8, padding: "6px 10px", fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-800)" }}>
+                    <span style={{ color: "var(--gray-500)" }}>{a.label}</span>
+                    <span style={{ fontWeight: 600, color: "var(--gray-900)" }}>{a.value}</span>
+                  </span>
+                ))}
+              </div>}
+        </Field>
+      </div>
+    </FormCard>
+  );
+}
 function AddRemoveRow({ children, onRemove }) {
   return (
     <div style={{ display: "flex", alignItems: "flex-end", gap: 12 }}>
@@ -159,7 +206,7 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
     department: initialData?.department || "",
     newJobTitle: initialData?.newRole || "", grade: initialData?.grade || "", notch: initialData?.notch || "",
     effectiveDate: initialData?.effectiveDate || "",
-    justification: initialData?.justification || "", budgetConfirmed: initialData?.budgetConfirmed || false,
+    justification: initialData?.justification || "",
   });
   // Supporting documents: self-managing field reports { keptUrls, newFiles }.
   const [docs, setDocs] = usePromo({ keptUrls: initialData?.docUrls || [], newFiles: [] });
@@ -205,54 +252,10 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
         <Field label="Effective Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
       </FormCard>
 
-      <FormCard title="Resolved Role & Benefits" badge={<AutoBadge />}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>
-          <Icon name="information-line" size={15} color="var(--gray-400)" />
-          Grade, notch, salary and allowances are resolved automatically from the selected job title and Payroll — they are not edited here.
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="New Job Grade">
-            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
-              <Icon name="bar-chart-grouped-line" size={18} style={{ color: "var(--icon-default)" }} />
-              <input value={form.grade} readOnly placeholder="Auto from job title" style={{ color: form.grade ? "var(--gray-900)" : "var(--gray-400)" }} />
-            </div>
-          </Field>
-          <Field label="Notch">
-            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
-              <Icon name="stack-line" size={18} style={{ color: "var(--icon-default)" }} />
-              <input value={form.notch} readOnly placeholder="Auto from job title" style={{ color: form.notch ? "var(--gray-900)" : "var(--gray-400)" }} />
-            </div>
-          </Field>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="New Salary">
-            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
-              <Icon name="money-dollar-circle-line" size={18} style={{ color: "var(--icon-default)" }} />
-              <input value={salary} readOnly placeholder="Select grade & notch" style={{ color: salary ? "var(--gray-900)" : "var(--gray-400)" }} />
-            </div>
-          </Field>
-          <Field label="Allowances">
-            {allowances.length === 0
-              ? <div className="input-wrap" style={{ background: "var(--gray-50)" }}><span style={{ flex: 1, fontFamily: "var(--font-control)", fontSize: 14, color: "var(--gray-400)" }}>Select grade & notch</span></div>
-              : <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                  {allowances.map(a => (
-                    <span key={a.label} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--gray-50)", border: "1px solid var(--gray-200)", borderRadius: 8, padding: "6px 10px", fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-800)" }}>
-                      <span style={{ color: "var(--gray-500)" }}>{a.label}</span>
-                      <span style={{ fontWeight: 600, color: "var(--gray-900)" }}>{a.value}</span>
-                    </span>
-                  ))}
-                </div>}
-          </Field>
-        </div>
-      </FormCard>
+      <ResolvedRoleBenefits grade={form.grade} notch={form.notch} salary={salary} allowances={allowances} />
 
-      <FormCard title="Justification & Budget">
+      <FormCard title="Justification">
         <Field label="Promotion Justification"><Textarea rows={4} value={form.justification} onChange={e => set("justification", e.target.value)} placeholder="Explain the rationale for this promotion…" /></Field>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <UI.Switch checked={form.budgetConfirmed} onCheckedChange={v => set("budgetConfirmed", v)} />
-          <span style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Budget confirmed for this promotion</span>
-        </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Supporting Documents</label>
@@ -389,7 +392,7 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
         branch: primary.branch || "—",
         previousSalary: primary.salary || "—", salary: f.salary || "—", performanceRating: primary.rating || "—",
         effectiveDate: f.effectiveDate, dateSubmitted: todayPromo(), status: "Pending",
-        justification: f.justification, budgetConfirmed: f.budgetConfirmed, allowances: f.allowances || [], docUrls: allDocs, notifyMails: f.notifyMails || [],
+        justification: f.justification, allowances: f.allowances || [], docUrls: allDocs, notifyMails: f.notifyMails || [],
         approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
       }, ...ps]);
       onToast("Promotion Submitted", { tone: "success" });
@@ -401,7 +404,7 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
         ...p, employees: f.employees.map(id => (window.EMP_BY_ID[id] || {}).name || id), staffIds: f.employees.join(", "),
         newRole: f.newJobTitle, grade: f.grade, notch: f.notch, salary: f.salary, allowances: f.allowances || [],
         effectiveDate: f.effectiveDate,
-        justification: f.justification, budgetConfirmed: f.budgetConfirmed, docUrls: allDocs, notifyMails: f.notifyMails || [],
+        justification: f.justification, docUrls: allDocs, notifyMails: f.notifyMails || [],
       } : p));
       onToast("Promotion Updated", { tone: "success" });
       setView({ name: "list" });

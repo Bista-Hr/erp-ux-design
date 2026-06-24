@@ -75,7 +75,7 @@ function ComboPopover({ rect, options, search, setSearch, isSelected, onPick, on
   );
 }
 
-function Combobox({ value, onChange, options, placeholder = "Select option...", icon, noDataText, avatar }) {
+function Combobox({ value, onChange, options, placeholder = "Select option...", icon, noDataText, avatar, disabled }) {
   const { ref, open, setOpen, rect } = usePopover();
   const [search, setSearch] = useState("");
   const opts = normOpts(options);
@@ -83,7 +83,7 @@ function Combobox({ value, onChange, options, placeholder = "Select option...", 
   const close = () => { setOpen(false); setSearch(""); };
   return (
     <div ref={ref} style={{ position: "relative" }}>
-      <div className="input-wrap" style={{ cursor: "pointer" }} onClick={() => (open ? close() : setOpen(true))}>
+      <div className="input-wrap" style={{ cursor: disabled ? "not-allowed" : "pointer", background: disabled ? "var(--gray-50)" : undefined, opacity: disabled ? 0.7 : 1 }} onClick={() => { if (disabled) return; open ? close() : setOpen(true); }}>
         {icon && !(avatar && sel) && <Icon name={icon} size={18} style={{ color: "var(--icon-default)" }} />}
         {sel
           ? <span style={{ flex: 1, display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "var(--font-control)", fontSize: 14, color: "var(--gray-900)" }}>
@@ -92,7 +92,7 @@ function Combobox({ value, onChange, options, placeholder = "Select option...", 
           : <span style={{ flex: 1, fontFamily: "var(--font-control)", fontSize: 14, color: "var(--gray-400)" }}>{placeholder}</span>}
         <Icon name="arrow-down-s-line" size={20} style={{ color: "var(--icon-default)", transition: "transform .15s", transform: open ? "rotate(180deg)" : "none" }} />
       </div>
-      {open && (
+      {open && !disabled && (
         <ComboPopover rect={rect} options={opts} search={search} setSearch={setSearch} noDataText={noDataText} avatar={avatar}
           isSelected={v => v === value} onClose={close}
           onPick={v => { onChange(v === value ? "" : v); close(); }} />

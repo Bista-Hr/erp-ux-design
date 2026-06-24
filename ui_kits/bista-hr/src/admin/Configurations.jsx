@@ -30,11 +30,12 @@ const COMPETENCY_SEED = [
 ];
 
 const RANKING_SEED = [
-  { id: 1, name: "Outstanding", max: "100", min: "90", color: "#1F8A5B" },
-  { id: 2, name: "Very Good", max: "89", min: "75", color: "#2A6FDB" },
-  { id: 3, name: "Good", max: "74", min: "60", color: "#F08C25" },
-  { id: 4, name: "Above Average", max: "59", min: "40", color: "#8B5CF6" },
-  { id: 5, name: "Below Average", max: "39", min: "0", color: "#D5503A" },
+  { id: 1, name: "5", max: "5.0", min: "4.5", color: "#1F8A5B" },
+  { id: 2, name: "4", max: "4.49", min: "3.5", color: "#2A6FDB" },
+  { id: 3, name: "3", max: "3.49", min: "2.5", color: "#F08C25" },
+  { id: 4, name: "2", max: "2.49", min: "1.5", color: "#8B5CF6" },
+  { id: 5, name: "1", max: "1.49", min: "0.5", color: "#D5503A" },
+  { id: 6, name: "0", max: "0.49", min: "0.0", color: "#525866" },
 ];
 const RANKING_SWATCHES = ["#1F8A5B", "#2A6FDB", "#F08C25", "#8B5CF6", "#D5503A", "#0EA5A5", "#E11D8F", "#525866"];
 
@@ -194,7 +195,7 @@ function PerformanceRankingsView({ rankings, onSave }) {
     <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 20 }}>
       <div>
         <div className="bh-h2" style={{ fontSize: 24 }}>Performance Ratings</div>
-        <div className="bh-body" style={{ marginTop: 4 }}>Define complete rating ranges covering 100% – 0% with colour coding for comprehensive performance evaluation.</div>
+        <div className="bh-body" style={{ marginTop: 4 }}>Define rating bands on a 0–5 scale with colour coding for performance evaluation.</div>
       </div>
       {!editing && rows.length > 0 && <Button variant="primary" icon="edit-2-line" onClick={() => setEditing(true)}>Edit Ratings</Button>}
     </div>
@@ -227,9 +228,9 @@ function PerformanceRankingsView({ rankings, onSave }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         {rows.map(r => (
           <div key={r.id} style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr auto auto", gap: 12, alignItems: "end" }}>
-            <Field label="Name" style={{ margin: 0 }}><Input placeholder="Eg. Outstanding" value={r.name} onChange={e => setRow(r.id, "name", e.target.value)} /></Field>
-            <Field label="Maximum Score" style={{ margin: 0 }}><Input type="number" placeholder="100" value={r.max} onChange={e => setRow(r.id, "max", e.target.value)} /></Field>
-            <Field label="Minimum Score" style={{ margin: 0 }}><Input type="number" placeholder="0" value={r.min} onChange={e => setRow(r.id, "min", e.target.value)} /></Field>
+            <Field label="Rating" style={{ margin: 0 }}><Input type="number" min={0} max={5} step={1} placeholder="Eg. 5" value={r.name} onChange={e => setRow(r.id, "name", e.target.value)} /></Field>
+            <Field label="Maximum Score" style={{ margin: 0 }}><Input type="number" min={0} max={5} step={0.01} placeholder="5.0" value={r.max} onChange={e => setRow(r.id, "max", e.target.value)} /></Field>
+            <Field label="Minimum Score" style={{ margin: 0 }}><Input type="number" min={0} max={5} step={0.01} placeholder="0.0" value={r.min} onChange={e => setRow(r.id, "min", e.target.value)} /></Field>
             <Field label="Colour" style={{ margin: 0 }}><ColorCell value={r.color} onChange={v => setRow(r.id, "color", v)} /></Field>
             <button className="btn btn-icon btn-ghost" onClick={() => delRow(r.id)} style={{ width: 40, height: 40, padding: 0 }}>
               <Icon name="delete-bin-6-line" size={18} color="var(--error)" />

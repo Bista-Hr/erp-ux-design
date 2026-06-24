@@ -93,14 +93,19 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
     department: initialData?.department || "",
     newTitle: initialData?.newTitle || "",
     grade: initialData?.grade || "",
+    notch: initialData?.notch || "",
     date: "",
     reason: initialData?.reason || "",
   });
   const [docs, setDocs] = useJt({ keptUrls: initialData?.documents || [], newFiles: [] });
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
-  const selectDept = (v) => setForm(s => ({ ...s, department: v, newTitle: "", grade: "" }));
-  const selectTitle = (v) => { const info = window.jobTitleInfo(v) || {}; setForm(s => ({ ...s, newTitle: v, grade: info.grade || "" })); };
+  const selectDept = (v) => setForm(s => ({ ...s, department: v, newTitle: "", grade: "", notch: "" }));
+  const selectTitle = (v) => { const info = window.jobTitleInfo(v) || {}; setForm(s => ({ ...s, newTitle: v, grade: info.grade || "", notch: info.notch || "" })); };
   const titleOptions = window.jobTitlesForDepartment(form.department);
+  // Salary + allowances auto-fetched from Payroll once the title resolves grade + notch.
+  const payroll = window.fetchPayroll(form.grade, form.notch);
+  const salary = payroll ? payroll.salary : "";
+  const allowances = payroll ? payroll.allowances : [];
   const valid = people.length > 0 && form.department && form.newTitle && form.date;
   const multi = people.length > 1;
 
@@ -121,20 +126,7 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
         <Field label="Effective Date"><UI.DatePicker value={form.date} onSelect={d => set("date", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
       </JtFormCard>
 
-      <JtFormCard title="Resolved Grade" badge={<JtAutoBadge />}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>
-          <Icon name="information-line" size={15} color="var(--gray-400)" />
-          Job Grade is resolved automatically from the selected job title — it is not edited here.
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="New Job Grade">
-            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
-              <Icon name="bar-chart-grouped-line" size={18} style={{ color: "var(--icon-default)" }} />
-              <input value={form.grade} readOnly placeholder="Auto from job title" style={{ color: form.grade ? "var(--gray-900)" : "var(--gray-400)" }} />
-            </div>
-          </Field>
-        </div>
-      </JtFormCard>
+      <ResolvedRoleBenefits grade={form.grade} notch={form.notch} salary={salary} allowances={allowances} />
 
       <JtFormCard title="Reason & Documents">
         <Field label="Reason / Note" optional><Textarea rows={4} value={form.reason} onChange={e => set("reason", e.target.value)} placeholder="Reason or note for this change of job title…" /></Field>
@@ -147,7 +139,7 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
         <Button variant="primary" icon={isEdit ? "check-line" : "user-add-line"} disabled={!valid}
-          onClick={() => valid && onSubmit({ names: people, title: form.newTitle, grade: form.grade, date: form.date, reason: form.reason, docs, editId: initialData?.id })}>
+          onClick={() => valid && onSubmit({ names: people, title: form.newTitle, grade: form.grade, notch: form.notch, date: form.date, reason: form.reason, docs, editId: initialData?.id })}>
           {isEdit ? "Save Changes" : (multi ? `Assign Job Title to ${people.length}` : "Assign Job Title")}
         </Button>
       </div>

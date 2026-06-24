@@ -174,12 +174,36 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
   const [form, setForm] = useTr({
     classification: initialData?.classification || "", newLocation: initialData?.newLocation || "",
     newDepartment: initialData?.newDept || "", newUnit: initialData?.newUnit || "", newJobTitle: initialData?.newTitle || "",
+    newGrade: initialData?.grade || "", newNotch: initialData?.notch || "",
     effectiveDate: initialData?.effectiveDate || "", reason: initialData?.reason || "" });
   const [docs, setDocs] = useTr({ keptUrls: initialData?.documents || [], newFiles: [] });
   const [mails, setMails] = useTr([]);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
 
   const primary = employees[0] ? byId[employees[0]] : null;
+  // A job title belongs to a department, so an intra-departmental transfer is only valid when
+  // every selected employee is in the SAME department. If a mix is selected, force Inter-
+  // Departmental and surface an error.
+  const deptList = [...new Set(employees.map(id => (byId[id] || {}).dept).filter(Boolean))];
+  const mixedDepts = deptList.length > 1;
+  useTrEffect(() => {
+    // A department conflict makes intra-departmental impossible — force Inter-Departmental whether
+    // the field was empty or set to Intra, so the banner's claim always matches the actual value.
+    if (mixedDepts && form.classification !== "Inter-Departmental") {
+      setForm(s => ({ ...s, classification: "Inter-Departmental", newJobTitle: "", newGrade: "", newNotch: "" }));
+    }
+  }, [mixedDepts, form.classification]);
+  // Cascade (mirrors Promotions / Job Title): the effective department narrows the Job Title list;
+  // picking a Job Title auto-resolves its Job Grade + Notch → Salary + Allowances. For an intra-
+  // departmental transfer the department is unchanged, so titles come from the employee's department.
+  const effDept = form.classification === "Intra-Departmental" ? (primary && primary.dept) || "" : form.newDepartment;
+  const titleOptions = window.jobTitlesForDepartment(effDept);
+  const selectTitle = (v) => { const info = window.jobTitleInfo(v) || {}; setForm(s => ({ ...s, newJobTitle: v, newGrade: info.grade || "", newNotch: info.notch || "" })); };
+  const selectNewDept = (v) => setForm(s => ({ ...s, newDepartment: v, newJobTitle: "", newGrade: "", newNotch: "" }));
+  // Salary + allowances auto-fetched from Payroll once the title resolves grade + notch.
+  const payroll = window.fetchPayroll(form.newGrade, form.newNotch);
+  const salary = payroll ? payroll.salary : "";
+  const allowances = payroll ? payroll.allowances : [];
   const staffIds = employees.join(", ");
   const autoItems = primary ? [
     { label: "Staff ID(s)", value: staffIds },
@@ -199,7 +223,7 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
 
       <FormCard title="Employee Information">
         <Field label="Employee(s)"><EmployeeAddSelect value={employees} onChange={setEmployees} employees={EMP} /></Field>
-        {primary && (
+        {primary && employees.length === 1 && (
           <div>
             <div style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)", marginBottom: 6 }}>Auto-populated from employee record</div>
             <DetailPanel items={autoItems} tint="gray" cols={3} />
@@ -208,15 +232,37 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
       </FormCard>
 
       <FormCard title="Transfer Details">
+        {mixedDepts && (
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10, background: "#FEF3F2", border: "1px solid #FECDCA", borderRadius: "var(--radius-md)", padding: "10px 14px" }}>
+            <Icon name="error-warning-line" size={18} color="#D92D20" style={{ marginTop: 1, flexShrink: 0 }} />
+            <span style={{ fontFamily: "var(--font-ui)", fontSize: 13, color: "#B42318", lineHeight: 1.45 }}>
+              Selected employees belong to different departments ({deptList.join(", ")}). An intra-departmental transfer requires a single department, so this has been set to <b>Inter-Departmental</b>.
+            </span>
+          </div>
+        )}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Transfer Classification"><Combobox value={form.classification} onChange={v => setForm(s => ({ ...s, classification: v, newDepartment: v === "Intra-Departmental" ? "" : s.newDepartment }))} options={TRANSFER_CLASSES} placeholder="Select classification" /></Field>
+          <Field label="Transfer Classification"><Combobox value={form.classification} disabled={mixedDepts} onChange={v => setForm(s => ({ ...s, classification: v, newDepartment: v === "Intra-Departmental" ? "" : s.newDepartment, newJobTitle: "", newGrade: "", newNotch: "" }))} options={TRANSFER_CLASSES} placeholder="Select classification" /></Field>
           <Field label="Proposed / New Location"><Combobox value={form.newLocation} onChange={v => set("newLocation", v)} options={LK.branches} placeholder="Select new location / branch" /></Field>
-          {form.classification !== "Intra-Departmental" && <Field label="New Department"><Combobox value={form.newDepartment} onChange={v => set("newDepartment", v)} options={LK.departments} placeholder="Select new department" /></Field>}
+        </div>
+        {/* Department + Job Title always sit side by side (cascade pair) */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          {form.classification === "Intra-Departmental"
+            ? <Field label="Department">
+                <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
+                  <Icon name="building-line" size={18} style={{ color: "var(--icon-default)" }} />
+                  <input value={effDept} readOnly placeholder="Current department (unchanged)" style={{ color: effDept ? "var(--gray-900)" : "var(--gray-400)" }} />
+                </div>
+              </Field>
+            : <Field label="New Department"><Combobox value={form.newDepartment} onChange={selectNewDept} options={LK.departments} placeholder="Select new department" /></Field>}
+          <Field label="New Job Title" optional><Combobox value={form.newJobTitle} onChange={selectTitle} options={titleOptions} placeholder={effDept ? "Select new job title (optional)" : (form.classification === "Intra-Departmental" ? "Select employee(s) first" : "Select a department first")} noDataText={form.classification === "Intra-Departmental" ? "Select employee(s) first." : "Select a department first."} /></Field>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
           <Field label="Unit/Branch" optional><Combobox value={form.newUnit} onChange={v => set("newUnit", v)} options={LK.orgUnits || []} placeholder="Select unit / branch" /></Field>
-          <Field label="New Job Title" optional><Combobox value={form.newJobTitle} onChange={v => set("newJobTitle", v)} options={LK.jobTitles} placeholder="Select new job title (optional)" /></Field>
           <Field label="Proposed Effective Transfer Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
         </div>
       </FormCard>
+
+      <ResolvedRoleBenefits grade={form.newGrade} notch={form.newNotch} salary={salary} allowances={allowances} />
 
       <FormCard title="Justification & Documents">
         <Field label="Reason / Justification"><Textarea rows={4} value={form.reason} onChange={e => set("reason", e.target.value)} placeholder="Explain the business justification for this transfer…" /></Field>
