@@ -64,8 +64,7 @@ const JOBTITLE_SEED = [
 /* ---------- assign modal (one job title → many employees) ---------- */
 function AssignJobTitleModal({ names, initialData, lookups, onClose, onSubmit }) {
   const LK = lookups || window.LOOKUPS;
-  const DIR = window.EMPLOYEE_DIRECTORY;
-  const empOptions = window.EMPLOYEE_NAMES;
+  const EMP = window.EMPLOYEE_LIST;
   const isEdit = !!initialData;
   const [people, setPeople] = useJt(names);
   const [title, setTitle] = useJt(initialData?.newTitle || "");
@@ -88,7 +87,7 @@ function AssignJobTitleModal({ names, initialData, lookups, onClose, onSubmit })
 
       <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 18 }}>
         <Field label="Selected employees">
-          <MultiSelectCombobox value={people} onChange={setPeople} options={empOptions} placeholder="Select one or more employees" avatar />
+          <EmployeeAddSelect value={people} onChange={setPeople} employees={EMP} />
         </Field>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
@@ -109,17 +108,16 @@ function AssignJobTitleModal({ names, initialData, lookups, onClose, onSubmit })
 
 /* ---------- employee roster (checkboxes; bulk action lives in the floating bar) ---------- */
 function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, setSegment, title, subtitle, headerAction }) {
-  const DIR = window.EMPLOYEE_DIRECTORY;
-  const names = window.EMPLOYEE_NAMES;
+  const EMP = window.EMPLOYEE_LIST;
   const [menu, setMenu] = useJt(null);
-  const shown = names.filter(n => {
+  const shown = EMP.filter(e => {
     if (q === "") return true;
-    const e = DIR[n] || {};
-    return `${n} ${e.staffId} ${e.title} ${e.dept}`.toLowerCase().includes(q.toLowerCase());
+    return `${e.name} ${e.staffId} ${e.title} ${e.dept}`.toLowerCase().includes(q.toLowerCase());
   });
-  const toggle = (n) => setSelected(s => s.includes(n) ? s.filter(x => x !== n) : [...s, n]);
-  const allShownSelected = shown.length > 0 && shown.every(n => selected.includes(n));
-  const toggleAll = () => setSelected(allShownSelected ? selected.filter(n => !shown.includes(n)) : [...new Set([...selected, ...shown])]);
+  const shownIds = shown.map(e => e.id);
+  const toggle = (id) => setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
+  const allShownSelected = shown.length > 0 && shownIds.every(id => selected.includes(id));
+  const toggleAll = () => setSelected(allShownSelected ? selected.filter(id => !shownIds.includes(id)) : [...new Set([...selected, ...shownIds])]);
   const pg = usePaged(shown, 10);
 
   return (
@@ -135,18 +133,17 @@ function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, 
             <th>Full Name</th><th>Employee ID</th><th>Current Job Title</th><th>Department</th><th>Branch</th><th style={{ width: 48 }}></th>
           </tr></thead>
           <tbody>
-            {pg.pageItems.map(n => {
-              const e = DIR[n] || {};
-              const on = selected.includes(n);
+            {pg.pageItems.map(e => {
+              const on = selected.includes(e.id);
               return (
-                <tr key={n} className="jt-roster-row" style={{ cursor: "pointer", background: on ? "#FFFBEB" : undefined }} onClick={() => toggle(n)}>
-                  <td onClick={ev => ev.stopPropagation()}><Checkbox checked={on} onChange={() => toggle(n)} /></td>
+                <tr key={e.id} className="jt-roster-row" style={{ cursor: "pointer", background: on ? "#FFFBEB" : undefined }} onClick={() => toggle(e.id)}>
+                  <td onClick={ev => ev.stopPropagation()}><Checkbox checked={on} onChange={() => toggle(e.id)} /></td>
                   <td>
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-                      <Avatar name={n} size={32} />
+                      <Avatar name={e.name} size={32} />
                       <span style={{ display: "flex", flexDirection: "column" }}>
-                        <span style={{ fontWeight: 500, color: "var(--gray-900)" }}>{n}</span>
-                        <span style={{ fontSize: 12, color: "var(--gray-400)" }}>{jtEmail(n)}</span>
+                        <span style={{ fontWeight: 500, color: "var(--gray-900)" }}>{e.name}</span>
+                        <span style={{ fontSize: 12, color: "var(--gray-400)" }}>{jtEmail(e.name)}</span>
                       </span>
                     </span>
                   </td>
@@ -155,7 +152,7 @@ function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, 
                   <td>{e.dept}</td>
                   <td>{e.branch}</td>
                   <td style={{ textAlign: "right" }} onClick={ev => ev.stopPropagation()}>
-                    <UI.RowActions actions={[{ label: "Assign Job Title", short: "Assign", icon: "user-add-line", onClick: () => onAssignOne(n) }]} />
+                    <UI.RowActions actions={[{ label: "Assign Job Title", short: "Assign", icon: "user-add-line", onClick: () => onAssignOne(e.id) }]} />
                   </td>
                 </tr>
               );
@@ -339,9 +336,9 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
         setAssign(null); setEditRec(null);
         setConfirm(null); return;
       }
-      const recs = f.names.map(n => {
-        const e = DIR[n] || {};
-        return { id: jtId(), employees: [n], staffIds: e.staffId || "—",
+      const recs = f.names.map(id => {
+        const e = window.EMP_BY_ID[id] || {};
+        return { id: jtId(), employees: [e.name || id], staffIds: e.staffId || id,
           previousTitle: e.title || "—", newTitle: f.title, grade: e.grade || "—",
           department: e.dept || "—", zone: e.zone || "—", branch: e.branch || "—",
           effectiveDate: fmtJtDate(f.date), dateSubmitted: todayJt(), status: "Pending",
@@ -398,7 +395,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
               title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status."
               headerAction={<Button variant="primary" icon="add-line" onClick={() => setAssign([])}>Add Job Title</Button>} />
           : <JobTitleList rows={records} q={q} setQ={setQ} tab={tab} setTab={setTab}
-              onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => { setEditRec(r); setAssign(r.employees); }} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
+              onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => { setEditRec(r); setAssign((r.employees || []).map(window.firstIdForName).filter(Boolean)); }} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
               segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel}
               title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status."
               headerAction={<Button variant="primary" icon="add-line" onClick={() => setAssign([])}>Add Job Title</Button>} />}

@@ -17,6 +17,45 @@ const EMPLOYEE_DIRECTORY = {
 };
 const EMPLOYEE_NAMES = Object.keys(EMPLOYEE_DIRECTORY);
 
+// ── Staff-ID-keyed employee list (the source of truth for staff pickers) ──
+// The client's requirement: employees may share a NAME but always have a unique STAFF ID,
+// so selection is keyed on the staff id, never the name. EMPLOYEE_LIST is an array of
+// { id: <staffId>, name, ...record }; EMP_BY_ID resolves a staff id back to the record.
+const EMPLOYEE_LIST = EMPLOYEE_NAMES.map(n => ({ id: EMPLOYEE_DIRECTORY[n].staffId, name: n, ...EMPLOYEE_DIRECTORY[n] }));
+// demonstrate a same-name / different-staff-id case (two distinct "Samuel Boateng"s)
+EMPLOYEE_LIST.push({ id: "EMP-20114", name: "Samuel Boateng", staffId: "EMP-20114", title: "Field Agent",
+  grade: "Grade 1", dept: "Operations", zone: "East Zone", branch: "Tema", salary: "GHS 4,300.00", rating: "Good" });
+const EMP_BY_ID = {};
+EMPLOYEE_LIST.forEach(e => { EMP_BY_ID[e.id] = e; });
+// first staff id matching a name — used to migrate legacy name-based records to ids on edit
+const firstIdForName = (name) => (EMPLOYEE_LIST.find(e => e.name === name) || {}).id;
+
+// ── Payroll (MOCK) ──
+// The real new-salary + allowances will come from the Payroll module (not yet implemented).
+// Until then, picking a Job Grade + Notch auto-fetches the salary and standard allowances from
+// this mock grid. Replace `fetchPayroll` with the payroll API call when it lands.
+const NOTCHES = ["Notch 1", "Notch 2", "Notch 3", "Notch 4", "Notch 5", "Notch 6"];
+// Notches are tied to the job grade — a grade exposes only its own band of notches.
+function notchesForGrade(grade) {
+  if (!grade) return [];
+  const g = parseInt((String(grade).match(/\d+/) || [1])[0], 10) || 1;
+  const count = Math.max(3, Math.min(NOTCHES.length, 2 + g)); // Grade 1 → 3 notches … capped at 6
+  return NOTCHES.slice(0, count);
+}
+const ghs = (n) => "GHS " + Math.round(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function fetchPayroll(grade, notch) {
+  if (!grade || !notch) return null;
+  const g = parseInt((String(grade).match(/\d+/) || [1])[0], 10) || 1;
+  const no = parseInt((String(notch).match(/\d+/) || [1])[0], 10) || 1;
+  const base = 4000 + g * 1500 + (no - 1) * 350;
+  const allowances = [
+    { label: "Transport Allowance", value: ghs(base * 0.10) },
+    { label: "Housing Allowance", value: ghs(base * 0.15) },
+  ];
+  if (g >= 5) allowances.push({ label: "Responsibility Allowance", value: ghs(base * 0.08) });
+  return { salary: ghs(base), allowances };
+}
+
 const PROMO_DOC = (name, ext, size, docType) => ({ name, ext, size, docType });
 
 const PROMOTION_SEED = [
@@ -70,4 +109,4 @@ const PROMOTION_SEED = [
     rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM" },
 ];
 
-Object.assign(window, { EMPLOYEE_DIRECTORY, EMPLOYEE_NAMES, PROMOTION_SEED });
+Object.assign(window, { EMPLOYEE_DIRECTORY, EMPLOYEE_NAMES, EMPLOYEE_LIST, EMP_BY_ID, firstIdForName, NOTCHES, notchesForGrade, fetchPayroll, PROMOTION_SEED });

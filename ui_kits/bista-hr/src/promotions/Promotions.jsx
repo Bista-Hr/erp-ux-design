@@ -25,10 +25,9 @@ const approverLabel = (status) => status === "Approved" ? "Approved" : status ==
 
 // roster rows from the shared employee directory (single source of truth)
 function promoRosterRows() {
-  const DIR = window.EMPLOYEE_DIRECTORY;
-  return window.EMPLOYEE_NAMES.map(n => ({
-    id: n, name: n, employeeNumber: DIR[n].staffId, jobTitle: DIR[n].title,
-    jobGrade: DIR[n].grade, department: DIR[n].dept, profilePictureUrl: "",
+  return window.EMPLOYEE_LIST.map(e => ({
+    id: e.id, name: e.name, employeeNumber: e.staffId, jobTitle: e.title,
+    jobGrade: e.grade, department: e.dept, profilePictureUrl: "",
   }));
 }
 
@@ -140,28 +139,35 @@ function AddRemoveRow({ children, onRemove }) {
 /* ---------- create / edit form (full page) ---------- */
 function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSubmit }) {
   const LK = lookups || window.LOOKUPS;
-  const empOptions = window.EMPLOYEE_NAMES;
+  const EMP = window.EMPLOYEE_LIST;
+  const byId = window.EMP_BY_ID;
   const isEdit = !!initialData;
-  const [employees, setEmployees] = usePromo(initialData ? (initialData.employees || []) : (initialEmployees || []));
+  // employees state holds STAFF IDS (client requirement — names can collide). Legacy records
+  // store names, so migrate them to ids on edit.
+  const initIds = initialData ? (initialData.employees || []).map(window.firstIdForName).filter(Boolean) : (initialEmployees || []);
+  const [employees, setEmployees] = usePromo(initIds);
   const [form, setForm] = usePromo({
-    newJobTitle: initialData?.newRole || "", grade: initialData?.grade || "", salary: initialData?.salary || "",
+    newJobTitle: initialData?.newRole || "", grade: initialData?.grade || "", notch: initialData?.notch || "",
     effectiveDate: initialData?.effectiveDate || "",
     justification: initialData?.justification || "", budgetConfirmed: initialData?.budgetConfirmed || false,
   });
-  const [allowances, setAllowances] = usePromo(initialData?.allowances?.length ? initialData.allowances.map(a => ({ type: a.label || "", amount: a.value || "" })) : []);
   // Supporting documents: self-managing field reports { keptUrls, newFiles }.
   const [docs, setDocs] = usePromo({ keptUrls: initialData?.docUrls || [], newFiles: [] });
   const [mails, setMails] = usePromo(initialData?.notifyMails || []);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
 
-  const valid = employees.length > 0 && form.newJobTitle && form.grade && form.salary && form.effectiveDate
+  // New salary + allowances are AUTO-FETCHED from payroll once grade + notch are chosen.
+  const payroll = window.fetchPayroll(form.grade, form.notch);
+  const salary = payroll ? payroll.salary : "";
+  const allowances = payroll ? payroll.allowances : [];
+
+  const valid = employees.length > 0 && form.newJobTitle && form.grade && form.notch && salary && form.effectiveDate
     && form.justification.trim() && mails.length > 0;
 
   const submit = () => {
     if (!valid) return;
     onSubmit({
-      employees, ...form,
-      allowances: allowances.filter(a => a.type.trim() || a.amount).map(a => ({ label: a.type, value: a.amount })),
+      employees, ...form, salary, allowances,
       docs,
       notifyMails: mails,
     });
@@ -173,16 +179,43 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
         subtitle={isEdit ? "Update the promotion details." : "Select staff, set the new role and route for approval."} />
 
       <FormCard title="Employee Information">
+        <Field label="Employee(s)">
+          <EmployeeAddSelect value={employees} onChange={setEmployees} employees={EMP} />
+        </Field>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Employee Name(s)">
-            <MultiSelectCombobox value={employees} onChange={setEmployees} options={empOptions} placeholder="Select one or more employees" avatar />
-          </Field>
           <Field label="New Job Title"><Combobox value={form.newJobTitle} onChange={v => set("newJobTitle", v)} options={LK.jobTitles} placeholder="Select job title" /></Field>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
-          <Field label="New Job Grade"><Combobox value={form.grade} onChange={v => set("grade", v)} options={LK.jobGrades} placeholder="Select job grade" /></Field>
-          <Field label="New Salary"><Input placeholder="GHS 0.00" value={form.salary} onChange={e => set("salary", e.target.value)} /></Field>
           <Field label="Effective Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <Field label="New Job Grade"><Combobox value={form.grade} onChange={v => setForm(s => ({ ...s, grade: v, notch: "" }))} options={LK.jobGrades} placeholder="Select job grade" /></Field>
+          <Field label="Notch"><Combobox value={form.notch} onChange={v => set("notch", v)} options={window.notchesForGrade(form.grade)} placeholder={form.grade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
+        </div>
+      </FormCard>
+
+      <FormCard title="Compensation">
+        <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>
+          <Icon name="information-line" size={15} color="var(--gray-400)" />
+          Auto-fetched from Payroll once a Job Grade and Notch are selected.
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <Field label="New Salary">
+            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
+              <Icon name="money-dollar-circle-line" size={18} style={{ color: "var(--icon-default)" }} />
+              <input value={salary} readOnly placeholder="Select grade & notch" style={{ color: salary ? "var(--gray-900)" : "var(--gray-400)" }} />
+            </div>
+          </Field>
+          <Field label="Allowances">
+            {allowances.length === 0
+              ? <div className="input-wrap" style={{ background: "var(--gray-50)" }}><span style={{ flex: 1, fontFamily: "var(--font-control)", fontSize: 14, color: "var(--gray-400)" }}>Select grade & notch</span></div>
+              : <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {allowances.map(a => (
+                    <span key={a.label} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--gray-50)", border: "1px solid var(--gray-200)", borderRadius: 8, padding: "6px 10px", fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-800)" }}>
+                      <span style={{ color: "var(--gray-500)" }}>{a.label}</span>
+                      <span style={{ fontWeight: 600, color: "var(--gray-900)" }}>{a.value}</span>
+                    </span>
+                  ))}
+                </div>}
+          </Field>
         </div>
       </FormCard>
 
@@ -192,20 +225,6 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <UI.Switch checked={form.budgetConfirmed} onCheckedChange={v => set("budgetConfirmed", v)} />
           <span style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Budget confirmed for this promotion</span>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Allowances</label>
-            <Button variant="stroke" size="sm" icon="add-line" onClick={() => setAllowances(a => [...a, { type: "", amount: "" }])}>Add Allowance</Button>
-          </div>
-          {allowances.length === 0 && <span style={{ fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-400)" }}>No allowances added.</span>}
-          {allowances.map((a, i) => (
-            <AddRemoveRow key={i} onRemove={() => setAllowances(list => list.filter((_, j) => j !== i))}>
-              <Input placeholder="Type — e.g. Housing" value={a.type} onChange={e => setAllowances(list => list.map((x, j) => j === i ? { ...x, type: e.target.value } : x))} />
-              <Input placeholder="GHS 0.00" value={a.amount} onChange={e => setAllowances(list => list.map((x, j) => j === i ? { ...x, amount: e.target.value } : x))} />
-            </AddRemoveRow>
-          ))}
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -232,9 +251,11 @@ function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
   const [rejectOpen, setRejectOpen] = usePromo(false);
   const empInfo = [
     { label: "Employee Name", value: promo.employees.join(", ") },
+    { label: "Staff ID(s)", value: promo.staffIds || "—" },
     { label: "Previous Job Title", value: promo.previousRole },
     { label: "New Job Title", value: promo.newRole },
     { label: "Job Grade", value: promo.grade },
+    { label: "Notch", value: promo.notch || "—" },
     { label: "Department / Unit", value: promo.deptUnit },
     { label: "Zone", value: promo.zone },
     { label: "Branch", value: promo.branch },
@@ -328,19 +349,20 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
     const c = confirm;
     if (c.kind === "add") {
       const f = c.form;
-      const DIR = window.EMPLOYEE_DIRECTORY;
-      const primary = f.employees[0] ? DIR[f.employees[0]] : {};
+      const byId = window.EMP_BY_ID;
+      const ids = f.employees;
+      const primary = ids[0] ? (byId[ids[0]] || {}) : {};
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/promotions/");
       setPromos(ps => [{
-        id: promoId(), employees: f.employees, staffIds: f.employees.map(n => (DIR[n] || {}).staffId).filter(Boolean).join(", ") || "—",
-        previousRole: primary.title || "—", newRole: f.newJobTitle, previousGrade: primary.grade || "—", grade: f.grade,
+        id: promoId(), employees: ids.map(id => (byId[id] || {}).name || id), staffIds: ids.join(", ") || "—",
+        previousRole: primary.title || "—", newRole: f.newJobTitle, previousGrade: primary.grade || "—", grade: f.grade, notch: f.notch,
         deptUnit: primary.dept || "—",
         department: primary.dept || "—",
         zone: primary.zone || "—",
         branch: primary.branch || "—",
         previousSalary: primary.salary || "—", salary: f.salary || "—", performanceRating: primary.rating || "—",
         effectiveDate: f.effectiveDate, dateSubmitted: todayPromo(), status: "Pending",
-        justification: f.justification, budgetConfirmed: f.budgetConfirmed, allowances: f.allowances || [], docUrls: allDocs, approvers: f.approvers || [], notifyMails: f.notifyMails || [],
+        justification: f.justification, budgetConfirmed: f.budgetConfirmed, allowances: f.allowances || [], docUrls: allDocs, notifyMails: f.notifyMails || [],
         approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
       }, ...ps]);
       onToast("Promotion Submitted", { tone: "success" });
@@ -349,9 +371,10 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
       const f = c.form;
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/promotions/");
       setPromos(ps => ps.map(p => p.id === c.id ? {
-        ...p, employees: f.employees, newRole: f.newJobTitle, grade: f.grade, salary: f.salary,
+        ...p, employees: f.employees.map(id => (window.EMP_BY_ID[id] || {}).name || id), staffIds: f.employees.join(", "),
+        newRole: f.newJobTitle, grade: f.grade, notch: f.notch, salary: f.salary, allowances: f.allowances || [],
         effectiveDate: f.effectiveDate,
-        justification: f.justification, budgetConfirmed: f.budgetConfirmed, allowances: f.allowances || [], docUrls: allDocs, approvers: f.approvers || [], notifyMails: f.notifyMails || [],
+        justification: f.justification, budgetConfirmed: f.budgetConfirmed, docUrls: allDocs, notifyMails: f.notifyMails || [],
       } : p));
       onToast("Promotion Updated", { tone: "success" });
       setView({ name: "list" });

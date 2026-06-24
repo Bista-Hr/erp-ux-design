@@ -144,10 +144,9 @@ function TransfersList({ rows, q, setQ, tab, setTab, onOpen, onEdit, onArchive, 
 
 /* ---------- employee roster (shared EmployeeSelectionRoster — single source of truth) ---------- */
 function TransferRoster({ q, setQ, segment, setSegment, onCreate, title, subtitle, headerAction }) {
-  const DIR = window.EMPLOYEE_DIRECTORY;
-  const rows = window.EMPLOYEE_NAMES.map(n => ({
-    id: n, name: n, employeeNumber: DIR[n].staffId, jobTitle: DIR[n].title,
-    jobGrade: DIR[n].grade, department: DIR[n].dept, profilePictureUrl: "",
+  const rows = window.EMPLOYEE_LIST.map(e => ({
+    id: e.id, name: e.name, employeeNumber: e.staffId, jobTitle: e.title,
+    jobGrade: e.grade, department: e.dept, profilePictureUrl: "",
   }));
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -167,10 +166,11 @@ function TransferRoster({ q, setQ, segment, setSegment, onCreate, title, subtitl
 /* ---------- create form (full page) ---------- */
 function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubmit }) {
   const LK = lookups || window.LOOKUPS;
-  const DIR = window.EMPLOYEE_DIRECTORY;
-  const empOptions = window.EMPLOYEE_NAMES;
+  const byId = window.EMP_BY_ID;
+  const EMP = window.EMPLOYEE_LIST;
   const isEdit = !!initialData;
-  const [employees, setEmployees] = useTr(initialData ? (initialData.employees || []) : (initialEmployees || []));
+  const initIds = initialData ? (initialData.employees || []).map(window.firstIdForName).filter(Boolean) : (initialEmployees || []);
+  const [employees, setEmployees] = useTr(initIds);
   const [form, setForm] = useTr({
     classification: initialData?.classification || "", newLocation: initialData?.newLocation || "",
     newDepartment: initialData?.newDept || "", newUnit: initialData?.newUnit || "", newJobTitle: initialData?.newTitle || "",
@@ -179,8 +179,8 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
   const [mails, setMails] = useTr([]);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
 
-  const primary = employees[0] ? DIR[employees[0]] : null;
-  const staffIds = employees.map(n => (DIR[n] || {}).staffId).filter(Boolean).join(", ");
+  const primary = employees[0] ? byId[employees[0]] : null;
+  const staffIds = employees.join(", ");
   const autoItems = primary ? [
     { label: "Staff ID(s)", value: staffIds },
     { label: "Current Job Title", value: primary.title },
@@ -198,10 +198,7 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
         subtitle={isEdit ? "Update this transfer record." : "Select staff, set the new posting and route for approval."} />
 
       <FormCard title="Employee Information">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Transfer Classification"><Combobox value={form.classification} onChange={v => set("classification", v)} options={TRANSFER_CLASSES} placeholder="Select classification" /></Field>
-          <Field label="Employee Name(s)"><MultiSelectCombobox value={employees} onChange={setEmployees} options={empOptions} placeholder="Select one or more employees" avatar /></Field>
-        </div>
+        <Field label="Employee(s)"><EmployeeAddSelect value={employees} onChange={setEmployees} employees={EMP} /></Field>
         {primary && (
           <div>
             <div style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)", marginBottom: 6 }}>Auto-populated from employee record</div>
@@ -212,8 +209,9 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
 
       <FormCard title="Transfer Details">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <Field label="Transfer Classification"><Combobox value={form.classification} onChange={v => setForm(s => ({ ...s, classification: v, newDepartment: v === "Intra-Departmental" ? "" : s.newDepartment }))} options={TRANSFER_CLASSES} placeholder="Select classification" /></Field>
           <Field label="Proposed / New Location"><Combobox value={form.newLocation} onChange={v => set("newLocation", v)} options={LK.branches} placeholder="Select new location / branch" /></Field>
-          <Field label="New Department"><Combobox value={form.newDepartment} onChange={v => set("newDepartment", v)} options={LK.departments} placeholder="Select new department" /></Field>
+          {form.classification !== "Intra-Departmental" && <Field label="New Department"><Combobox value={form.newDepartment} onChange={v => set("newDepartment", v)} options={LK.departments} placeholder="Select new department" /></Field>}
           <Field label="Unit/Branch" optional><Combobox value={form.newUnit} onChange={v => set("newUnit", v)} options={LK.orgUnits || []} placeholder="Select unit / branch" /></Field>
           <Field label="New Job Title" optional><Combobox value={form.newJobTitle} onChange={v => set("newJobTitle", v)} options={LK.jobTitles} placeholder="Select new job title (optional)" /></Field>
           <Field label="Proposed Effective Transfer Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
@@ -235,7 +233,7 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employees, primary, staffIds, ...form, docs, notifyMails: mails })}>{isEdit ? "Save Changes" : "Create Transfer"}</Button>
+        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employees: employees.map(id => (byId[id] || {}).name || id), employeeIds: employees, primary, staffIds, ...form, docs, notifyMails: mails })}>{isEdit ? "Save Changes" : "Create Transfer"}</Button>
       </div>
     </div>
   );

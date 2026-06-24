@@ -199,8 +199,10 @@ function UIDatePicker({ value, onSelect, placeholder = "Pick a date", error, cla
 function UISwitch({ checked, onCheckedChange, id, className }) {
   return (
     <button type="button" role="switch" aria-checked={!!checked} id={id} onClick={() => onCheckedChange(!checked)}
-      className={cn("relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors", checked ? "bg-primary" : "bg-gray-300", className)}>
-      <span className={cn("inline-block h-4 w-4 transform rounded-full bg-white transition-transform", checked ? "translate-x-4" : "translate-x-0.5")} />
+      style={{ boxSizing: "border-box", padding: 0, border: 0, width: 36, height: 20, flexShrink: 0 }}
+      className={cn("relative inline-flex cursor-pointer items-center rounded-full align-middle transition-colors", checked ? "bg-primary" : "bg-gray-300", className)}>
+      <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", left: checked ? 18 : 2,
+        width: 16, height: 16, borderRadius: "9999px", background: "#fff", boxShadow: "0 1px 2px rgba(16,24,40,.2)", transition: "left .15s ease" }} />
     </button>
   );
 }
