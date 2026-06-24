@@ -119,14 +119,23 @@ function PromotionsList({ rows, q, setQ, tab, setTab, onOpen, onEdit, onArchive,
 }
 
 /* ---------- reusable section helpers (form) ---------- */
-function FormCard({ title, children }) {
+function FormCard({ title, badge, children }) {
   return (
     <div className="card" style={{ padding: "var(--card-pad, 24px)", overflow: "visible" }}>
-      <div className="bh-h2" style={{ fontSize: 20, marginBottom: 18 }}>{title}</div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+        <div className="bh-h2" style={{ fontSize: 20 }}>{title}</div>
+        {badge}
+      </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>{children}</div>
     </div>
   );
 }
+// "Auto-populated" pill — marks the card that groups system-resolved values (grade, notch, benefits).
+const AutoBadge = () => (
+  <span style={{ display: "inline-flex", alignItems: "center", gap: 5, whiteSpace: "nowrap", background: "var(--brand-yellow-tint)", border: "1px solid var(--brand-yellow)", color: "var(--gray-800)", borderRadius: 999, padding: "3px 9px", fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 11.5 }}>
+    <Icon name="sparkling-2-line" size={12} color="var(--brand-yellow-dark)" />Auto-populated
+  </span>
+);
 function AddRemoveRow({ children, onRemove }) {
   return (
     <div style={{ display: "flex", alignItems: "flex-end", gap: 12 }}>
@@ -147,6 +156,7 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
   const initIds = initialData ? (initialData.employees || []).map(window.firstIdForName).filter(Boolean) : (initialEmployees || []);
   const [employees, setEmployees] = usePromo(initIds);
   const [form, setForm] = usePromo({
+    department: initialData?.department || "",
     newJobTitle: initialData?.newRole || "", grade: initialData?.grade || "", notch: initialData?.notch || "",
     effectiveDate: initialData?.effectiveDate || "",
     justification: initialData?.justification || "", budgetConfirmed: initialData?.budgetConfirmed || false,
@@ -156,12 +166,18 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
   const [mails, setMails] = usePromo(initialData?.notifyMails || []);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
 
-  // New salary + allowances are AUTO-FETCHED from payroll once grade + notch are chosen.
+  // Cascade: Department narrows Job Titles; picking a Job Title auto-resolves its Grade + Notch
+  // (and therefore Salary + Benefits, fetched below). Grade/Notch are not picked manually.
+  const selectDept = (v) => setForm(s => ({ ...s, department: v, newJobTitle: "", grade: "", notch: "" }));
+  const selectTitle = (v) => { const info = window.jobTitleInfo(v) || {}; setForm(s => ({ ...s, newJobTitle: v, grade: info.grade || "", notch: info.notch || "" })); };
+  const titleOptions = window.jobTitlesForDepartment(form.department);
+
+  // New salary + allowances are AUTO-FETCHED from payroll once grade + notch are resolved.
   const payroll = window.fetchPayroll(form.grade, form.notch);
   const salary = payroll ? payroll.salary : "";
   const allowances = payroll ? payroll.allowances : [];
 
-  const valid = employees.length > 0 && form.newJobTitle && form.grade && form.notch && salary && form.effectiveDate
+  const valid = employees.length > 0 && form.department && form.newJobTitle && form.grade && form.notch && salary && form.effectiveDate
     && form.justification.trim() && mails.length > 0;
 
   const submit = () => {
@@ -183,19 +199,30 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
           <EmployeeAddSelect value={employees} onChange={setEmployees} employees={EMP} />
         </Field>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="New Job Title"><Combobox value={form.newJobTitle} onChange={v => set("newJobTitle", v)} options={LK.jobTitles} placeholder="Select job title" /></Field>
-          <Field label="Effective Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
+          <Field label="Department"><Combobox value={form.department} onChange={selectDept} options={LK.departments} placeholder="Select department" /></Field>
+          <Field label="New Job Title"><Combobox value={form.newJobTitle} onChange={selectTitle} options={titleOptions} placeholder={form.department ? "Select job title" : "Select department first"} noDataText="Select a department first." /></Field>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="New Job Grade"><Combobox value={form.grade} onChange={v => setForm(s => ({ ...s, grade: v, notch: "" }))} options={LK.jobGrades} placeholder="Select job grade" /></Field>
-          <Field label="Notch"><Combobox value={form.notch} onChange={v => set("notch", v)} options={window.notchesForGrade(form.grade)} placeholder={form.grade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
-        </div>
+        <Field label="Effective Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
       </FormCard>
 
-      <FormCard title="Compensation">
+      <FormCard title="Resolved Role & Benefits" badge={<AutoBadge />}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>
           <Icon name="information-line" size={15} color="var(--gray-400)" />
-          Auto-fetched from Payroll once a Job Grade and Notch are selected.
+          Grade, notch, salary and allowances are resolved automatically from the selected job title and Payroll — they are not edited here.
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <Field label="New Job Grade">
+            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
+              <Icon name="bar-chart-grouped-line" size={18} style={{ color: "var(--icon-default)" }} />
+              <input value={form.grade} readOnly placeholder="Auto from job title" style={{ color: form.grade ? "var(--gray-900)" : "var(--gray-400)" }} />
+            </div>
+          </Field>
+          <Field label="Notch">
+            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
+              <Icon name="stack-line" size={18} style={{ color: "var(--icon-default)" }} />
+              <input value={form.notch} readOnly placeholder="Auto from job title" style={{ color: form.notch ? "var(--gray-900)" : "var(--gray-400)" }} />
+            </div>
+          </Field>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
           <Field label="New Salary">

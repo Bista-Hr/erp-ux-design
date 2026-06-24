@@ -2,12 +2,61 @@
 // Submitting does NOT save directly — it calls onSubmit(form) so the orchestrator can
 // raise the confirmation modal (the Figma "Are you sure…?" phase) before committing.
 // The primary button stays disabled until every required field has a value.
+
+// NotchEditor — manages a grade's NOTCHES (sequential integers starting at 1). New grades start
+// with 10 notches. Add appends the next number; only the LAST notch can be removed (asks for
+// confirmation), keeping the band a contiguous 1..N.
+const DEFAULT_NOTCHES = Array.from({ length: 10 }, (_, i) => i + 1);
+function NotchEditor({ value, onChange }) {
+  const list = Array.isArray(value) ? value : [];
+  const [confirmIdx, setConfirmIdx] = React.useState(null);
+  const [hover, setHover] = React.useState(false);
+  const resequence = (arr) => arr.map((_, i) => i + 1);
+  const add = () => onChange(resequence([...list, 0]));
+  const remove = () => { onChange(resequence(list.slice(0, -1))); setConfirmIdx(null); };
+  const last = list.length - 1;
+  const sq = { width: 40, height: 40, borderRadius: "var(--radius-sm)", display: "inline-flex", alignItems: "center", justifyContent: "center",
+    fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 15, position: "relative" };
+  return (
+    <div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+        {list.map((n, idx) => (
+          <div key={idx} onMouseEnter={() => idx === last && setHover(true)} onMouseLeave={() => setHover(false)}
+            style={{ ...sq, background: "var(--brand-yellow-tint)", border: "1px solid var(--brand-yellow)", color: "var(--gray-900)" }}>
+            {n}
+            {idx === last && (
+              <button type="button" title="Remove last notch" onClick={() => setConfirmIdx(idx)}
+                style={{ position: "absolute", top: -7, right: -7, width: 18, height: 18, borderRadius: "50%", border: "1px solid var(--border)",
+                  background: "#fff", color: "var(--error)", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  padding: 0, boxShadow: "var(--shadow-input)", opacity: hover ? 1 : 0.6, transition: "opacity .12s" }}>
+                <Icon name="close-line" size={12} color="var(--error)" />
+              </button>
+            )}
+          </div>
+        ))}
+        <button type="button" onClick={add} title="Add notch"
+          style={{ ...sq, background: "#fff", border: "1.5px dashed var(--border-strong)", color: "var(--gray-500)", cursor: "pointer" }}>
+          <Icon name="add-line" size={20} color="var(--gray-500)" />
+        </button>
+      </div>
+      <div style={{ marginTop: 8, fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>
+        Notches start at 1 (default 10). Add a notch to extend this grade's band; only the last notch can be removed.
+      </div>
+      {confirmIdx !== null && (
+        <ConfirmModal title="Remove Notch" message={`Are you sure you want to remove Notch ${list[confirmIdx]}? It is the last notch in this grade's band.`}
+          confirmLabel="Yes, Remove" confirmIcon="delete-bin-6-line" cancelLabel="Cancel" tone="error"
+          onConfirm={remove} onClose={() => setConfirmIdx(null)} />
+      )}
+    </div>
+  );
+}
+
 function FormModal({ config, initial, onClose, onSubmit, lookups }) {
   const LK = lookups || window.LOOKUPS;
   const editing = !!initial;
   const [form, setForm] = useState(() => {
     const f = { active: editing ? initial.active : true };
-    config.fields.forEach(fl => f[fl.key] = initial ? (initial[fl.key] ?? "") : "");
+    config.fields.forEach(fl => f[fl.key] = initial ? (initial[fl.key] ?? (fl.type === "notches" ? DEFAULT_NOTCHES.slice() : "")) : (fl.type === "notches" ? DEFAULT_NOTCHES.slice() : ""));
     return f;
   });
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
@@ -64,12 +113,16 @@ function FormModal({ config, initial, onClose, onSubmit, lookups }) {
                     ? <Textarea placeholder={fl.placeholder} value={form[fl.key]} onChange={e => set(fl.key, e.target.value)} />
                     : fl.type === "date"
                       ? <UI.DatePicker value={form[fl.key] || ""} onSelect={d => set(fl.key, `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`)} placeholder={fl.placeholder || "Pick a date"} />
-                      : <Input placeholder={fl.placeholder} value={form[fl.key]} onChange={e => set(fl.key, e.target.value)} />}
+                      : fl.type === "number"
+                        ? <Input type="number" min={fl.min ?? 0} placeholder={fl.placeholder} value={form[fl.key]} onChange={e => set(fl.key, e.target.value)} />
+                        : fl.type === "notches"
+                          ? <NotchEditor value={form[fl.key]} onChange={v => set(fl.key, v)} />
+                          : <Input placeholder={fl.placeholder} value={form[fl.key]} onChange={e => set(fl.key, e.target.value)} />}
             </Field>
           );
         })}
         <div style={{ gridColumn: "1 / -1", display: config.hideActive ? "none" : "block" }}>
-          <Checkbox checked={form.active} onChange={v => set("active", v)} label="Active" />
+          <Checkbox checked={form.active} onChange={v => set("active", v)} label={config.activeLabel || "Active"} />
         </div>
         {config.aiAssist && (
           <button onClick={aiFill} style={{ gridColumn: "1 / -1", justifySelf: "start", display: "inline-flex", alignItems: "center", gap: 6,

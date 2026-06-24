@@ -153,6 +153,9 @@ function App() {
   const cfg = isList ? (CONFIGS[pageName] || genConfig(pageName)) : null;
   // lookups derived from LIVE data → managed Departments/Grades/etc. feed every dropdown
   const lookups = deriveLookups(data);
+  // mirror live entity data to a global so cross-screen helpers (notchesForGrade, jobTitle
+  // catalog) reflect what the user manages in Core HR (grades' notches, titles' department/grade).
+  window.HR_DATA = data;
   const rows = (isList && data[pageName]) || [];
   const isEmployees = isList && pageName === "Employees";
   const viewingEmployee = isEmployees && !!employee;
@@ -176,6 +179,9 @@ function App() {
   // System Administration ▸ User Management ▸ Roles / Users (RBAC management)
   const isRoles = isList && pageName === "Roles";
   const isUsers = isList && pageName === "Users";
+  // System Administration ▸ Configuration ▸ Performance Ratings (ranges editor) + Organization (org profile)
+  const isPerfRatings = isList && pageName === "Performance Ratings";
+  const isOrg = isList && pageName === "Organization";
   // Recruitment ▸ Job Posts (admin posting details + applicant pipeline)
   const isJobPosts = isList && pageName === "Job Posts";
   // Recruitment ▸ Hiring Requests (raise → approve/reject gate) + Assessments (assessor queue)
@@ -321,9 +327,13 @@ function App() {
                                 : isLearning
                                 ? <LearningSection page={pageName} onToast={pushToast} onSubPage={setSubPage} onTab={setTab} />
                                 : isRoles
-                                ? <RolesScreen onToast={pushToast} canCreate={pageCan(perms, "Roles", "Create")} canEdit={pageCan(perms, "Roles", "Update")} canDelete={pageCan(perms, "Roles", "Delete")} />
+                                ? <RolesScreen onToast={pushToast} onSubPage={setSubPage} canCreate={pageCan(perms, "Roles", "Create")} canEdit={pageCan(perms, "Roles", "Update")} canDelete={pageCan(perms, "Roles", "Delete")} canManage={pageCan(perms, "Roles", "Update")} />
                                 : isUsers
                                   ? <UsersScreen onToast={pushToast} roles={rbac.roles} canEdit={pageCan(perms, "Users", "Update")} />
+                                  : isPerfRatings
+                                  ? <PerformanceRatingsScreen onToast={pushToast} />
+                                  : isOrg
+                                  ? <OrganizationScreen onToast={pushToast} />
                                   : <CrudScreen key={pageName} config={cfg} rows={rows}
                                   onCreate={openCreate} onEdit={openEdit} onArchive={askArchive} onMenuAction={handleMenuAction}
                                   canCreate={pageCan(perms, pageName, "Create")} canEdit={pageCan(perms, pageName, "Update")} canArchive={pageCan(perms, pageName, "Delete")} />}

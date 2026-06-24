@@ -133,19 +133,14 @@ function CompetencyForm({ initial, onCancel, onSubmit }) {
 }
 
 /* ---------- competencies list ---------- */
-function CompetenciesList({ rows, q, setQ, onCreate, onEdit, onArchive, onViewRankings }) {
+function CompetenciesList({ rows, q, setQ, onCreate, onEdit, onArchive }) {
   const [menu, setMenu] = useCfg(null);
   const shown = rows.filter(r => q === "" || r.name.toLowerCase().includes(q.toLowerCase()));
   const pg = usePaged(shown, 10);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <PageHeader title="Competencies" subtitle="Manage competencies and the behavioural traits used for performance appraisals."
-        actions={
-          <React.Fragment>
-            <Button variant="stroke" icon="list-check-2" onClick={onViewRankings}>View Ranking Descriptions</Button>
-            <Button variant="primary" icon="add-line" onClick={onCreate}>Add Competency</Button>
-          </React.Fragment>
-        } />
+        actions={<Button variant="primary" icon="add-line" onClick={onCreate}>Add Competency</Button>} />
       <div className="card" style={{ padding: 20 }}>
         <div className="bh-tablebox">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 20px" }}>
@@ -188,7 +183,7 @@ function CompetenciesList({ rows, q, setQ, onCreate, onEdit, onArchive, onViewRa
 }
 
 /* ---------- performance rankings sub-page ---------- */
-function PerformanceRankingsView({ rankings, onBack, onSave }) {
+function PerformanceRankingsView({ rankings, onSave }) {
   const [rows, setRows] = useCfg(() => rankings.map(r => ({ ...r })));
   const [editing, setEditing] = useCfg(rankings.length === 0);
   const addRow = () => setRows(rs => [...rs, { id: cfgId(), name: "", max: "", min: "", color: RANKING_SWATCHES[rs.length % RANKING_SWATCHES.length] }]);
@@ -198,17 +193,17 @@ function PerformanceRankingsView({ rankings, onBack, onSave }) {
   const header = (
     <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 20 }}>
       <div>
-        <div className="bh-h2" style={{ fontSize: 24 }}>Performance Rankings</div>
-        <div className="bh-body" style={{ marginTop: 4 }}>Define score ranges and their colour coding for performance evaluations.</div>
+        <div className="bh-h2" style={{ fontSize: 24 }}>Performance Ratings</div>
+        <div className="bh-body" style={{ marginTop: 4 }}>Define complete rating ranges covering 100% – 0% with colour coding for comprehensive performance evaluation.</div>
       </div>
-      {!editing && rows.length > 0 && <Button variant="primary" icon="edit-2-line" onClick={() => setEditing(true)}>Edit Rankings</Button>}
+      {!editing && rows.length > 0 && <Button variant="primary" icon="edit-2-line" onClick={() => setEditing(true)}>Edit Ratings</Button>}
     </div>
   );
 
   if (!editing && rows.length === 0) {
     return <div className="card" style={{ padding: "var(--card-pad, 24px)" }}>{header}
       <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)" }}>
-        <EmptyState title="Nothing here yet" subtitle="Define performance ranking ranges to grade appraisals." cta="Add Rankings" onAction={() => { addRow(); setEditing(true); }} />
+        <EmptyState title="Nothing here yet" subtitle="Define performance rating ranges to grade appraisals." cta="Add Ratings" onAction={() => { addRow(); setEditing(true); }} />
       </div>
     </div>;
   }
@@ -217,7 +212,7 @@ function PerformanceRankingsView({ rankings, onBack, onSave }) {
     return <div className="card" style={{ padding: "var(--card-pad, 24px)" }}>{header}
       <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
         <table className="bh">
-          <thead><tr><th>Ranking</th><th>Maximum Score</th><th>Minimum Score</th><th>Colour</th></tr></thead>
+          <thead><tr><th>Rating</th><th>Maximum Score</th><th>Minimum Score</th><th>Colour</th></tr></thead>
           <tbody>{rows.map(r => (
             <tr key={r.id}><td>{r.name}</td><td>{r.max}</td><td>{r.min}</td>
               <td><span style={{ width: 22, height: 22, borderRadius: 6, background: r.color, display: "inline-block", verticalAlign: "middle" }} /></td></tr>
@@ -247,8 +242,8 @@ function PerformanceRankingsView({ rankings, onBack, onSave }) {
         <Icon name="add-line" size={16} color="var(--brand-yellow-dark)" />Add Ranking
       </button>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24 }}>
-        <Button variant="stroke" onClick={onBack}>Cancel</Button>
-        <Button variant="primary" disabled={!rows.length || rows.some(r => !r.name.trim())} onClick={() => onSave(rows)}>Save Rankings</Button>
+        <Button variant="stroke" onClick={() => { setRows(rankings.map(r => ({ ...r }))); setEditing(false); }}>Cancel</Button>
+        <Button variant="primary" disabled={!rows.length || rows.some(r => !r.name.trim())} onClick={() => { onSave(rows); setEditing(false); }}>Save Ratings</Button>
       </div>
     </div>
   );
@@ -257,28 +252,23 @@ function PerformanceRankingsView({ rankings, onBack, onSave }) {
 /* ---------- controller ---------- */
 function CompetenciesScreen({ onToast, onSubPage }) {
   const [comps, setComps] = useCfg(COMPETENCY_SEED);
-  const [rankings, setRankings] = useCfg(RANKING_SEED);
   const [q, setQ] = useCfg("");
-  const [view, setView] = useCfg({ name: "list" });   // list | form | rankings
+  const [view, setView] = useCfg({ name: "list" });   // list | form
   const [confirm, setConfirm] = useCfg(null);
 
   useCfgEffect(() => {
     if (!onSubPage) return;
     if (view.name === "form") onSubPage({ trail: [{ label: "Competencies", onClick: () => setView({ name: "list" }) }, { label: view.initial ? "Edit Competency" : "Add Competency" }] });
-    else if (view.name === "rankings") onSubPage({ trail: [{ label: "Competencies", onClick: () => setView({ name: "list" }) }, { label: "Performance Rankings" }] });
     else onSubPage(null);
     return () => onSubPage(null);
   }, [view]);
 
   const submitComp = (form) => setConfirm({ kind: view.initial ? "updateComp" : "addComp", form });
-  const saveRankings = (rows) => setConfirm({ kind: rankings.length ? "updateRanking" : "addRanking", rows });
 
   const CONFIRM = {
     addComp:       { t: "Add Competency",            m: "add this competency",            l: "Yes, Add",     i: "add-line",     c: "Cancel", tone: "success", done: "Competency Added" },
     updateComp:    { t: "Update Competency",         m: "update this competency",         l: "Yes, Update",  i: "check-line",   c: "No",     tone: "success", done: "Competency Updated" },
     archiveComp:   { t: "Archive Competency",        m: "archive this competency",        l: "Yes, Archive", i: "archive-line", c: "No",     tone: "error",   done: "Competency Archived" },
-    addRanking:    { t: "Add Performance Ranking",    m: "add this performance ranking",   l: "Yes, Add",     i: "add-line",     c: "Cancel", tone: "success", done: "Performance Ranking Added" },
-    updateRanking: { t: "Update Performance Ranking", m: "update this performance ranking", l: "Yes, Update", i: "check-line",  c: "No",     tone: "success", done: "Performance Ranking Updated" },
   };
 
   const runConfirm = () => {
@@ -286,19 +276,16 @@ function CompetenciesScreen({ onToast, onSubPage }) {
     if (c.kind === "addComp") { setComps(cs => [{ id: cfgId(), ...c.form }, ...cs]); setView({ name: "list" }); }
     else if (c.kind === "updateComp") { setComps(cs => cs.map(x => x.id === view.initial.id ? { ...x, ...c.form } : x)); setView({ name: "list" }); }
     else if (c.kind === "archiveComp") { setComps(cs => cs.filter(x => x.id !== c.row.id)); }
-    else if (c.kind === "addRanking" || c.kind === "updateRanking") { setRankings(c.rows); setView({ name: "list" }); }
     onToast(cc.done, { tone: cc.tone });
     setConfirm(null);
   };
 
   let body;
   if (view.name === "form") body = <CompetencyForm initial={view.initial} onCancel={() => setView({ name: "list" })} onSubmit={submitComp} />;
-  else if (view.name === "rankings") body = <PerformanceRankingsView rankings={rankings} onBack={() => setView({ name: "list" })} onSave={saveRankings} />;
   else body = <CompetenciesList rows={comps} q={q} setQ={setQ}
     onCreate={() => setView({ name: "form", initial: null })}
     onEdit={(r) => setView({ name: "form", initial: r })}
-    onArchive={(r) => setConfirm({ kind: "archiveComp", row: r })}
-    onViewRankings={() => setView({ name: "rankings" })} />;
+    onArchive={(r) => setConfirm({ kind: "archiveComp", row: r })} />;
 
   return (
     <React.Fragment>
@@ -312,4 +299,100 @@ function CompetenciesScreen({ onToast, onSubPage }) {
   );
 }
 
-Object.assign(window, { CompetenciesScreen });
+/* ---------- Performance Ratings (standalone ranges editor) ---------- */
+function PerformanceRatingsScreen({ onToast }) {
+  const [rankings, setRankings] = useCfg(RANKING_SEED);
+  const [confirm, setConfirm] = useCfg(null);
+  const save = (rows) => setConfirm({ rows });
+  const run = () => {
+    const had = rankings.length;
+    setRankings(confirm.rows);
+    onToast(had ? "Performance Ratings Updated" : "Performance Ratings Created", { tone: "success" });
+    setConfirm(null);
+  };
+  return (
+    <React.Fragment>
+      <PerformanceRankingsView rankings={rankings} onSave={save} />
+      {confirm && (
+        <ConfirmModal title={rankings.length ? "Update Performance Ratings" : "Create Performance Ratings"}
+          message="Are you sure you want to save these performance ratings?"
+          confirmLabel="Yes, Save" confirmIcon="check-line" cancelLabel="Cancel"
+          onConfirm={run} onClose={() => setConfirm(null)} />
+      )}
+    </React.Fragment>
+  );
+}
+
+/* ---------- Organization (Mission / Vision / Core Values / Tip) ---------- */
+const ORG_FIELDS = [
+  { key: "missionStatement", title: "Our Mission", label: "Mission Statement" },
+  { key: "visionStatement", title: "Vision", label: "Vision Statement" },
+  { key: "coreValues", title: "Core Values", label: "Core Values" },
+  { key: "tipForTheWeek", title: "Tip For The Week", label: "Tip For The Week" },
+];
+const ORG_SEED = {
+  missionStatement: "To deliver dependable financial services that improve the everyday lives of the people and businesses we serve.",
+  visionStatement: "To be the most trusted and customer-centric financial institution in every market we operate in.",
+  coreValues: "Integrity · Service Excellence · Teamwork · Accountability · Innovation",
+  tipForTheWeek: "",
+};
+
+function ManageOrganizationModal({ label, value, onClose, onSave }) {
+  const [note, setNote] = useCfg(value || "");
+  return (
+    <Modal onClose={onClose} width={520}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "24px 24px 0" }}>
+        <div>
+          <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 20, lineHeight: "28px", color: "var(--gray-900)" }}>Manage Your Organization</div>
+          <div className="bh-body" style={{ marginTop: 4 }}>Update your organization information below.</div>
+        </div>
+        <button className="btn btn-icon btn-ghost" onClick={onClose} style={{ width: 32, height: 32, padding: 0 }}><Icon name="close-line" size={20} color="var(--gray-500)" /></button>
+      </div>
+      <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 18 }}>
+        <Field label="Detail Type">
+          <div className="input-wrap" style={{ background: "var(--gray-50)", cursor: "not-allowed" }}>
+            <input value={label} readOnly disabled style={{ color: "var(--gray-700)", cursor: "not-allowed" }} />
+          </div>
+        </Field>
+        <Field label="Note"><Textarea rows={6} value={note} onChange={e => setNote(e.target.value)} placeholder="Enter details here" /></Field>
+      </div>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, padding: "0 24px 24px" }}>
+        <Button variant="stroke" onClick={onClose}>Cancel</Button>
+        <Button variant="primary" disabled={!note.trim()} onClick={() => onSave(note.trim())}>Update Detail</Button>
+      </div>
+    </Modal>
+  );
+}
+
+function OrganizationScreen({ onToast }) {
+  const [org, setOrg] = useCfg(ORG_SEED);
+  const [dialog, setDialog] = useCfg(null);   // { key, label }
+  const save = (note) => {
+    setOrg(o => ({ ...o, [dialog.key]: note }));
+    onToast(`${dialog.label} Updated`, { tone: "success" });
+    setDialog(null);
+  };
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title="Manage Your Organization" subtitle="Set up your mission, vision, core values and weekly tips." />
+      <div className="org-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 16 }}>
+        {ORG_FIELDS.map(f => {
+          const val = org[f.key];
+          const has = val && val.trim() !== "";
+          return (
+            <div key={f.key} className="card" style={{ padding: 20, display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 16, color: "var(--gray-900)" }}>{f.title}</div>
+                <Button variant={has ? "primary" : "stroke"} size="sm" icon={has ? "edit-2-line" : "add-line"} onClick={() => setDialog(f)}>{has ? `Update ${f.label}` : `Add ${f.label}`}</Button>
+              </div>
+              <div style={{ background: "var(--gray-50)", borderRadius: "var(--radius-md)", padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: has ? "var(--gray-700)" : "var(--gray-400)", minHeight: 64 }}>{has ? val : "Not set"}</div>
+            </div>
+          );
+        })}
+      </div>
+      {dialog && <ManageOrganizationModal label={dialog.label} value={org[dialog.key]} onClose={() => setDialog(null)} onSave={save} />}
+    </div>
+  );
+}
+
+Object.assign(window, { CompetenciesScreen, PerformanceRatingsScreen, OrganizationScreen });

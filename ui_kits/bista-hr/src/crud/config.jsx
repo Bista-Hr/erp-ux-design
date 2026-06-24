@@ -26,11 +26,13 @@ const CONFIGS = {
   },
   "Job Grades": {
     title: "Job Grades", subtitle: "Manage your organization's job grades.", cta: "Create Job Grade", noun: "Job Grade",
-    cols: [{ key: "name", label: "Name" }, { key: "code", label: "Code" }],
+    cols: [{ key: "name", label: "Name" }, { key: "code", label: "Code" }, { key: "level", label: "Level", fallback: "Not Set" }, { key: "notches", label: "Notches", type: "count" }],
     fields: [
-      { key: "name", label: "Name", placeholder: "Enter job grade name" },
-      { key: "code", label: "Code", placeholder: "Enter grade code" },
-      { key: "description", label: "Description", type: "textarea", placeholder: "Enter description", full: true, optional: true },
+      { key: "name", label: "Name", placeholder: "Grade A" },
+      { key: "code", label: "Code", placeholder: "GA" },
+      { key: "level", label: "Level", type: "number", placeholder: "1", optional: true },
+      { key: "notches", label: "Notches", type: "notches", full: true, optional: true },
+      { key: "description", label: "Description", type: "textarea", placeholder: "Highest grade level for senior executives", full: true },
     ],
   },
   "Branches/Units": {
@@ -59,11 +61,14 @@ const CONFIGS = {
   },
   "Job Titles": {
     title: "Job Titles", subtitle: "Manage designations across your organization.", cta: "Add Job Title", noun: "Job Title",
-    cols: [{ key: "name", label: "Name" }, { key: "code", label: "Code" }, { key: "grade", label: "Job Grade" }],
+    addTitle: "Create Job Title", verb: "Create",
+    cols: [{ key: "name", label: "Name" }, { key: "code", label: "Code" }, { key: "department", label: "Department", fallback: "—" }, { key: "grade", label: "Job Grade", fallback: "—" }],
     fields: [
-      { key: "name", label: "Name", placeholder: "Enter job title" },
-      { key: "code", label: "Code", placeholder: "Enter code" },
-      { key: "grade", label: "Job Grade", type: "select", lookup: "jobGrades", placeholder: "Select grade", optional: true },
+      { key: "name", label: "Name", placeholder: "Senior Software Engineer" },
+      { key: "code", label: "Code", placeholder: "SSE" },
+      { key: "department", label: "Department", type: "select", lookup: "departments", placeholder: "Select a department (optional)", optional: true },
+      { key: "grade", label: "Job Grade", type: "select", lookup: "jobGrades", placeholder: "Select a job grade (optional)", optional: true },
+      { key: "description", label: "Description", type: "textarea", placeholder: "Responsible for developing and maintaining software applications", full: true },
     ],
   },
   "Zones": {
@@ -93,24 +98,25 @@ const CONFIGS = {
   // ---- System Administration ▸ Configurations (Figma) ----
   "Corporate Perspectives": {
     title: "Corporate Perspectives", subtitle: "Manage strategic perspectives and company goal categories for performance evaluations.",
-    cta: "Add Perspective", noun: "Perspective", verb: "Add", addTitle: "Add New Perspective",
+    cta: "Add Perspective", noun: "Perspective", verb: "Add", addTitle: "Add Perspective",
+    subtitle: "Create a new strategic perspective for company goal categories.",
     hideStatus: true, hideSegment: true, hideActive: true, aiAssist: true, modalWidth: 560,
-    cols: [{ key: "name", label: "Name" }, { key: "description", label: "Description" }],
+    cols: [{ key: "name", label: "Perspective" }, { key: "description", label: "Description" }],
     fields: [
-      { key: "name", label: "Perspective Name", placeholder: "Eg. Customer", full: true },
-      { key: "description", label: "Description", type: "textarea", placeholder: "Description of the perspective...", full: true, optional: true },
+      { key: "name", label: "Perspective", placeholder: "e.g. Financial, Customer, Operational, Innovation", full: true },
+      { key: "description", label: "Description", type: "textarea", placeholder: "Describe the perspective", full: true },
     ],
   },
   "Periods": {
     title: "Periods", subtitle: "Define and manage time periods for organizing appraisals and reports.",
-    cta: "Add Period", noun: "Period", verb: "Add",
-    hideStatus: true, hideSegment: true, hideActive: true, aiAssist: true, modalWidth: 560,
-    cols: [{ key: "name", label: "Period Name" }, { key: "startDate", label: "Start Date" }, { key: "endDate", label: "End Date" }, { key: "description", label: "Description" }],
+    cta: "Add Period", noun: "Period", verb: "Add", addTitle: "Add Period",
+    hideSegment: true, aiAssist: true, modalWidth: 560, activeLabel: "Set as Active Period",
+    cols: [{ key: "name", label: "Period" }, { key: "startDate", label: "Start Date" }, { key: "endDate", label: "End Date" }, { key: "description", label: "Description" }],
     fields: [
-      { key: "name", label: "Period Name", placeholder: "Eg. Quarter 1", full: true },
-      { key: "startDate", label: "Start Date", placeholder: "DD / MM / YYYY", optional: true },
-      { key: "endDate", label: "End Date", placeholder: "DD / MM / YYYY", optional: true },
-      { key: "description", label: "Description", type: "textarea", placeholder: "Enter reason", full: true, optional: true },
+      { key: "name", label: "Period Name", placeholder: "e.g. Q1 2024, Summer Term, FY 2024", full: true },
+      { key: "startDate", label: "Start Date", type: "date", placeholder: "Pick a start date" },
+      { key: "endDate", label: "End Date", type: "date", placeholder: "Pick an end date" },
+      { key: "description", label: "Description", type: "textarea", placeholder: "Describe what this period covers (e.g. goals, coverage, notes)…", full: true },
     ],
   },
   "Employee Goals": {
@@ -228,8 +234,10 @@ const SEED = {
     { id: 4, name: "Marketing", code: "MKT", orgUnit: "Technology", head: "Samuel Boateng", active: true },
   ],
   "Job Grades": [
-    { id: 1, name: "Grade 1", code: "G1", active: true }, { id: 2, name: "Grade 2", code: "G2", active: true },
-    { id: 3, name: "Grade 3", code: "G3", active: true }, { id: 4, name: "Grade 4", code: "G4", active: false },
+    { id: 1, name: "Grade 1", code: "G1", level: "1", notches: [1, 2, 3], description: "Entry-level grade for junior staff.", active: true },
+    { id: 2, name: "Grade 2", code: "G2", level: "2", notches: [1, 2, 3, 4], description: "Standard professional grade.", active: true },
+    { id: 3, name: "Grade 3", code: "G3", level: "3", notches: [1, 2, 3, 4, 5], description: "Senior professional grade.", active: true },
+    { id: 4, name: "Grade 4", code: "G4", level: "4", notches: [1, 2, 3, 4, 5, 6], description: "Management grade for department heads.", active: false },
   ],
   "Branches/Units": [
     { id: 1, name: "Executive Management", head: "Leslie Alexandre", type: "Management", department: "N/A", level: "1", active: true },
@@ -238,9 +246,14 @@ const SEED = {
     { id: 4, name: "Technology", head: "Leslie Alexandre", type: "Department", department: "N/A", level: "2", active: true },
   ],
   "Job Titles": [
-    { id: 1, name: "Software Engineer", code: "SWE", grade: "Grade 2", active: true },
-    { id: 2, name: "HR Manager", code: "HRM", grade: "Grade 3", active: true },
-    { id: 3, name: "Finance Analyst", code: "FAN", grade: "Grade 2", active: true },
+    { id: 1, name: "Software Engineer", code: "SWE", department: "Information Technology", grade: "Grade 2", notch: "Notch 1", description: "Develops and maintains software applications.", active: true },
+    { id: 2, name: "Data Scientist", code: "DSC", department: "Information Technology", grade: "Grade 3", notch: "Notch 1", description: "Builds models and analytics from organizational data.", active: true },
+    { id: 3, name: "HR Manager", code: "HRM", department: "Human Resource", grade: "Grade 3", notch: "Notch 1", description: "Leads HR operations and people management.", active: true },
+    { id: 4, name: "HR Officer", code: "HRO", department: "Human Resource", grade: "Grade 2", notch: "Notch 1", description: "Supports day-to-day HR administration.", active: true },
+    { id: 5, name: "Finance Analyst", code: "FAN", department: "Finance", grade: "Grade 2", notch: "Notch 1", description: "Analyzes financial data and prepares reports.", active: true },
+    { id: 6, name: "Accountant", code: "ACC", department: "Finance", grade: "Grade 2", notch: "Notch 2", description: "Maintains ledgers and financial records.", active: true },
+    { id: 7, name: "Marketing Lead", code: "MKL", department: "Marketing", grade: "Grade 3", notch: "Notch 1", description: "Owns campaigns and brand strategy.", active: true },
+    { id: 8, name: "Sales Officer", code: "SLO", department: "Marketing", grade: "Grade 1", notch: "Notch 1", description: "Drives sales and customer acquisition.", active: true },
   ],
   "Zones": [
     { id: 1, name: "West Zone", code: "West", active: true },

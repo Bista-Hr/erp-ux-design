@@ -1,188 +1,232 @@
 // BISTA HR · admin/RolesUsers — System Administration ▸ User Management.
-//   RolesScreen : list + create/edit roles with a full permission matrix. Writes to
-//                 the shared window.HRStores.rbac store, so new/edited roles appear
-//                 instantly in the login picker and the top-bar role switcher.
-//   UsersScreen : directory of users, each assigned a role (changeable inline).
-// This is the "extensible roles & permissions" surface — the six defaults are seeds.
+// Ported 1:1 from the production app (components/configurations/user-management/*):
+//   RolesScreen          : list (Role Name · Description · ⋯) + Add/Edit RoleFormModal
+//                          (Name + Description + "Clone permissions from" on create) + a
+//                          dedicated full-page ManagePermissions view (Permissions (Role)).
+//   ManagePermissions    : groups → resource cards, per-resource Edit/Save, "Select all in
+//                          this section", per-permission Switch. Writes to window.HRStores.rbac.
+//   UsersScreen          : insights cards + role filter + search + table (Name · Email · Roles ·
+//                          Action) + Edit UserFormModal (read-only name/email + change-email,
+//                          multi-role MultiSelectCombobox, Active switch).
+// Roles still feed the login picker + top-bar switcher, so a created role auto-gets a colour/icon
+// (not surfaced in the form — the codebase has none) to keep those surfaces consistent.
 
-const { useState: useRU } = React;
+const { useState: useRU, useEffect: useRUEffect } = React;
 
-const ROLE_COLORS = ["#375DFB", "#007839", "#7A5AF8", "#C2540A", "#0C7792", "#C11E39", "#525866", "#B54708"];
-const ROLE_ICONS = ["shield-star-line", "user-settings-line", "briefcase-line", "team-line", "user-search-line", "shield-keyhole-line", "key-2-line", "group-line"];
+const ROLE_COLORS = ["#375DFB", "#007839", "#7A5AF8", "#C2540A", "#0C7792", "#C11E39", "#6941C6", "#B54708"];
+const ROLE_ICONS = ["shield-keyhole-line", "user-settings-line", "briefcase-line", "team-line", "user-search-line", "key-2-line", "group-line", "shield-star-line"];
+const pickColor = (n) => ROLE_COLORS[n % ROLE_COLORS.length];
+const pickIcon = (n) => ROLE_ICONS[n % ROLE_ICONS.length];
 
-function groupResources() {
-  const out = [];
-  const seen = {};
-  for (const r of window.RBAC.resources) {
-    if (!seen[r.group]) { seen[r.group] = { group: r.group, items: [] }; out.push(seen[r.group]); }
-    seen[r.group].items.push(r);
-  }
-  return out;
-}
-
-// ---- small toggle pill for an action ----------------------------------------
-function PermPill({ label, on, onClick, disabled }) {
-  return (
-    <button type="button" onClick={disabled ? undefined : onClick} style={{
-      fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 12, padding: "5px 11px", borderRadius: 999,
-      cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.5 : 1,
-      border: on ? "1px solid var(--brand-yellow-dark)" : "1px solid var(--border-strong)",
-      background: on ? "var(--brand-yellow-tint)" : "#fff", color: on ? "var(--gray-900)" : "var(--gray-500)",
-      display: "inline-flex", alignItems: "center", gap: 5, transition: "all .12s" }}>
-      {on && <Icon name="check-line" size={13} color="var(--brand-yellow-dark)" />}{label}
-    </button>
-  );
-}
-
-// ---- role create / edit modal with permission matrix ------------------------
-function RoleEditor({ mode, role, onClose, onSave }) {
+/* ============================ ROLE CREATE / EDIT MODAL ============================ */
+// Mirrors RoleFormModal.tsx: Role Name + Description (both required) + "Clone permissions
+// from (optional)" — clone only shows on create and copies the chosen role's permissions.
+function RoleFormModal({ mode, role, existingRoles, onClose, onSave }) {
+  const editing = mode === "edit";
   const [name, setName] = useRU(role ? role.name : "");
   const [description, setDescription] = useRU(role ? role.description : "");
-  const [color, setColor] = useRU(role ? role.color : ROLE_COLORS[0]);
-  const [icon, setIcon] = useRU(role ? role.icon : ROLE_ICONS[5]);
-  const [perms, setPerms] = useRU(new Set(role ? role.permissions : []));
-  const groups = groupResources();
-  const isSystem = role && role.system;
+  const [cloneFrom, setCloneFrom] = useRU("__none__");
+  const valid = name.trim() !== "" && description.trim() !== "";
 
-  const has = (p) => perms.has(p);
-  const toggle = (p) => setPerms(s => { const n = new Set(s); n.has(p) ? n.delete(p) : n.add(p); return n; });
-  const setResource = (res, on) => setPerms(s => {
-    const n = new Set(s);
-    res.actions.forEach(a => { const p = `${res.key}:${a}`; on ? n.add(p) : n.delete(p); });
-    return n;
-  });
-  const resAllOn = (res) => res.actions.every(a => has(`${res.key}:${a}`));
-  const setGroup = (g, on) => setPerms(s => {
-    const n = new Set(s);
-    g.items.forEach(res => res.actions.forEach(a => { const p = `${res.key}:${a}`; on ? n.add(p) : n.delete(p); }));
-    return n;
-  });
-  const groupCount = (g) => g.items.reduce((acc, res) => acc + res.actions.filter(a => has(`${res.key}:${a}`)).length, 0);
+  const cloneOptions = [{ value: "__none__", label: "None" }].concat(
+    (existingRoles || []).map(r => ({ value: r.id, label: `${r.name}${(r.permissions || []).length ? ` (${r.permissions.length} permission${r.permissions.length !== 1 ? "s" : ""})` : ""}` }))
+  );
 
-  const save = () => {
-    const id = role ? role.id : (name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "role") + "-" + (Date.now() % 100000);
-    onSave({ id, name: name.trim() || "Untitled Role", description: description.trim(), color, icon, permissions: [...perms], system: role ? role.system : false });
+  const submit = () => {
+    if (!valid) return;
+    onSave({ name: name.trim(), description: description.trim(), cloneFromRoleId: cloneFrom !== "__none__" ? cloneFrom : null });
   };
 
   return (
-    <Modal onClose={onClose} width={760}>
+    <Modal onClose={onClose} width={600}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "24px 24px 0" }}>
         <div>
-          <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 20, color: "var(--gray-900)" }}>{mode === "edit" ? "Edit Role" : "Create Role"}</div>
-          <div className="bh-body" style={{ marginTop: 4 }}>Name the role and choose exactly what it can access.</div>
+          <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 20, lineHeight: "28px", color: "var(--gray-900)" }}>{editing ? "Edit Role" : "Add Role"}</div>
+          <div className="bh-body" style={{ marginTop: 4 }}>{editing ? "Update this role's details" : "Create a new user role"}</div>
         </div>
         <button className="btn btn-icon btn-ghost" onClick={onClose} style={{ width: 32, height: 32, padding: 0 }}><Icon name="close-line" size={20} color="var(--gray-500)" /></button>
       </div>
 
-      <div style={{ padding: "20px 24px 0", display: "flex", gap: 16 }}>
-        <div style={{ flex: 1 }}>
-          <Field label="Role Name"><Input placeholder="Eg. Payroll Officer" value={name} onChange={e => setName(e.target.value)} /></Field>
-        </div>
-        <div style={{ width: 200 }}>
-          <Field label="Colour">
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", paddingTop: 4 }}>
-              {ROLE_COLORS.map(c => (
-                <button key={c} type="button" onClick={() => setColor(c)} aria-label={c} style={{
-                  width: 26, height: 26, borderRadius: "50%", background: c, cursor: "pointer",
-                  border: color === c ? "2px solid var(--gray-900)" : "2px solid #fff", boxShadow: "0 0 0 1px var(--border)" }} />
-              ))}
-            </div>
+      <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 18 }}>
+        <Field label="Role Name"><Input placeholder="Eg. Administrator" value={name} onChange={e => setName(e.target.value)} /></Field>
+        <Field label="Description"><Textarea rows={4} placeholder="Describe what this role is for and which permissions it grants…" value={description} onChange={e => setDescription(e.target.value)} /></Field>
+        {!editing && (existingRoles || []).length > 0 && (
+          <Field label="Clone permissions from" optional>
+            <Combobox value={cloneFrom} onChange={setCloneFrom} options={cloneOptions} placeholder="Select a role to copy its permissions…" />
           </Field>
-        </div>
-      </div>
-      <div style={{ padding: "0 24px" }}>
-        <Field label="Description"><Input placeholder="What is this role for?" value={description} onChange={e => setDescription(e.target.value)} /></Field>
+        )}
       </div>
 
-      <div style={{ padding: "8px 24px 0" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <div style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-800)" }}>Permissions <span style={{ color: "var(--gray-400)" }}>· {perms.size} selected</span></div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button className="btn btn-ghost btn-sm" onClick={() => setPerms(new Set(window.RBAC.allPerms))}>Select all</button>
-            <button className="btn btn-ghost btn-sm" onClick={() => setPerms(new Set())}>Clear</button>
-          </div>
-        </div>
-        <div style={{ maxHeight: 320, overflowY: "auto", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)" }}>
-          {groups.map((g, gi) => {
-            const cnt = groupCount(g);
-            const total = g.items.reduce((a, r) => a + r.actions.length, 0);
-            return (
-              <div key={g.group} style={{ borderTop: gi ? "1px solid var(--divider)" : 0 }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", background: "var(--gray-50)" }}>
-                  <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 12.5, letterSpacing: ".02em", textTransform: "uppercase", color: "var(--gray-500)" }}>{g.group}</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ fontFamily: "var(--font-ui)", fontSize: 11.5, color: "var(--gray-400)" }}>{cnt}/{total}</span>
-                    <button className="btn btn-ghost btn-sm" onClick={() => setGroup(g, cnt < total)}>{cnt < total ? "Enable all" : "Disable all"}</button>
-                  </div>
-                </div>
-                {g.items.map(res => (
-                  <div key={res.key} style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", borderTop: "1px solid var(--divider)" }}>
-                    <button type="button" onClick={() => setResource(res, !resAllOn(res))} title="Toggle all" style={{
-                      width: 18, height: 18, flexShrink: 0, borderRadius: 5, cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center",
-                      border: resAllOn(res) ? "0" : "1.5px solid var(--border-strong)", background: resAllOn(res) ? "var(--brand-yellow)" : "#fff" }}>
-                      {resAllOn(res) && <Icon name="check-line" size={13} color="var(--brand-ink)" />}
-                    </button>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: "var(--font-head)", fontWeight: 600, fontSize: 13.5, color: "var(--gray-900)" }}>{res.label}</div>
-                      <div style={{ fontFamily: "var(--font-ui)", fontSize: 11, color: "var(--gray-400)" }}>{res.key}</div>
-                    </div>
-                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end", maxWidth: 360 }}>
-                      {res.actions.map(a => <PermPill key={a} label={a} on={has(`${res.key}:${a}`)} onClick={() => toggle(`${res.key}:${a}`)} />)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            );
-          })}
-        </div>
-        {isSystem && <div style={{ marginTop: 10, fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--warning-deep)", display: "flex", alignItems: "center", gap: 6 }}><Icon name="information-line" size={15} color="var(--warning-deep)" />This is a system role — edits apply, but it can't be deleted.</div>}
-      </div>
-
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, padding: 24 }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, padding: "0 24px 24px" }}>
         <Button variant="stroke" onClick={onClose}>Cancel</Button>
-        <Button variant="primary" icon={mode === "edit" ? "check-line" : "add-line"} disabled={!name.trim()} onClick={save}>{mode === "edit" ? "Save Changes" : "Create Role"}</Button>
+        <Button variant="primary" disabled={!valid} onClick={submit}>{editing ? "Update" : "Add"}</Button>
       </div>
     </Modal>
   );
 }
 
-function RolesScreen({ onToast, canCreate = true, canEdit = true, canDelete = true }) {
-  const [rbac, setRbac] = useStore(window.HRStores.rbac);
-  const [editor, setEditor] = useRU(null);
-  const [confirm, setConfirm] = useRU(null);
-  const [q, setQ] = useRU("");
-  const roles = rbac.roles.filter(r => r.name.toLowerCase().includes(q.toLowerCase()));
+/* ============================ MANAGE PERMISSIONS (full page) ============================ */
+// Mirrors PermissionsForm.tsx: groups → resource cards; one resource editable at a time
+// (Edit → Cancel/Save Changes), "Select all in this section", per-permission Switch.
+function groupedResources() {
+  const out = [];
+  const seen = {};
+  for (const r of window.RBAC.resources) {
+    if (!seen[r.group]) { seen[r.group] = { groupName: r.group, resources: [] }; out.push(seen[r.group]); }
+    seen[r.group].resources.push(r);
+  }
+  return out;
+}
 
-  const saveRole = (role) => {
-    const isEdit = rbac.roles.some(r => r.id === role.id);
-    setRbac(s => ({ ...s, roles: isEdit ? s.roles.map(r => r.id === role.id ? role : r) : [...s.roles, role] }));
-    onToast && onToast(`Role ${isEdit ? "Updated" : "Created"}`, { tone: "success" });
+function ManagePermissions({ role, onSave, onToast }) {
+  const [permIds, setPermIds] = useRU(() => new Set(role.permissions || []));
+  const [editingRes, setEditingRes] = useRU(null);     // only one resource open at a time
+  const [q, setQ] = useRU("");
+  const modules = groupedResources();
+
+  const permName = (res, action) => `${res.key}:${action}`;
+  const has = (res, action) => permIds.has(permName(res, action));
+  const toggle = (res, action) => setPermIds(s => { const n = new Set(s); const p = permName(res, action); n.has(p) ? n.delete(p) : n.add(p); return n; });
+  const selectedInRes = (res) => res.actions.filter(a => has(res, a)).length;
+  const allInRes = (res) => res.actions.length > 0 && selectedInRes(res) === res.actions.length;
+  const toggleResAll = (res) => setPermIds(s => {
+    const n = new Set(s); const on = allInRes(res);
+    res.actions.forEach(a => { const p = permName(res, a); on ? n.delete(p) : n.add(p); });
+    return n;
+  });
+
+  const save = () => {
+    onSave([...permIds]);
+    setEditingRes(null);
+    onToast && onToast("Permissions Assigned", { tone: "success" });
+  };
+  const cancelEdit = () => { setPermIds(new Set(role.permissions || [])); setEditingRes(null); };
+
+  const ql = q.trim().toLowerCase();
+  const matchRes = (res) => !ql || res.label.toLowerCase().includes(ql) || res.group.toLowerCase().includes(ql) || res.actions.some(a => a.toLowerCase().includes(ql)) || res.key.toLowerCase().includes(ql);
+  const shownModules = modules
+    .map(m => ({ ...m, resources: m.resources.filter(matchRes) }))
+    .filter(m => m.resources.length > 0 || (ql && m.groupName.toLowerCase().includes(ql)));
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title={`Permissions (${role.name})`} subtitle="Manage permissions for this role." />
+      <div className="input-wrap" style={{ width: 380, maxWidth: "100%", padding: "9px 12px" }}>
+        <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
+        <input placeholder="Search permissions, modules, or features…" value={q} onChange={e => setQ(e.target.value)} />
+      </div>
+
+      {shownModules.map(m => (
+        <div key={m.groupName} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 20, color: "var(--gray-900)" }}>{m.groupName}</div>
+          {m.resources.map(res => {
+            const open = editingRes === res.key;
+            return (
+              <div key={res.key} className="card" style={{ padding: 0, overflow: "hidden" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px" }}>
+                  <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 16, color: "var(--gray-900)" }}>{res.label}</div>
+                  {open
+                    ? <div style={{ display: "flex", gap: 10 }}>
+                        <Button variant="stroke" size="sm" onClick={cancelEdit}>Cancel</Button>
+                        <Button variant="primary" size="sm" onClick={save}>Save Changes</Button>
+                      </div>
+                    : <Button variant="ghost" size="sm" icon="edit-2-line" onClick={() => setEditingRes(res.key)}>Edit</Button>}
+                </div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "#FAFAFA", borderTop: "1px solid var(--divider)", borderBottom: "1px solid var(--divider)", fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 13.5, color: "var(--gray-800)" }}>
+                  <span>Modules &amp; Features</span>
+                  {open && <Checkbox checked={allInRes(res)} onChange={() => toggleResAll(res)} label="Select all in this section" />}
+                </div>
+                <div style={{ opacity: open ? 1 : 0.55, pointerEvents: open ? "auto" : "none" }}>
+                  {res.actions.map((a, i) => (
+                    <div key={a} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderTop: i ? "1px solid var(--divider)" : 0 }}>
+                      <span style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-700)" }}>{a} {res.label}</span>
+                      <UI.Switch checked={has(res, a)} onCheckedChange={() => toggle(res, a)} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ))}
+      {shownModules.length === 0 && <EmptyState compact title="No permissions found" subtitle="No module or feature matches your search." />}
+    </div>
+  );
+}
+
+/* ============================ ROLES SCREEN ============================ */
+function RolesScreen({ onToast, onSubPage, canCreate = true, canEdit = true, canDelete = true, canManage = true }) {
+  const [rbac, setRbac] = useStore(window.HRStores.rbac);
+  const [editor, setEditor] = useRU(null);             // { mode, role }
+  const [confirm, setConfirm] = useRU(null);           // role pending delete
+  const [q, setQ] = useRU("");
+  const [view, setView] = useRU({ name: "list" });     // list | permissions
+  const roles = rbac.roles.filter(r => r.name.toLowerCase().includes(q.toLowerCase()) || (r.description || "").toLowerCase().includes(q.toLowerCase()));
+  const pg = usePaged(roles, 10);
+
+  useRUEffect(() => {
+    if (!onSubPage) return;
+    if (view.name === "permissions") {
+      const r = rbac.roles.find(x => x.id === view.id);
+      onSubPage({ trail: [{ label: "Roles", onClick: () => setView({ name: "list" }) }, { label: `Permissions (${r ? r.name : ""})` }] });
+    } else onSubPage(null);
+    return () => onSubPage(null);
+  }, [view, rbac.roles]);
+
+  const saveRole = (data) => {
+    if (editor.mode === "edit") {
+      setRbac(s => ({ ...s, roles: s.roles.map(r => r.id === editor.role.id ? { ...r, name: data.name, description: data.description } : r) }));
+      onToast && onToast("Role updated successfully", { tone: "success" });
+    } else {
+      const idx = rbac.roles.length;
+      const id = (data.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "role") + "-" + (Date.now() % 100000);
+      const cloned = data.cloneFromRoleId ? (rbac.roles.find(r => r.id === data.cloneFromRoleId)?.permissions || []).slice() : [];
+      const role = { id, name: data.name, description: data.description, color: pickColor(idx), icon: pickIcon(idx), permissions: cloned, system: false };
+      setRbac(s => ({ ...s, roles: [...s.roles, role] }));
+      onToast && onToast(cloned.length ? "Role created successfully with permissions copied." : "Role created successfully.", { tone: "success" });
+    }
     setEditor(null);
   };
   const removeRole = (role) => {
     setRbac(s => ({ ...s, roles: s.roles.filter(r => r.id !== role.id), roleId: s.roleId === role.id ? "super-admin" : s.roleId }));
-    onToast && onToast("Role Deleted", { tone: "error" });
+    onToast && onToast("Role archived successfully", { tone: "error" });
     setConfirm(null);
+  };
+
+  if (view.name === "permissions") {
+    const role = rbac.roles.find(r => r.id === view.id);
+    if (!role) { setView({ name: "list" }); return null; }
+    return (
+      <ManagePermissions role={role} onToast={onToast}
+        onSave={(perms) => setRbac(s => ({ ...s, roles: s.roles.map(r => r.id === role.id ? { ...r, permissions: perms } : r) }))} />
+    );
+  }
+
+  const rowActions = (r) => {
+    const acts = [];
+    if (canEdit) acts.push({ label: "Edit Role", short: "Edit", icon: "edit-2-line", onClick: () => setEditor({ mode: "edit", role: r }) });
+    if (canManage) acts.push({ label: "Manage Permissions", short: "Permissions", icon: "shield-keyhole-line", onClick: () => setView({ name: "permissions", id: r.id }) });
+    if (canDelete && !r.system) acts.push({ label: "Archive Role", short: "Archive", icon: "archive-line", danger: true, onClick: () => setConfirm(r) });
+    return acts;
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <PageHeader title="Roles" subtitle="Define roles and the permissions each one grants. Changes apply across the app instantly."
-        actions={canCreate && <Button variant="primary" icon="add-line" onClick={() => setEditor({ mode: "create", role: null })}>Create Role</Button>} />
+      <PageHeader title="Roles" subtitle="Manage roles and permissions for users."
+        actions={canCreate && <Button variant="primary" icon="add-line" onClick={() => setEditor({ mode: "create", role: null })}>Add Role</Button>} />
 
-      <div className="card" style={{ padding: 20 }}>
-        <div className="bh-tablebox">
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 20px" }}>
-          <div className="input-wrap" style={{ width: 280, padding: "8px 12px" }}>
+      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 20px", borderBottom: "1px solid var(--divider)" }}>
+          <div className="input-wrap" style={{ width: 300, padding: "8px 12px" }}>
             <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
             <input placeholder="Search roles…" value={q} onChange={e => setQ(e.target.value)} />
           </div>
           <span style={{ fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-500)" }}>{rbac.roles.length} roles</span>
         </div>
         <table className="bh">
-          <thead><tr><th>Role</th><th>Description</th><th>Permissions</th><th>Type</th><th style={{ width: 48 }}></th></tr></thead>
+          <thead><tr><th>Role Name</th><th>Description</th><th style={{ width: 48 }}></th></tr></thead>
           <tbody>
-            {roles.map(r => (
+            {pg.pageItems.map(r => (
               <tr key={r.id}>
                 <td>
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
@@ -192,131 +236,288 @@ function RolesScreen({ onToast, canCreate = true, canEdit = true, canDelete = tr
                     <span style={{ fontFamily: "var(--font-head)", fontWeight: 600, color: "var(--gray-900)" }}>{r.name}</span>
                   </span>
                 </td>
-                <td style={{ maxWidth: 360, color: "var(--gray-500)" }}>{r.description}</td>
-                <td><span className="bh-chip">{(r.permissions || []).length}</span></td>
-                <td><StatusBadge variant={r.system ? "info" : "completed"} text={r.system ? "System" : "Custom"} size="sm" /></td>
-                <td style={{ position: "relative", textAlign: "right" }}>
-                  <RoleRowMenu role={r} canEdit={canEdit} canDelete={canDelete && !r.system}
-                    onEdit={() => setEditor({ mode: "edit", role: r })} onDelete={() => setConfirm(r)} />
-                </td>
+                <td style={{ maxWidth: 460, color: "var(--gray-500)" }}>{r.description}</td>
+                <td style={{ textAlign: "right" }}><UI.RowActions actions={rowActions(r)} forceMenu /></td>
               </tr>
             ))}
+            {roles.length === 0 && <tr><td colSpan={3} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No role matches your search." /></td></tr>}
           </tbody>
         </table>
-        </div>
+        {roles.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
       </div>
 
-      {editor && <RoleEditor mode={editor.mode} role={editor.role} onClose={() => setEditor(null)} onSave={saveRole} />}
+      {editor && <RoleFormModal mode={editor.mode} role={editor.role} existingRoles={rbac.roles} onClose={() => setEditor(null)} onSave={saveRole} />}
       {confirm && (
-        <ConfirmModal title="Delete Role" message={`Are you sure you want to delete the "${confirm.name}" role? Users on this role will fall back to Super Admin.`}
-          confirmLabel="Yes, Delete" confirmIcon="delete-bin-line" cancelLabel="Cancel" tone="error"
+        <ConfirmModal title="Archive Role" message={`Are you sure you want to archive "${confirm.name}"? This action cannot be undone.`}
+          confirmLabel="Yes, Archive" confirmIcon="archive-line" cancelLabel="Cancel" tone="error"
           onConfirm={() => removeRole(confirm)} onClose={() => setConfirm(null)} />
       )}
     </div>
   );
 }
 
-function RoleRowMenu({ role, canEdit, canDelete, onEdit, onDelete }) {
-  const [open, setOpen] = useRU(false);
-  if (!canEdit && !canDelete) return null;
-  return (
-    <React.Fragment>
-      <button className="btn btn-icon btn-ghost" style={{ width: 28, height: 28, padding: 0 }} onClick={() => setOpen(o => !o)}>
-        <Icon name="more-fill" size={18} color="var(--gray-400)" />
-      </button>
-      {open && (
-        <div onMouseLeave={() => setOpen(false)} style={{ position: "absolute", right: 16, top: 40, zIndex: 20, background: "#fff", borderRadius: "var(--radius-md)", boxShadow: "var(--shadow-pop)", padding: 6, minWidth: 160, display: "flex", flexDirection: "column" }}>
-          {canEdit && <button className="menu-item" onClick={() => { setOpen(false); onEdit(); }}><Icon name="edit-2-line" size={16} />Edit Role</button>}
-          {canDelete && <button className="menu-item danger" onClick={() => { setOpen(false); onDelete(); }}><Icon name="delete-bin-line" size={16} />Delete Role</button>}
-        </div>
-      )}
-    </React.Fragment>
-  );
-}
-
-// ---- Users ------------------------------------------------------------------
+/* ============================ USERS ============================ */
 const USERS_SEED = [
-  { id: 1, name: "Leslie Alexandre", email: "leslie.alexandre@joesam.com", dept: "Human Resource", role: "super-admin", status: "Active" },
-  { id: 2, name: "Emmanuel Ansah", email: "emmanuel.ansah@joesam.com", dept: "Human Resource", role: "hr-admin", status: "Active" },
-  { id: 3, name: "Olivia Bennett", email: "olivia.bennett@joesam.com", dept: "Finance", role: "hrbp", status: "Active" },
-  { id: 4, name: "Franklin Brobbey", email: "franklin.brobbey@joesam.com", dept: "Finance", role: "line-manager", status: "Active" },
-  { id: 5, name: "Bright Manu", email: "bright.manu@joesam.com", dept: "Information Technology", role: "line-manager", status: "Active" },
-  { id: 6, name: "Samuel Boateng", email: "samuel.boateng@joesam.com", dept: "Marketing", role: "recruiter", status: "Active" },
-  { id: 7, name: "Phoenix Carter", email: "phoenix.carter@joesam.com", dept: "Finance", role: "employee", status: "Active" },
-  { id: 8, name: "Ama Mensah", email: "ama.mensah@joesam.com", dept: "Support Services", role: "employee", status: "Active" },
-  { id: 9, name: "Kofi Owusu", email: "kofi.owusu@joesam.com", dept: "Information Technology", role: "employee", status: "Invited" },
-  { id: 10, name: "Demi Owusu", email: "demi.owusu@joesam.com", dept: "Human Resource", role: "hr-admin", status: "Active" },
+  { id: 1, name: "Leslie Alexandre", email: "leslie.alexandre@joesam.com", dept: "Human Resource", roleIds: ["super-admin"], isActive: true },
+  { id: 2, name: "Emmanuel Ansah", email: "emmanuel.ansah@joesam.com", dept: "Human Resource", roleIds: ["hr-admin"], isActive: true },
+  { id: 3, name: "Olivia Bennett", email: "olivia.bennett@joesam.com", dept: "Finance", roleIds: ["hrbp", "line-manager"], isActive: true },
+  { id: 4, name: "Franklin Brobbey", email: "franklin.brobbey@joesam.com", dept: "Finance", roleIds: ["line-manager"], isActive: true },
+  { id: 5, name: "Bright Manu", email: "bright.manu@joesam.com", dept: "Information Technology", roleIds: ["line-manager"], isActive: true },
+  { id: 6, name: "Samuel Boateng", email: "samuel.boateng@joesam.com", dept: "Marketing", roleIds: ["recruiter"], isActive: true },
+  { id: 7, name: "Phoenix Carter", email: "phoenix.carter@joesam.com", dept: "Finance", roleIds: ["employee"], isActive: true },
+  { id: 8, name: "Ama Mensah", email: "ama.mensah@joesam.com", dept: "Support Services", roleIds: ["employee"], isActive: true },
+  { id: 9, name: "Kofi Owusu", email: "kofi.owusu@joesam.com", dept: "Information Technology", roleIds: ["employee"], isActive: false },
+  { id: 10, name: "Demi Owusu", email: "demi.owusu@joesam.com", dept: "Human Resource", roleIds: ["hr-admin", "ld-admin"], isActive: true },
+  { id: 11, name: "Grace Adjei", email: "grace.adjei@joesam.com", dept: "Marketing", roleIds: ["ld-admin"], isActive: true },
+  { id: 12, name: "Daniel Quaye", email: "daniel.quaye@joesam.com", dept: "Information Technology", roleIds: ["employee"], isActive: true },
 ];
 window.HRStores.users = window.HRStores.users || makeStore(USERS_SEED);
 
-function UsersScreen({ onToast, roles = [], canEdit = true }) {
-  const [users, setUsers] = useStore(window.HRStores.users);
-  const [q, setQ] = useRU("");
-  const [openRole, setOpenRole] = useRU(null);
-  const roleOf = (id) => roles.find(r => r.id === id) || { name: "—", color: "#868C98", icon: "user-3-line" };
-  const shown = users.filter(u => u.name.toLowerCase().includes(q.toLowerCase()) || u.email.toLowerCase().includes(q.toLowerCase()));
-  const setRole = (uid, roleId) => {
-    setUsers(list => list.map(u => u.id === uid ? { ...u, role: roleId } : u));
-    setOpenRole(null);
-    onToast && onToast("Role Assigned", { tone: "success" });
-  };
+// ---- User insights (3 cards + dialogs) — mirrors UserInsightsCards.tsx, seeded with demo data ----
+const LOGIN_ISSUES_SEED = [
+  { email: "kofi.owusu@joesam.com", failCount: 5, lastError: "Invalid password", lastAttemptAt: "24 Jun 2026 08:14" },
+  { email: "j.doe@joesam.com", failCount: 3, lastError: "Account locked after 3 attempts", lastAttemptAt: "23 Jun 2026 17:42" },
+  { email: "test.user@joesam.com", failCount: 2, lastError: "User not found", lastAttemptAt: "22 Jun 2026 11:05" },
+];
+const DUPLICATE_GROUPS_SEED = [
+  { email: "a.mensah@joesam.com", users: [
+    { id: "usr_8841", fullName: "Ama Mensah", email: "a.mensah@joesam.com" },
+    { id: "usr_9123", fullName: "Ama Mensah (import)", email: "a.mensah@joesam.com" },
+  ] },
+];
 
+function InsightDialog({ title, onClose, children }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <PageHeader title="Users" subtitle="People with access to BISTA HR and the role assigned to each."
-        actions={canEdit && <Button variant="primary" icon="user-add-line" onClick={() => onToast && onToast("Invite sent", { tone: "success" })}>Invite User</Button>} />
-      <div className="card" style={{ padding: 20 }}>
-        <div className="bh-tablebox">
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "16px 20px" }}>
-          <div className="input-wrap" style={{ width: 280, padding: "8px 12px" }}>
-            <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
-            <input placeholder="Search users…" value={q} onChange={e => setQ(e.target.value)} />
-          </div>
-          <span style={{ fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-500)" }}>{users.length} users</span>
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 120, background: "rgba(16,24,40,.45)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-pop)", width: 680, maxWidth: "100%", maxHeight: "80vh", display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 24px", borderBottom: "1px solid var(--divider)" }}>
+          <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 16, color: "var(--gray-900)" }}>{title}</div>
+          <button className="btn btn-icon btn-ghost" onClick={onClose} style={{ width: 32, height: 32, padding: 0 }}><Icon name="close-line" size={20} color="var(--gray-500)" /></button>
         </div>
-        <table className="bh">
-          <thead><tr><th>User</th><th>Email</th><th>Department</th><th>Role</th><th>Status</th></tr></thead>
-          <tbody>
-            {shown.map(u => {
-              const role = roleOf(u.role);
-              return (
-                <tr key={u.id}>
-                  <td><span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}><Avatar name={u.name} size={28} />{u.name}</span></td>
-                  <td style={{ color: "var(--gray-500)" }}>{u.email}</td>
-                  <td>{u.dept}</td>
-                  <td style={{ position: "relative" }}>
-                    <button onClick={() => canEdit && setOpenRole(openRole === u.id ? null : u.id)} style={{
-                      display: "inline-flex", alignItems: "center", gap: 7, border: "1px solid var(--border-strong)", background: "#fff",
-                      borderRadius: 999, padding: "5px 10px 5px 8px", cursor: canEdit ? "pointer" : "default" }}>
-                      <span style={{ width: 18, height: 18, borderRadius: "50%", background: (role.color) + "1f", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-                        <Icon name={role.icon} size={11} color={role.color} />
-                      </span>
-                      <span style={{ fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 12.5, color: "var(--gray-900)" }}>{role.name}</span>
-                      {canEdit && <Icon name="arrow-down-s-line" size={15} color="var(--gray-400)" />}
-                    </button>
-                    {openRole === u.id && (
-                      <div onMouseLeave={() => setOpenRole(null)} style={{ position: "absolute", left: 0, top: 40, zIndex: 30, background: "#fff", border: "1px solid var(--border)", borderRadius: 12, boxShadow: "var(--shadow-pop)", padding: 6, minWidth: 220, maxHeight: 280, overflowY: "auto" }}>
-                        {roles.map(r => (
-                          <button key={r.id} className="menu-item" onClick={() => setRole(u.id, r.id)} style={{ justifyContent: "flex-start" }}>
-                            <span style={{ width: 18, height: 18, borderRadius: "50%", background: (r.color || "#375DFB") + "1f", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-                              <Icon name={r.icon || "user-3-line"} size={11} color={r.color || "#375DFB"} />
-                            </span>
-                            {r.name}{r.id === u.role && <Icon name="check-line" size={15} color="var(--brand-yellow-dark)" style={{ marginLeft: "auto" }} />}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </td>
-                  <td><StatusBadge variant={u.status === "Active" ? "active" : "pending"} text={u.status} size="sm" /></td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        </div>
+        <div style={{ padding: 24, overflowY: "auto" }}>{children}</div>
       </div>
     </div>
   );
 }
 
-Object.assign(window, { RolesScreen, UsersScreen, RoleEditor });
+function UserInsightsCards() {
+  const [dialog, setDialog] = useRU(null);   // "login" | "dups" | null
+  const [dups, setDups] = useRU(DUPLICATE_GROUPS_SEED);
+  const [checking, setChecking] = useRU(false);
+  const card = { borderRadius: "var(--radius-md)", padding: "14px 16px", border: "1px solid" };
+  const recheck = () => { setChecking(true); setTimeout(() => setChecking(false), 900); };
+
+  return (
+    <React.Fragment>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12 }}>
+        {/* Login Issues */}
+        <button onClick={() => setDialog("login")} style={{ ...card, textAlign: "left", cursor: "pointer", background: "#FEF3F2", borderColor: "#FECDCA" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-ui)", fontSize: 12.5, fontWeight: 500, color: "var(--gray-500)" }}><Icon name="error-warning-line" size={14} color="#F04438" />Login Issues</span>
+            <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "#F04438" }}>View →</span>
+          </div>
+          <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 26, color: "var(--gray-900)", marginTop: 6 }}>{LOGIN_ISSUES_SEED.length}</div>
+          <div style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>users with failed attempts</div>
+        </button>
+        {/* Successful Logins */}
+        <div style={{ ...card, background: "#ECFDF3", borderColor: "#ABEFC6" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-ui)", fontSize: 12.5, fontWeight: 500, color: "var(--gray-500)" }}><Icon name="checkbox-circle-line" size={14} color="#12B76A" />Successful Logins</span>
+          <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 26, color: "var(--gray-900)", marginTop: 6 }}>1,240</div>
+          <div style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>in the last 30 days</div>
+        </div>
+        {/* Duplicate Users */}
+        <div style={{ ...card, background: "var(--gray-50)", borderColor: "var(--border)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-ui)", fontSize: 12.5, fontWeight: 500, color: "var(--gray-500)" }}><Icon name="group-line" size={14} color="var(--gray-500)" />Duplicate Users</span>
+            <button className="btn btn-icon btn-ghost" onClick={recheck} title="Refresh duplicate count" style={{ width: 24, height: 24, padding: 0 }}><Icon name="refresh-line" size={14} color="var(--gray-400)" /></button>
+          </div>
+          <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 26, color: "var(--gray-900)", marginTop: 6 }}>{checking ? "…" : dups.length}</div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>duplicate email groups</span>
+            {dups.length > 0 && <button onClick={() => setDialog("dups")} style={{ border: 0, background: "none", cursor: "pointer", padding: 0, fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--brand-yellow-dark)" }}>View →</button>}
+          </div>
+        </div>
+      </div>
+
+      {dialog === "login" && (
+        <InsightDialog title="Users with Login Issues" onClose={() => setDialog(null)}>
+          <table className="bh">
+            <thead><tr><th>Email</th><th style={{ textAlign: "center" }}>Fails</th><th>Last Error</th><th>Last Attempt</th></tr></thead>
+            <tbody>{LOGIN_ISSUES_SEED.map(it => (
+              <tr key={it.email}>
+                <td style={{ fontWeight: 500, color: "var(--gray-800)" }}>{it.email}</td>
+                <td style={{ textAlign: "center" }}><span style={{ display: "inline-block", background: "#FEE4E2", color: "#B42318", fontWeight: 600, fontSize: 12, borderRadius: 999, padding: "2px 9px" }}>{it.failCount}</span></td>
+                <td style={{ color: "var(--gray-500)" }}>{it.lastError}</td>
+                <td style={{ color: "var(--gray-400)", whiteSpace: "nowrap" }}>{it.lastAttemptAt}</td>
+              </tr>
+            ))}</tbody>
+          </table>
+        </InsightDialog>
+      )}
+      {dialog === "dups" && (
+        <InsightDialog title="Duplicate Email Groups" onClose={() => setDialog(null)}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {dups.map(g => (
+              <div key={g.email} style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-md)", padding: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                  <span style={{ fontFamily: "var(--font-head)", fontWeight: 600, fontSize: 14, color: "var(--gray-700)" }}>{g.email}</span>
+                  <button onClick={() => { setDups(d => d.filter(x => x.email !== g.email)); }} style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--brand-yellow-dark)", border: "1px solid var(--brand-yellow)", borderRadius: 6, padding: "3px 8px", background: "var(--brand-yellow-tint)", cursor: "pointer" }}><Icon name="tools-line" size={12} color="var(--brand-yellow-dark)" />Quick Fix</button>
+                </div>
+                <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
+                  {g.users.map(u => (
+                    <li key={u.id} style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-ui)", fontSize: 13.5, color: "var(--gray-600)" }}>
+                      <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--gray-400)" }} />
+                      <span style={{ fontWeight: 500 }}>{u.fullName}</span>
+                      <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: 11, color: "var(--gray-400)" }}>{u.id}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            {dups.length === 0 && <div style={{ textAlign: "center", color: "var(--gray-400)", fontSize: 14, padding: "24px 0" }}>No duplicate users found.</div>}
+          </div>
+        </InsightDialog>
+      )}
+    </React.Fragment>
+  );
+}
+
+// ---- Edit User modal — mirrors UserFormModal.tsx ----
+function UserFormModal({ user, roleOptions, onClose, onSubmit, onChangeEmail }) {
+  const [roleIds, setRoleIds] = useRU(user.roleIds || []);
+  const [isActive, setIsActive] = useRU(!!user.isActive);
+  const [emailEdit, setEmailEdit] = useRU(false);
+  const [newEmail, setNewEmail] = useRU("");
+  const [err, setErr] = useRU("");
+  const valid = roleIds.length > 0;
+  const isEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());
+
+  const changeEmail = () => {
+    const t = newEmail.trim();
+    if (!t || !isEmail(t)) { setErr(t ? "Enter a valid email address." : "Enter a new email address."); return; }
+    if (t === user.email) { setErr("New email must be different from the current one."); return; }
+    setErr(""); onChangeEmail(t); setEmailEdit(false); setNewEmail("");
+  };
+
+  return (
+    <Modal onClose={onClose} width={600}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "24px 24px 0" }}>
+        <div>
+          <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 20, lineHeight: "28px", color: "var(--gray-900)" }}>Edit User</div>
+          <div className="bh-body" style={{ marginTop: 4 }}>Update user role and status.</div>
+        </div>
+        <button className="btn btn-icon btn-ghost" onClick={onClose} style={{ width: 32, height: 32, padding: 0 }}><Icon name="close-line" size={20} color="var(--gray-500)" /></button>
+      </div>
+
+      <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 18 }}>
+        <Field label="Full Name">
+          <div className="input-wrap" style={{ background: "var(--gray-50)" }}><input value={user.name} readOnly disabled style={{ color: "var(--gray-600)" }} /></div>
+        </Field>
+        <Field label="Email">
+          <div style={{ display: "flex", gap: 8 }}>
+            <div className="input-wrap" style={{ flex: 1, background: "var(--gray-50)" }}><input value={user.email} readOnly disabled style={{ color: "var(--gray-600)" }} /></div>
+            <button className="btn btn-icon btn-stroke" title="Change email" onClick={() => { setEmailEdit(v => !v); setNewEmail(""); setErr(""); }} style={{ width: 38, height: 38, padding: 0, flexShrink: 0 }}><Icon name="pencil-line" size={16} color="var(--gray-600)" /></button>
+          </div>
+          {emailEdit && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingTop: 10, marginTop: 10, borderTop: "1px solid var(--divider)" }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
+                <div className="input-wrap" style={{ flex: 1 }}><input placeholder="New email address" value={newEmail} onChange={e => { setNewEmail(e.target.value); setErr(""); }} onKeyDown={e => e.key === "Enter" && changeEmail()} /></div>
+                <Button variant="primary" disabled={!newEmail.trim()} onClick={changeEmail}>Change email</Button>
+              </div>
+              {err && <div style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--error)" }}>{err}</div>}
+            </div>
+          )}
+        </Field>
+        <Field label="Roles"><MultiSelectCombobox value={roleIds} onChange={setRoleIds} options={roleOptions} placeholder="Select roles" noDataText="No roles found." /></Field>
+        <Field label="Status">
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <UI.Switch checked={isActive} onCheckedChange={setIsActive} />
+            <span style={{ fontFamily: "var(--font-ui)", fontSize: 14, color: "var(--gray-700)" }}>{isActive ? "Active" : "Inactive"}</span>
+          </div>
+        </Field>
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, padding: "0 24px 24px" }}>
+        <Button variant="stroke" onClick={onClose}>Cancel</Button>
+        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ roleIds, isActive })}>Update</Button>
+      </div>
+    </Modal>
+  );
+}
+
+function UsersScreen({ onToast, roles = [], canEdit = true }) {
+  const [users, setUsers] = useStore(window.HRStores.users);
+  const [q, setQ] = useRU("");
+  const [roleFilter, setRoleFilter] = useRU("all");
+  const [edit, setEdit] = useRU(null);    // user being edited
+  const roleOptions = roles.map(r => ({ value: r.id, label: r.name }));
+  const roleName = (id) => (roles.find(r => r.id === id) || {}).name || id;
+
+  const shown = users.filter(u =>
+    (roleFilter === "all" || (u.roleIds || []).includes(roleFilter)) &&
+    (u.name.toLowerCase().includes(q.toLowerCase()) || u.email.toLowerCase().includes(q.toLowerCase()))
+  );
+  const pg = usePaged(shown, 10);
+
+  const submit = ({ roleIds, isActive }) => {
+    setUsers(list => list.map(u => u.id === edit.id ? { ...u, roleIds, isActive } : u));
+    setEdit(null);
+    onToast && onToast("User updated successfully", { tone: "success" });
+  };
+  const changeEmail = (uid, email) => {
+    setUsers(list => list.map(u => u.id === uid ? { ...u, email } : u));
+    setEdit(e => e && e.id === uid ? { ...e, email } : e);
+    onToast && onToast("Email updated successfully", { tone: "success" });
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title="Users" subtitle="Manage users and their access." />
+
+      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+        {/* insights cards */}
+        <div style={{ padding: 20, borderBottom: "1px solid var(--divider)" }}><UserInsightsCards /></div>
+
+        {/* toolbar — role filter + search (right-aligned) */}
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "flex-end", gap: 16, padding: "16px 20px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 200 }}>
+            <span style={{ fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-500)" }}>Filter by role</span>
+            <Combobox value={roleFilter} onChange={setRoleFilter} options={[{ value: "all", label: "All roles" }].concat(roleOptions)} placeholder="All roles" />
+          </div>
+          <div className="input-wrap" style={{ width: 280, padding: "8px 12px" }}>
+            <Icon name="search-2-line" size={18} style={{ color: "var(--icon-default)" }} />
+            <input placeholder="Search…" value={q} onChange={e => setQ(e.target.value)} />
+          </div>
+        </div>
+
+        <table className="bh">
+          <thead><tr><th>Name</th><th>Email</th><th>Roles</th><th style={{ textAlign: "right" }}>Action</th></tr></thead>
+          <tbody>
+            {pg.pageItems.map(u => (
+              <tr key={u.id}>
+                <td><span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}><Avatar name={u.name} size={32} /><span style={{ fontWeight: 500, color: "var(--gray-900)" }}>{u.name}</span></span></td>
+                <td style={{ color: "var(--gray-500)" }}>{u.email}</td>
+                <td>
+                  <span style={{ display: "inline-flex", flexWrap: "wrap", gap: 6 }}>
+                    {(u.roleIds || []).length
+                      ? (u.roleIds || []).map(id => <span key={id} className="bh-chip" style={{ background: "var(--gray-100)", color: "var(--gray-700)" }}>{roleName(id)}</span>)
+                      : <span style={{ color: "var(--gray-400)", fontSize: 12 }}>No role</span>}
+                  </span>
+                </td>
+                <td style={{ textAlign: "right" }}>
+                  {canEdit && <button className="btn btn-icon btn-ghost" title="Edit user" onClick={() => setEdit(u)} style={{ width: 32, height: 32, padding: 0 }}><Icon name="pencil-line" size={16} color="var(--gray-500)" /></button>}
+                </td>
+              </tr>
+            ))}
+            {shown.length === 0 && <tr><td colSpan={4} style={{ padding: 0 }}><EmptyState compact title="No users found" subtitle="No user matches your filters." /></td></tr>}
+          </tbody>
+        </table>
+        {shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
+      </div>
+
+      {edit && <UserFormModal user={edit} roleOptions={roleOptions} onClose={() => setEdit(null)} onSubmit={submit} onChangeEmail={(email) => changeEmail(edit.id, email)} />}
+    </div>
+  );
+}
+
+Object.assign(window, { RolesScreen, UsersScreen });

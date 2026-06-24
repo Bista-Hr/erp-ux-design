@@ -63,7 +63,9 @@ function CrudScreen({ config, rows, onCreate, onEdit, onArchive, onMenuAction, c
                           ? <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}><Avatar name={r[c.key]} size={28} />{r[c.key]}</span>
                           : c.type === "badge"
                             ? <StatusBadge variant={String(r[c.key] || "").toLowerCase()} text={r[c.key]} size="sm" />
-                            : r[c.key]}
+                            : c.type === "count"
+                              ? <span className="bh-chip">{(r[c.key] || []).length}</span>
+                              : (r[c.key] ?? "") !== "" ? r[c.key] : (c.fallback ? <span style={{ color: "var(--gray-400)" }}>{c.fallback}</span> : r[c.key])}
                       </td>
                     ))}
                     {!config.hideStatus && <td><StatusDot active={r.active} /></td>}

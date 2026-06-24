@@ -1,12 +1,13 @@
 // BISTA HR · jobtitle/JobTitle — People & Culture ▸ Job Title (Assign / Change of Job Title).
-// Bulk-assign flow (mirrors the Reporting Managers screen):
+// Bulk-assign flow (mirrors Promotions / Transfers — full-page forms, not modals):
 //   JobTitleRoster   : employee roster with row checkboxes + search. Select one or many →
-//                      an "Assign Job Title (N)" button → AssignJobTitleModal assigns ONE
-//                      new job title to all selected. A per-row "Assign" handles a single
+//                      an "Assign Job Title (N)" button → the full-page JobTitleForm assigns
+//                      ONE new job title to all selected. A per-row "Assign" handles a single
 //                      employee. No status pick — an assignment is created Pending and
 //                      becomes Current once approved.
-//   AssignJobTitleModal : "N employee(s) selected. Choose one job title to assign to all of
-//                      them." → selected employees list + Job Title + Effective Date + Reason.
+//   JobTitleForm     : full-page Assign / Edit (breadcrumb, not a modal). Employee(s) +
+//                      Department → New Job Title (filtered) → auto Job Grade, Effective Date,
+//                      Reason and Supporting Documents — consistent with the Promotion form.
 //   JobTitleList     : Requests tab — All / Approved / Pending change requests + approval.
 //   JobTitleDetails  : "Job Title Change Approval" — Change Information, Reason, Supporting
 //                      Documents, Approval Information, with Approve / Reject for pending.
@@ -61,48 +62,96 @@ const JOBTITLE_SEED = [
     rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM" },
 ];
 
-/* ---------- assign modal (one job title → many employees) ---------- */
-function AssignJobTitleModal({ names, initialData, lookups, onClose, onSubmit }) {
+/* ---------- form section card (matches the Promotions full-page form) ---------- */
+function JtFormCard({ title, badge, children }) {
+  return (
+    <div className="card" style={{ padding: "var(--card-pad, 24px)", overflow: "visible" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+        <div className="bh-h2" style={{ fontSize: 20 }}>{title}</div>
+        {badge}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>{children}</div>
+    </div>
+  );
+}
+// "Auto-populated" pill — marks the card grouping system-resolved values (job grade).
+const JtAutoBadge = () => (
+  <span style={{ display: "inline-flex", alignItems: "center", gap: 5, whiteSpace: "nowrap", background: "var(--brand-yellow-tint)", border: "1px solid var(--brand-yellow)", color: "var(--gray-800)", borderRadius: 999, padding: "3px 9px", fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 11.5 }}>
+    <Icon name="sparkling-2-line" size={12} color="var(--brand-yellow-dark)" />Auto-populated
+  </span>
+);
+
+/* ---------- assign / edit (FULL PAGE — mirrors the Promotion form for consistency) ---------- */
+// Department narrows the Job Title list; picking a Job Title auto-resolves its Grade (read-only).
+function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubmit }) {
   const LK = lookups || window.LOOKUPS;
   const EMP = window.EMPLOYEE_LIST;
   const isEdit = !!initialData;
-  const [people, setPeople] = useJt(names);
-  const [title, setTitle] = useJt(initialData?.newTitle || "");
-  const [date, setDate] = useJt("");
-  const [reason, setReason] = useJt(initialData?.reason || "");
+  const initIds = initialData ? (initialData.employees || []).map(window.firstIdForName).filter(Boolean) : (initialEmployees || []);
+  const [people, setPeople] = useJt(initIds);
+  const [form, setForm] = useJt({
+    department: initialData?.department || "",
+    newTitle: initialData?.newTitle || "",
+    grade: initialData?.grade || "",
+    date: "",
+    reason: initialData?.reason || "",
+  });
   const [docs, setDocs] = useJt({ keptUrls: initialData?.documents || [], newFiles: [] });
-  const valid = title && date && people.length > 0;
+  const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
+  const selectDept = (v) => setForm(s => ({ ...s, department: v, newTitle: "", grade: "" }));
+  const selectTitle = (v) => { const info = window.jobTitleInfo(v) || {}; setForm(s => ({ ...s, newTitle: v, grade: info.grade || "" })); };
+  const titleOptions = window.jobTitlesForDepartment(form.department);
+  const valid = people.length > 0 && form.department && form.newTitle && form.date;
   const multi = people.length > 1;
-  return (
-    <Modal onClose={onClose} width={620}>
-      <div style={{ padding: "24px 24px 0" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-          <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 20, lineHeight: "28px", color: "var(--gray-900)" }}>{isEdit ? "Edit job title" : "Assign job title"}</div>
-          <button className="btn btn-icon btn-ghost" onClick={onClose} style={{ width: 32, height: 32, padding: 0 }}><Icon name="close-line" size={20} color="var(--gray-500)" /></button>
-        </div>
-        <div className="bh-body" style={{ marginTop: 4 }}>
-          {isEdit ? "Update this job title change request." : <React.Fragment>{people.length} employee{multi ? "s" : ""} selected. Choose one job title to assign to {multi ? "all of them" : "them"}.</React.Fragment>}
-        </div>
-      </div>
 
-      <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 18 }}>
-        <Field label="Selected employees">
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader title={isEdit ? "Edit Job Title Change" : "Assign Job Title"}
+        subtitle={isEdit ? "Update this change of job title request."
+          : "Select staff, choose the new job title and route the change for approval."} />
+
+      <JtFormCard title="Employee Information">
+        <Field label="Employee(s)">
           <EmployeeAddSelect value={people} onChange={setPeople} employees={EMP} />
         </Field>
-
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-          <Field label="Job Title"><Combobox value={title} onChange={setTitle} options={LK.jobTitles} placeholder="Select job title" /></Field>
-          <Field label="Effective Date"><UI.DatePicker value={date} onSelect={d => setDate(d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <Field label="Department"><Combobox value={form.department} onChange={selectDept} options={LK.departments} placeholder="Select department" /></Field>
+          <Field label="New Job Title"><Combobox value={form.newTitle} onChange={selectTitle} options={titleOptions} placeholder={form.department ? "Select job title" : "Select department first"} noDataText="Select a department first." /></Field>
         </div>
-        <Field label="Reason / Note" optional><Textarea rows={3} value={reason} onChange={e => setReason(e.target.value)} placeholder="Reason or note for this assignment…" /></Field>
-        <Field label="Supporting Documents" optional><SupportingDocuments existingUrls={initialData?.documents || []} isEditMode={isEdit} onChange={setDocs} maxFiles={8} maxSizeMB={8} /></Field>
-      </div>
+        <Field label="Effective Date"><UI.DatePicker value={form.date} onSelect={d => set("date", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
+      </JtFormCard>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, padding: "0 24px 24px" }}>
-        <Button variant="stroke" onClick={onClose}>Cancel</Button>
-        <Button variant="primary" icon="user-add-line" disabled={!valid} onClick={() => valid && onSubmit({ names: people, title, date, reason, docs, editId: initialData?.id })}>{isEdit ? "Save Changes" : "Assign job title"}</Button>
+      <JtFormCard title="Resolved Grade" badge={<JtAutoBadge />}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>
+          <Icon name="information-line" size={15} color="var(--gray-400)" />
+          Job Grade is resolved automatically from the selected job title — it is not edited here.
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <Field label="New Job Grade">
+            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
+              <Icon name="bar-chart-grouped-line" size={18} style={{ color: "var(--icon-default)" }} />
+              <input value={form.grade} readOnly placeholder="Auto from job title" style={{ color: form.grade ? "var(--gray-900)" : "var(--gray-400)" }} />
+            </div>
+          </Field>
+        </div>
+      </JtFormCard>
+
+      <JtFormCard title="Reason & Documents">
+        <Field label="Reason / Note" optional><Textarea rows={4} value={form.reason} onChange={e => set("reason", e.target.value)} placeholder="Reason or note for this change of job title…" /></Field>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Supporting Documents</label>
+          <SupportingDocuments existingUrls={initialData?.documents || []} isEditMode={isEdit} onChange={setDocs} maxFiles={8} maxSizeMB={8} />
+        </div>
+      </JtFormCard>
+
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
+        <Button variant="stroke" onClick={onCancel}>Cancel</Button>
+        <Button variant="primary" icon={isEdit ? "check-line" : "user-add-line"} disabled={!valid}
+          onClick={() => valid && onSubmit({ names: people, title: form.newTitle, grade: form.grade, date: form.date, reason: form.reason, docs, editId: initialData?.id })}>
+          {isEdit ? "Save Changes" : (multi ? `Assign Job Title to ${people.length}` : "Assign Job Title")}
+        </Button>
       </div>
-    </Modal>
+    </div>
   );
 }
 
@@ -304,17 +353,18 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
   const [rosterQ, setRosterQ] = useJt("");
   const [selected, setSelected] = useJt([]);
   const [approvalSel, setApprovalSel] = useJt([]);
-  const [assign, setAssign] = useJt(null);          // names[] being assigned (modal)
-  const [editRec, setEditRec] = useJt(null);         // record being edited (modal initialData)
   const [lastCount, setLastCount] = useJt(0);        // held count so the bar shows it while sliding out
   const [q, setQ] = useJt("");
   const [tab, setTab] = useJt([]);
-  const [view, setView] = useJt({ name: "list" });   // list | details
+  const [view, setView] = useJt({ name: "list" });   // list | add | edit | details
   const [confirm, setConfirm] = useJt(null);
 
   useJtEffect(() => {
     if (!onSubPage) return;
-    if (view.name === "details") onSubPage({ trail: [{ label: "Job Title", onClick: () => setView({ name: "list" }) }, { label: "Job Title Change Approval" }] });
+    const toList = () => setView({ name: "list" });
+    if (view.name === "add") onSubPage({ trail: [{ label: "Job Title", onClick: toList }, { label: "Assign Job Title" }] });
+    else if (view.name === "edit") onSubPage({ trail: [{ label: "Job Title", onClick: toList }, { label: "Edit Job Title Change" }] });
+    else if (view.name === "details") onSubPage({ trail: [{ label: "Job Title", onClick: toList }, { label: "Job Title Change Approval" }] });
     else onSubPage(null);
     return () => onSubPage(null);
   }, [view]);
@@ -322,6 +372,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
   useJtEffect(() => { if (selected.length) setLastCount(selected.length); }, [selected.length]);
 
   const current = view.name === "details" ? records.find(r => r.id === view.id) : null;
+  const editing = view.name === "edit" ? records.find(r => r.id === view.id) : null;
 
   const submitAssign = (f) => setConfirm({ kind: "assign", form: f });
   const runConfirm = () => {
@@ -330,16 +381,16 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
       const f = c.form;
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/jobtitle/");
       if (f.editId) {
-        setRecords(rs => rs.map(r => r.id === f.editId ? { ...r, employees: f.names, newTitle: f.title,
+        setRecords(rs => rs.map(r => r.id === f.editId ? { ...r, employees: f.names.map(id => (window.EMP_BY_ID[id] || {}).name || id), staffIds: f.names.join(", "), newTitle: f.title, grade: f.grade || r.grade,
           effectiveDate: fmtJtDate(f.date), reason: f.reason || "", approvers: f.approvers || [], documents: allDocs } : r));
         onToast("Job Title Change Updated", { tone: "success" });
-        setAssign(null); setEditRec(null);
+        setView({ name: "list" });
         setConfirm(null); return;
       }
       const recs = f.names.map(id => {
         const e = window.EMP_BY_ID[id] || {};
         return { id: jtId(), employees: [e.name || id], staffIds: e.staffId || id,
-          previousTitle: e.title || "—", newTitle: f.title, grade: e.grade || "—",
+          previousTitle: e.title || "—", newTitle: f.title, grade: f.grade || e.grade || "—",
           department: e.dept || "—", zone: e.zone || "—", branch: e.branch || "—",
           effectiveDate: fmtJtDate(f.date), dateSubmitted: todayJt(), status: "Pending",
           reason: f.reason || "", documents: allDocs, approvers: f.approvers || [],
@@ -347,7 +398,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
       });
       setRecords(rs => [...recs, ...rs]);
       onToast(f.names.length > 1 ? `Job Title Assigned to ${f.names.length} Employees` : "Job Title Assigned", { tone: "success" });
-      setAssign(null); setEditRec(null); setSelected([]); setSegment("Requests");
+      setSelected([]); setView({ name: "list" }); setSegment("Requests");
     } else if (c.kind === "archive") {
       setRecords(rs => rs.filter(r => r.id !== c.row.id));
       onToast("Job Title Change Archived", { tone: "error" });
@@ -381,24 +432,28 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
   };
 
   let body;
-  if (view.name === "details" && current) {
+  if (view.name === "add") {
+    body = <JobTitleForm lookups={lookups} initialEmployees={view.initialEmployees} onCancel={() => setView({ name: "list" })} onSubmit={submitAssign} />;
+  } else if (view.name === "edit" && editing) {
+    body = <JobTitleForm lookups={lookups} initialData={editing} onCancel={() => setView({ name: "list" })} onSubmit={submitAssign} />;
+  } else if (view.name === "details" && current) {
     body = <JobTitleDetails record={current}
       onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={(r) => setConfirm({ kind: "reject", row: r })}
       onUpdate={(partial) => setRecords(rs => rs.map(x => x.id === current.id ? { ...x, ...partial } : x))} onToast={onToast} />;
   } else {
-    const pendingCount = records.filter(r => r.status === "Pending").length;
+    const addAction = <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add", initialEmployees: [] })}>Add Job Title</Button>;
     body = (
       <React.Fragment>
         {segment === "Assign"
           ? <JobTitleRoster q={rosterQ} setQ={setRosterQ} selected={selected} setSelected={setSelected}
-              onAssignOne={(n) => setAssign([n])} segment={segment} setSegment={setSegment}
+              onAssignOne={(n) => setView({ name: "add", initialEmployees: [n] })} segment={segment} setSegment={setSegment}
               title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status."
-              headerAction={<Button variant="primary" icon="add-line" onClick={() => setAssign([])}>Add Job Title</Button>} />
+              headerAction={addAction} />
           : <JobTitleList rows={records} q={q} setQ={setQ} tab={tab} setTab={setTab}
-              onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => { setEditRec(r); setAssign((r.employees || []).map(window.firstIdForName).filter(Boolean)); }} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
+              onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => setView({ name: "edit", id: r.id })} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
               segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel}
               title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status."
-              headerAction={<Button variant="primary" icon="add-line" onClick={() => setAssign([])}>Add Job Title</Button>} />}
+              headerAction={addAction} />}
       </React.Fragment>
     );
   }
@@ -425,9 +480,9 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
     return `Are you sure you want to ${CONFIRM[c.kind].m}?`;
   };
 
-  const barVisible = view.name !== "details" && segment === "Assign" && selected.length > 0;
+  const barVisible = view.name === "list" && segment === "Assign" && selected.length > 0;
   const barCount = selected.length || lastCount;
-  const approvalBarVisible = view.name !== "details" && segment === "Requests" && approvalSel.length > 0;
+  const approvalBarVisible = view.name === "list" && segment === "Requests" && approvalSel.length > 0;
 
   return (
     <React.Fragment>
@@ -438,7 +493,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
         <span className="jt-count" key={barCount}>{barCount}</span>
         <span style={{ fontFamily: "var(--font-ui)", fontSize: 14, color: "var(--gray-700)" }}>staff selected</span>
         <button className="jt-clear" onClick={() => setSelected([])}>Clear</button>
-        <Button variant="primary" icon="user-add-line" onClick={() => setAssign(selected)}>Assign Job Title</Button>
+        <Button variant="primary" icon="user-add-line" onClick={() => setView({ name: "add", initialEmployees: selected })}>Assign Job Title</Button>
       </div>
 
       {/* floating bulk-approval bar (Requests queue) */}
@@ -447,7 +502,6 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
         <Button variant="primary" icon="check-line" onClick={() => setConfirm({ kind: "bulkApprove", ids: approvalSel })}>Approve</Button>
       </BulkBar>
 
-      {assign && <AssignJobTitleModal names={assign} initialData={editRec} lookups={lookups} onClose={() => { setAssign(null); setEditRec(null); }} onSubmit={submitAssign} />}
       {confirm && (() => { const cc = CONFIRM[confirm.kind]; return (
         <ConfirmModal title={cc.t} message={confirmMsg()} confirmLabel={cc.l} confirmIcon={cc.i}
           cancelLabel={cc.c} onConfirm={runConfirm} onClose={() => setConfirm(null)} />

@@ -35,12 +35,26 @@ const firstIdForName = (name) => (EMPLOYEE_LIST.find(e => e.name === name) || {}
 // Until then, picking a Job Grade + Notch auto-fetches the salary and standard allowances from
 // this mock grid. Replace `fetchPayroll` with the payroll API call when it lands.
 const NOTCHES = ["Notch 1", "Notch 2", "Notch 3", "Notch 4", "Notch 5", "Notch 6"];
-// Notches are tied to the job grade — a grade exposes only its own band of notches.
+// Notches are tied to the job grade. A grade OWNS its band of notches (managed on the Core HR
+// Job Grade form). notchesForGrade reads the live grade's notch count first, falling back to a
+// computed band when a grade has none defined. Notches are sequential integers starting at 1.
+function gradeNotchCount(grade) {
+  const rows = (window.HR_DATA && window.HR_DATA["Job Grades"]) || [];
+  const row = rows.find(r => r.name === grade);
+  if (row) {
+    if (Array.isArray(row.notches)) return row.notches.length;
+    if (row.notches != null && row.notches !== "") return +row.notches || 0;
+  }
+  return 0;
+}
 function notchesForGrade(grade) {
   if (!grade) return [];
-  const g = parseInt((String(grade).match(/\d+/) || [1])[0], 10) || 1;
-  const count = Math.max(3, Math.min(NOTCHES.length, 2 + g)); // Grade 1 → 3 notches … capped at 6
-  return NOTCHES.slice(0, count);
+  let count = gradeNotchCount(grade);
+  if (!count) {
+    const g = parseInt((String(grade).match(/\d+/) || [1])[0], 10) || 1;
+    count = Math.max(3, Math.min(6, 2 + g)); // fallback: Grade 1 → 3 notches … capped at 6
+  }
+  return Array.from({ length: count }, (_, i) => `Notch ${i + 1}`);
 }
 const ghs = (n) => "GHS " + Math.round(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 function fetchPayroll(grade, notch) {
@@ -109,4 +123,30 @@ const PROMOTION_SEED = [
     rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM" },
 ];
 
-Object.assign(window, { EMPLOYEE_DIRECTORY, EMPLOYEE_NAMES, EMPLOYEE_LIST, EMP_BY_ID, firstIdForName, NOTCHES, notchesForGrade, fetchPayroll, PROMOTION_SEED });
+Object.assign(window, { EMPLOYEE_DIRECTORY, EMPLOYEE_NAMES, EMPLOYEE_LIST, EMP_BY_ID, firstIdForName, NOTCHES, notchesForGrade, gradeNotchCount, fetchPayroll, PROMOTION_SEED });
+
+// ── Job-title catalog ──
+// Every job title belongs to a DEPARTMENT (and the organization) and carries a default JOB GRADE
+// + NOTCH. Reads the live Core HR "Job Titles" rows so titles created there cascade everywhere;
+// falls back to a static set before any data is loaded. BENEFITS are not stored on the title —
+// they derive from (grade, notch) via fetchPayroll, so a title resolves to grade → notch → benefits.
+const JOB_TITLE_FALLBACK = [
+  { name: "Finance Analyst", department: "Finance", grade: "Grade 2", notch: "Notch 1" },
+  { name: "Accountant", department: "Finance", grade: "Grade 2", notch: "Notch 1" },
+  { name: "HR Manager", department: "Human Resource", grade: "Grade 3", notch: "Notch 1" },
+  { name: "Software Engineer", department: "Information Technology", grade: "Grade 2", notch: "Notch 1" },
+  { name: "Sales Officer", department: "Marketing", grade: "Grade 1", notch: "Notch 1" },
+];
+const jtCatalog = () => {
+  const rows = (window.HR_DATA && window.HR_DATA["Job Titles"]) || [];
+  return rows.length ? rows : JOB_TITLE_FALLBACK;
+};
+function jobTitlesForDepartment(dept) {
+  return jtCatalog().filter(r => !dept || r.department === dept).map(r => r.name);
+}
+function jobTitleInfo(title) {
+  const r = jtCatalog().find(x => x.name === title);
+  if (!r) return null;
+  return { department: r.department || "", grade: r.grade || "", notch: r.notch || "Notch 1" };
+}
+Object.assign(window, { JOB_TITLE_FALLBACK, jobTitlesForDepartment, jobTitleInfo });
