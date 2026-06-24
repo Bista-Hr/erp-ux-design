@@ -19,8 +19,6 @@ const CONFIGS = {
         lookup: "employees", placeholder: "Select an employee", optional: true },
       { key: "orgUnit", label: "Organizational Unit", type: "select",
         lookup: "orgUnits", placeholder: "Select an organizational unit", optional: true },
-      { key: "costCenter", label: "Cost Center Code", type: "select",
-        lookup: "zones", placeholder: "Select a zone", optional: true },
       { key: "description", label: "Description", type: "textarea", placeholder: "Enter description", full: true, optional: true },
     ],
   },
