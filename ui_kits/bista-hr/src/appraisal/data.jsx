@@ -19,7 +19,7 @@ const APP_KPI = ["Quality", "Efficiency", "Accuracy", "Timeliness", "Cost"];
 const rankLabel = (r) => { const n = Number(r); return n >= 5 ? "Outstanding" : n >= 4 ? "Very Good" : n >= 3 ? "Satisfactory" : n >= 2 ? "Needs Improvement" : n >= 1 ? "Poor" : "—"; };
 
 // card status → pill + photo tint + action (active = natural photo, others tinted)
-const APP_STATUS = {
+const APPRAISAL_CARD_STATUS = {
   "not-started": { variant: "default",  text: "Not Started", tint: "yellow",  cta: "Complete Assessment", disabled: true },
   "in-draft":    { variant: "draft",    text: "In Draft",    tint: "natural", cta: "Complete Assessment", disabled: false },
   "in-progress": { variant: "pending",  text: "In Progress", tint: "natural", cta: "Continue Assessment", disabled: false },
@@ -64,6 +64,6 @@ const seedBehavioural = () => ([
 ]);
 
 Object.assign(window, {
-  appId, APP_PERSPECTIVES, APP_KPI, rankLabel, APP_STATUS, APP_PHOTO_TINT, APP_CARDS,
+  appId, APP_PERSPECTIVES, APP_KPI, rankLabel, APPRAISAL_CARD_STATUS, APP_PHOTO_TINT, APP_CARDS,
   seedObjectiveScore, blankAppPerspective, seedBehavioural,
 });

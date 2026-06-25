@@ -1,0 +1,86 @@
+================================================================================
+NAVIGATION CHANGE — Add "People & Culture" section
+FILE: lib/constants.ts   (inside `export const navigationMain`)
+================================================================================
+
+WHAT THIS DOES
+--------------
+Groups the existing "Promotions" and "Transfers" links under a single
+"People & Culture" section, exactly the way "Core HR", "Leave Management"
+and "Employee Engagement" are structured (showSubItemsAsTabs: true).
+
+• Sidebar: one "People & Culture" entry under HR Management.
+• In-page: a tab bar [Promotions | Transfers] is rendered automatically by
+  components/layout/Header.tsx (findItemWithTabs) — NO per-page changes needed.
+• Icons used (Users, BriefcaseBusinessIcon, ArrowRightLeft) are ALREADY
+  imported in this file. No new imports required.
+
+
+STEP 1 — In `navigationMain`, inside the "HR Management" item's `subItems`
+array, FIND these two standalone entries (they are the last two items,
+just before the `],` that closes HR Management's subItems):
+--------------------------------------------------------------------------------
+      {
+        name: 'Promotions',
+        href: ROUTES.PROMOTIONS.MAIN,
+        icon: BriefcaseBusinessIcon,
+      },
+      {
+        name: 'Transfers',
+        href: ROUTES.TRANSFERS.MAIN,
+        icon: ArrowRightLeft,
+      },
+--------------------------------------------------------------------------------
+
+
+STEP 2 — REPLACE them with this single grouped entry:
+--------------------------------------------------------------------------------
+      {
+        name: 'People & Culture',
+        href: ROUTES.PROMOTIONS.MAIN,
+        icon: Users,
+        showSubItemsAsTabs: true,
+        subItems: [
+          {
+            name: 'Promotions',
+            href: ROUTES.PROMOTIONS.MAIN,
+            icon: BriefcaseBusinessIcon,
+          },
+          {
+            name: 'Transfers',
+            href: ROUTES.TRANSFERS.MAIN,
+            icon: ArrowRightLeft,
+          },
+          // ── Enable these once their routes/pages exist ──────────────────
+          // 1) Add to the ROUTES object (lib/constants.ts), e.g.:
+          //      JOB_TITLE_CHANGES: { MAIN: '/job-title-changes', ... },
+          //      EMPLOYEE_EXITS:    { MAIN: '/employee-exits', ... },
+          // 2) Import the icons at the top of this file:
+          //      import { Briefcase, LogOut } from 'lucide-react'  // Briefcase is already imported
+          // 3) Uncomment:
+          // {
+          //   name: 'Job Title',
+          //   href: ROUTES.JOB_TITLE_CHANGES.MAIN,
+          //   icon: Briefcase,
+          // },
+          // {
+          //   name: 'Employee Exit',
+          //   href: ROUTES.EMPLOYEE_EXITS.MAIN,
+          //   icon: LogOut,
+          // },
+        ],
+      },
+--------------------------------------------------------------------------------
+
+
+NOTES
+-----
+• `href: ROUTES.PROMOTIONS.MAIN` on the parent is intentional — Header.tsx /
+  SidebarMenuItem.tsx navigate a tabbed parent to its first sub-item.
+• The tab bar matches the active route by EXACT path (subItem.href === pathname),
+  so the tabs highlight on /promotions and /transfers (consistent with the
+  other sections; deep pages like /promotions/create don't show the bar).
+• Permissions: if your sidebar filters by permission (useAccessibleNavigation),
+  the "People & Culture" group inherits visibility from its sub-items, so it
+  appears whenever Promotions or Transfers is permitted — no extra config.
+================================================================================

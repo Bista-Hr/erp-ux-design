@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BISTA HR — Job Grades, Notches & Job Title Cascade (Backend Spec)</title>
+<style>
+  :root{
+    --gold:#F2C200; --gold-tint:#FEF7DC; --ink:#15140F; --gray-900:#1B1A16; --gray-700:#43413a;
+    --gray-500:#73706a; --gray-400:#9a978f; --line:#e7e4dc; --bg:#faf9f6; --card:#ffffff;
+    --code-bg:#1c1b18; --code-fg:#f3efe6; --green:#1F8A5B; --red:#C0492F; --blue:#2A5FB0;
+  }
+  *{box-sizing:border-box}
+  html{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  body{ margin:0; background:var(--bg); color:var(--gray-900);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size:15px; line-height:1.6; }
+  .page{ max-width:900px; margin:0 auto; padding:56px 64px 96px; background:var(--card); }
+  code, .mono{ font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  h1,h2,h3{ font-weight:700; color:var(--ink); line-height:1.25; }
+  h1{ font-size:32px; margin:0 0 6px; letter-spacing:-.01em; }
+  h2{ font-size:21px; margin:44px 0 14px; padding-bottom:8px; border-bottom:2px solid var(--gold); }
+  h3{ font-size:16px; margin:26px 0 8px; }
+  p{ margin:0 0 12px; }
+  ul,ol{ margin:0 0 14px; padding-left:22px; }
+  li{ margin:4px 0; }
+  .kicker{ display:inline-block; font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--ink); background:var(--gold); padding:5px 10px; border-radius:5px; }
+  .sub{ color:var(--gray-500); font-size:14px; margin-top:10px; }
+  .meta{ display:flex; gap:24px; flex-wrap:wrap; margin-top:18px; padding-top:18px; border-top:1px solid var(--line); font-size:13px; color:var(--gray-500); }
+  .meta b{ color:var(--gray-900); font-weight:600; }
+  table{ width:100%; border-collapse:collapse; margin:8px 0 18px; font-size:14px; }
+  th,td{ text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th{ font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--gray-500); background:var(--bg); border-bottom:1px solid var(--line); }
+  td code{ font-size:13px; background:var(--gold-tint); padding:1px 6px; border-radius:4px; color:#6b5a00; }
+  .req{ color:var(--red); font-weight:700; }
+  .opt{ color:var(--gray-400); font-size:12px; }
+  pre{ background:var(--code-bg); color:var(--code-fg); border-radius:10px; padding:16px 18px; overflow:auto; font-size:13px; line-height:1.55; margin:8px 0 18px; }
+  pre .k{ color:#e9c46a; } pre .s{ color:#9fd5a0; } pre .c{ color:#8a877e; }
+  .note{ border-left:3px solid var(--gold); background:var(--gold-tint); padding:12px 16px; border-radius:0 8px 8px 0; margin:8px 0 18px; font-size:14px; }
+  .note.warn{ border-left-color:var(--red); background:#fbeee9; }
+  .flow{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:6px 0 18px; }
+  .flow .node{ background:var(--card); border:1.5px solid var(--line); border-radius:10px; padding:10px 14px; font-weight:600; font-size:13px; }
+  .flow .node.hl{ border-color:var(--gold); background:var(--gold-tint); }
+  .flow .arr{ color:var(--gray-400); font-weight:700; }
+  .pillrow{ display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 16px; }
+  .pill{ width:34px; height:34px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center;
+    font-weight:700; background:var(--gold-tint); border:1px solid var(--gold); }
+  .pill.add{ background:#fff; border:1.5px dashed var(--gray-400); color:var(--gray-500); }
+  .endpoint{ display:flex; align-items:center; gap:10px; margin:14px 0 4px; }
+  .verb{ font-family:ui-monospace,monospace; font-size:12px; font-weight:700; padding:3px 8px; border-radius:5px; color:#fff; }
+  .verb.get{ background:var(--blue); } .verb.post{ background:var(--green); } .verb.put{ background:#B5840B; } .verb.del{ background:var(--red); }
+  .path{ font-family:ui-monospace,monospace; font-size:14px; font-weight:600; }
+  .small{ font-size:13px; color:var(--gray-500); }
+  hr{ border:0; border-top:1px solid var(--line); margin:40px 0; }
+  @media print{ body{ background:#fff; } .page{ padding:0; max-width:none; } h2{ break-after:avoid; } table,pre,.note{ break-inside:avoid; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <span class="kicker">BISTA HR · Backend Specification</span>
+  <h1 style="margin-top:14px;">Job Grades, Notches &amp; the Job Title Cascade</h1>
+  <p class="sub">Data model, relationships, validation rules and API contract for grade notches and the
+    department → job title → grade/notch/benefits resolution used across People &amp; Culture workflows.</p>
+  <div class="meta">
+    <span><b>Audience</b> · Backend / API team</span>
+    <span><b>Modules</b> · Core HR, Payroll, People &amp; Culture</span>
+    <span><b>Status</b> · Spec for implementation</span>
+  </div>
+
+  <h2>1. Summary</h2>
+  <p>Two additions to the existing Core HR model:</p>
+  <ol>
+    <li><b>Notches belong to a Job Grade.</b> A grade owns an ordered band of notches — plain sequential
+      integers starting at <code>1</code>. Admins add a notch (appends the next number) or remove one
+      (always confirmed); the remaining notches re-sequence so the band is always <code>1…N</code> with no gaps.</li>
+    <li><b>Job Titles resolve compensation.</b> Every job title belongs to an <b>organization</b> and a
+      <b>department</b> and carries a <b>job grade</b> + default <b>notch</b>. In People &amp; Culture forms
+      (Promotions first), selecting a <b>department</b> filters the available job titles; selecting a
+      <b>job title</b> auto-resolves its <b>grade</b>, <b>notch</b> and the <b>benefits</b> (salary +
+      allowances) for that grade/notch — no manual grade/notch entry.</li>
+  </ol>
+
+  <h2>2. Entity relationships</h2>
+  <div class="flow">
+    <span class="node">Organization</span><span class="arr">→</span>
+    <span class="node">Department</span><span class="arr">→</span>
+    <span class="node hl">Job Title</span><span class="arr">→</span>
+    <span class="node">Job Grade</span><span class="arr">→</span>
+    <span class="node">Notch</span><span class="arr">→</span>
+    <span class="node">Benefits (salary + allowances)</span>
+  </div>
+  <ul>
+    <li>An <b>Organization</b> has many <b>Departments</b>.</li>
+    <li>A <b>Department</b> has many <b>Job Titles</b>. A Job Title belongs to exactly one Department (and, transitively, one Organization).</li>
+    <li>A <b>Job Grade</b> has many <b>Notches</b> (ordered, <code>1…N</code>). A Notch belongs to exactly one Grade.</li>
+    <li>A <b>Job Title</b> references one <b>Job Grade</b> and one default <b>Notch</b> within that grade.</li>
+    <li><b>Benefits</b> (base salary + allowances) are a function of <code>(jobGradeId, notch)</code> — owned by Payroll, not stored on the title.</li>
+  </ul>
+
+  <h2>3. Job Grade</h2>
+  <p>Existing fields plus the new <code>notches</code> band.</p>
+  <table>
+    <thead><tr><th>Field</th><th>Type</th><th>Rules</th></tr></thead>
+    <tbody>
+      <tr><td><code>name</code> <span class="req">*</span></td><td>string</td><td>Letters, numbers, spaces, <code>- ' . &amp;</code>. e.g. “Grade 2”.</td></tr>
+      <tr><td><code>code</code> <span class="req">*</span></td><td>string</td><td>Letters, numbers, <code>-</code>, <code>_</code>. e.g. “G2”.</td></tr>
+      <tr><td><code>level</code> <span class="opt">optional</span></td><td>integer ≥ 0</td><td>Ordering/seniority. Display “Not Set” when null.</td></tr>
+      <tr><td><code>notches</code></td><td>integer count <i>or</i> ordered int[]</td><td><b>New.</b> Sequential <code>1…N</code>. See rules below. Default on create: <code>3</code> (i.e. <code>[1,2,3]</code>).</td></tr>
+      <tr><td><code>description</code> <span class="req">*</span></td><td>string</td><td>Required.</td></tr>
+      <tr><td><code>isActive</code></td><td>boolean</td><td>Defaults <code>true</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Notch rules</h3>
+  <div class="pillrow">
+    <span class="pill">1</span><span class="pill">2</span><span class="pill">3</span><span class="pill">4</span>
+    <span class="pill add">+</span>
+  </div>
+  <ul>
+    <li>Notches are <b>plain integers</b> starting at <code>1</code>, contiguous, no gaps — the band is always <code>1…N</code>.</li>
+    <li><b>Add</b> appends the next integer (<code>N+1</code>). No separate label/value — the number <i>is</i> the notch.</li>
+    <li><b>Remove</b> is allowed but <b>must always be confirmed</b> by the user before it is applied. After removal the band re-sequences to <code>1…N-1</code> (the UI renders a confirm dialog; the API receives the final band).</li>
+    <li>Recommended guard: a grade should keep <b>at least 1</b> notch. Reject removal that would empty the band, or that targets a notch currently assigned to an employee/job title (see “Referential safety”).</li>
+    <li>Persist either a single <code>notchCount</code> integer or an explicit ordered array — both are equivalent since notches are sequential. The array form is preferred if notches may later carry per-notch attributes (e.g. step value).</li>
+  </ul>
+  <div class="note warn"><b>Referential safety.</b> Before removing a notch, check it is not referenced by an active
+    job title default notch or an employee’s current notch. If it is, block the removal (or require reassignment) and
+    return a <code>409 Conflict</code> with the blocking references.</div>
+
+  <h2>4. Job Title (Designation)</h2>
+  <table>
+    <thead><tr><th>Field</th><th>Type</th><th>Rules</th></tr></thead>
+    <tbody>
+      <tr><td><code>name</code> <span class="req">*</span></td><td>string</td><td>e.g. “Senior Software Engineer”.</td></tr>
+      <tr><td><code>code</code> <span class="req">*</span></td><td>string</td><td>e.g. “SSE”.</td></tr>
+      <tr><td><code>departmentId</code></td><td>uuid → Department</td><td>The department this title belongs to. Drives the cascade filter.</td></tr>
+      <tr><td><code>organizationId</code></td><td>uuid → Organization</td><td>Derivable from the department; included for direct scoping/tenancy.</td></tr>
+      <tr><td><code>jobGradeId</code></td><td>uuid → Job Grade</td><td>The grade this title maps to.</td></tr>
+      <tr><td><code>defaultNotch</code></td><td>integer</td><td>Default notch within the grade’s band (<code>1…N</code>). Used to seed the cascade.</td></tr>
+      <tr><td><code>description</code> <span class="req">*</span></td><td>string</td><td>Required.</td></tr>
+      <tr><td><code>isActive</code></td><td>boolean</td><td>Defaults <code>true</code>.</td></tr>
+    </tbody>
+  </table>
+  <div class="note">Today the cascade reads <code>departmentId</code>, <code>jobGradeId</code> and <code>defaultNotch</code>
+    off the job title. If a title may have multiple valid notches at hiring/promotion time, expose an allowed-notch range
+    instead of a single default and let the form pick within it.</div>
+
+  <h2>5. The cascade (People &amp; Culture forms)</h2>
+  <p>Used on the Promotion form (and any P&amp;C form that assigns a new job title). The three steps:</p>
+  <ol>
+    <li><b>Select Department</b> → the Job Title field is filtered to titles where <code>title.departmentId = department.id</code>. Job Title is disabled until a department is chosen; changing department clears the title/grade/notch.</li>
+    <li><b>Select Job Title</b> → the system resolves <code>jobGradeId</code> + <code>defaultNotch</code> from the title and displays them as <b>read-only</b> (the user does not pick grade/notch manually).</li>
+    <li><b>Benefits auto-fill</b> → with <code>(jobGradeId, notch)</code> known, Payroll returns the base salary and allowances, shown read-only as “Benefits &amp; Allowances”.</li>
+  </ol>
+  <div class="flow">
+    <span class="node hl">Department</span><span class="arr">filters →</span>
+    <span class="node hl">Job Title</span><span class="arr">resolves →</span>
+    <span class="node">Grade + Notch</span><span class="arr">→</span>
+    <span class="node">Salary + Allowances</span>
+  </div>
+
+  <h2>6. API contract</h2>
+
+  <h3>Job Grades</h3>
+  <div class="endpoint"><span class="verb post">POST</span><span class="path">/api/job-grades</span></div>
+  <pre><span class="c">// create — notches default to [1,2,3] when omitted</span>
+{
+  <span class="k">"name"</span>: <span class="s">"Grade 2"</span>,
+  <span class="k">"code"</span>: <span class="s">"G2"</span>,
+  <span class="k">"level"</span>: 2,
+  <span class="k">"notchCount"</span>: 4,            <span class="c">// or "notches": [1,2,3,4]</span>
+  <span class="k">"description"</span>: <span class="s">"Standard professional grade."</span>,
+  <span class="k">"isActive"</span>: true
+}</pre>
+  <div class="endpoint"><span class="verb put">PUT</span><span class="path">/api/job-grades/{id}</span></div>
+  <p class="small">Send the full resulting band (<code>notchCount</code> or the re-sequenced array). Removals are confirmed client-side; the server validates referential safety and re-sequences/persists.</p>
+  <div class="endpoint"><span class="verb get">GET</span><span class="path">/api/job-grades/{id}/notches</span></div>
+  <pre>{ <span class="k">"jobGradeId"</span>: <span class="s">"…"</span>, <span class="k">"notches"</span>: [1, 2, 3, 4] }</pre>
+
+  <h3>Cascade lookups</h3>
+  <div class="endpoint"><span class="verb get">GET</span><span class="path">/api/job-titles?departmentId={id}&amp;active=true</span></div>
+  <pre>[
+  { <span class="k">"id"</span>: <span class="s">"jt_01"</span>, <span class="k">"name"</span>: <span class="s">"Finance Analyst"</span>, <span class="k">"jobGradeId"</span>: <span class="s">"g2"</span>, <span class="k">"defaultNotch"</span>: 1 },
+  { <span class="k">"id"</span>: <span class="s">"jt_02"</span>, <span class="k">"name"</span>: <span class="s">"Accountant"</span>,      <span class="k">"jobGradeId"</span>: <span class="s">"g2"</span>, <span class="k">"defaultNotch"</span>: 2 }
+]</pre>
+  <div class="endpoint"><span class="verb get">GET</span><span class="path">/api/job-titles/{id}/resolution</span></div>
+  <pre><span class="c">// one call that returns grade + notch + benefits for a title</span>
+{
+  <span class="k">"jobTitleId"</span>: <span class="s">"jt_01"</span>,
+  <span class="k">"department"</span>: { <span class="k">"id"</span>: <span class="s">"d_fin"</span>, <span class="k">"name"</span>: <span class="s">"Finance"</span> },
+  <span class="k">"jobGrade"</span>:  { <span class="k">"id"</span>: <span class="s">"g2"</span>, <span class="k">"name"</span>: <span class="s">"Grade 2"</span> },
+  <span class="k">"notch"</span>: 1,
+  <span class="k">"benefits"</span>: {
+    <span class="k">"baseSalary"</span>: <span class="s">"GHS 7,000.00"</span>,
+    <span class="k">"allowances"</span>: [
+      { <span class="k">"label"</span>: <span class="s">"Transport Allowance"</span>, <span class="k">"value"</span>: <span class="s">"GHS 700.00"</span> },
+      { <span class="k">"label"</span>: <span class="s">"Housing Allowance"</span>,  <span class="k">"value"</span>: <span class="s">"GHS 1,050.00"</span> }
+    ]
+  }
+}</pre>
+  <div class="endpoint"><span class="verb get">GET</span><span class="path">/api/payroll/benefits?jobGradeId={id}&amp;notch={n}</span></div>
+  <p class="small">Payroll-owned. Returns base salary + allowances for a grade/notch. The form may call this directly
+    or rely on <code>/job-titles/{id}/resolution</code> which embeds it.</p>
+
+  <h2>7. Validation &amp; business rules</h2>
+  <ul>
+    <li>Notch values are integers ≥ 1, contiguous from 1, unique within a grade.</li>
+    <li>A job title’s <code>defaultNotch</code> must be ≤ its grade’s notch count.</li>
+    <li>Removing a notch requires explicit user confirmation (UI) and a server-side referential check (API).</li>
+    <li>When a grade’s notch count is reduced below a notch used by a title/employee, block or require reassignment.</li>
+    <li>A job title must reference a department within the same organization (tenant).</li>
+    <li>The cascade never lets the user type grade/notch — they are derived; the request submitted by the form carries the resolved <code>jobGradeId</code> + <code>notch</code> for audit.</li>
+  </ul>
+
+  <hr />
+  <p class="small">Prototype reference: Core HR ▸ Job Grades (notch editor), Core HR ▸ Job Titles (department + grade + notch),
+    and People &amp; Culture ▸ Promotions (department → job title → auto grade/notch/benefits). This document describes
+    the intended backend contract behind those screens.</p>
+
+</div>
+</body>
+</html>

@@ -14,8 +14,8 @@ function PhotoArt({ tint }) {
   );
 }
 
-function AppraisalCard({ card, onAction }) {
-  const st = APP_STATUS[card.status];
+function AppraisalQuarterCard({ card, onAction }) {
+  const st = APPRAISAL_CARD_STATUS[card.status];
   return (
     <div style={{ background: "#fff", borderRadius: 16, padding: 16, display: "flex", flexDirection: "column" }}>
       <PhotoArt tint={st.tint} />
@@ -70,7 +70,7 @@ function Appraisals({ onToast, onViewAnnouncements, onOpenAnnouncement, onSubPag
     const sub = subs[view.card.id] || { scores: APP_PERSPECTIVES.map(() => blankAppPerspective()), behavioural: seedBehavioural() };
     main = <AppraisalDetails card={view.card} scores={sub.scores} behavioural={sub.behavioural} onEdit={(step) => setView({ name: "wizard", card: view.card, step })} />;
   } else {
-    main = <div className="tgt-cards">{cards.map(c => <AppraisalCard key={c.id} card={c} onAction={openAction} />)}</div>;
+    main = <div className="tgt-cards">{cards.map(c => <AppraisalQuarterCard key={c.id} card={c} onAction={openAction} />)}</div>;
   }
 
   return (
@@ -93,4 +93,4 @@ function Appraisals({ onToast, onViewAnnouncements, onOpenAnnouncement, onSubPag
   );
 }
 
-Object.assign(window, { Appraisals, AppraisalCard, PhotoArt });
+Object.assign(window, { Appraisals, AppraisalQuarterCard, PhotoArt });

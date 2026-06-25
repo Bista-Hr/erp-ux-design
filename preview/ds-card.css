@@ -1,0 +1,27 @@
+/* Shared styling for the live component specimen cards (Design System tab). */
+
+/* preflight is off — replicate the Tailwind resets the components rely on */
+*, ::before, ::after { border-width: 0; border-style: solid; border-color: var(--border); }
+button { background-color: transparent; background-image: none; }
+p { margin: 0; }
+
+html, body { margin: 0; }
+body { background: #fff; color: var(--gray-900); font-family: var(--font-ui); padding: 28px; }
+#root { max-width: 100%; }
+
+/* RichText (Quill-snow-like) placeholder + list rendering */
+.bh-rte:empty::before { content: attr(data-ph); color: var(--gray-400); pointer-events: none; }
+.bh-rte ul { list-style: disc; padding-left: 1.5em; margin: 0; }
+.bh-rte ol { list-style: decimal; padding-left: 1.5em; margin: 0; }
+.bh-rte a { color: var(--brand-blue); text-decoration: underline; }
+.bh-rte:focus { outline: none; }
+
+/* specimen layout helpers */
+.page { display: flex; flex-direction: column; gap: 24px; }
+.spec { }
+.spec-label { font-family: var(--font-ui); font-size: 11px; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--gray-400); margin-bottom: 12px; }
+.spec-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.spec-col { display: flex; flex-direction: column; gap: 14px; max-width: 460px; }
+.spec-grid { display: grid; gap: 14px; }
+.card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-xl, 16px); }

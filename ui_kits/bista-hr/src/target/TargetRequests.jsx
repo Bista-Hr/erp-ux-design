@@ -14,7 +14,7 @@ function ClipboardArt({ tint }) {
   );
 }
 
-function AppraisalCard({ card, onAction }) {
+function TargetQuarterCard({ card, onAction }) {
   const st = TARGET_STATUS[card.status];
   return (
     <div style={{ background: "#fff", borderRadius: 16, padding: 16, display: "flex", flexDirection: "column" }}>
@@ -43,7 +43,7 @@ function AppraisalCard({ card, onAction }) {
 function TargetLanding({ cards, onAction }) {
   return (
     <div className="tgt-cards">
-      {cards.map(c => <AppraisalCard key={c.id} card={c} onAction={onAction} />)}
+      {cards.map(c => <TargetQuarterCard key={c.id} card={c} onAction={onAction} />)}
     </div>
   );
 }
@@ -105,4 +105,4 @@ function TargetRequests({ onToast, onViewAnnouncements, onOpenAnnouncement, onSu
   );
 }
 
-Object.assign(window, { TargetRequests, AppraisalCard, ClipboardArt, TargetLanding });
+Object.assign(window, { TargetRequests, TargetQuarterCard, ClipboardArt, TargetLanding });

@@ -29,10 +29,12 @@ Both share one design language, so this system serves both.
 |---|---|
 | `README.md` | This file — context, content + visual foundations, iconography. |
 | `colors_and_type.css` | All color, type, radius, shadow and spacing tokens as CSS vars + semantic type classes. **Import this in every artifact.** |
+| `styles.css` | Single entry point — `@import`s `colors_and_type.css` then `bista-components.css`. Consumers (and the DS compiler) can link this one file. |
+| `components/` | **Compiled design-system components** exposed on `window.BISTAHRDesignSystem_c5941c` (`Button`, `StatusBadge`, `Avatar`, `StatCard`, `EmptyState`) — each a self-contained `Name.jsx` + `Name.d.ts` + `@dsCard` preview. Use these from consuming projects via the bound `_ds_bundle.js`. |
 | `assets/` | Brand assets: Apex logo vectors, the Bistasol oil-droplet background. |
 | `assets/logo/` | `apex-vector-1.svg`, `apex-vector-2.svg` — the droplet glyph inside the Apex logo. |
-| `preview/` | Design-system specimen cards (colors, type, components) shown in the Design System tab. |
-| `ui_kits/bista-hr/` | High-fidelity, interactive recreation of the Core HR admin app (sidebar, top nav, tables, modals, forms, login). |
+| `preview/` | Design-system specimen cards (colors, type, **live interactive component cards**) shown in the Design System tab. |
+| `ui_kits/bista-hr/` | High-fidelity, interactive recreation of the Core HR admin app (sidebar, top nav, tables, modals, forms, login). Its `src/primitives/ui.jsx` (`window.UI`) + global controls are the broad reusable layer; the compiled `components/` are the subset exported on the DS namespace. |
 | `SKILL.md` | Agent-Skill manifest so this system is usable from Claude Code. |
 
 ---

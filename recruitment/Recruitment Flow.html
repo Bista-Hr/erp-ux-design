@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recruitment — End-to-End Flow &amp; Data Model</title>
+<meta name="description" content="The complete BISTA HR recruitment flow from hiring request to hire — exact data types, status enums, components and routes as built in the Bistasol HR frontend.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../bista-components.css">
+<style>
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg-canvas); color:var(--text-primary); font-family:var(--font-ui); }
+  a{ text-decoration:none; color:inherit; }
+
+  .wrap{ max-width:1340px; margin:0 auto; padding:var(--space-10) var(--space-8) var(--space-16); }
+
+  /* header */
+  .maphead{ margin-bottom:var(--space-6); }
+  .maphead .kicker{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-ui); font-weight:700; font-size:12px; letter-spacing:.07em; text-transform:uppercase;
+    color:var(--warning-deep); background:var(--brand-yellow-tint); border:1px solid #F2E6A8;
+    padding:5px 12px; border-radius:var(--radius-full); margin-bottom:var(--space-4);
+  }
+  .maphead .kicker .dot{ width:7px; height:7px; border-radius:50%; background:var(--brand-yellow); }
+  .maphead h1{ font-family:var(--font-head); font-weight:800; font-size:36px; letter-spacing:-0.025em; color:var(--gray-900); margin:0 0 8px; }
+  .maphead p{ font-family:var(--font-ui); font-size:16px; line-height:1.55; color:var(--text-secondary); max-width:84ch; margin:0; text-wrap:pretty; }
+
+  /* legend + nav strips */
+  .statusbar{ display:flex; flex-wrap:wrap; gap:var(--space-5); padding:12px 18px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow-card); margin:var(--space-6) 0 var(--space-4); }
+  .statusbar .si{ display:flex; align-items:center; gap:9px; font-family:var(--font-ui); font-size:13px; color:var(--text-secondary); }
+  .statusbar .si b{ color:var(--gray-900); font-weight:700; }
+  .statusbar .sw{ width:13px; height:13px; border-radius:4px; flex:none; }
+
+  .navstrip{ display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:10px 14px; background:var(--gray-900); border-radius:var(--radius-lg); margin-bottom:var(--space-8); }
+  .navstrip .ns-lead{ display:flex; align-items:center; gap:8px; font-family:var(--font-head); font-weight:800; font-size:13px; color:var(--brand-yellow); margin-right:6px; }
+  .navstrip .ns-lead i{ font-size:17px; }
+  .navstrip .tab{ font-family:var(--font-ui); font-weight:600; font-size:12.5px; color:rgba(255,255,255,.85); background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); padding:5px 12px; border-radius:var(--radius-sm); }
+  .navstrip .tab.on{ background:var(--brand-yellow); color:var(--brand-ink); border-color:var(--brand-yellow); }
+  .navstrip .tab.ghost{ color:rgba(255,255,255,.4); background:transparent; border-style:dashed; }
+
+  /* band scaffolding */
+  .band{ margin-bottom:var(--space-5); }
+  .band-label{ display:flex; align-items:center; gap:10px; margin-bottom:var(--space-4); flex-wrap:wrap; }
+  .band-label .bl-num{ font-family:var(--font-head); font-weight:800; font-size:12px; color:#fff; background:var(--gray-900); border-radius:var(--radius-xs); padding:3px 9px; letter-spacing:.04em; }
+  .band-label h2{ font-family:var(--font-head); font-weight:700; font-size:17px; color:var(--gray-900); margin:0; }
+  .band-label .bl-tag{ font-family:var(--font-control); font-weight:600; font-size:11px; padding:3px 10px; border-radius:var(--radius-full); }
+  .tag-built{ background:var(--success-tint); color:var(--success-deep); }
+  .tag-planned{ background:var(--gray-100); color:var(--text-secondary); }
+  .tag-cross{ background:#F4F7FF; color:var(--brand-blue); }
+  .band-label .bl-rule{ flex:1; height:1px; background:var(--border); min-width:30px; }
+  .band-label .route{ font-family:var(--font-control); font-size:11px; color:var(--text-muted); background:var(--gray-50); border:1px solid var(--border); padding:2px 8px; border-radius:var(--radius-xs); }
+
+  /* flow connector */
+  .flow{ display:flex; align-items:center; justify-content:center; gap:12px; padding:var(--space-2) 0; }
+  .flow .line{ width:2px; height:20px; background:linear-gradient(var(--gray-300),var(--brand-yellow-dark)); border-radius:2px; }
+  .flow i{ font-size:20px; color:var(--brand-yellow-dark); }
+  .flow span{ font-family:var(--font-ui); font-weight:700; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
+
+  /* generic surface card */
+  .surface{ background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow-card); overflow:hidden; }
+  .surface-top{ display:flex; align-items:center; gap:12px; padding:13px 20px; border-bottom:1px solid var(--border); }
+  .surface-top.amber{ background:linear-gradient(90deg, var(--brand-yellow-tint), var(--bg-surface)); }
+  .surface-top.green{ background:linear-gradient(90deg, var(--success-tint), var(--bg-surface)); }
+  .surface-top.blue{ background:linear-gradient(90deg, #F4F7FF, var(--bg-surface)); }
+  .surface-top .st-mark{ width:30px; height:30px; border-radius:8px; flex:none; display:grid; place-items:center; }
+  .surface-top .st-mark i{ font-size:18px; }
+  .surface-top h3{ font-family:var(--font-head); font-weight:800; font-size:16px; color:var(--gray-900); margin:0; letter-spacing:-0.01em; }
+  .surface-top .st-sub{ font-family:var(--font-ui); font-size:12.5px; color:var(--text-secondary); }
+  .surface-body{ padding:var(--space-5); }
+
+  /* two-column: payload + meta */
+  .split{ display:grid; grid-template-columns:1.5fr 1fr; gap:0; }
+  .split .left{ padding:var(--space-5); border-right:1px solid var(--divider); }
+  .split .right{ padding:var(--space-5); background:var(--gray-25); }
+  .blk{ font-family:var(--font-ui); font-weight:700; font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--text-muted); margin:0 0 11px; display:flex; align-items:center; gap:7px; }
+  .blk .tname{ font-family:var(--font-control); font-weight:700; font-size:10.5px; color:var(--brand-blue); background:#F4F7FF; border:1px solid #E0E7FF; padding:1px 7px; border-radius:var(--radius-xs); text-transform:none; letter-spacing:0; }
+
+  /* field list (data type) */
+  .fields{ display:grid; grid-template-columns:1fr 1fr; gap:5px 16px; }
+  .fields.one{ grid-template-columns:1fr; }
+  .field{ display:flex; align-items:baseline; gap:8px; font-family:var(--font-control); font-size:11.5px; line-height:1.5; padding:3px 0; border-bottom:1px dashed var(--gray-100); }
+  .field .fn{ color:var(--gray-900); font-weight:700; }
+  .field .ft{ color:var(--brand-blue); }
+  .field .req{ color:var(--error); font-weight:700; margin-left:-4px; }
+  .field .opt{ color:var(--text-muted); }
+
+  /* component pills */
+  .comps{ display:flex; flex-wrap:wrap; gap:6px; }
+  .comps .cp{ display:inline-flex; align-items:center; gap:6px; font-family:var(--font-control); font-weight:600; font-size:11px; color:var(--gray-800); background:var(--bg-surface); border:1px solid var(--border); padding:4px 9px; border-radius:var(--radius-sm); }
+  .comps .cp i{ font-size:12px; color:var(--gray-400); }
+  .metaline{ font-family:var(--font-ui); font-size:12px; line-height:1.5; color:var(--text-secondary); margin:0 0 12px; }
+  .metaline b{ color:var(--gray-900); }
+
+  /* status chips */
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+  .chip{ font-family:var(--font-control); font-weight:600; font-size:11px; padding:3px 10px; border-radius:var(--radius-full); display:inline-flex; align-items:center; gap:5px; }
+  .chip .n{ font-weight:800; opacity:.6; }
+  .chip.pending{ background:var(--brand-yellow-tint); color:var(--warning-deep); }
+  .chip.approved{ background:var(--success-tint); color:var(--success-deep); }
+  .chip.rejected{ background:var(--error-tint); color:var(--error); }
+  .chip.neutral{ background:var(--gray-100); color:var(--text-secondary); }
+  .chip.blue{ background:#F4F7FF; color:var(--brand-blue); }
+  .chip.purple{ background:#EDE7F9; color:#6941C6; }
+  .chip-arrow{ color:var(--gray-300); font-size:14px; }
+
+  /* THE PIPELINE — application lifecycle */
+  .pipe{ background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow-card); overflow:hidden; }
+  .pipe-track{ display:grid; grid-template-columns:repeat(4,1fr); }
+  .pstage{ position:relative; padding:var(--space-5) var(--space-4) var(--space-4); border-right:1px solid var(--divider); }
+  .pstage:last-child{ border-right:0; }
+  .pstage .ph{ display:flex; align-items:center; gap:9px; margin-bottom:7px; }
+  .pstage .pnum{ width:26px; height:26px; border-radius:50%; flex:none; display:grid; place-items:center; font-family:var(--font-head); font-weight:800; font-size:12px; color:#fff; }
+  .pstage .pi{ font-size:18px; }
+  .pstage h4{ font-family:var(--font-head); font-weight:700; font-size:14.5px; color:var(--gray-900); margin:0; }
+  .pstage .enum{ font-family:var(--font-control); font-weight:700; font-size:10px; color:var(--text-muted); margin:1px 0 8px; }
+  .pstage p{ font-family:var(--font-ui); font-size:12px; line-height:1.45; color:var(--text-secondary); margin:0 0 10px; }
+  .pstage .act{ display:flex; flex-direction:column; gap:6px; }
+  .pstage .act .a{ display:flex; gap:7px; align-items:flex-start; font-family:var(--font-ui); font-size:11.5px; line-height:1.35; color:var(--gray-800); background:var(--gray-25); border:1px solid var(--border); border-radius:var(--radius-sm); padding:6px 8px; }
+  .pstage .act .a i{ font-size:13px; color:var(--brand-yellow-dark); flex:none; margin-top:1px; }
+  .pstage .act .a.btn i{ color:var(--brand-blue); }
+  .pstage .act .a.danger i{ color:var(--error); }
+  .pstage:not(:last-child)::after{
+    content:"\EA6E"; font-family:"remixicon"; position:absolute; right:-11px; top:24px; z-index:3;
+    width:22px; height:22px; border-radius:50%; background:#fff; border:1px solid var(--border);
+    display:grid; place-items:center; font-size:14px; color:var(--gray-400);
+  }
+  .pipe-foot{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding:13px 20px; border-top:1px solid var(--border); background:var(--gray-25); }
+  .pipe-foot .terminal{ display:inline-flex; align-items:center; gap:8px; font-family:var(--font-head); font-weight:700; font-size:13px; padding:6px 13px; border-radius:var(--radius-md); }
+  .pipe-foot .terminal i{ font-size:16px; }
+  .pipe-foot .t-hired{ background:var(--success-tint); color:var(--success-deep); }
+  .pipe-foot .t-rej{ background:var(--error-tint); color:var(--error); }
+  .pipe-foot .ff{ font-family:var(--font-ui); font-size:12px; color:var(--text-secondary); }
+
+  /* sub-process rail (shortlist / interview) */
+  .subrail{ display:grid; grid-template-columns:1fr 1fr; gap:var(--space-4); }
+  .subcard{ border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; background:var(--bg-surface); }
+  .subcard .sc-top{ display:flex; align-items:center; gap:9px; padding:11px 15px; border-bottom:1px solid var(--border); background:var(--gray-25); }
+  .subcard .sc-top i{ font-size:17px; color:var(--brand-blue); }
+  .subcard .sc-top h4{ font-family:var(--font-head); font-weight:700; font-size:14px; color:var(--gray-900); margin:0; }
+  .subcard .sc-top .route{ margin-left:auto; font-family:var(--font-control); font-size:10px; color:var(--text-muted); }
+  .subcard .sc-body{ padding:14px 15px; }
+  .subcard .sc-body p{ font-family:var(--font-ui); font-size:12px; line-height:1.5; color:var(--text-secondary); margin:0 0 10px; }
+  .subcard .sc-body p b{ color:var(--gray-900); }
+
+  /* cards-detail grid */
+  .cardgrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .dcard{ border:1px solid var(--border); border-radius:var(--radius-md); padding:11px 13px; background:var(--bg-surface); }
+  .dcard h5{ font-family:var(--font-head); font-weight:700; font-size:12.5px; color:var(--gray-900); margin:0 0 3px; display:flex; align-items:center; gap:7px; }
+  .dcard h5 i{ font-size:14px; color:var(--brand-yellow-dark); }
+  .dcard p{ font-family:var(--font-ui); font-size:11px; line-height:1.4; color:var(--text-muted); margin:0; }
+
+  /* appendix: enums */
+  .enumgrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:var(--space-4); }
+  .enumcard{ background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow-card); padding:var(--space-4) var(--space-5); }
+  .enumcard h4{ font-family:var(--font-control); font-weight:700; font-size:12.5px; color:var(--gray-900); margin:0 0 4px; }
+  .enumcard .desc{ font-family:var(--font-ui); font-size:11px; line-height:1.4; color:var(--text-muted); margin:0 0 11px; }
+  .enumlist{ display:flex; flex-direction:column; gap:5px; }
+  .enumlist .er{ display:flex; align-items:center; gap:9px; font-family:var(--font-control); font-size:11.5px; }
+  .enumlist .er .ev{ width:20px; text-align:center; font-weight:800; color:#fff; border-radius:var(--radius-xs); font-size:10px; padding:2px 0; flex:none; }
+  .enumlist .er .el{ color:var(--gray-800); font-weight:600; }
+
+  @media (max-width:1000px){
+    .pipe-track{ grid-template-columns:1fr 1fr; }
+    .pstage{ border-bottom:1px solid var(--divider); }
+    .pstage::after{ display:none; }
+    .split{ grid-template-columns:1fr; }
+    .split .left{ border-right:0; border-bottom:1px solid var(--divider); }
+    .fields,.cardgrid,.enumgrid,.subrail{ grid-template-columns:1fr; }
+  }
+  @media (max-width:620px){
+    .pipe-track{ grid-template-columns:1fr; }
+    .maphead h1{ font-size:27px; }
+    .cardgrid{ grid-template-columns:1fr; }
+  }
+  @media print{
+    body{ background:#fff; }
+    .wrap{ max-width:none; padding:0; }
+    .surface,.pipe,.statusbar,.enumcard{ box-shadow:none; }
+    .band,.pipe,.surface{ break-inside:avoid; }
+    .navstrip{ background:var(--gray-900) !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <header class="maphead">
+      <span class="kicker"><span class="dot"></span>BISTA HR · Bistasol ERP · Recruitment Module</span>
+      <h1>Recruitment — End-to-End Flow</h1>
+      <p>The full hiring lifecycle exactly as built in the HR frontend: from a manager raising a <strong>hiring request</strong>, through HR <strong>posting the job</strong> and defining an <strong>assessment rubric</strong>, to a candidate <strong>applying</strong> and moving through the <strong>shortlist → assessment → offer → hire</strong> pipeline. Every stage lists its real route, components, request payload and status enum.</p>
+    </header>
+
+    <div class="statusbar">
+      <div class="si"><span class="sw" style="background:var(--success)"></span><b>Built</b> — live in the app today</div>
+      <div class="si"><span class="sw" style="background:var(--brand-blue)"></span><b>Sub-process</b> — nested approval / scoring loop</div>
+      <div class="si"><span class="sw" style="background:var(--gray-400)"></span><b>Planned</b> — route exists, not yet implemented</div>
+      <div class="si"><span class="sw" style="background:var(--error)"></span><b>Required field</b> in payload</div>
+    </div>
+
+    <div class="navstrip">
+      <span class="ns-lead"><i class="ri-team-line"></i>Recruitment</span>
+      <span class="tab on">Hiring Requests</span>
+      <span class="tab">Job Posts</span>
+      <span class="tab">Assessments</span>
+      <span class="tab ghost">Job Re-openings</span>
+      <span class="tab ghost">Job Evaluations</span>
+      <span class="tab ghost">Talent Pool</span>
+    </div>
+
+    <!-- A · HIRING REQUEST -->
+    <section class="band">
+      <div class="band-label">
+        <span class="bl-num">A</span>
+        <h2>Raise a Hiring Request</h2>
+        <span class="bl-tag tag-built">Built · Hiring Manager</span>
+        <span class="route">/recruitment/hiring-requests/create</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="surface">
+        <div class="surface-top amber"><span class="st-mark" style="background:var(--brand-yellow)"><i class="ri-clipboard-line" style="color:var(--brand-ink)"></i></span><h3>A line manager requests vacancies to be filled</h3><span class="st-sub">— the entry point of the whole module</span></div>
+        <div class="split">
+          <div class="left">
+            <p class="blk">Request payload <span class="tname">CreateHiringRequestPayload</span></p>
+            <div class="fields">
+              <div class="field"><span class="fn">designationId<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">departmentId<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">jobGradeId<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">numberOfVacancies<span class="req">*</span></span><span class="ft">number</span></div>
+              <div class="field"><span class="fn">vacancyReason<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">justificationForHire<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">startDate<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">jobStatus<span class="req">*</span></span><span class="ft">0 New · 1 Existing</span></div>
+            </div>
+            <p class="metaline" style="margin-top:14px;"><b>Update</b> reuses the same shape with all fields optional <span style="font-family:var(--font-control);color:var(--text-muted);">(UpdateHiringRequestPayload)</span>. The detail object resolves <b>designation / department / jobGrade</b> to full objects, plus <b>requestedBy</b>, <b>evaluatedBy</b>, <b>evaluatedAt</b>, <b>evaluationReason</b>.</p>
+          </div>
+          <div class="right">
+            <p class="blk">Components</p>
+            <div class="comps">
+              <span class="cp"><i class="ri-file-list-3-line"></i>HiringRequestsPageClient</span>
+              <span class="cp"><i class="ri-edit-box-line"></i>HiringRequestForm</span>
+              <span class="cp"><i class="ri-add-line"></i>NewJobGradeModal</span>
+            </div>
+            <p class="blk" style="margin-top:18px;">Permissions</p>
+            <div class="chips">
+              <span class="chip neutral">HiringRequests:Create</span>
+              <span class="chip neutral">HiringRequests:Read</span>
+              <span class="chip neutral">HiringRequests:Update</span>
+            </div>
+            <p class="blk" style="margin-top:18px;">Table row <span class="tname">HiringRequest</span></p>
+            <p class="metaline" style="margin:0;">designationName · numberOfVacancies · departmentName · startDate · jobStatus · statusName · dateCreated</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flow"><span class="line"></span></div>
+    <div class="flow"><span>HR / approver evaluates</span><i class="ri-arrow-down-line"></i></div>
+
+    <!-- B · APPROVAL GATE -->
+    <section class="band">
+      <div class="band-label">
+        <span class="bl-num">B</span>
+        <h2>Approval Gate</h2>
+        <span class="bl-tag tag-built">Built · Approver</span>
+        <span class="route">HiringRequests:Approve</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="surface">
+        <div class="surface-body">
+          <p class="metaline"><b>HiringRequestsDetailModal</b> presents every field for review. The approver either accepts (optionally adjusting the job grade) or declines with a reason via <b>RejectHiringRequestModal</b>. Status is the shared <b>ApprovalStatus</b> enum.</p>
+          <div class="subrail">
+            <div class="subcard">
+              <div class="sc-top"><i class="ri-check-double-line"></i><h4>Approve</h4><span class="route">ApproveHiringRequestPayload</span></div>
+              <div class="sc-body">
+                <p>Optional <b>evaluationReason</b> and an optional <b>jobGradeId</b> override. Sets <b>evaluatedBy / evaluatedAt</b>.</p>
+                <div class="chips"><span class="chip pending"><span class="n">0</span>Pending</span><span class="chip-arrow"><i class="ri-arrow-right-line"></i></span><span class="chip approved"><span class="n">1</span>Approved</span></div>
+              </div>
+            </div>
+            <div class="subcard">
+              <div class="sc-top" style="background:var(--error-tint);"><i class="ri-close-circle-line" style="color:var(--error);"></i><h4>Reject</h4><span class="route">RejectHiringRequestPayload</span></div>
+              <div class="sc-body">
+                <p>Requires a <b>rejectionReason</b>. Terminal — the request does not proceed to posting.</p>
+                <div class="chips"><span class="chip pending"><span class="n">0</span>Pending</span><span class="chip-arrow"><i class="ri-arrow-right-line"></i></span><span class="chip rejected"><span class="n">2</span>Rejected</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flow"><span class="line"></span></div>
+    <div class="flow"><span>approved → HR publishes the role</span><i class="ri-arrow-down-line"></i></div>
+
+    <!-- C · JOB POSTING -->
+    <section class="band">
+      <div class="band-label">
+        <span class="bl-num">C</span>
+        <h2>Create Job Posting</h2>
+        <span class="bl-tag tag-built">Built · HR</span>
+        <span class="route">/recruitment/job-posts/create</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="surface">
+        <div class="surface-top blue"><span class="st-mark" style="background:var(--brand-blue)"><i class="ri-megaphone-line" style="color:#fff"></i></span><h3>Publish the vacancy internally, externally, or both</h3><span class="st-sub">— with pre-screening questions and a closing date</span></div>
+        <div class="split">
+          <div class="left">
+            <p class="blk">Posting payload <span class="tname">CreateJobPostingRequest</span></p>
+            <div class="fields">
+              <div class="field"><span class="fn">designationId<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">departmentId<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">organizationalUnitId<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">employmentType<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">closingDate<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">closingTime<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">type<span class="req">*</span></span><span class="ft">0/1/2</span></div>
+              <div class="field"><span class="fn">jobDescription<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">keyDuties<span class="req">*</span></span><span class="ft">string[]</span></div>
+              <div class="field"><span class="fn">qualifications…<span class="req">*</span></span><span class="ft">string[]</span></div>
+              <div class="field"><span class="fn">skillsRequired<span class="req">*</span></span><span class="ft">string[]</span></div>
+              <div class="field"><span class="fn">preScreening…<span class="req">*</span></span><span class="ft">{text,type}[]</span></div>
+            </div>
+            <p class="metaline" style="margin-top:14px;"><b>Posting type</b> — <span class="chip blue" style="margin:0 2px;">0 Internal</span><span class="chip blue" style="margin:0 2px;">1 External</span><span class="chip blue" style="margin:0 2px;">2 Internal &amp; External</span></p>
+          </div>
+          <div class="right">
+            <p class="blk">Components</p>
+            <div class="comps">
+              <span class="cp"><i class="ri-layout-grid-line"></i>JobPostingsPageClient</span>
+              <span class="cp"><i class="ri-table-line"></i>JobPostingsTable</span>
+              <span class="cp"><i class="ri-edit-box-line"></i>JobPostingForm</span>
+              <span class="cp"><i class="ri-draggable"></i>SortableQuestionItem</span>
+              <span class="cp"><i class="ri-eye-line"></i>PostingDetailsClient</span>
+              <span class="cp"><i class="ri-id-card-line"></i>JobCard</span>
+            </div>
+            <p class="blk" style="margin-top:18px;">Lifecycle</p>
+            <div class="chips">
+              <span class="chip approved">Active</span>
+              <span class="chip-arrow"><i class="ri-arrow-right-line"></i></span>
+              <span class="chip neutral">Closed</span>
+              <span class="chip-arrow"><i class="ri-arrow-left-right-line"></i></span>
+              <span class="chip blue">Reopen</span>
+            </div>
+            <p class="metaline" style="margin:10px 0 0;"><b>isClosed</b> / <b>closedAt</b> drive Close &amp; Reopen. Status board (<b>JobPostingStatusData</b>): total posts · active · applications · shortlisted · in assessment.</p>
+            <p class="blk" style="margin-top:18px;">Permissions</p>
+            <div class="chips">
+              <span class="chip neutral">JobPostings:Create</span>
+              <span class="chip neutral">JobPostings:Close</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flow"><span class="line"></span></div>
+    <div class="flow"><span>HR defines how candidates will be scored</span><i class="ri-arrow-down-line"></i></div>
+
+    <!-- C2 · ASSESSMENT RUBRIC -->
+    <section class="band">
+      <div class="band-label">
+        <span class="bl-num">C·2</span>
+        <h2>Define the Interview Assessment</h2>
+        <span class="bl-tag tag-built">Built · HR</span>
+        <span class="route">/recruitment/job-posts/[id]/assessment</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="surface">
+        <div class="split">
+          <div class="left">
+            <p class="blk">Rubric payload <span class="tname">CreateAssessmentRequest</span></p>
+            <div class="fields one">
+              <div class="field"><span class="fn">constructs<span class="req">*</span></span><span class="ft">AssessmentConstruct[]</span></div>
+            </div>
+            <p class="blk" style="margin-top:14px;">Each construct <span class="tname">AssessmentConstruct</span></p>
+            <div class="fields">
+              <div class="field"><span class="fn">constructName<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">weight<span class="req">*</span></span><span class="ft">number</span></div>
+              <div class="field one"><span class="fn">requirements<span class="req">*</span></span><span class="ft">string[]</span></div>
+            </div>
+          </div>
+          <div class="right">
+            <p class="blk">Components</p>
+            <div class="comps">
+              <span class="cp"><i class="ri-list-check-2"></i>AssessmentForm</span>
+              <span class="cp"><i class="ri-folder-chart-line"></i>AssessmentsTabGroup</span>
+              <span class="cp"><i class="ri-draggable"></i>SortableConstructItem</span>
+            </div>
+            <p class="metaline" style="margin-top:14px;"><b>isInterviewAssessmentCreated</b> on the posting gates whether candidates can be scheduled for assessment later. Weighted constructs become the assessors' scorecard.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flow"><span class="line"></span></div>
+    <div class="flow"><span>candidate applies (Careers)</span><i class="ri-arrow-down-line"></i></div>
+
+    <!-- D · APPLICATION INTAKE -->
+    <section class="band">
+      <div class="band-label">
+        <span class="bl-num">D</span>
+        <h2>Candidate Application</h2>
+        <span class="bl-tag tag-built">Built · Applicant</span>
+        <span class="route">/dashboard/careers · Careers API</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="surface">
+        <div class="surface-top green"><span class="st-mark" style="background:var(--success)"><i class="ri-user-add-line" style="color:#fff"></i></span><h3>Internal employees or external candidates apply</h3><span class="st-sub">— internal posting uses the signed-in employee; external requires an email</span></div>
+        <div class="split">
+          <div class="left">
+            <p class="blk">Submit payload <span class="tname">SubmitApplicationRequest</span></p>
+            <div class="fields">
+              <div class="field"><span class="fn">cvUrl<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">coverLetterUrl<span class="req">*</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">preScreeningAnswers<span class="req">*</span></span><span class="ft">{questionIndex,answer}[]</span></div>
+              <div class="field"><span class="fn">applicantEmail<span class="opt"> ?</span></span><span class="ft">string</span></div>
+              <div class="field"><span class="fn">applicantName<span class="opt"> ?</span></span><span class="ft">string</span></div>
+            </div>
+            <p class="blk" style="margin-top:16px;">Stored on the application <span class="tname">ApplicationDetails</span></p>
+            <p class="metaline" style="margin:0;">applicantName · email · phone · employeeId · cv / cover · employmentHistory[] · education[] · skills[] · certifications[] · assessmentScore · assessmentStatus · offerStatus · hasShortlistRequest</p>
+          </div>
+          <div class="right">
+            <p class="blk">Careers components</p>
+            <div class="comps">
+              <span class="cp"><i class="ri-briefcase-line"></i>CareersPageClient</span>
+              <span class="cp"><i class="ri-id-card-line"></i>CareerCard</span>
+              <span class="cp"><i class="ri-file-text-line"></i>CareerDetailsClient</span>
+              <span class="cp"><i class="ri-send-plane-line"></i>CareerApplyClient</span>
+              <span class="cp"><i class="ri-window-line"></i>JobApplicationDialog</span>
+            </div>
+            <p class="blk" style="margin-top:16px;">Detail cards (review surface)</p>
+            <div class="comps">
+              <span class="cp">ApplicantInfoCard</span>
+              <span class="cp">EducationCard</span>
+              <span class="cp">EmploymentHistoryCard</span>
+              <span class="cp">SkillsCard</span>
+              <span class="cp">CertificationsCard</span>
+              <span class="cp">DocumentsCard</span>
+              <span class="cp">PreScreeningAssessmentCard</span>
+              <span class="cp">ApplicationTimelineCard</span>
+              <span class="cp">ApplicationInterviewCard</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flow"><span class="line"></span></div>
+    <div class="flow"><span>application moves through the pipeline</span><i class="ri-arrow-down-line"></i></div>
+
+    <!-- E · PIPELINE -->
+    <section class="band">
+      <div class="band-label">
+        <span class="bl-num">E</span>
+        <h2>Application Pipeline</h2>
+        <span class="bl-tag tag-built">Built · HR</span>
+        <span class="route">/recruitment/job-posts/[id]/applications/[applicationId]</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="pipe">
+        <div class="pipe-track">
+          <!-- Submitted -->
+          <div class="pstage">
+            <div class="ph"><span class="pnum" style="background:var(--gray-500)">0</span><i class="ri-inbox-line pi" style="color:var(--gray-500)"></i></div>
+            <h4>Submitted</h4>
+            <p class="enum">ApplicationStatus.Submitted</p>
+            <p>HR reviews the candidate and raises a shortlist request.</p>
+            <div class="act">
+              <div class="a btn"><i class="ri-send-plane-line"></i>Send Shortlist Request <span style="color:var(--text-muted)">→ ShortlistRequest</span></div>
+              <div class="a"><i class="ri-check-line"></i>Approve / Reject Shortlist</div>
+              <div class="a danger"><i class="ri-close-line"></i>Reject Application</div>
+            </div>
+          </div>
+          <!-- Shortlisted -->
+          <div class="pstage">
+            <div class="ph"><span class="pnum" style="background:var(--brand-blue)">1</span><i class="ri-user-star-line pi" style="color:var(--brand-blue)"></i></div>
+            <h4>Shortlisted</h4>
+            <p class="enum">ApplicationStatus.Shortlisted</p>
+            <p>Once the rubric exists, schedule the candidate with assessors for an interview.</p>
+            <div class="act">
+              <div class="a btn"><i class="ri-calendar-schedule-line"></i>Schedule for Assessment <span style="color:var(--text-muted)">→ ScheduledInterview</span></div>
+            </div>
+          </div>
+          <!-- Assessment -->
+          <div class="pstage">
+            <div class="ph"><span class="pnum" style="background:var(--warning-deep)">2</span><i class="ri-medal-2-line pi" style="color:var(--warning-deep)"></i></div>
+            <h4>Assessment</h4>
+            <p class="enum">ApplicationStatus.Assessment</p>
+            <p>Assessors score the weighted constructs; HR then advances the candidate.</p>
+            <div class="act">
+              <div class="a"><i class="ri-star-line"></i>assessmentScore recorded</div>
+              <div class="a btn"><i class="ri-thumb-up-line"></i>Approve for Hiring</div>
+            </div>
+          </div>
+          <!-- Offer -->
+          <div class="pstage">
+            <div class="ph"><span class="pnum" style="background:var(--success)">3</span><i class="ri-mail-send-line pi" style="color:var(--success)"></i></div>
+            <h4>Offer</h4>
+            <p class="enum">ApplicationStatus.Offer</p>
+            <p>HR sends a formal offer with salary and dates.</p>
+            <div class="act">
+              <div class="a btn"><i class="ri-send-plane-fill"></i>Send Offer <span style="color:var(--text-muted)">→ SendOfferRequest</span></div>
+              <div class="a"><i class="ri-money-dollar-circle-line"></i>salary · startDate · offerExpiryDate</div>
+            </div>
+          </div>
+        </div>
+        <div class="pipe-foot">
+          <span class="ff">Terminal states:</span>
+          <span class="terminal t-hired"><i class="ri-checkbox-circle-line"></i>Hired <span style="opacity:.6;font-weight:800;">4</span></span>
+          <span class="terminal t-rej"><i class="ri-close-circle-line"></i>Rejected <span style="opacity:.6;font-weight:800;">5</span></span>
+          <span class="ff">— an application can be rejected from any active stage (with <b style="color:var(--gray-900)">rejectionReason</b>).</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- E sub-processes -->
+    <div class="flow"><span>two nested loops drive the pipeline</span><i class="ri-arrow-down-line"></i></div>
+    <div class="band">
+      <div class="subrail">
+        <div class="subcard">
+          <div class="sc-top"><i class="ri-user-follow-line"></i><h4>Shortlist Request loop</h4><span class="route">ShortlistRequests:Approve / Reject</span></div>
+          <div class="sc-body">
+            <p>HR sends a request; an approver decides. <b>CreateShortlistRequest</b> { jobApplicationId }. On approve the application becomes <b>Shortlisted</b>; on reject it can be resent or the application rejected.</p>
+            <div class="chips">
+              <span class="chip pending"><span class="n">0</span>Pending</span>
+              <span class="chip-arrow"><i class="ri-arrow-right-line"></i></span>
+              <span class="chip approved"><span class="n">1</span>Approved</span>
+              <span class="chip rejected"><span class="n">2</span>Rejected</span>
+            </div>
+            <p class="metaline" style="margin:10px 0 0;font-family:var(--font-control);font-size:11px;">ShortlistRequestStatus · components: ShortlistRequestsTabGroup, ShortlistAndAssessmentsSection</p>
+          </div>
+        </div>
+        <div class="subcard">
+          <div class="sc-top"><i class="ri-calendar-check-line"></i><h4>Interview &amp; scoring loop</h4><span class="route">ScheduledInterviews · AssessorInterviews</span></div>
+          <div class="sc-body">
+            <p><b>CreateScheduledInterviewRequest</b> { jobApplicationId, locationId, scheduledStartAt, scheduledEndAt, assessorEmployeeIds[] }. Each assessor submits <b>SubmitInterviewAssessmentRequest</b> { constructScores[] }.</p>
+            <div class="chips">
+              <span class="chip pending"><span class="n">0</span>Pending</span>
+              <span class="chip-arrow"><i class="ri-arrow-right-line"></i></span>
+              <span class="chip blue"><span class="n">1</span>InProgress</span>
+              <span class="chip-arrow"><i class="ri-arrow-right-line"></i></span>
+              <span class="chip approved"><span class="n">2</span>Completed</span>
+            </div>
+            <p class="metaline" style="margin:10px 0 0;font-family:var(--font-control);font-size:11px;">InterviewAssessmentStatus · components: ScheduleAssessmentDialog, AssessorInterviewsTable, InterviewScoreForm</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow"><span class="line"></span></div>
+    <div class="flow"><span>assessor's own queue</span><i class="ri-arrow-down-line"></i></div>
+
+    <!-- F · ASSESSOR -->
+    <section class="band">
+      <div class="band-label">
+        <span class="bl-num">F</span>
+        <h2>Assessor Scoring</h2>
+        <span class="bl-tag tag-built">Built · Assessor</span>
+        <span class="route">/recruitment/assessments/[jobPostingId]/[interviewId]</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="surface">
+        <div class="surface-body">
+          <p class="metaline">Each assessor sees only the interviews assigned to them (<b>AssessorInterviewListItem</b>), filtered by their own submission status. They open the interview and score every weighted construct — <b>ConstructScore</b> { constructName, score } — then submit.</p>
+          <div class="cardgrid">
+            <div class="dcard"><h5><i class="ri-list-ordered"></i>Pending queue</h5><p>AssessorSubmissionStatus.Pending (0) — not yet scored.</p></div>
+            <div class="dcard"><h5><i class="ri-checkbox-circle-line"></i>Completed</h5><p>AssessorSubmissionStatus.Completed (1) — scores submitted.</p></div>
+            <div class="dcard"><h5><i class="ri-shield-keyhole-line"></i>Permissions</h5><p>AssessorInterviews:Read · AssessorInterviews:Submit</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flow"><span class="line"></span></div>
+    <div class="flow"><span>offer accepted → hire</span><i class="ri-arrow-down-line"></i></div>
+
+    <!-- G · HIRE + PLANNED -->
+    <section class="band">
+      <div class="band-label">
+        <span class="bl-num">G</span>
+        <h2>Hire &amp; What Comes Next</h2>
+        <span class="bl-tag tag-cross">Built → Planned</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="surface">
+        <div class="surface-body">
+          <p class="metaline">When the offer is accepted (<b>OfferStatus</b> Pending → Sent → Accepted) the application reaches <b>Hired</b> and hands off to onboarding. Three recruitment surfaces have routes reserved but are <b>not yet built</b>:</p>
+          <div class="cardgrid">
+            <div class="dcard"><h5><i class="ri-refresh-line"></i>Job Re-openings</h5><p>/recruitment/job-reopenings — "to be implemented soon".</p></div>
+            <div class="dcard"><h5><i class="ri-scales-3-line"></i>Job Evaluations</h5><p>/recruitment/job-evaluations — committee evaluation, route only.</p></div>
+            <div class="dcard"><h5><i class="ri-group-2-line"></i>Talent Pool</h5><p>/recruitment/talent-pool — "to be implemented soon".</p></div>
+          </div>
+          <p class="metaline" style="margin:14px 0 0;font-size:11.5px;"><b>Legacy note:</b> an older <b>Job Requests</b> flow still exists (JobRequestFormPayload — jobTitle, branch/unit, salaryRangeMin/Max, responsibilities, qualificationsAndExperience, skills) with its own routes and components (JobRequests, JobRequestForm, JobRequestDetails). It predates Hiring Requests and is not in the current navigation tabs.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPENDIX · ENUMS -->
+    <section class="band" style="margin-top:var(--space-10);">
+      <div class="band-label">
+        <span class="bl-num" style="background:var(--brand-blue)">＃</span>
+        <h2>Data Dictionary — Status Enums</h2>
+        <span class="bl-tag tag-cross">Reference</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="enumgrid">
+        <div class="enumcard">
+          <h4>ApplicationStatus</h4>
+          <p class="desc">The candidate's position in the pipeline.</p>
+          <div class="enumlist">
+            <div class="er"><span class="ev" style="background:var(--gray-500)">0</span><span class="el">Submitted</span></div>
+            <div class="er"><span class="ev" style="background:var(--brand-blue)">1</span><span class="el">Shortlisted</span></div>
+            <div class="er"><span class="ev" style="background:var(--warning-deep)">2</span><span class="el">Assessment</span></div>
+            <div class="er"><span class="ev" style="background:var(--success)">3</span><span class="el">Offer</span></div>
+            <div class="er"><span class="ev" style="background:var(--success-deep)">4</span><span class="el">Hired</span></div>
+            <div class="er"><span class="ev" style="background:var(--error)">5</span><span class="el">Rejected</span></div>
+          </div>
+        </div>
+        <div class="enumcard">
+          <h4>ApprovalStatus</h4>
+          <p class="desc">Hiring &amp; job request evaluation.</p>
+          <div class="enumlist">
+            <div class="er"><span class="ev" style="background:var(--warning-deep)">0</span><span class="el">Pending</span></div>
+            <div class="er"><span class="ev" style="background:var(--success)">1</span><span class="el">Approved</span></div>
+            <div class="er"><span class="ev" style="background:var(--error)">2</span><span class="el">Rejected</span></div>
+          </div>
+        </div>
+        <div class="enumcard">
+          <h4>ShortlistRequestStatus</h4>
+          <p class="desc">Nested shortlist approval.</p>
+          <div class="enumlist">
+            <div class="er"><span class="ev" style="background:var(--warning-deep)">0</span><span class="el">Pending</span></div>
+            <div class="er"><span class="ev" style="background:var(--success)">1</span><span class="el">Approved</span></div>
+            <div class="er"><span class="ev" style="background:var(--error)">2</span><span class="el">Rejected</span></div>
+          </div>
+        </div>
+        <div class="enumcard">
+          <h4>InterviewAssessmentStatus</h4>
+          <p class="desc">Scheduled interview progress.</p>
+          <div class="enumlist">
+            <div class="er"><span class="ev" style="background:var(--warning-deep)">0</span><span class="el">Pending</span></div>
+            <div class="er"><span class="ev" style="background:var(--brand-blue)">1</span><span class="el">InProgress</span></div>
+            <div class="er"><span class="ev" style="background:var(--success)">2</span><span class="el">Completed</span></div>
+          </div>
+        </div>
+        <div class="enumcard">
+          <h4>OfferStatus</h4>
+          <p class="desc">Offer lifecycle.</p>
+          <div class="enumlist">
+            <div class="er"><span class="ev" style="background:var(--warning-deep)">0</span><span class="el">Pending</span></div>
+            <div class="er"><span class="ev" style="background:var(--brand-blue)">1</span><span class="el">Sent</span></div>
+            <div class="er"><span class="ev" style="background:var(--success)">2</span><span class="el">Accepted</span></div>
+          </div>
+        </div>
+        <div class="enumcard">
+          <h4>EmploymentType</h4>
+          <p class="desc">Used by requests &amp; postings.</p>
+          <div class="enumlist">
+            <div class="er"><span class="ev" style="background:var(--gray-700)">1</span><span class="el">Permanent</span></div>
+            <div class="er"><span class="ev" style="background:var(--gray-700)">2</span><span class="el">Contract</span></div>
+            <div class="er"><span class="ev" style="background:var(--gray-700)">3</span><span class="el">Temporary</span></div>
+            <div class="er"><span class="ev" style="background:var(--gray-700)">4</span><span class="el">National Service</span></div>
+            <div class="er"><span class="ev" style="background:var(--gray-700)">5</span><span class="el">Internship</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+import type { CellValue } from 'flowers-nextjs-table'
+import type { ApprovalStatus } from '../constants'
+
+export interface Allowance {
+  allowanceType: string
+  amount: number
+}
+
+export interface CreatePromotionRequest {
+  // The create endpoint accepts MULTIPLE employees — one promotion target is
+  // applied to every selected employee (single source of truth = the roster).
+  employeeIds: string[]
+  requestType?: string
+  performanceRating?: number
+  promotionJustification?: string
+  budgetConfirmation?: boolean
+  supportingDocumentUrls?: string[]
+  newJobTitle: string
+  newJobGradeId?: string
+  newJobGrade?: string
+  notch?: string
+  newDepartmentId?: string
+  newDepartment?: string
+  newZoneId?: string
+  newZone?: string
+  newBranchId?: string
+  newBranch?: string
+  newSalary: number
+  effectiveDate: string
+  includesTransfer: boolean
+  allowances?: Allowance[]
+  approverEmployeeIds: string[]
+  emailsToNotifyUponApproval: string[]
+}
+
+export type PromotionColumns = PromotionResponseData & {
+  [key: string]: CellValue
+}
+
+export interface PromotionResponseData {
+  id: string
+  employeeId: string
+  employeeName: string
+  employeeNumber: string
+  profilePictureUrl?: string // Not provided by backend, added for frontend display purposes
+  currentJobTitle: string
+  currentJobGrade: string
+  currentDepartment: string
+  currentZone: string
+  currentBranch: string
+  currentSalary: number
+  newJobTitle: string
+  newJobGrade: string
+  newDepartment: string
+  newZone: string
+  newBranch: string
+  newSalary: number
+  effectiveDate: string
+  includesTransfer: boolean
+  status: ApprovalStatus
+  submittedAt: string
+  rejectionReason?: string
+  approvedAt?: string
+  approvedBy?: string
+  approvedByUserName?: string
+  approvedByUserEmail?: string
+  rejectedAt?: string
+  rejectedBy?: string
+  rejectedByUserName?: string
+  rejectedByUserEmail?: string
+  allowances: Allowance[]
+  tenantCode: string
+  createdAt: string
+  updatedAt: string
+  createdBy: string
+  createdByUserName: string
+  createdByUserEmail: string
+  updatedBy: string
+  updatedByUserName: string
+  updatedByUserEmail: string
+  approvers: PromotionApprover[]
+}
+
+export interface PromotionApprover {
+  id: string
+  approverEmployeeId: string
+  approverEmployeeName: string
+  approvalOrder: number
+  isApproved: boolean
+  isRejected: boolean
+  approvedAt?: string
+  rejectedAt?: string
+  comments?: string
+}
+export interface Promotion {
+  staffId: string
+  staffName: string
+  grade: string
+  notch: string
+  effectiveDate: string
+}
+
+export interface BulkUploadResponse {
+  data: Promotion[]
+  message: string
+  code: number
+  subCode?: string
+  errors?: Array<{
+    field: string
+    errorMessage: string
+  }>
+}
+
+export type PromotionTableRow = Promotion & Record<string, CellValue>

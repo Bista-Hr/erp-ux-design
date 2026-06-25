@@ -1,0 +1,757 @@
+'use client'
+
+import { useRouter } from '@bprogress/next/app'
+import { format } from 'date-fns'
+import { Field, FieldArray, Form, Formik } from 'formik'
+import { CalendarIcon, Plus, Trash } from 'lucide-react'
+import { useState } from 'react'
+import { z } from 'zod'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { SectionContainer } from '@/components/layout/SectionContainer'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Switch } from '@/components/ui/switch'
+import { EmailInputList } from '@/components/ui/email-input-list'
+import { useConfirmationDialog } from '@/hooks/use-confirmation-dialog'
+import { createPromotion } from '@/lib/mutations/promotions/create/create'
+import { updatePromotion } from '@/lib/mutations/promotions/update/update'
+import { cn, validateWithZod } from '@/lib/utils'
+import AmountInput from '../ui/amount-input'
+import { SelectField } from '../ui/select-field'
+
+interface Allowance {
+  allowanceType: string
+  amount: number
+}
+
+interface PromotionResponse {
+  id: string
+  employeeId: string
+  performanceRating?: number
+  promotionJustification?: string
+  budgetConfirmation?: boolean
+  supportingDocumentUrls?: string[]
+  newJobTitle: string
+  newJobGradeId?: string
+  newJobGrade?: string
+  notch?: string
+  newDepartmentId?: string
+  newDepartment?: string
+  newZoneId?: string
+  newZone?: string
+  newBranchId?: string
+  newBranch?: string
+  newSalary: number
+  effectiveDate: string
+  includesTransfer: boolean
+  allowances?: Allowance[]
+  approverEmployeeIds?: string[]
+  emailsToNotifyUponApproval?: string[]
+}
+
+// Mirrors POST /api/Promotions request body exactly.
+interface PromotionRequestPayload {
+  employeeIds: string[]
+  requestType: string
+  performanceRating: number
+  promotionJustification: string
+  budgetConfirmation: boolean
+  supportingDocumentUrls: string[]
+  newJobTitle: string
+  newJobGradeId?: string
+  newJobGrade?: string
+  notch?: string
+  newDepartmentId?: string
+  newDepartment?: string
+  newZoneId?: string
+  newZone?: string
+  newBranchId?: string
+  newBranch?: string
+  newSalary: number
+  effectiveDate: string
+  includesTransfer: boolean
+  allowances: Allowance[]
+  approverEmployeeIds: string[]
+  emailsToNotifyUponApproval: string[]
+}
+
+interface FormValues {
+  employeeIds: string[]
+  performanceRating: string
+  promotionJustification: string
+  budgetConfirmation: boolean
+  supportingDocumentUrls: string[]
+  newJobTitle: string
+  newJobGradeId: string
+  newJobGrade: string
+  notch: string
+  newDepartmentId: string
+  newDepartment: string
+  newZoneId: string
+  newZone: string
+  newBranchId: string
+  newBranch: string
+  newSalary: number
+  effectiveDate: string
+  includesTransfer: boolean
+  allowances: Allowance[]
+  approverEmployeeIds: string[]
+  emailsToNotifyUponApproval: string[]
+  [key: string]: unknown
+}
+
+interface SelectOption {
+  value: string
+  label: string
+  image?: string
+}
+
+// requestType is sent empty for now (no UI field); add an input here later if needed.
+const PERFORMANCE_RATING_OPTIONS: SelectOption[] = [1, 2, 3, 4, 5].map((n) => ({
+  value: String(n),
+  label: String(n),
+}))
+
+// Date Picker Component
+interface DatePickerFieldProps {
+  label: string
+  value: string
+  onSelect: (date: string) => void
+  error?: string
+  required?: boolean
+}
+
+const DatePickerField = ({ label, value, onSelect, error, required }: DatePickerFieldProps) => {
+  const [open, setOpen] = useState(false)
+  const currentYear = new Date().getFullYear()
+  const selectedDate = value ? new Date(value) : undefined
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-slate-700">
+        {label}
+        {required && <span className="text-destructive ml-1">*</span>}
+      </label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            type="button"
+            className={cn(
+              'w-full border-[#e5e5e5] justify-start text-left font-normal',
+              !value && 'text-muted-foreground',
+              error && 'border-destructive'
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {value ? format(new Date(value), 'PPP') : <span>Pick a date</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            captionLayout="dropdown"
+            startMonth={new Date(currentYear, 0)}
+            endMonth={new Date(currentYear + 10, 11)}
+            selected={selectedDate}
+            onSelect={(date) => {
+              if (date) {
+                onSelect(format(date, 'yyyy-MM-dd'))
+                setOpen(false)
+              }
+            }}
+            disabled={(date) => date < today}
+          />
+        </PopoverContent>
+      </Popover>
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </div>
+  )
+}
+
+interface PromotionsFormProps {
+  initialData?: PromotionResponse | null
+  /** Pre-selected employees coming from the roster (create flow). */
+  initialEmployeeIds?: string[]
+  employeeOptions: SelectOption[]
+  departmentOptions: SelectOption[]
+  zoneOptions: SelectOption[]
+  branchOptions: SelectOption[]
+  jobGradeOptions: SelectOption[]
+  designationOptions: SelectOption[]
+}
+
+const zodSchema = z
+  .object({
+    employeeIds: z
+      .array(z.string())
+      .refine((val) => val.filter((id) => id.trim() !== '').length >= 1, {
+        message: 'Select at least one employee',
+      }),
+    performanceRating: z.preprocess(
+      (val) => Number(String(val ?? '0')),
+      z.number().min(1, 'Performance rating is required')
+    ),
+    promotionJustification: z.string().min(1, 'Justification is required'),
+    budgetConfirmation: z.boolean(),
+    supportingDocumentUrls: z.array(z.string()).optional(),
+    newJobTitle: z.string().min(1, 'New Job title is required'),
+    newJobGradeId: z.string().min(1, 'Job grade is required'),
+    newJobGrade: z.string().min(1, 'Job grade is required'),
+    notch: z.string().optional(),
+    newDepartmentId: z.string().optional(),
+    newDepartment: z.string().optional(),
+    newZoneId: z.string().optional(),
+    newZone: z.string().optional(),
+    newBranchId: z.string().optional(),
+    newBranch: z.string().optional(),
+    newSalary: z.preprocess(
+      (val) => Number(String(val).replace(/,/g, '')),
+      z.number().min(1, 'Salary must be 1 or greater')
+    ),
+    effectiveDate: z.string().min(1, 'Effective date is required'),
+    includesTransfer: z.boolean(),
+    allowances: z
+      .array(
+        z.object({
+          allowanceType: z.string(),
+          amount: z.number(),
+        })
+      )
+      .optional(),
+    approverEmployeeIds: z
+      .array(z.string())
+      .refine((val) => val.filter((id) => id.trim() !== '').length >= 1, {
+        message: 'At least one approver is required.',
+      }),
+    emailsToNotifyUponApproval: z
+      .array(z.string())
+      .refine((val) => val.filter((email) => email.trim() !== '').length >= 1, {
+        message: 'At least one department or email must be provided.',
+      }),
+  })
+  .superRefine((val, ctx) => {
+    if (val.includesTransfer) {
+      if (!val.newDepartmentId || val.newDepartmentId.trim() === '') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Department is required',
+          path: ['newDepartmentId'],
+        })
+      }
+      if (!val.newZoneId || val.newZoneId.trim() === '') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Zone is required',
+          path: ['newZoneId'],
+        })
+      }
+      if (!val.newBranchId || val.newBranchId.trim() === '') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Branch is required',
+          path: ['newBranchId'],
+        })
+      }
+    }
+  })
+
+const PromotionsForm = ({
+  initialData = null,
+  initialEmployeeIds = [],
+  employeeOptions,
+  departmentOptions,
+  zoneOptions,
+  branchOptions,
+  jobGradeOptions,
+  designationOptions,
+}: PromotionsFormProps) => {
+  const { push } = useRouter()
+  const confirmationDialog = useConfirmationDialog()
+
+  // Edit mode targets a single record; create mode may target many (from roster).
+  const initialEmployees = initialData?.employeeId
+    ? [initialData.employeeId]
+    : initialEmployeeIds
+
+  const initialValues: FormValues = {
+    employeeIds: initialEmployees,
+    performanceRating: initialData?.performanceRating
+      ? String(initialData.performanceRating)
+      : '',
+    promotionJustification: initialData?.promotionJustification ?? '',
+    budgetConfirmation: initialData?.budgetConfirmation ?? false,
+    supportingDocumentUrls: initialData?.supportingDocumentUrls ?? [],
+    newJobTitle: initialData?.newJobTitle ?? '',
+    newJobGradeId: initialData?.newJobGradeId ?? '',
+    newJobGrade: initialData?.newJobGrade ?? '',
+    notch: initialData?.notch ?? '',
+    newDepartmentId: initialData?.newDepartmentId ?? '',
+    newDepartment: initialData?.newDepartment ?? '',
+    newZoneId: initialData?.newZoneId ?? '',
+    newZone: initialData?.newZone ?? '',
+    newBranchId: initialData?.newBranchId ?? '',
+    newBranch: initialData?.newBranch ?? '',
+    newSalary: initialData?.newSalary ?? 0,
+    effectiveDate: initialData?.effectiveDate ?? '',
+    includesTransfer: initialData?.includesTransfer ?? false,
+    allowances: initialData?.allowances ?? [],
+    approverEmployeeIds: initialData?.approverEmployeeIds ?? [],
+    emailsToNotifyUponApproval: initialData?.emailsToNotifyUponApproval ?? [''],
+  }
+
+  const handleSubmit = async (values: FormValues) => {
+    const employeeIds = values.employeeIds.filter((id) => id && id.trim() !== '')
+    const filteredApprovers = values.approverEmployeeIds.filter((id) => id && id.trim() !== '')
+    const filteredEmails = values.emailsToNotifyUponApproval.filter((m) => m && m.trim() !== '')
+    const filteredDocs = (values.supportingDocumentUrls ?? []).filter((u) => u && u.trim() !== '')
+    const filteredAllowances = (values.allowances ?? []).filter(
+      (a) => a.allowanceType.trim() !== '' || Number(a.amount) > 0
+    )
+
+    const promotionData: PromotionRequestPayload = {
+      employeeIds,
+      requestType: '',
+      performanceRating: Number(values.performanceRating) || 0,
+      promotionJustification: values.promotionJustification,
+      budgetConfirmation: Boolean(values.budgetConfirmation),
+      supportingDocumentUrls: filteredDocs,
+      newJobTitle: values.newJobTitle,
+      newJobGradeId: values.newJobGradeId || undefined,
+      newJobGrade: values.newJobGrade || undefined,
+      notch: values.notch || undefined,
+      newDepartmentId: values.newDepartmentId || undefined,
+      newDepartment: values.newDepartment || undefined,
+      newZoneId: values.newZoneId || undefined,
+      newZone: values.newZone || undefined,
+      newBranchId: values.newBranchId || undefined,
+      newBranch: values.newBranch || undefined,
+      newSalary: Number(values.newSalary) || 0,
+      effectiveDate: values.effectiveDate,
+      includesTransfer: Boolean(values.includesTransfer),
+      allowances: filteredAllowances.map((a) => ({
+        allowanceType: a.allowanceType,
+        amount: Number(a.amount) || 0,
+      })),
+      approverEmployeeIds: filteredApprovers,
+      emailsToNotifyUponApproval: filteredEmails,
+    }
+
+    const response = initialData
+      ? await updatePromotion(initialData.id, promotionData)
+      : await createPromotion(promotionData)
+
+    if (response.code === 200 || response.code === 201) {
+      confirmationDialog.showSuccess({
+        title: `Promotion ${initialData ? 'Updated' : 'Created'}`,
+        content: `You have successfully ${initialData ? 'updated' : 'created'} a promotion`,
+        onConfirm: () => {
+          push('/promotions/')
+        },
+      })
+    } else {
+      confirmationDialog.showError({
+        title: 'Operation Failed',
+        content: response.message ?? `Failed to ${initialData ? 'update' : 'create'} promotion`,
+      })
+    }
+  }
+
+  return (
+    <SectionContainer>
+      <PageHeader
+        title={initialData ? 'Edit Promotion' : 'Create Promotion'}
+        description={initialData ? 'Update the promotion details' : 'Create a new promotion record'}
+      />
+
+      <Formik<FormValues>
+        key={initialData?.id || 'form'}
+        initialValues={initialValues}
+        validate={(values) => validateWithZod(values, zodSchema)}
+        onSubmit={handleSubmit}
+        enableReinitialize={true}
+        validateOnBlur={false}
+      >
+        {({ errors, touched, isSubmitting, values, setFieldValue }) => {
+          const employeeIds = values.employeeIds ?? []
+          // Approvers are chosen from staff, excluding the employees being promoted.
+          const approverOptions = employeeOptions.filter((o) => !employeeIds.includes(o.value))
+
+          return (
+            <Form className="space-y-4">
+              {/* Employee Details Section */}
+              <div className="bg-white rounded-lg p-6 space-y-6">
+                <h2 className="text-xl font-semibold text-slate-900">Employee Information</h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Employee(s) - multi-select (single source of truth = the roster) */}
+                  <MultiSelectCombobox
+                    label="Employee Name(s)"
+                    required
+                    placeholder="Select one or more employees"
+                    options={employeeOptions}
+                    value={employeeIds}
+                    onChange={(ids) => setFieldValue('employeeIds', ids)}
+                    error={
+                      touched.employeeIds && errors.employeeIds
+                        ? (errors.employeeIds as string)
+                        : false
+                    }
+                  />
+
+                  {/* New Job Title - bound by label (backend stores newJobTitle only) */}
+                  <SelectField
+                    label="New Job Title"
+                    value={
+                      designationOptions.find((o) => o.label === values.newJobTitle)?.value ?? ''
+                    }
+                    options={designationOptions}
+                    placeholder="Select job title"
+                    onChange={(value) => {
+                      const label = designationOptions.find((o) => o.value === value)?.label ?? ''
+                      setFieldValue('newJobTitle', label)
+                    }}
+                    error={touched.newJobTitle && !!errors.newJobTitle}
+                    errorMessage={errors.newJobTitle as string}
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* New Job Grade - Using SelectField */}
+                  <SelectField
+                    label="New Job Grade"
+                    value={values.newJobGradeId}
+                    options={jobGradeOptions}
+                    placeholder="Select job grade"
+                    onChange={async (value) => {
+                      const label = jobGradeOptions.find((o) => o.value === value)?.label ?? ''
+                      await setFieldValue('newJobGradeId', value)
+                      await setFieldValue('newJobGrade', label)
+                    }}
+                    error={touched.newJobGradeId && !!errors.newJobGradeId}
+                    errorMessage={errors.newJobGradeId as string}
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">
+                      New Salary
+                      <span className="text-destructive ml-1">*</span>
+                    </label>
+                    <AmountInput
+                      name="newSalary"
+                      prefix="GHS"
+                      placeholder="0.00"
+                      error={touched.newSalary && !!errors.newSalary}
+                      className="h-10 w-full"
+                    />
+                  </div>
+
+                  {/* Notch */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">Notch</label>
+                    <Field
+                      name="notch"
+                      placeholder="e.g. Notch 3"
+                      className="flex h-10 w-full rounded-md border border-[#e5e5e5] bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                  </div>
+
+                  {/* Performance Rating */}
+                  <SelectField
+                    label="Performance Rating"
+                    value={values.performanceRating}
+                    options={PERFORMANCE_RATING_OPTIONS}
+                    placeholder="Select rating"
+                    onChange={(value) => setFieldValue('performanceRating', value)}
+                    error={touched.performanceRating && !!errors.performanceRating}
+                    errorMessage={errors.performanceRating as string}
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <DatePickerField
+                    label="Effective Date"
+                    value={values.effectiveDate}
+                    onSelect={(date) => setFieldValue('effectiveDate', date)}
+                    error={touched.effectiveDate ? (errors.effectiveDate as string) : undefined}
+                    required
+                  />
+                </div>
+
+                <div className="flex items-center space-x-2 pt-2">
+                  <Switch
+                    checked={Boolean(values.includesTransfer)}
+                    onCheckedChange={(checked) => setFieldValue('includesTransfer', checked)}
+                  />
+                  <label className="text-sm font-medium text-slate-700">Include Transfer</label>
+                </div>
+
+                {values.includesTransfer && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-100">
+                    <SelectField
+                      label="New Branch"
+                      value={values.newBranchId}
+                      options={branchOptions}
+                      placeholder="Select branch"
+                      onChange={async (value) => {
+                        const label = branchOptions.find((o) => o.value === value)?.label ?? ''
+                        await setFieldValue('newBranchId', value)
+                        await setFieldValue('newBranch', label)
+                      }}
+                      error={touched.newBranchId && !!errors.newBranchId}
+                      errorMessage={errors.newBranchId as string}
+                      required={Boolean(values.includesTransfer)}
+                    />
+
+                    <SelectField
+                      label="New Zone"
+                      value={values.newZoneId}
+                      options={zoneOptions}
+                      placeholder="Select zone"
+                      onChange={async (value) => {
+                        const label = zoneOptions.find((o) => o.value === value)?.label ?? ''
+                        await setFieldValue('newZoneId', value)
+                        await setFieldValue('newZone', label)
+                      }}
+                      error={touched.newZoneId && !!errors.newZoneId}
+                      errorMessage={errors.newZoneId as string}
+                      required={Boolean(values.includesTransfer)}
+                    />
+
+                    <SelectField
+                      label="New Department"
+                      value={values.newDepartmentId}
+                      options={departmentOptions}
+                      placeholder="Select department"
+                      onChange={async (value) => {
+                        const label = departmentOptions.find((o) => o.value === value)?.label ?? ''
+                        await setFieldValue('newDepartmentId', value)
+                        await setFieldValue('newDepartment', label)
+                      }}
+                      error={touched.newDepartmentId && !!errors.newDepartmentId}
+                      errorMessage={errors.newDepartmentId as string}
+                      required={Boolean(values.includesTransfer)}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Justification & Budget Section */}
+              <div className="bg-white rounded-lg p-6 space-y-6">
+                <h2 className="text-xl font-semibold text-slate-900">Justification &amp; Budget</h2>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700">
+                    Promotion Justification
+                    <span className="text-destructive ml-1">*</span>
+                  </label>
+                  <Field
+                    as="textarea"
+                    name="promotionJustification"
+                    rows={4}
+                    placeholder="Explain the rationale for this promotion…"
+                    className={cn(
+                      'flex w-full rounded-md border border-[#e5e5e5] bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring',
+                      touched.promotionJustification &&
+                        errors.promotionJustification &&
+                        'border-destructive'
+                    )}
+                  />
+                  {touched.promotionJustification && errors.promotionJustification && (
+                    <p className="text-sm text-destructive">
+                      {errors.promotionJustification as string}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    checked={Boolean(values.budgetConfirmation)}
+                    onCheckedChange={(checked) => setFieldValue('budgetConfirmation', checked)}
+                  />
+                  <label className="text-sm font-medium text-slate-700">
+                    Budget confirmed for this promotion
+                  </label>
+                </div>
+
+                {/* Allowances - FieldArray */}
+                <FieldArray name="allowances">
+                  {({ push: pushAllowance, remove }) => (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium text-slate-700">Allowances</label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => pushAllowance({ allowanceType: '', amount: 0 })}
+                        >
+                          <Plus className="mr-1 h-4 w-4" />
+                          Add Allowance
+                        </Button>
+                      </div>
+
+                      {values.allowances.length === 0 && (
+                        <p className="text-sm text-muted-foreground">No allowances added.</p>
+                      )}
+
+                      {values.allowances.map((_, index) => (
+                        <div
+                          key={index}
+                          className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3 items-end"
+                        >
+                          <div className="space-y-2">
+                            <label className="text-xs font-medium text-slate-500">Type</label>
+                            <Field
+                              name={`allowances.${index}.allowanceType`}
+                              placeholder="e.g. Housing"
+                              className="flex h-10 w-full rounded-md border border-[#e5e5e5] bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-xs font-medium text-slate-500">Amount</label>
+                            <AmountInput
+                              name={`allowances.${index}.amount`}
+                              prefix="GHS"
+                              placeholder="0.00"
+                              className="h-10 w-full"
+                            />
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => remove(index)}
+                            aria-label="Remove allowance"
+                          >
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </FieldArray>
+
+                {/* Supporting Documents - URL list */}
+                <FieldArray name="supportingDocumentUrls">
+                  {({ push: pushDoc, remove }) => (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium text-slate-700">
+                          Supporting Document URLs
+                        </label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => pushDoc('')}
+                        >
+                          <Plus className="mr-1 h-4 w-4" />
+                          Add Document
+                        </Button>
+                      </div>
+
+                      {values.supportingDocumentUrls.length === 0 && (
+                        <p className="text-sm text-muted-foreground">No documents added.</p>
+                      )}
+
+                      {values.supportingDocumentUrls.map((_, index) => (
+                        <div key={index} className="flex gap-3 items-center">
+                          <Field
+                            name={`supportingDocumentUrls.${index}`}
+                            placeholder="https://…"
+                            className="flex h-10 w-full rounded-md border border-[#e5e5e5] bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="text-destructive hover:text-destructive shrink-0"
+                            onClick={() => remove(index)}
+                            aria-label="Remove document"
+                          >
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </FieldArray>
+              </div>
+
+              {/* Approval & Notification Section */}
+              <div className="bg-white rounded-lg p-6 w-full space-y-6">
+                <h2 className="text-xl font-semibold text-slate-900">Approval &amp; Notification</h2>
+
+                {/* Approvers - reuses MultiSelectCombobox */}
+                <MultiSelectCombobox
+                  label="Approvers"
+                  required
+                  placeholder="Select one or more approvers"
+                  options={approverOptions}
+                  value={values.approverEmployeeIds ?? []}
+                  onChange={(ids) => setFieldValue('approverEmployeeIds', ids)}
+                  error={
+                    touched.approverEmployeeIds && errors.approverEmployeeIds
+                      ? (errors.approverEmployeeIds as string)
+                      : false
+                  }
+                  description="Select the approver(s) who must sign off on this promotion."
+                />
+
+                {/* Notify Departments Section */}
+                <div className="flex flex-row w-full gap-2">
+                  <div className="flex-1 space-y-2 min-w-0">
+                    <EmailInputList
+                      label="Notify Departments"
+                      description="Department mails only"
+                      placeholder="e.g. HR, Finance, it@company.com"
+                      emails={values.emailsToNotifyUponApproval || []}
+                      onChange={(emails) => setFieldValue('emailsToNotifyUponApproval', emails)}
+                      error={
+                        touched.emailsToNotifyUponApproval && errors.emailsToNotifyUponApproval
+                          ? Array.isArray(errors.emailsToNotifyUponApproval)
+                            ? errors.emailsToNotifyUponApproval.join(', ')
+                            : (errors.emailsToNotifyUponApproval as string)
+                          : false
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Form Actions */}
+              <div className="flex justify-end gap-4 pt-6 border-t border-slate-200">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => push('/promotions/')}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting} loading={isSubmitting}>
+                  {initialData ? 'Save Changes' : 'Create Promotion'}
+                </Button>
+              </div>
+            </Form>
+          )
+        }}
+      </Formik>
+
+      {confirmationDialog.renderDialog()}
+    </SectionContainer>
+  )
+}
+
+export default PromotionsForm

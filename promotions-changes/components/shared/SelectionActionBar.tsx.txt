@@ -1,0 +1,114 @@
+'use client'
+
+import { X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+
+export interface SelectionAction {
+  label: string
+  onClick: () => void | Promise<void>
+  variant?: 'default' | 'outline' | 'destructive' | 'secondary' | 'ghost' | 'link'
+  disabled?: boolean
+}
+
+interface SelectionActionBarProps {
+  /** Number of selected items */
+  count: number
+  /** Whether the bar should be visible (e.g., only on certain tabs) */
+  isVisible?: boolean
+  /** Label for the selected items (e.g., "staff", "candidate", "item") */
+  itemLabel?: string
+  /** Primary action button */
+  primaryAction?: SelectionAction
+  /** Secondary action button */
+  secondaryAction?: SelectionAction
+  /** Callback when selection is cleared */
+  onClear: () => void
+  /** Additional class names */
+  className?: string
+}
+
+/**
+ * Floating bulk-action bar — matches the BISTA HR design:
+ * anchored bottom-right, white surface with a soft shadow, a yellow pill count
+ * chip that pops on change, and a spring slide-in/out. Clear stays at the far
+ * right (after the confirm buttons).
+ *
+ * Composes existing primitives only: Button.
+ */
+export function SelectionActionBar({
+  count,
+  isVisible = true,
+  itemLabel = 'item',
+  primaryAction,
+  secondaryAction,
+  onClear,
+  className,
+}: Readonly<SelectionActionBarProps>) {
+  const show = isVisible && count > 0
+
+  return (
+    <div
+      className={cn(
+        'fixed bottom-7 right-7 z-50',
+        'flex items-center gap-3.5 bg-white border rounded-2xl px-4 py-3',
+        'shadow-[0_14px_36px_rgba(16,24,40,0.20)] will-change-transform',
+        className
+      )}
+      style={{
+        // Driven inline (not via Tailwind arbitrary classes) so the spring easing
+        // can never be dropped by JIT/purge — the bar always slides smoothly.
+        transform: show ? 'translateY(0)' : 'translateY(180%)',
+        opacity: show ? 1 : 0,
+        pointerEvents: show ? 'auto' : 'none',
+        transition: 'transform .42s cubic-bezier(.34,1.56,.64,1), opacity .26s ease',
+      }}
+    >
+      <style>{`@keyframes bistaCountPop{0%{transform:scale(1.7)}55%{transform:scale(.88)}100%{transform:scale(1)}}`}</style>
+
+      <span
+        key={count}
+        className="inline-flex items-center justify-center min-w-[26px] h-[26px] px-2 rounded-full bg-[#FFD800] text-[#3a2a00] font-bold text-sm tabular-nums"
+        style={{ animation: 'bistaCountPop .34s cubic-bezier(.34,1.56,.64,1)' }}
+      >
+        {count}
+      </span>
+      <span className="text-sm font-medium text-gray-700">
+        {itemLabel}
+        {count > 1 ? 's' : ''} selected
+      </span>
+
+      {primaryAction && (
+        <Button
+          size="sm"
+          variant={primaryAction.variant ?? 'default'}
+          onClick={primaryAction.onClick}
+          disabled={primaryAction.disabled}
+        >
+          {primaryAction.label}
+        </Button>
+      )}
+      {secondaryAction && (
+        <Button
+          size="sm"
+          variant={secondaryAction.variant ?? 'outline'}
+          className="border-gray-300"
+          onClick={secondaryAction.onClick}
+          disabled={secondaryAction.disabled}
+        >
+          {secondaryAction.label}
+        </Button>
+      )}
+
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={onClear}
+        aria-label="Clear selection"
+        className="text-gray-500 hover:text-gray-700 hover:bg-gray-50 group px-2"
+      >
+        <X className="size-5 group-hover:scale-110 transition-transform" />
+      </Button>
+    </div>
+  )
+}

@@ -1,0 +1,237 @@
+'use client'
+
+import { useRouter } from '@bprogress/next/app'
+import { useState } from 'react'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { SectionContainer } from '@/components/layout/SectionContainer'
+import { DetailField } from '@/components/shared/DetailField'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { StatusBadge } from '@/components/ui/status-badge'
+import { useConfirmationDialog } from '@/hooks/use-confirmation-dialog'
+import {
+  ApprovalStatus,
+  getApprovalStatusLabel,
+  getApprovalStatusVariant,
+} from '@/lib/constants'
+import { approvePromotions, rejectPromotions } from '@/lib/mutations/promotions/update-status'
+import type { PromotionApprover, PromotionResponseData } from '@/lib/types/Promotion-types'
+import { formatAmount } from '@/lib/utils'
+import RejectionReasonModal from './RejectionReasonModal'
+
+interface Props {
+  data: PromotionResponseData
+}
+
+// Maps an approver's boolean flags to the shared StatusBadge variant/label vocabulary.
+const getApproverStatus = (approver: PromotionApprover): { variant: string; label: string } => {
+  if (approver.isApproved) return { variant: 'approved', label: 'Approved' }
+  if (approver.isRejected) return { variant: 'rejected', label: 'Rejected' }
+  return { variant: 'pending', label: 'Pending' }
+}
+
+const PromotionDetails = ({ data }: Props) => {
+  const { push, refresh } = useRouter()
+  const [showRejectionModal, setShowRejectionModal] = useState(false)
+  const [isRejecting, setIsRejecting] = useState(false)
+  const [rejectionError, setRejectionError] = useState<string | undefined>()
+  const { renderDialog, showSuccess, showError, showConfirmation } = useConfirmationDialog()
+
+  const employeeName = data.employeeName || 'N/A'
+  const previousRole = data.currentJobTitle || 'N/A'
+  const newRole = data.newJobTitle || 'N/A'
+  const department = data.newDepartment || 'N/A'
+  const employeeSalary = data.newSalary ?? 0
+  const effectiveDate = data.effectiveDate ? new Date(data.effectiveDate) : null
+  const branch = data.newBranch || 'N/A'
+  const zone = data.newZone || 'N/A'
+  const jobGrade = data.newJobGrade || 'N/A'
+  const approvedAt = data.approvedAt ? new Date(data.approvedAt).toLocaleString() : 'N/A'
+  const rejectedAt = data.rejectedAt ? new Date(data.rejectedAt).toLocaleString() : 'N/A'
+  const approvers = data.approvers ?? []
+
+  const _handleApprovePromotion = () => {
+    showConfirmation({
+      title: 'Approve Promotion',
+      content: `Are you sure you want to approve the promotion for ${employeeName}?`,
+      confirmText: 'Yes, Approve',
+      lazy: true,
+      onConfirm: async () => {
+        const response = await approvePromotions(data.id)
+        if (response.code === 200) {
+          showSuccess({
+            title: 'Promotion Approved',
+            content: 'You have successfully approved this promotion',
+            onConfirm: () => {
+              push('/promotions')
+            },
+          })
+        } else {
+          showError({
+            title: 'Failed to approve promotion',
+            content: response.errors || 'Failed to approve promotion. Please try again.',
+          })
+        }
+      },
+    })
+  }
+
+  const handleRejectPromotion = () => {
+    setRejectionError(undefined)
+    setShowRejectionModal(true)
+  }
+
+  const handleConfirmRejection = async (reason: string) => {
+    setIsRejecting(true)
+    setRejectionError(undefined)
+
+    const response = await rejectPromotions(data.id, reason)
+
+    if (response.code === 200) {
+      refresh()
+      setShowRejectionModal(false)
+      showSuccess({
+        title: 'Promotion Rejected',
+        content: 'You have successfully rejected this promotion',
+        onConfirm: () => {
+          push('/promotions')
+        },
+      })
+    } else {
+      setRejectionError(response.errors || 'Failed to reject promotion. Please try again.')
+    }
+
+    setIsRejecting(false)
+  }
+
+  return (
+    <SectionContainer useNestedContainer>
+      <PageHeader title="Promotion Approval" description="Review and approve or reject promotions">
+        {data.status === ApprovalStatus.Pending && (
+          <div className="flex gap-4">
+            <Button variant="destructive" onClick={handleRejectPromotion}>
+              Reject Promotion
+            </Button>
+          </div>
+        )}
+      </PageHeader>
+
+      {renderDialog()}
+
+      <RejectionReasonModal
+        open={showRejectionModal}
+        onOpenChange={setShowRejectionModal}
+        onConfirm={handleConfirmRejection}
+        loading={isRejecting}
+        error={rejectionError}
+      />
+
+      <Card className="mt-4 rounded-2xl border border-slate-200">
+        <CardHeader>
+          <h2 className="text-2xl font-semibold text-black">Employee Information</h2>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-4 @xs:grid-cols-2 @lg:grid-cols-3 @4xl:grid-cols-4">
+            <DetailField label="Employee Name" value={employeeName} />
+            <DetailField label="Previous Job Title" value={previousRole} />
+            <DetailField label="New Job Title" value={newRole} />
+            <DetailField label="Job Grade" value={jobGrade} />
+            <DetailField label="Department / Unit" value={department} />
+            <DetailField label="Zone" value={zone} />
+            <DetailField label="Branch" value={branch} />
+            <DetailField label="Salary" value={formatAmount(employeeSalary)} />
+            <DetailField label="Effective Date" value={effectiveDate ? effectiveDate.toDateString() : 'N/A'} />
+            <DetailField
+              label="Status"
+              value={
+                <StatusBadge
+                  variant={getApprovalStatusVariant(data.status)}
+                  text={getApprovalStatusLabel(data.status)}
+                />
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-8 rounded-2xl border border-slate-200">
+        <CardHeader>
+          <h2 className="text-2xl font-semibold text-black">Benefits & Allowances</h2>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-4 @xs:grid-cols-2 @lg:grid-cols-3 @4xl:grid-cols-4">
+          {data.allowances && data.allowances.length > 0 ? (
+            data.allowances.map((allowance) => (
+              <DetailField
+                key={`${allowance.allowanceType}-${allowance.amount}`}
+                label={allowance.allowanceType || 'N/A'}
+                value={formatAmount(allowance.amount)}
+              />
+            ))
+          ) : (
+            <p className="col-span-full text-slate-500">No allowances available</p>
+          )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-8 rounded-2xl border border-slate-200">
+        <CardHeader>
+          <h2 className="text-2xl font-semibold text-black">Approvers</h2>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-4 @xs:grid-cols-2 @lg:grid-cols-3 @4xl:grid-cols-4">
+            {approvers.length > 0 ? (
+              [...approvers]
+                .sort((a, b) => a.approvalOrder - b.approvalOrder)
+                .map((approver) => {
+                  const status = getApproverStatus(approver)
+                  return (
+                    <DetailField
+                      key={approver.id || approver.approverEmployeeId}
+                      label={approver.approverEmployeeName || 'N/A'}
+                      value={<StatusBadge variant={status.variant} text={status.label} />}
+                    />
+                  )
+                })
+            ) : (
+              <p className="col-span-full text-slate-500">No approvers assigned</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-8 rounded-2xl border border-slate-200">
+        <CardHeader>
+          <h2 className="text-2xl font-semibold text-black">Approval Information</h2>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-4 @xs:grid-cols-2 @lg:grid-cols-3 @4xl:grid-cols-4">
+            <DetailField
+              label="Approved By"
+              value={data.approvedByUserName || data.approvedBy || 'N/A'}
+            />
+            <DetailField label="Approver Email" value={data.approvedByUserEmail || 'N/A'} />
+            <DetailField label="Approved At" value={approvedAt} />
+            <DetailField
+              label="Rejected By"
+              value={data.rejectedByUserName || data.rejectedBy || 'N/A'}
+            />
+            <DetailField label="Rejector Email" value={data.rejectedByUserEmail || 'N/A'} />
+            <DetailField label="Rejected At" value={rejectedAt} />
+          </div>
+        </CardContent>
+      </Card>
+
+      {data.rejectionReason && (
+        <Card className="mt-8 rounded-2xl border border-slate-200">
+          <CardContent className="pt-6">
+            <DetailField label="Reason For Rejection" value={data.rejectionReason} />
+          </CardContent>
+        </Card>
+      )}
+    </SectionContainer>
+  )
+}
+
+export default PromotionDetails

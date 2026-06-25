@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Components · Primitives" name="Button" subtitle="window.BISTAHRDesignSystem_c5941c.Button" viewport="760x200" -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/mona-sans@latest/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  *, ::before, ::after { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: #fff; color: var(--gray-900); font-family: var(--font-ui); padding: 28px; }
+  .spec-label { font-family: var(--font-ui); font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--gray-400); margin: 0 0 12px; }
+  .spec-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .page { display: flex; flex-direction: column; gap: 24px; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <script>
+    (function () {
+      const NS = window.BISTAHRDesignSystem_c5941c || {};
+      const e = React.createElement;
+      
+    const { Button } = NS;
+    function Demo() {
+      return e('div', {className:'page'},
+        e('p', {className:'spec-label'}, 'Variants & sizes'),
+        e('div', {className:'spec-row'},
+          e(Button, {variant:'primary', icon:'add-line'}, 'Create Job Grade'),
+          e(Button, {variant:'stroke'}, 'Cancel'),
+          e(Button, {variant:'blue', icon:'send-plane-line'}, 'Send'),
+          e(Button, {variant:'ghost', icon:'more-2-fill'}, 'More'),
+          e(Button, {variant:'danger', icon:'delete-bin-line'}, 'Archive'),
+          e(Button, {variant:'primary', size:'sm'}, 'Small'),
+          e(Button, {variant:'primary', icon:'add-line'})
+        )
+      );
+    }
+      ReactDOM.createRoot(document.getElementById('root')).render(e(Demo));
+    })();
+  </script>
+</body>
+</html>

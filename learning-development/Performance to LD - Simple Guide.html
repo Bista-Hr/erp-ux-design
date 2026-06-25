@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Performance Feeds Learning — A Simple Guide for HR &amp; L&amp;D</title>
+<meta name="description" content="A plain-English, two-lane guide to how the Performance module hands work over to Learning & Development — written so both HR/managers and the L&D team can see exactly where they fit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../bista-components.css">
+<style>
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{ margin:0; background:var(--bg-canvas); color:var(--text-primary); font-family:var(--font-ui); }
+  a{ color:inherit; }
+
+  .doc{ max-width:920px; margin:0 auto; padding:var(--space-12) var(--space-6) var(--space-16); }
+  .sheet{ background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow-card); overflow:hidden; }
+
+  /* cover */
+  .cover{ position:relative; overflow:hidden; padding:var(--space-12) var(--space-10) var(--space-10);
+    background:radial-gradient(130% 150% at 92% -20%, rgba(255,216,0,.22), transparent 48%), var(--bg-surface); border-bottom:1px solid var(--border); }
+  .kicker{ display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:12px; letter-spacing:.07em; text-transform:uppercase;
+    color:var(--warning-deep); background:var(--brand-yellow-tint); border:1px solid #F2E6A8; padding:5px 12px; border-radius:var(--radius-full); margin-bottom:var(--space-5); }
+  .kicker .dot{ width:7px; height:7px; border-radius:50%; background:var(--brand-yellow); }
+  .cover h1{ font-family:var(--font-head); font-weight:800; font-size:38px; line-height:1.07; letter-spacing:-0.025em; margin:0 0 var(--space-3); color:var(--gray-900); max-width:22ch; text-wrap:balance; }
+  .cover p.sub{ font-size:16px; line-height:1.55; color:var(--text-secondary); max-width:64ch; margin:0; text-wrap:pretty; }
+  .cover p.sub strong{ color:var(--gray-900); }
+
+  .body{ padding:var(--space-10); }
+  section.s{ margin-bottom:var(--space-12); }
+  section.s:last-child{ margin-bottom:0; }
+  .s-head{ display:flex; align-items:baseline; gap:var(--space-3); margin-bottom:var(--space-4); padding-bottom:var(--space-3); border-bottom:2px solid var(--gray-100); }
+  .s-num{ font-family:var(--font-head); font-weight:800; font-size:14px; color:var(--brand-yellow-dark); flex:none; }
+  .s-head h2{ font-family:var(--font-head); font-weight:700; font-size:23px; letter-spacing:-0.015em; color:var(--gray-900); margin:0; }
+  p.lead{ font-size:15.5px; line-height:1.65; color:var(--text-secondary); margin:0 0 var(--space-4); text-wrap:pretty; max-width:74ch; }
+  p.lead strong{ color:var(--gray-900); font-weight:700; }
+
+  /* one-liner */
+  .oneliner{ display:flex; gap:14px; align-items:flex-start; background:var(--brand-yellow-tint); border:1px solid #F2E6A8; border-radius:var(--radius-lg); padding:var(--space-5) var(--space-6); }
+  .oneliner i{ font-size:26px; color:var(--warning-deep); flex:none; margin-top:2px; }
+  .oneliner div{ font-size:16px; line-height:1.55; color:var(--gray-800); }
+  .oneliner b{ color:var(--gray-900); }
+
+  /* relay: two halves + handoff */
+  .relay{ display:grid; grid-template-columns:1fr 56px 1fr; gap:0; align-items:stretch; margin-top:var(--space-2); }
+  .half{ border:1px solid var(--border); border-radius:var(--radius-lg); padding:var(--space-5); }
+  .half.perf{ background:#F4F7FF; border-color:#D6E0FF; }
+  .half.ld{ background:var(--success-tint); border-color:#A6E9C8; }
+  .half .ht{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .half .ht .hi{ width:34px; height:34px; border-radius:9px; display:grid; place-items:center; flex:none; }
+  .half.perf .ht .hi{ background:var(--brand-blue); } .half.ld .ht .hi{ background:var(--success); }
+  .half .ht .hi i{ color:#fff; font-size:18px; }
+  .half .ht h3{ font-family:var(--font-head); font-weight:800; font-size:16px; margin:0; color:var(--gray-900); }
+  .half .ht span{ font-family:var(--font-control); font-weight:600; font-size:11px; color:var(--text-muted); display:block; margin-top:1px; }
+  .half p{ font-size:13.5px; line-height:1.55; color:var(--text-secondary); margin:0 0 8px; }
+  .half .own{ font-family:var(--font-control); font-weight:600; font-size:11.5px; padding:4px 10px; border-radius:var(--radius-full); background:#fff; border:1px solid var(--border); color:var(--gray-700); display:inline-flex; align-items:center; gap:6px; }
+  .handoff-mid{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+  .handoff-mid .ring{ width:40px; height:40px; border-radius:50%; background:var(--brand-yellow); display:grid; place-items:center; box-shadow:var(--shadow-btn); }
+  .handoff-mid .ring i{ color:var(--brand-ink); font-size:20px; }
+  .handoff-mid .lbl{ font-family:var(--font-control); font-weight:700; font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--text-muted); text-align:center; line-height:1.3; }
+
+  /* lanes: who does what */
+  .lanes{ display:grid; grid-template-columns:1fr 1fr; gap:var(--space-4); margin-top:var(--space-2); }
+  .lane{ border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+  .lane .lh{ padding:12px 16px; display:flex; align-items:center; gap:10px; }
+  .lane.hr .lh{ background:#F4F7FF; } .lane.ld .lh{ background:var(--success-tint); }
+  .lane .lh i{ font-size:19px; } .lane.hr .lh i{ color:var(--brand-blue); } .lane.ld .lh i{ color:var(--success-deep); }
+  .lane .lh h3{ font-family:var(--font-head); font-weight:700; font-size:15px; margin:0; color:var(--gray-900); }
+  .lane .lh small{ display:block; font-family:var(--font-control); font-weight:600; font-size:11px; color:var(--text-muted); }
+  .lane ul{ margin:0; padding:14px 16px 16px; list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .lane li{ display:flex; gap:9px; align-items:flex-start; font-size:13.5px; line-height:1.5; color:var(--text-secondary); }
+  .lane li i{ font-size:15px; flex:none; margin-top:2px; } .lane.hr li i{ color:var(--brand-blue); } .lane.ld li i{ color:var(--success-deep); }
+  .lane li b{ color:var(--gray-900); font-weight:600; }
+
+  /* end-to-end steps */
+  .steps{ display:flex; flex-direction:column; gap:0; }
+  .step{ display:grid; grid-template-columns:44px 1fr; gap:var(--space-4); position:relative; padding-bottom:var(--space-5); }
+  .step:not(:last-child)::before{ content:""; position:absolute; left:21px; top:40px; bottom:0; width:2px; background:#E6E8EC; }
+  .step .n{ width:44px; height:44px; border-radius:50%; color:#fff; display:grid; place-items:center; font-family:var(--font-head); font-weight:800; font-size:16px; z-index:1; }
+  .step .c h3{ font-family:var(--font-head); font-weight:700; font-size:16px; color:var(--gray-900); margin:9px 0 5px; }
+  .step .c p{ font-size:14px; line-height:1.6; color:var(--text-secondary); margin:0; }
+  .step .c .tag{ display:inline-flex; align-items:center; gap:6px; margin-top:8px; font-family:var(--font-control); font-weight:600; font-size:11px; padding:3px 10px; border-radius:var(--radius-full); }
+  .tag.hr{ background:#F4F7FF; color:var(--brand-blue); } .tag.ld{ background:var(--success-tint); color:var(--success-deep); } .tag.both{ background:var(--gray-100); color:var(--text-secondary); }
+
+  /* worked example */
+  .journey{ border:1px solid var(--border); border-left:4px solid var(--brand-yellow); border-radius:var(--radius-md); background:var(--gray-25); padding:var(--space-5) var(--space-6); }
+  .journey .jp{ display:flex; gap:14px; padding:11px 0; border-bottom:1px dashed var(--border); }
+  .journey .jp:last-child{ border-bottom:0; padding-bottom:0; } .journey .jp:first-child{ padding-top:0; }
+  .journey .jp .mark{ font-family:var(--font-control); font-weight:700; font-size:10.5px; flex:none; width:58px; padding-top:3px; }
+  .journey .jp.perf .mark{ color:var(--brand-blue); } .journey .jp.ld .mark{ color:var(--success-deep); }
+  .journey .jp .jt{ font-size:13.5px; line-height:1.55; color:var(--text-secondary); }
+  .journey .jp .jt b{ color:var(--gray-900); }
+
+  /* golden rules */
+  .rules{ display:grid; grid-template-columns:1fr 1fr; gap:var(--space-4); }
+  .rule{ display:flex; gap:12px; align-items:flex-start; border:1px solid var(--border); border-radius:var(--radius-lg); padding:var(--space-4) var(--space-5); background:var(--gray-25); }
+  .rule .ri{ width:36px; height:36px; border-radius:9px; background:#fff; border:1px solid var(--border); display:grid; place-items:center; flex:none; }
+  .rule .ri i{ font-size:18px; color:var(--brand-yellow-dark); }
+  .rule h4{ font-family:var(--font-head); font-weight:700; font-size:14.5px; color:var(--gray-900); margin:0 0 3px; }
+  .rule p{ font-size:13px; line-height:1.5; color:var(--text-secondary); margin:0; }
+
+  .links{ display:flex; flex-wrap:wrap; gap:12px; margin-top:var(--space-6); }
+  .links a{ display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:13px; color:var(--brand-blue); border:1px solid #D6E0FF; background:#F4F7FF; padding:8px 14px; border-radius:var(--radius-full); text-decoration:none; }
+  .links a i{ font-size:16px; }
+
+  .footnote{ font-size:12px; color:var(--text-muted); text-align:center; margin-top:var(--space-8); line-height:1.5; }
+
+  @media (max-width:760px){
+    .relay{ grid-template-columns:1fr; gap:var(--space-3); }
+    .handoff-mid{ flex-direction:row; gap:10px; }
+    .lanes,.rules{ grid-template-columns:1fr; }
+    .body,.cover{ padding:var(--space-6); }
+    .cover h1{ font-size:28px; }
+  }
+  @media print{
+    body{ background:#fff; } .doc{ max-width:none; padding:0; } .sheet{ border:0; box-shadow:none; border-radius:0; }
+    section.s,.step,.journey,.relay,.lane,.rule{ break-inside:avoid; }
+    .cover{ background:var(--bg-surface); -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .half.perf,.half.ld,.lane.hr .lh,.lane.ld .lh{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+</style>
+</head>
+<body>
+  <div class="doc">
+    <div class="sheet">
+
+      <header class="cover">
+        <span class="kicker"><span class="dot"></span>BISTA HR · Bistasol ERP · For HR &amp; L&amp;D teams</span>
+        <h1>How Performance feeds Learning</h1>
+        <p class="sub">A plain-English guide to one journey that crosses <strong>two teams</strong>: HR &amp; managers run performance and produce the <strong>demand</strong> for development; the L&amp;D team turns that into real programs and proves they worked — the <strong>supply</strong>. This shows exactly where each of you fits.</p>
+      </header>
+
+      <div class="body">
+
+        <!-- 1 -->
+        <section class="s">
+          <div class="s-head"><span class="s-num">01</span><h2>The whole thing in one line</h2></div>
+          <div class="oneliner">
+            <i class="ri-lightbulb-flash-line"></i>
+            <div>Performance answers <b>“how did people do, and what do they need to grow?”</b> — then hands that list to Learning &amp; Development, which answers <b>“here's the training, you're booked on it, and here's proof it worked.”</b></div>
+          </div>
+        </section>
+
+        <!-- 2 -->
+        <section class="s">
+          <div class="s-head"><span class="s-num">02</span><h2>Two halves, one baton</h2></div>
+          <p class="lead">Think of a relay race. The <strong>Performance</strong> half is already live in the system and owned by HR and line managers. The <strong>Learning &amp; Development</strong> half is owned by the L&amp;D team. The baton passed between them is simple: <em>“who needs to grow, and in what.”</em></p>
+          <div class="relay">
+            <div class="half perf">
+              <div class="ht"><span class="hi"><i class="ri-bar-chart-box-line"></i></span><div><h3>Performance</h3><span>Already built · runs yearly</span></div></div>
+              <p>Goals are set, the year is appraised, a score comes out, and every employee writes a development plan (IDP) that lists the training they need.</p>
+              <span class="own"><i class="ri-team-line"></i>Owned by HR &amp; line managers</span>
+            </div>
+            <div class="handoff-mid">
+              <span class="ring"><i class="ri-arrow-right-line"></i></span>
+              <span class="lbl">Hand<br>off</span>
+            </div>
+            <div class="half ld">
+              <div class="ht"><span class="hi"><i class="ri-graduation-cap-line"></i></span><div><h3>Learning &amp; Development</h3><span>Being built · the next leg</span></div></div>
+              <p>Collects everyone's training needs, builds &amp; costs the programs, books the right people, and measures whether the learning happened and got used.</p>
+              <span class="own"><i class="ri-bookmark-3-line"></i>Owned by the L&amp;D team</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3 -->
+        <section class="s">
+          <div class="s-head"><span class="s-num">03</span><h2>Where do I fit?</h2></div>
+          <p class="lead">Find your lane. You only need to do your part — the system carries the information across for you.</p>
+          <div class="lanes">
+            <div class="lane hr">
+              <div class="lh"><i class="ri-user-star-line"></i><div><h3>If you're in HR or a manager</h3><small>The Performance side</small></div></div>
+              <ul>
+                <li><i class="ri-flag-2-line"></i><span>Agree each person's <b>goals</b> at the start of the year and approve them.</span></li>
+                <li><i class="ri-scales-3-line"></i><span>Run the <b>appraisal</b> — the employee self-rates, the manager rates, scores are moderated for fairness.</span></li>
+                <li><i class="ri-route-line"></i><span>Help each person write a <b>development plan (IDP)</b> — the growth goals and the training they need.</span></li>
+                <li><i class="ri-git-branch-line"></i><span>The <b>score</b> routes people: under 3 → improvement plan; 3–4 → keep growing; 4+ → leadership pipeline.</span></li>
+                <li><i class="ri-shake-hands-line"></i><span>That's your handoff — you don't book or pay for training. You produce the <b>demand</b>.</span></li>
+              </ul>
+            </div>
+            <div class="lane ld">
+              <div class="lh"><i class="ri-bookmark-3-line"></i><div><h3>If you're in L&amp;D</h3><small>The Learning side</small></div></div>
+              <ul>
+                <li><i class="ri-focus-3-line"></i><span>See every plan gathered into a <b>needs assessment</b> (bank-wide, department, and individual/IDP).</span></li>
+                <li><i class="ri-folder-settings-line"></i><span>Build the real <b>programs</b> — dates, providers and cost (even across currencies).</span></li>
+                <li><i class="ri-user-add-line"></i><span><b>Enroll</b> the right people; the system warns if someone's on leave or double-booked.</span></li>
+                <li><i class="ri-medal-2-line"></i><span><b>Evaluate</b>: a before/after check shows learning happened; the manager signs off it was applied.</span></li>
+                <li><i class="ri-pie-chart-2-line"></i><span>Answer <b>“who, how many, what cost, what result?”</b> instantly on the dashboard.</span></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4 -->
+        <section class="s">
+          <div class="s-head"><span class="s-num">04</span><h2>The journey, end to end</h2></div>
+          <p class="lead">Six steps. The first three are HR's; the handoff is the IDP; the last two are L&amp;D's.</p>
+          <div class="steps">
+            <div class="step"><div class="n" style="background:var(--brand-blue)">1</div><div class="c"><h3>Set goals</h3><p>Each employee's goals are agreed and weighted to total 100%, then the manager approves.</p><span class="tag hr"><i class="ri-team-line"></i>HR &amp; manager</span></div></div>
+            <div class="step"><div class="n" style="background:var(--brand-blue)">2</div><div class="c"><h3>Appraise &amp; score</h3><p>Self-assessment, then manager assessment, then moderation — ending in one score out of 5.</p><span class="tag hr"><i class="ri-team-line"></i>HR &amp; manager</span></div></div>
+            <div class="step"><div class="n" style="background:var(--brand-blue)">3</div><div class="c"><h3>Plan development (IDP)</h3><p>Everyone writes growth goals and tags each to a learning method (70% on-the-job · 20% coaching · 10% formal training).</p><span class="tag hr"><i class="ri-user-line"></i>Employee &amp; manager</span></div></div>
+            <div class="step"><div class="n" style="background:var(--brand-yellow);color:var(--brand-ink)">4</div><div class="c"><h3>Handoff — the demand signal</h3><p>All those plans add up. <b>“500 people want formal training in X; 200 want to understudy…”</b> becomes L&amp;D's to-do list.</p><span class="tag both"><i class="ri-shake-hands-line"></i>Crosses over</span></div></div>
+            <div class="step"><div class="n" style="background:var(--success)">5</div><div class="c"><h3>Deliver the training</h3><p>L&amp;D builds &amp; costs the programs, enrolls people (checking for clashes), and the system invites &amp; reminds them automatically.</p><span class="tag ld"><i class="ri-bookmark-3-line"></i>L&amp;D team</span></div></div>
+            <div class="step"><div class="n" style="background:var(--success)">6</div><div class="c"><h3>Prove it worked</h3><p>A before/after check shows learning happened; the manager signs off it was applied on the job; cost &amp; impact land on the dashboard.</p><span class="tag ld"><i class="ri-bookmark-3-line"></i>L&amp;D + manager</span></div></div>
+          </div>
+        </section>
+
+        <!-- 5 -->
+        <section class="s">
+          <div class="s-head"><span class="s-num">05</span><h2>One person, both teams</h2></div>
+          <p class="lead">Follow <strong>Ama, a Relationship Manager</strong>, as she crosses from one lane to the other:</p>
+          <div class="journey">
+            <div class="jp perf"><span class="mark">HR</span><div class="jt"><b>Jan:</b> Ama agrees her goals with her manager — grow deposits, improve customer satisfaction.</div></div>
+            <div class="jp perf"><span class="mark">HR</span><div class="jt"><b>Dec:</b> She and her manager appraise the year. Score: <b>3.6 / 5</b> — solid, with a gap in credit analysis.</div></div>
+            <div class="jp perf"><span class="mark">HR</span><div class="jt"><b>Dec:</b> In her development plan she adds a goal — “strengthen credit analysis” — with a <b>formal-training</b> activity.</div></div>
+            <div class="jp ld"><span class="mark">L&amp;D</span><div class="jt"><b>Jan:</b> Ama's request lands in L&amp;D's <b>needs assessment</b> with 40 others wanting the same thing. L&amp;D sets up &amp; costs the program and <b>enrolls</b> her — checking she isn't on leave.</div></div>
+            <div class="jp ld"><span class="mark">L&amp;D</span><div class="jt"><b>Mar:</b> She gets an automatic invite, does a <b>before</b> self-check, attends, then an <b>after</b> one — the jump proves she learned.</div></div>
+            <div class="jp ld"><span class="mark">L&amp;D</span><div class="jt"><b>Jun:</b> Her manager signs off that she <b>applied</b> it to live deals. The cost and impact show on the L&amp;D dashboard.</div></div>
+          </div>
+        </section>
+
+        <!-- 6 -->
+        <section class="s">
+          <div class="s-head"><span class="s-num">06</span><h2>The rules that keep it real</h2></div>
+          <p class="lead">These are the principles that make this a proper corporate system, not another spreadsheet:</p>
+          <div class="rules">
+            <div class="rule"><span class="ri"><i class="ri-database-2-line"></i></span><div><h4>One source of truth</h4><p>Every plan, program, cost and result lives in one system — no parallel Excel sheets or email chains.</p></div></div>
+            <div class="rule"><span class="ri"><i class="ri-arrow-left-right-line"></i></span><div><h4>Demand vs. supply</h4><p>HR produces the demand (“who needs what”). L&amp;D produces the supply (“booked, delivered, proven”). Neither rebuilds the other.</p></div></div>
+            <div class="rule"><span class="ri"><i class="ri-shield-check-line"></i></span><div><h4>No shopping lists</h4><p>A training need states the <b>problem to solve</b> and a priority — not an open-ended wish-list of courses.</p></div></div>
+            <div class="rule"><span class="ri"><i class="ri-error-warning-line"></i></span><div><h4>Check before booking</h4><p>The system flags if someone is on leave, already trained recently, or busy elsewhere — before they're enrolled again.</p></div></div>
+            <div class="rule"><span class="ri"><i class="ri-line-chart-line"></i></span><div><h4>Proof, not attendance</h4><p>Success isn't “turned up.” It's a measured before/after and a manager's sign-off that it was used on the job.</p></div></div>
+            <div class="rule"><span class="ri"><i class="ri-shield-keyhole-line"></i></span><div><h4>Right people, right view</h4><p>Each role sees only what it should — employee, manager, HR business partner, L&amp;D admin — across the whole flow.</p></div></div>
+          </div>
+        </section>
+
+        <div class="links">
+          <a href="Performance to LD Flow.html"><i class="ri-flow-chart"></i>See the visual flow</a>
+          <a href="LD Module Map.html"><i class="ri-map-2-line"></i>L&amp;D module map</a>
+          <a href="Performance and LD Explained.html"><i class="ri-booklet-line"></i>For the implementer</a>
+          <a href="LD Requirements Brief.html"><i class="ri-file-text-line"></i>Full requirements (PRD)</a>
+        </div>
+
+      </div>
+    </div>
+    <p class="footnote">BISTA HR · Bistasol ERP — How Performance feeds Learning: a simple, two-lane guide for HR &amp; L&amp;D teams.</p>
+  </div>
+</body>
+</html>

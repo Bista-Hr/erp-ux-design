@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning &amp; Development — Requirements Brief</title>
+<meta name="description" content="Product requirements brief (PRD) for the BISTA HR Learning & Development module.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../bista-components.css">
+<style>
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{ margin:0; background:var(--bg-canvas); color:var(--text-primary); font-family:var(--font-ui); }
+
+  /* ---------- document shell ---------- */
+  .doc{ max-width:920px; margin:0 auto; padding:var(--space-12) var(--space-6) var(--space-16); }
+  .sheet{
+    background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-xl);
+    box-shadow:var(--shadow-card); overflow:hidden;
+  }
+
+  /* ---------- cover ---------- */
+  .cover{
+    position:relative; overflow:hidden;
+    padding:var(--space-12) var(--space-10) var(--space-10);
+    background:
+      radial-gradient(130% 150% at 92% -20%, rgba(255,216,0,.22), transparent 48%),
+      var(--bg-surface);
+    border-bottom:1px solid var(--border);
+  }
+  .cover .kicker{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-ui); font-weight:700; font-size:12px; letter-spacing:.07em; text-transform:uppercase;
+    color:var(--warning-deep); background:var(--brand-yellow-tint); border:1px solid #F2E6A8;
+    padding:5px 12px; border-radius:var(--radius-full); margin-bottom:var(--space-5);
+  }
+  .cover .kicker .dot{ width:7px; height:7px; border-radius:50%; background:var(--brand-yellow); }
+  .cover h1{
+    font-family:var(--font-head); font-weight:800; font-size:40px; line-height:1.06; letter-spacing:-0.025em;
+    margin:0 0 var(--space-3); color:var(--gray-900); max-width:20ch; text-wrap:balance;
+  }
+  .cover p.sub{
+    font-family:var(--font-ui); font-weight:400; font-size:16px; line-height:1.55;
+    color:var(--text-secondary); max-width:64ch; margin:0; text-wrap:pretty;
+  }
+  .meta{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+    margin-top:var(--space-8); background:var(--border); border:1px solid var(--border);
+    border-radius:var(--radius-lg); overflow:hidden;
+  }
+  .meta div{ background:var(--bg-surface); padding:var(--space-4) var(--space-4); }
+  .meta .k{ font-family:var(--font-ui); font-weight:700; font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
+  .meta .v{ font-family:var(--font-head); font-weight:600; font-size:14px; color:var(--gray-900); }
+
+  /* ---------- body ---------- */
+  .body{ padding:var(--space-10); }
+  section.s{ margin-bottom:var(--space-12); scroll-margin-top:24px; }
+  section.s:last-child{ margin-bottom:0; }
+
+  .s-head{ display:flex; align-items:baseline; gap:var(--space-3); margin-bottom:var(--space-5); padding-bottom:var(--space-3); border-bottom:2px solid var(--gray-100); }
+  .s-num{ font-family:var(--font-head); font-weight:800; font-size:14px; color:var(--brand-yellow-dark); flex:none; letter-spacing:.02em; }
+  .s-head h2{ font-family:var(--font-head); font-weight:700; font-size:23px; letter-spacing:-0.015em; color:var(--gray-900); margin:0; }
+
+  .lead{ font-family:var(--font-ui); font-size:15px; line-height:1.6; color:var(--text-secondary); margin:0 0 var(--space-5); text-wrap:pretty; max-width:74ch; }
+  .lead strong{ color:var(--gray-900); font-weight:700; }
+
+  h3.sub{ font-family:var(--font-head); font-weight:700; font-size:16px; color:var(--gray-900); margin:var(--space-6) 0 var(--space-3); }
+
+  ul.clean{ margin:0 0 var(--space-4); padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+  ul.clean li{ position:relative; padding-left:26px; font-family:var(--font-ui); font-size:14.5px; line-height:1.55; color:var(--text-secondary); }
+  ul.clean li::before{ content:"\EB7C"; font-family:"remixicon"; position:absolute; left:0; top:-1px; color:var(--brand-yellow-dark); font-size:17px; }
+  ul.clean li strong{ color:var(--gray-900); font-weight:600; }
+
+  /* callout */
+  .callout{ display:flex; gap:14px; background:var(--brand-yellow-tint); border:1px solid #F2E6A8; border-radius:var(--radius-lg); padding:var(--space-4) var(--space-5); margin:var(--space-5) 0; }
+  .callout i{ color:var(--warning-deep); font-size:22px; flex:none; margin-top:1px; }
+  .callout .ct{ font-family:var(--font-ui); font-size:14px; line-height:1.55; color:var(--gray-800); }
+  .callout .ct b{ color:var(--gray-900); }
+
+  .callout.blue{ background:#F4F7FF; border-color:#D6E0FF; }
+  .callout.blue i{ color:var(--brand-blue); }
+
+  /* goal cards */
+  .goalgrid{ display:grid; grid-template-columns:repeat(2,1fr); gap:var(--space-4); margin-top:var(--space-4); }
+  .goalcard{ border:1px solid var(--border); border-radius:var(--radius-lg); padding:var(--space-5); background:var(--gray-25); }
+  .goalcard .gi{ width:38px; height:38px; border-radius:10px; display:grid; place-items:center; background:#fff; border:1px solid var(--border); margin-bottom:var(--space-3); }
+  .goalcard .gi i{ font-size:20px; color:var(--brand-blue); }
+  .goalcard h4{ font-family:var(--font-head); font-weight:700; font-size:15px; color:var(--gray-900); margin:0 0 4px; }
+  .goalcard p{ font-family:var(--font-ui); font-size:13px; line-height:1.5; color:var(--text-secondary); margin:0; }
+
+  /* scope columns */
+  .scope{ display:grid; grid-template-columns:1fr 1fr; gap:var(--space-5); }
+  .scope .col{ border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+  .scope .col h4{ margin:0; padding:12px 16px; font-family:var(--font-head); font-weight:700; font-size:13px; letter-spacing:.03em; text-transform:uppercase; display:flex; align-items:center; gap:8px; }
+  .scope .in h4{ background:var(--success-tint); color:var(--success-deep); }
+  .scope .out h4{ background:var(--gray-50); color:var(--text-secondary); }
+  .scope ul{ margin:0; padding:14px 16px 16px 34px; display:flex; flex-direction:column; gap:8px; }
+  .scope li{ font-family:var(--font-ui); font-size:13.5px; line-height:1.5; color:var(--text-secondary); }
+  .scope li::marker{ color:var(--gray-300); }
+
+  /* roles */
+  .roles{ display:flex; flex-direction:column; gap:10px; }
+  .role{ display:grid; grid-template-columns:180px 1fr; gap:var(--space-4); align-items:start; padding:14px 16px; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--gray-25); }
+  .role .who{ display:flex; align-items:center; gap:10px; }
+  .role .ravatar{ width:32px; height:32px; border-radius:50%; display:grid; place-items:center; flex:none; background:var(--brand-blue); color:#fff; font-family:var(--font-head); font-weight:700; font-size:13px; }
+  .role .rname{ font-family:var(--font-head); font-weight:700; font-size:14px; color:var(--gray-900); }
+  .role .rdesc{ font-family:var(--font-ui); font-size:13.5px; line-height:1.5; color:var(--text-secondary); }
+
+  /* FR tables */
+  .frblock{ border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; margin-bottom:var(--space-5); }
+  .frblock > .fbh{ display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--gray-50); border-bottom:1px solid var(--border); }
+  .frblock > .fbh .pillnum{ font-family:var(--font-head); font-weight:800; font-size:12px; color:#fff; background:var(--gray-900); border-radius:var(--radius-xs); padding:3px 8px; letter-spacing:.03em; }
+  .frblock > .fbh h4{ font-family:var(--font-head); font-weight:700; font-size:15px; color:var(--gray-900); margin:0; }
+  table.fr{ width:100%; border-collapse:collapse; }
+  table.fr th{ text-align:left; font-family:var(--font-ui); font-weight:700; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--text-muted); padding:9px 16px; border-bottom:1px solid var(--border); background:var(--gray-25); }
+  table.fr td{ font-family:var(--font-ui); font-size:13.5px; line-height:1.5; color:var(--text-secondary); padding:12px 16px; border-bottom:1px solid var(--divider); vertical-align:top; }
+  table.fr tr:last-child td{ border-bottom:0; }
+  table.fr td.id{ font-family:var(--font-control); font-weight:700; font-size:12px; color:var(--brand-blue); white-space:nowrap; }
+  table.fr td.req{ color:var(--gray-800); }
+  table.fr td.pri{ white-space:nowrap; }
+  .prtag{ display:inline-flex; align-items:center; gap:5px; font-family:var(--font-control); font-weight:600; font-size:11px; padding:3px 8px; border-radius:var(--radius-xs); }
+  .pr-must{ background:var(--error-tint); color:var(--error); }
+  .pr-should{ background:var(--warning-tint); color:var(--warning-deep); }
+  .pr-could{ background:var(--gray-100); color:var(--text-secondary); }
+
+  /* kirkpatrick */
+  .kp{ display:flex; flex-direction:column; gap:10px; }
+  .kprow{ display:grid; grid-template-columns:62px 1fr; gap:var(--space-4); align-items:stretch; }
+  .kplvl{ border-radius:var(--radius-md); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; color:#fff; padding:10px 6px; }
+  .kplvl .ln{ font-family:var(--font-head); font-weight:800; font-size:20px; line-height:1; }
+  .kplvl .lt{ font-family:var(--font-ui); font-weight:700; font-size:9px; letter-spacing:.06em; text-transform:uppercase; opacity:.85; }
+  .kpbody{ border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 16px; background:var(--gray-25); display:flex; flex-direction:column; justify-content:center; }
+  .kpbody .kph{ display:flex; align-items:center; gap:10px; margin-bottom:3px; flex-wrap:wrap; }
+  .kpbody h4{ font-family:var(--font-head); font-weight:700; font-size:15px; color:var(--gray-900); margin:0; }
+  .kpbody p{ font-family:var(--font-ui); font-size:13px; line-height:1.5; color:var(--text-secondary); margin:0; }
+  .chip{ font-family:var(--font-control); font-weight:600; font-size:10.5px; padding:2px 8px; border-radius:var(--radius-full); letter-spacing:.02em; }
+  .chip-in{ background:var(--success-tint); color:var(--success-deep); }
+  .chip-out{ background:var(--gray-100); color:var(--text-muted); }
+  .chip-later{ background:#F4F7FF; color:var(--brand-blue); }
+
+  /* cost model */
+  .costwrap{ display:grid; grid-template-columns:1fr 1fr; gap:var(--space-4); }
+  .costcard{ border:1px solid var(--border); border-radius:var(--radius-lg); padding:var(--space-5); }
+  .costcard h4{ font-family:var(--font-head); font-weight:700; font-size:14px; color:var(--gray-900); margin:0 0 10px; display:flex; align-items:center; gap:8px; }
+  .costcard h4 i{ color:var(--brand-yellow-dark); font-size:18px; }
+  .costcard ul{ margin:0; padding-left:18px; display:flex; flex-direction:column; gap:6px; }
+  .costcard li{ font-family:var(--font-ui); font-size:13px; line-height:1.45; color:var(--text-secondary); }
+
+  /* integration grid */
+  .intgrid{ display:grid; grid-template-columns:repeat(2,1fr); gap:var(--space-4); }
+  .intcard{ display:flex; gap:12px; border:1px solid var(--border); border-radius:var(--radius-lg); padding:var(--space-4) var(--space-5); background:var(--gray-25); }
+  .intcard .ii{ width:40px; height:40px; border-radius:10px; display:grid; place-items:center; flex:none; background:#fff; border:1px solid var(--border); }
+  .intcard .ii i{ font-size:21px; color:var(--brand-blue); }
+  .intcard h4{ font-family:var(--font-head); font-weight:700; font-size:14px; color:var(--gray-900); margin:0 0 3px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .intcard p{ font-family:var(--font-ui); font-size:12.5px; line-height:1.45; color:var(--text-secondary); margin:0; }
+
+  /* notifications matrix already covered by table.fr */
+
+  /* roadmap / future */
+  .phases{ display:flex; flex-direction:column; gap:var(--space-4); }
+  .phase{ display:grid; grid-template-columns:120px 1fr; gap:var(--space-4); border:1px solid var(--border); border-left:4px solid var(--brand-yellow); border-radius:var(--radius-md); padding:var(--space-4) var(--space-5); background:var(--bg-surface); }
+  .phase.p2{ border-left-color:var(--brand-blue); }
+  .phase.p3{ border-left-color:var(--gray-300); }
+  .phase .pl{ display:flex; flex-direction:column; gap:4px; }
+  .phase .pl .pn{ font-family:var(--font-head); font-weight:800; font-size:13px; color:var(--gray-900); letter-spacing:.02em; }
+  .phase .pl .pt{ font-family:var(--font-ui); font-weight:600; font-size:11px; color:var(--text-muted); }
+  .phase .pr2 h4{ font-family:var(--font-head); font-weight:700; font-size:14.5px; color:var(--gray-900); margin:0 0 6px; }
+  .phase .pr2 p{ font-family:var(--font-ui); font-size:13px; line-height:1.5; color:var(--text-secondary); margin:0; }
+  .phase .pr2 .tags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .phase .pr2 .tags span{ font-family:var(--font-control); font-weight:600; font-size:11px; padding:3px 9px; border-radius:var(--radius-full); background:var(--gray-100); color:var(--text-secondary); }
+
+  /* open questions */
+  .oq{ display:flex; flex-direction:column; gap:10px; }
+  .oqitem{ display:flex; gap:12px; align-items:flex-start; border:1px solid var(--border); border-radius:var(--radius-md); padding:13px 16px; background:var(--gray-25); }
+  .oqitem .qn{ font-family:var(--font-control); font-weight:700; font-size:12px; color:#fff; background:var(--warning); border-radius:var(--radius-xs); padding:3px 8px; flex:none; }
+  .oqitem p{ font-family:var(--font-ui); font-size:13.5px; line-height:1.5; color:var(--text-secondary); margin:0; }
+  .oqitem p b{ color:var(--gray-900); }
+
+  /* TOC */
+  .toc{ background:var(--gray-25); border:1px solid var(--border); border-radius:var(--radius-lg); padding:var(--space-5) var(--space-6); margin-bottom:var(--space-10); }
+  .toc h3{ font-family:var(--font-ui); font-weight:700; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); margin:0 0 var(--space-3); }
+  .toc ol{ margin:0; padding:0; list-style:none; columns:2; column-gap:var(--space-8); }
+  .toc li{ break-inside:avoid; margin-bottom:9px; }
+  .toc a{ font-family:var(--font-ui); font-size:13.5px; color:var(--text-secondary); display:flex; gap:10px; align-items:baseline; }
+  .toc a:hover{ color:var(--brand-blue); }
+  .toc a .tn{ font-family:var(--font-head); font-weight:700; font-size:12px; color:var(--brand-yellow-dark); flex:none; width:18px; }
+
+  .footnote{ font-family:var(--font-ui); font-size:12px; color:var(--text-muted); text-align:center; margin-top:var(--space-8); line-height:1.5; }
+
+  @media (max-width:760px){
+    .meta{ grid-template-columns:repeat(2,1fr); }
+    .goalgrid,.scope,.costwrap,.intgrid{ grid-template-columns:1fr; }
+    .role{ grid-template-columns:1fr; }
+    .toc ol{ columns:1; }
+    .body,.cover{ padding:var(--space-6); }
+    .cover h1{ font-size:30px; }
+  }
+
+  @media print{
+    body{ background:#fff; }
+    .doc{ max-width:none; padding:0; }
+    .sheet{ border:0; border-radius:0; box-shadow:none; }
+    .toc{ display:none; }
+    section.s{ break-inside:avoid; }
+    .frblock,.kprow,.phase,.goalcard,.intcard{ break-inside:avoid; }
+    .cover{ background:var(--bg-surface); }
+  }
+</style>
+</head>
+<body>
+  <div class="doc">
+    <div class="sheet">
+
+      <!-- COVER -->
+      <header class="cover">
+        <span class="kicker"><span class="dot"></span>BISTA HR · Bistasol ERP · Product Requirements</span>
+        <h1>Learning &amp; Development Module</h1>
+        <p class="sub">A from-the-ground-up platform to plan, deliver, evaluate and report on employee learning across the bank — replacing today's Excel sheets, emails and Microsoft Forms with one connected system.</p>
+        <div class="meta">
+          <div><div class="k">Module</div><div class="v">Learning &amp; Development</div></div>
+          <div><div class="k">Business Owner</div><div class="v">HR / L&amp;D — Nana Bema</div></div>
+          <div><div class="k">Source</div><div class="v">Requirements Gathering · Transcript&nbsp;1</div></div>
+          <div><div class="k">Status</div><div class="v">Draft for review</div></div>
+        </div>
+      </header>
+
+      <div class="body">
+
+        <!-- TOC -->
+        <nav class="toc">
+          <h3>Contents</h3>
+          <ol>
+            <li><a href="#s1"><span class="tn">01</span>Overview &amp; Vision</a></li>
+            <li><a href="#s2"><span class="tn">02</span>Goals &amp; Success Metrics</a></li>
+            <li><a href="#s3"><span class="tn">03</span>Scope &amp; Phasing</a></li>
+            <li><a href="#s4"><span class="tn">04</span>Roles &amp; Personas</a></li>
+            <li><a href="#s5"><span class="tn">05</span>Needs Assessment</a></li>
+            <li><a href="#s6"><span class="tn">06</span>Program Catalog &amp; Setup</a></li>
+            <li><a href="#s7"><span class="tn">07</span>Enrollment &amp; Notifications</a></li>
+            <li><a href="#s8"><span class="tn">08</span>Evaluation Framework</a></li>
+            <li><a href="#s9"><span class="tn">09</span>Cost, Budget &amp; ROI</a></li>
+            <li><a href="#s10"><span class="tn">10</span>Reporting &amp; Dashboard</a></li>
+            <li><a href="#s11"><span class="tn">11</span>Integrations</a></li>
+            <li><a href="#s12"><span class="tn">12</span>Learner Experience: My Classroom</a></li>
+            <li><a href="#s13"><span class="tn">13</span>Future: Encompassing System</a></li>
+            <li><a href="#s14"><span class="tn">14</span>Open Decisions</a></li>
+          </ol>
+        </nav>
+
+        <!-- 1. OVERVIEW -->
+        <section class="s" id="s1">
+          <div class="s-head"><span class="s-num">01</span><h2>Overview &amp; Vision</h2></div>
+          <p class="lead">L&amp;D currently runs on <strong>Excel sheets, email invitations and Microsoft Office Forms</strong> — there is no system of record. Data is fragmented, reporting is manual, and nothing speaks to Core HR or Performance. We are building the L&amp;D platform from ground zero.</p>
+          <p class="lead">The vision is a single platform that houses every program, drives needs assessment, enrolls and notifies learners automatically, measures whether learning actually happened and was applied, and lets the L&amp;D team answer questions instantly — <strong>“who has been enrolled on this program?”</strong>, <strong>“how many people did we train this year?”</strong>, <strong>“what did it cost?”</strong> — without combing through spreadsheets.</p>
+          <div class="callout">
+            <i class="ri-lightbulb-flash-line"></i>
+            <div class="ct"><b>North-star query.</b> At any point, the system can be asked who was enrolled on a given program (e.g. Leadership, Excel), when they were trained, and whether they are currently on leave or already engaged — and surface that with prompts before a second enrollment.</div>
+          </div>
+          <p class="lead"><strong>Priority order:</strong> build the <strong>admin side first</strong> (set up programs, enroll, notify, evaluate, report). The learner-facing and content/experience layers come in later phases.</p>
+        </section>
+
+        <!-- 2. GOALS -->
+        <section class="s" id="s2">
+          <div class="s-head"><span class="s-num">02</span><h2>Goals &amp; Success Metrics</h2></div>
+          <div class="goalgrid">
+            <div class="goalcard">
+              <div class="gi"><i class="ri-database-2-line"></i></div>
+              <h4>Single source of truth</h4>
+              <p>Every program, enrollment, cost and evaluation lives in one system — no more parallel Excel sheets.</p>
+            </div>
+            <div class="goalcard">
+              <div class="gi"><i class="ri-flashlight-line"></i></div>
+              <h4>Instant reporting</h4>
+              <p>Headcount trained, enrollment by category, cost per department answered in seconds, not days.</p>
+            </div>
+            <div class="goalcard">
+              <div class="gi"><i class="ri-line-chart-line"></i></div>
+              <h4>Provable learning impact</h4>
+              <p>Pre/post measurement and line-manager application scoring show learning took place and was applied.</p>
+            </div>
+            <div class="goalcard">
+              <div class="gi"><i class="ri-links-line"></i></div>
+              <h4>Connected to Core HR</h4>
+              <p>Enrollment pulls live employee, leave, grade and payroll data — conflicts are flagged automatically.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. SCOPE -->
+        <section class="s" id="s3">
+          <div class="s-head"><span class="s-num">03</span><h2>Scope &amp; Phasing</h2></div>
+          <p class="lead"><strong>Phase 1 (this build)</strong> delivers the L&amp;D administration workflow end-to-end. Talent management, the learner experience platform and community engagement are acknowledged here and mapped, but delivered later.</p>
+          <div class="scope">
+            <div class="col in">
+              <h4><i class="ri-checkbox-circle-fill"></i>In scope — Phase 1</h4>
+              <ul>
+                <li>3-tier needs assessment (strategic, departmental, individual / IDP-fed)</li>
+                <li>Program catalog &amp; setup with scheduling and multi-currency costs</li>
+                <li>Bulk &amp; selective enrollment from Core HR, with conflict checks</li>
+                <li>Automated invitations, reminders, acknowledgements &amp; escalation</li>
+                <li>Reserve / waitlist with auto-promotion</li>
+                <li>Evaluation levels 2 (learning), 3 (application) &amp; 4 (impact)</li>
+                <li>Budget management per bank &amp; department</li>
+                <li>L&amp;D dashboard + standard &amp; custom reports</li>
+              </ul>
+            </div>
+            <div class="col out">
+              <h4><i class="ri-time-line"></i>Later / out of Phase 1</h4>
+              <ul>
+                <li>Level 1 (reaction) — handled by external vendors, not tracked</li>
+                <li>Automated Level 5 ROI calculation (manual at first)</li>
+                <li>Full Talent Management &amp; succession workspace</li>
+                <li>Learner-facing learning experience platform (LXP) &amp; content authoring</li>
+                <li>Employee experience / community engagement &amp; ERGs</li>
+                <li>Pre-training assessment as a hard gate / qualification</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. ROLES -->
+        <section class="s" id="s4">
+          <div class="s-head"><span class="s-num">04</span><h2>Roles &amp; Personas</h2></div>
+          <div class="roles">
+            <div class="role">
+              <div class="who"><span class="ravatar">LD</span><span class="rname">L&amp;D Administrator</span></div>
+              <div class="rdesc">Sets up programs, costs and schedules; enrolls learners; manages reserves; runs reports. The primary Phase-1 user.</div>
+            </div>
+            <div class="role">
+              <div class="who"><span class="ravatar" style="background:var(--brand-yellow-dark)">LM</span><span class="rname">Line Manager / HOD</span></div>
+              <div class="rdesc">Initiates Tier-2 departmental needs; receives decline escalations; tracks &amp; signs off learner action plans; scores application &amp; business impact.</div>
+            </div>
+            <div class="role">
+              <div class="who"><span class="ravatar" style="background:var(--success)">EM</span><span class="rname">Employee / Learner</span></div>
+              <div class="rdesc">Acknowledges enrollment, completes pre/post assessment, builds an application action plan, reports impact.</div>
+            </div>
+            <div class="role">
+              <div class="who"><span class="ravatar" style="background:#6941C6">BP</span><span class="rname">HR Business Partner</span></div>
+              <div class="rdesc">Visibility across IDP, PIP, performance objectives and action plans for their populations.</div>
+            </div>
+            <div class="role">
+              <div class="who"><span class="ravatar" style="background:var(--gray-700)">TM</span><span class="rname">Talent Manager</span></div>
+              <div class="rdesc">Reads the leadership / succession pipeline; prioritizes development resources. Restricted visibility (later phase).</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. NEEDS ASSESSMENT -->
+        <section class="s" id="s5">
+          <div class="s-head"><span class="s-num">05</span><h2>Needs Assessment</h2></div>
+          <p class="lead">Training needs are captured in <strong>three tiers</strong>, each with its own owner and entry point. Guardrails are essential — the system must stop line managers submitting open-ended “training shopping lists.”</p>
+          <div class="frblock">
+            <div class="fbh"><span class="pillnum">TIER 1</span><h4>Strategic &amp; mandatory — bank-wide</h4></div>
+            <table class="fr">
+              <thead><tr><th style="width:90px">ID</th><th>Requirement</th><th style="width:96px">Priority</th></tr></thead>
+              <tbody>
+                <tr><td class="id">LD-NA-01</td><td class="req">L&amp;D maintains bank-wide mandatory / compliance programs (AML, cybersecurity, ethics, anti-harassment) as recurring yearly items.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-NA-02</td><td class="req">L&amp;D can add strategic-focus needs from management decisions (e.g. Islamic / non-interest banking capacity), updatable at start or mid-year.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="frblock">
+            <div class="fbh"><span class="pillnum">TIER 2</span><h4>Department-specific — line-manager initiated</h4></div>
+            <table class="fr">
+              <thead><tr><th style="width:90px">ID</th><th>Requirement</th><th style="width:96px">Priority</th></tr></thead>
+              <tbody>
+                <tr><td class="id">LD-NA-03</td><td class="req">Line managers / HODs initiate development requests with the same authority they hold in the Performance system.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-NA-04</td><td class="req">Requests are constrained by L&amp;D-defined parameters so managers specify the problem to solve (e.g. “build data-analytics capacity”), not a wish-list.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-NA-05</td><td class="req">Tier 2 hosts the department “academies” (retail sales, credit, operations) and their multi-day course bundles.</td><td class="pri"><span class="prtag pr-should">Should</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="frblock">
+            <div class="fbh"><span class="pillnum">TIER 3</span><h4>Individual — IDP-fed</h4></div>
+            <table class="fr">
+              <thead><tr><th style="width:90px">ID</th><th>Requirement</th><th style="width:96px">Priority</th></tr></thead>
+              <tbody>
+                <tr><td class="id">LD-NA-06</td><td class="req">Pull Individual Development Plan data from the Performance system into an L&amp;D view, segmented by the 70-20-10 model (formal training, coaching/mentoring, on-the-job).</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-NA-07</td><td class="req">Where an IDP selects formal training / conferences, map it to available programs; where it selects coaching/mentoring, surface it for pairing oversight.</td><td class="pri"><span class="prtag pr-should">Should</span></td></tr>
+                <tr><td class="id">LD-NA-08</td><td class="req">Present consolidated needs in an easy, Excel-like table that segregates by intervention type and is export-ready.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-NA-09</td><td class="req">Learners flagged in the leadership / succession pipeline get prioritized development; remaining resources spread thinly across others.</td><td class="pri"><span class="prtag pr-should">Should</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 6. CATALOG & SETUP -->
+        <section class="s" id="s6">
+          <div class="s-head"><span class="s-num">06</span><h2>Program Catalog &amp; Setup</h2></div>
+          <div class="frblock">
+            <div class="fbh"><span class="pillnum">SETUP</span><h4>Programs, scheduling &amp; logistics</h4></div>
+            <table class="fr">
+              <thead><tr><th style="width:90px">ID</th><th>Requirement</th><th style="width:96px">Priority</th></tr></thead>
+              <tbody>
+                <tr><td class="id">LD-PR-01</td><td class="req">Create &amp; maintain a program library with title, objectives, provider, mode (in-person / virtual / online), dates and due dates.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-PR-02</td><td class="req">Administrators can edit a scheduled program (venue, date) even after invites are sent; changes auto-issue an update notice to participants.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-PR-03</td><td class="req">Capture cost: direct/course fee + associated costs (meals, travel, emoluments), each in any currency — a single program may mix currencies.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-PR-04</td><td class="req">Per-grade cost parameters (transport, mileage, emolument) feed from Core HR so per-person cost can be computed at setup.</td><td class="pri"><span class="prtag pr-should">Should</span></td></tr>
+                <tr><td class="id">LD-PR-05</td><td class="req">Link externally-hosted programs (e.g. National Banking College) rather than re-uploading; reflect provider date changes.</td><td class="pri"><span class="prtag pr-should">Should</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 7. ENROLLMENT -->
+        <section class="s" id="s7">
+          <div class="s-head"><span class="s-num">07</span><h2>Enrollment &amp; Notifications</h2></div>
+          <div class="frblock">
+            <div class="fbh"><span class="pillnum">ENROL</span><h4>Assigning learners</h4></div>
+            <table class="fr">
+              <thead><tr><th style="width:90px">ID</th><th>Requirement</th><th style="width:96px">Priority</th></tr></thead>
+              <tbody>
+                <tr><td class="id">LD-EN-01</td><td class="req">Enroll in bulk or by selection — upload a pre-populated template, or pick by job title / role / department / unit (fed from Core HR). Selecting “Relationship Managers” populates all of them.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-EN-02</td><td class="req">Conflict checks at enrollment: warn if the person is on leave, already enrolled in this course (with how long ago, allowing override), or busy in another program at that time.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-EN-03</td><td class="req">Build a prioritized reserve / waitlist (from IDP interest or pipeline). If an enrollee drops, auto-notify the next person.</td><td class="pri"><span class="prtag pr-should">Should</span></td></tr>
+                <tr><td class="id">LD-EN-04</td><td class="req">Reports distinguish attended vs. declined / rejected; end-of-year report counts only attendees, with declines retained for management decisions.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="frblock">
+            <div class="fbh"><span class="pillnum">NOTIFY</span><h4>Invitations, reminders &amp; acknowledgement</h4></div>
+            <table class="fr">
+              <thead><tr><th style="width:90px">ID</th><th>Requirement</th><th style="width:96px">Priority</th></tr></thead>
+              <tbody>
+                <tr><td class="id">LD-EN-05</td><td class="req">On enrollment, auto-send an “enrolled” notice — no manual reminders by the admin.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-EN-06</td><td class="req">Configurable reminder cadence (e.g. at enrollment, then 2 weeks / 1 week / 1 day before).</td><td class="pri"><span class="prtag pr-should">Should</span></td></tr>
+                <tr><td class="id">LD-EN-07</td><td class="req">Learner must acknowledge: commit to attend, or decline with a reason. Declines escalate to the line manager.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-EN-08</td><td class="req">Track non-attendance to support future charge-back / deterrence of no-shows.</td><td class="pri"><span class="prtag pr-could">Could</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 8. EVALUATION -->
+        <section class="s" id="s8">
+          <div class="s-head"><span class="s-num">08</span><h2>Evaluation Framework</h2></div>
+          <p class="lead">Evaluation follows the <strong>Kirkpatrick model</strong>. The bank cares most about <strong>Level 2 (learning happened)</strong> and <strong>Level 3–4 (it was applied and had impact)</strong>. Level 1 stays with external vendors; Level 5 ROI is aspirational at first.</p>
+          <div class="kp">
+            <div class="kprow">
+              <div class="kplvl" style="background:var(--gray-400)"><span class="ln">1</span><span class="lt">React</span></div>
+              <div class="kpbody"><div class="kph"><h4>Reaction</h4><span class="chip chip-out">Not in system</span></div><p>Classroom feedback — facilitator, food, ambience. Handled by external vendors; not tracked here.</p></div>
+            </div>
+            <div class="kprow">
+              <div class="kplvl" style="background:var(--brand-blue)"><span class="ln">2</span><span class="lt">Learn</span></div>
+              <div class="kpbody"><div class="kph"><h4>Learning — pre &amp; post</h4><span class="chip chip-in">Phase 1</span></div><p>At acceptance, a pre-course self-assessment auto-populates with the program title &amp; objectives (mail-merge style); learners rate themselves on a graduated scale. The same questions repeat post-course; the shift in percentage evidences learning.</p></div>
+            </div>
+            <div class="kprow">
+              <div class="kplvl" style="background:var(--success)"><span class="ln">3</span><span class="lt">Apply</span></div>
+              <div class="kpbody"><div class="kph"><h4>Application — action plan</h4><span class="chip chip-in">Phase 1</span></div><p>Post-course, the learner builds an IDP-style action plan (actions, timelines, resources). It routes to the line manager, who tracks progress and has final sign-off on completion. Visible to the HRBP alongside IDP / PIP / objectives.</p></div>
+            </div>
+            <div class="kprow">
+              <div class="kplvl" style="background:var(--warning)"><span class="ln">4</span><span class="lt">Impact</span></div>
+              <div class="kpbody"><div class="kph"><h4>Business impact</h4><span class="chip chip-in">Phase 1</span></div><p>Learner selects pre-built impact categories (improved CX, faster turnaround, error reduction, increased income) and estimates contribution. Both learner and manager respond — the <b>manager's score is what the bank uses</b>.</p></div>
+            </div>
+            <div class="kprow">
+              <div class="kplvl" style="background:var(--gray-700)"><span class="ln">5</span><span class="lt">ROI</span></div>
+              <div class="kpbody"><div class="kph"><h4>Return on investment</h4><span class="chip chip-later">Aspirational</span></div><p>Fully-loaded cost (program + daily employee cost from payroll ÷ 22 days) vs. program benefits. Manual at first; auto-calculated later as data matures.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 9. COST / ROI -->
+        <section class="s" id="s9">
+          <div class="s-head"><span class="s-num">09</span><h2>Cost, Budget &amp; ROI</h2></div>
+          <div class="costwrap">
+            <div class="costcard">
+              <h4><i class="ri-price-tag-3-line"></i>Program cost model</h4>
+              <ul>
+                <li><b>Direct / course fee</b> — the program's headline cost</li>
+                <li><b>Associated cost</b> — meals, travel, emoluments</li>
+                <li><b>Multi-currency</b> — fee in USD, associated in GHS/GBP on one program</li>
+                <li><b>Per-grade rates</b> — transport &amp; emolument vary by grade, fed from Core HR</li>
+              </ul>
+            </div>
+            <div class="costcard">
+              <h4><i class="ri-wallet-3-line"></i>Budget management</h4>
+              <ul>
+                <li>Upload approved budgets <b>per bank</b> and <b>per department</b></li>
+                <li>Flag / alert when a department exhausts its budget</li>
+                <li>Dashboard shows spend-to-date and remaining budget</li>
+              </ul>
+            </div>
+          </div>
+          <div class="callout blue">
+            <i class="ri-functions"></i>
+            <div class="ct"><b>ROI formula (Level 5, later).</b> Numerator = program benefits (cost saved / revenue added, from impact scoring). Denominator = fully-loaded cost = program cost + (employee daily cost × program days), where daily cost = total monthly emolument ÷ 22 standard days. ROI&nbsp;% = (benefit − cost) ÷ cost × 100.</div>
+          </div>
+        </section>
+
+        <!-- 10. REPORTING -->
+        <section class="s" id="s10">
+          <div class="s-head"><span class="s-num">10</span><h2>Reporting &amp; Dashboard</h2></div>
+          <p class="lead">Reporting is the <strong>single biggest pain point</strong> — today it takes days of combing Excel to answer basic questions. The dashboard and report engine are the heart of the value.</p>
+          <ul class="clean">
+            <li><strong>L&amp;D dashboard</strong> — people enrolled at any point in time, spend-to-date, remaining budget, programs yet to run.</li>
+            <li><strong>Standard reports</strong> — number trained, enrollment by category (e.g. leadership), total cost of training, cost per employee, cost per department.</li>
+            <li><strong>Custom / ad-hoc reports</strong> — spool reports across any in-system parameter; export to Excel.</li>
+            <li><strong>Impact analytics</strong> — graphs / pie charts of enrolled vs. % learning achieved, and business-impact rollups.</li>
+            <li><strong>Attendance reporting</strong> — attended vs. declined / rejected, with declines retained for management.</li>
+          </ul>
+        </section>
+
+        <!-- 11. INTEGRATIONS -->
+        <section class="s" id="s11">
+          <div class="s-head"><span class="s-num">11</span><h2>Integrations</h2></div>
+          <div class="intgrid">
+            <div class="intcard">
+              <div class="ii"><i class="ri-team-line"></i></div>
+              <div><h4>Core HR</h4><p>Employees, departments, units, job titles, grades, leave status, payroll / emoluments — powering enrollment, conflict checks and cost.</p></div>
+            </div>
+            <div class="intcard">
+              <div class="ii"><i class="ri-bar-chart-box-line"></i></div>
+              <div><h4>Performance / IDP</h4><p>Feeds Tier-3 needs; the action-plan template mirrors the IDP; development gaps inform priorities.</p></div>
+            </div>
+            <div class="intcard">
+              <div class="ii"><i class="ri-node-tree"></i></div>
+              <div><h4>Succession &amp; Talent <span class="chip chip-later">Later</span></h4><p>Pipeline flags drive development priority; restricted visibility. Needs performance scores (4+ = pipeline, under-3 = PIP).</p></div>
+            </div>
+            <div class="intcard">
+              <div class="ii"><i class="ri-graduation-cap-line"></i></div>
+              <div><h4>External LMS</h4><p>API integration with National Banking College &amp; Intuition; Percipio via deep-link (declined to integrate).</p></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 12. LEARNER EXPERIENCE -->
+        <section class="s" id="s12">
+          <div class="s-head"><span class="s-num">12</span><h2>Learner Experience — My Classroom &amp; Course Delivery</h2></div>
+          <p class="lead">The same platform has a <strong>learner-facing section</strong> (“My Classroom”) alongside the admin side, gated by role. L&amp;D pushes courses to people; learners take them, mark progress, and — where required — complete a post-course assessment. This was parked as a later-phase LXP, but the reference walk-through shows a lean version that belongs in the core build.</p>
+          <div class="callout blue">
+            <i class="ri-information-line"></i>
+            <div class="ct"><b>Added from a reference review.</b> Captured from a walk-through of a similar platform's <b>user/learner dashboard</b> — “My Classroom”, admin course assignment (⋯ → Assign to), a post-completion assessment/questionnaire option, and per-course progress tracking (done / in-progress / attended). It is <b>the same platform, a different section</b>.</div>
+          </div>
+          <div class="frblock">
+            <div class="fbh"><span class="pillnum">CLASSROOM</span><h4>My Classroom — the learner view</h4></div>
+            <table class="fr">
+              <thead><tr><th style="width:90px">ID</th><th>Requirement</th><th style="width:96px">Priority</th></tr></thead>
+              <tbody>
+                <tr><td class="id">LD-LX-01</td><td class="req">Each learner has a personal “My Classroom” listing courses assigned to them, with status (not started / in progress / completed) and due dates.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-LX-02</td><td class="req">Opening a course shows its content — ordered items such as video, document, link or text “posts”. Learners can view/play each item.</td><td class="pri"><span class="prtag pr-should">Should</span></td></tr>
+                <tr><td class="id">LD-LX-03</td><td class="req">Learner can mark an item (and the course) as <b>done</b>; the course shows their own completion state. No editing of content by the learner.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-LX-04</td><td class="req">Where the course requires it, completion prompts a <b>course assessment / questionnaire</b> (links to the Evaluation framework, §08).</td><td class="pri"><span class="prtag pr-should">Should</span></td></tr>
+                <tr><td class="id">LD-LX-05</td><td class="req">Strict role gating: learners see only their own classroom; admins/L&amp;D see all courses, assignment and tracking. Same platform, separate section.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="frblock">
+            <div class="fbh"><span class="pillnum">ASSIGN</span><h4>Course assignment &amp; setup — the admin view</h4></div>
+            <table class="fr">
+              <thead><tr><th style="width:90px">ID</th><th>Requirement</th><th style="width:96px">Priority</th></tr></thead>
+              <tbody>
+                <tr><td class="id">LD-LX-06</td><td class="req">From the all-courses list, an admin can <b>⋯ → “Assign to”</b> and pick a list of people (by selection, role, department or unit — consistent with enrollment, §07). Assigned courses appear in each learner's My Classroom.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-LX-07</td><td class="req">When adding a course, capture course details + content items and an <b>on-completion option</b>: require a course assessment or questionnaire (yes/no, with the form to use).</td><td class="pri"><span class="prtag pr-should">Should</span></td></tr>
+                <tr><td class="id">LD-LX-08</td><td class="req">Per course, a tracking view shows assignees by status — <b>how many completed, in progress, attended / not attended</b> — with drill-down to the individuals.</td><td class="pri"><span class="prtag pr-must">Must</span></td></tr>
+                <tr><td class="id">LD-LX-09</td><td class="req">External / hosted courses (e.g. Percipio, Intuition) can be linked rather than re-uploaded; the assessment &amp; tracking still apply where data is returned.</td><td class="pri"><span class="prtag pr-could">Could</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 13. FUTURE -->
+        <section class="s" id="s13">
+          <div class="s-head"><span class="s-num">13</span><h2>Future: The Encompassing System</h2></div>
+          <p class="lead">Beyond admin, the long-term vision is an <strong>encompassing development &amp; employee-experience platform</strong>. We map it here so Phase 1 is built with the right seams.</p>
+          <div class="phases">
+            <div class="phase">
+              <div class="pl"><span class="pn">PHASE 1</span><span class="pt">Now</span></div>
+              <div class="pr2"><h4>L&amp;D Administration</h4><p>Needs assessment, program setup, enrollment &amp; notifications, evaluation L2–L4, budget &amp; reporting. The admin backbone.</p>
+                <div class="tags"><span>Needs</span><span>Catalog</span><span>Enroll</span><span>Evaluate</span><span>Report</span></div></div>
+            </div>
+            <div class="phase p2">
+              <div class="pl"><span class="pn">PHASE 2</span><span class="pt">Next</span></div>
+              <div class="pr2"><h4>Learner Experience &amp; Talent</h4><p>Learner-facing learning platform (LXP) with content curation &amp; self-enrollment; full Talent Management &amp; succession workspace; automated Level-5 ROI.</p>
+                <div class="tags"><span>LXP / course catalog</span><span>Self-enroll</span><span>Content curation</span><span>Talent &amp; succession</span><span>Auto ROI</span></div></div>
+            </div>
+            <div class="phase p3">
+              <div class="pl"><span class="pn">PHASE 3</span><span class="pt">Vision</span></div>
+              <div class="pr2"><h4>Employee Experience Platform</h4><p>Community engagement &amp; employee resource groups (replacing Microsoft Communities), social learning &amp; live chat, AI-assisted impact valuation — “everything development, everything employee experience.”</p>
+                <div class="tags"><span>Community / ERGs</span><span>Live chat</span><span>Social learning</span><span>AI impact</span></div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 14. OPEN DECISIONS -->
+        <section class="s" id="s14">
+          <div class="s-head"><span class="s-num">14</span><h2>Open Decisions</h2></div>
+          <div class="oq">
+            <div class="oqitem"><span class="qn">Q1</span><p><b>Pipeline visibility.</b> Should employees know they are in the leadership / succession pipeline? Management leans yes; tradition says no. Unresolved — affects IDP prioritization UX.</p></div>
+            <div class="oqitem"><span class="qn">Q2</span><p><b>Reminder cadence.</b> Confirm exact default intervals (proposed: enrollment → 2 weeks → 1 week → 1 day) and whether per-program overrides are needed.</p></div>
+            <div class="oqitem"><span class="qn">Q3</span><p><b>Pre-assessment as a gate.</b> Confirmed <b>not</b> a qualification gate — it maps knowledge before/after, not eligibility.</p></div>
+            <div class="oqitem"><span class="qn">Q4</span><p><b>Level-5 automation.</b> Daily employee cost requires payroll daily-rate data (÷22 days). Confirm payroll report will expose per-employee daily rate / emolument by grade.</p></div>
+            <div class="oqitem"><span class="qn">Q5</span><p><b>Assets pending from L&amp;D.</b> Sarah to share pre-registration &amp; evaluation Forms (format + sample output), standard reporting template, and the needs-assessment parameter set.</p></div>
+            <div class="oqitem"><span class="qn">Q6</span><p><b>Phase of the learner “My Classroom” (§12).</b> The reference review suggests a lean learner-facing course-delivery section is wanted now. Confirm whether LD-LX-01–08 sit in Phase 1 alongside admin, or remain Phase 2.</p></div>
+            <div class="oqitem"><span class="qn">Q7</span><p><b>Course content hosting.</b> Do we host content (videos/docs) in-platform, or only link out to external LMS (Percipio / Intuition / National Banking College)? Affects the course player (LD-LX-02) and tracking depth.</p></div>
+          </div>
+        </section>
+
+      </div><!-- /body -->
+    </div><!-- /sheet -->
+
+    <p class="footnote">BISTA HR · Bistasol ERP — Learning &amp; Development Requirements Brief · Draft for review<br>Compiled from “Requirements Gathering — Learning &amp; Development, Meeting Transcript 1,” amended with the user-dashboard reference walk-through (Call with Nobert Kyereboah Mensah).</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+import { getServerSession } from 'next-auth'
+import Promotions from '@/components/promotions/Promotions'
+import type { EmployeeRosterRow } from '@/components/shared/EmployeeSelectionRoster'
+import { authOptions } from '@/lib/auth-options'
+import { employeeGetDTO } from '@/lib/dto/employee'
+import { promotionsDTO } from '@/lib/dto/promotions-dto'
+import type { QueryParams } from '@/lib/services/fetch-service'
+import { formatDisplayName } from '@/lib/utils/person-name'
+
+function getFirstQueryValue(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) {
+    return value[0]
+  }
+  return value
+}
+
+function buildPromotionApiQuery(params: {
+  page?: string
+  pageSize?: string
+  search?: string
+  status?: string
+  sortBy?: string
+  sortDescending?: string
+}): QueryParams {
+  const sortDescending =
+    params.sortDescending === undefined ? undefined : params.sortDescending === 'true'
+
+  return {
+    PageNumber: params.page ? Number(params.page) : 1,
+    PageSize: params.pageSize ? Number(params.pageSize) : 10,
+    ...(params.search ? { SearchTerm: params.search } : {}),
+    ...(params.status !== undefined && params.status !== ''
+      ? { status: Number(params.status) }
+      : {}),
+    ...(params.sortBy ? { SortBy: params.sortBy } : {}),
+    ...(sortDescending === undefined ? {} : { SortDescending: sortDescending }),
+  }
+}
+
+export default async function PromotionsPage(
+  props: Readonly<{
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  }>
+) {
+  const params = await props.searchParams
+  const activeStatus = getFirstQueryValue(params.status)
+
+  const _sessions = await getServerSession(authOptions)
+
+  const apiQuery = buildPromotionApiQuery({
+    page: getFirstQueryValue(params.page),
+    pageSize: getFirstQueryValue(params.pageSize),
+    search: getFirstQueryValue(params.search),
+    status: getFirstQueryValue(params.status),
+    sortBy: getFirstQueryValue(params.sortBy),
+    sortDescending: getFirstQueryValue(params.sortDescending),
+  })
+
+  const [response, employeesRes] = await Promise.all([
+    promotionsDTO.getPromotions(apiQuery),
+    employeeGetDTO.getEmployeesByDepartment(''),
+  ])
+
+  const employees: EmployeeRosterRow[] = employeesRes.map((emp) => ({
+    id: emp.id,
+    name: formatDisplayName(emp),
+    jobTitle: emp.designation,
+    jobGrade: emp.jobGrade,
+    department: emp.department,
+    branch: emp.branch,
+    profilePictureUrl: emp.profilePictureUrl ?? '',
+  }))
+
+  return <Promotions data={response.data} employees={employees} activeStatus={activeStatus} />
+}

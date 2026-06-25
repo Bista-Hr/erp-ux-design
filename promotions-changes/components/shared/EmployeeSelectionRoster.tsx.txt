@@ -1,0 +1,226 @@
+'use client'
+
+import { type CellValue, type ColumnDef, Table } from 'flowers-nextjs-table'
+import { useId, useMemo, useState } from 'react'
+import 'flowers-nextjs-table/styles'
+import { Search } from 'lucide-react'
+import { Avatar } from '@/components/image/Images'
+import { EmptyTableState } from '@/components/shared/EmptyTableState'
+import { SelectionActionBar } from '@/components/shared/SelectionActionBar'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+
+/** A single selectable employee row. Keep this in sync with your employee list DTO. */
+export interface EmployeeRosterRow {
+  id: string
+  name: string
+  employeeNumber?: string
+  jobTitle?: string
+  jobGrade?: string
+  department?: string
+  branch?: string
+  profilePictureUrl?: string
+}
+
+interface TableRow extends Record<string, CellValue> {
+  id: string
+  checkbox: string
+  name: string
+  employeeNumber: string
+  jobTitle: string
+  jobGrade: string
+  department: string
+  profilePictureUrl: string
+}
+
+interface EmployeeSelectionRosterProps {
+  readonly employees: ReadonlyArray<EmployeeRosterRow>
+  /** Singular noun used in the selection bar, e.g. "staff". */
+  readonly itemLabel?: string
+  /** Primary action label, e.g. "Create Promotion". */
+  readonly actionLabel: string
+  /** Called with the selected employee ids when the primary action is clicked. */
+  readonly onProceed: (selectedIds: string[]) => void
+  readonly searchPlaceholder?: string
+  /**
+   * Controlled search value. When provided, the roster filters by this value and
+   * does NOT render its own search field (the parent owns the search UI — e.g.
+   * placed in the tab row). Omit to let the roster manage search internally.
+   */
+  readonly searchQuery?: string
+  readonly isActionPending?: boolean
+  // Manual pagination (optional — omit for client-side single page)
+  readonly page?: number
+  readonly totalPages?: number
+  readonly pageSize?: number
+  readonly onPageChange?: (page: number) => void
+}
+
+const toTableRow = (e: EmployeeRosterRow): TableRow => ({
+  id: e.id,
+  checkbox: '',
+  name: e.name,
+  employeeNumber: e.employeeNumber ?? '-',
+  jobTitle: e.jobTitle ?? '-',
+  jobGrade: e.jobGrade ?? '-',
+  department: e.department ?? '-',
+  profilePictureUrl: e.profilePictureUrl ?? '',
+})
+
+/**
+ * Reusable employee roster: a checkbox table (with select-all + search) that is
+ * the single source of truth for a multi-employee action. Selecting rows reveals
+ * the shared SelectionActionBar; its primary action hands the selected ids back
+ * to the parent (which typically routes to the relevant create form).
+ *
+ * Search filters the roster client-side (the parent passes the full staff list),
+ * so it never interferes with any server-side list query on the page.
+ *
+ * Composes existing primitives only: Table, Checkbox, Input, EmptyTableState,
+ * SelectionActionBar, Avatar.
+ */
+export function EmployeeSelectionRoster({
+  employees,
+  itemLabel = 'staff',
+  actionLabel,
+  onProceed,
+  searchPlaceholder = 'Search staff…',
+  searchQuery,
+  isActionPending = false,
+  page,
+  totalPages,
+  pageSize = 10,
+  onPageChange,
+}: EmployeeSelectionRosterProps) {
+  const tableId = useId()
+  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({})
+  const [internalQuery, setInternalQuery] = useState('')
+  // Controlled when the parent passes `searchQuery`; otherwise self-managed.
+  const isControlledSearch = searchQuery !== undefined
+  const query = isControlledSearch ? searchQuery : internalQuery
+
+  const tableData = useMemo(() => {
+    const rows = employees.map(toTableRow)
+    const q = query.trim().toLowerCase()
+    if (!q) return rows
+    return rows.filter((row) =>
+      `${row.name} ${row.employeeNumber} ${row.jobTitle} ${row.jobGrade} ${row.department}`
+        .toLowerCase()
+        .includes(q)
+    )
+  }, [employees, query])
+
+  const selectedIds = Object.entries(rowSelection)
+    .filter(([, selected]) => selected)
+    .map(([id]) => id)
+
+  const allSelected = tableData.length > 0 && tableData.every((row) => rowSelection[row.id])
+  const someSelected = tableData.some((row) => rowSelection[row.id]) && !allSelected
+
+  const columns: ColumnDef<TableRow>[] = [
+    {
+      accessorKey: 'checkbox',
+      enableSorting: false,
+      size: 50,
+      header: () => (
+        <Checkbox
+          checked={someSelected ? 'indeterminate' : allSelected}
+          onCheckedChange={(checked) => {
+            if (checked) {
+              const next: Record<string, boolean> = {}
+              for (const row of tableData) next[row.id] = true
+              setRowSelection(next)
+            } else {
+              setRowSelection({})
+            }
+          }}
+          aria-label="Select all"
+        />
+      ),
+      cell: (row) => (
+        <Checkbox
+          checked={rowSelection[row.id] || false}
+          onCheckedChange={(checked) =>
+            setRowSelection((prev) => ({ ...prev, [row.id]: !!checked }))
+          }
+          aria-label="Select row"
+        />
+      ),
+    },
+    {
+      accessorKey: 'name',
+      header: 'Full Name',
+      cell: (row) => (
+        <span className="inline-flex items-center gap-2.5">
+          <Avatar
+            alt={row.name}
+            src={row.profilePictureUrl}
+            width={32}
+            height={32}
+            fullName={row.name}
+          />
+          <span className="font-medium text-gray-900">{row.name}</span>
+        </span>
+      ),
+    },
+    { accessorKey: 'employeeNumber', header: 'Employee ID' },
+    { accessorKey: 'jobTitle', header: 'Current Job Title' },
+    { accessorKey: 'jobGrade', header: 'Current Grade' },
+    { accessorKey: 'department', header: 'Department' },
+  ]
+
+  return (
+    <>
+      <SelectionActionBar
+        count={selectedIds.length}
+        itemLabel={itemLabel}
+        primaryAction={{
+          label: actionLabel,
+          onClick: () => onProceed(selectedIds),
+          variant: 'default',
+          disabled: isActionPending || selectedIds.length === 0,
+        }}
+        onClear={() => setRowSelection({})}
+      />
+
+      {!isControlledSearch && (
+        <div className="border-b px-6 py-4 flex items-center justify-end">
+          <div className="relative md:w-72 w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              value={internalQuery}
+              onChange={(e) => setInternalQuery(e.target.value)}
+              placeholder={searchPlaceholder}
+              className="pl-9"
+            />
+          </div>
+        </div>
+      )}
+
+      {tableData.length === 0 ? (
+        <EmptyTableState
+          entityName="No staff found"
+          description="No staff match your search."
+        />
+      ) : (
+        <Table
+          key={tableId}
+          data={tableData}
+          columns={columns}
+          itemsPerPage={pageSize}
+          paginationMode={onPageChange ? 'manual' : 'auto'}
+          totalPages={totalPages}
+          page={page}
+          onPageChange={onPageChange}
+          showPageNumbers={true}
+          classNames={{
+            table: 'w-full',
+            thead: 'bg-[#F6F8FA] text-gray-700',
+          }}
+        />
+      )}
+    </>
+  )
+}
+
+export default EmployeeSelectionRoster

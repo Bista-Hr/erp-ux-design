@@ -17,8 +17,16 @@
           {
             "group": [
               "components.jsx",
+              "components/Avatar/**",
+              "components/Button/**",
+              "components/EmptyState/**",
+              "components/StatCard/**",
+              "components/StatusBadge/**",
+              "flow-revamp/**",
+              "learning-development/**",
               "preview/**",
               "screens.jsx",
+              "src/primitives/**",
               "ui_kits/bista-hr/**",
               "ui_kits/bista-hr/src/**",
               "ui_kits/bista-hr/src/admin/**",
@@ -37,12 +45,15 @@
               "ui_kits/bista-hr/src/exit/**",
               "ui_kits/bista-hr/src/forms/**",
               "ui_kits/bista-hr/src/jobtitle/**",
+              "ui_kits/bista-hr/src/learning/**",
               "ui_kits/bista-hr/src/leave-admin/**",
               "ui_kits/bista-hr/src/leave/**",
               "ui_kits/bista-hr/src/overlays/**",
+              "ui_kits/bista-hr/src/performance/**",
               "ui_kits/bista-hr/src/primitives/**",
               "ui_kits/bista-hr/src/promotions/**",
               "ui_kits/bista-hr/src/screens/**",
+              "ui_kits/bista-hr/src/shared/**",
               "ui_kits/bista-hr/src/shell/**",
               "ui_kits/bista-hr/src/target/**",
               "ui_kits/bista-hr/src/transfers/**",
@@ -66,6 +77,30 @@
       {
         "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:Mona Sans))/i]",
         "message": "Font not provided by the design system. Available: Mona Sans."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Avatar'] > JSXAttribute > JSXIdentifier[name!=/^(?:name|size|src|key|ref|className|style|children)$/]",
+        "message": "<Avatar> doesn't accept that prop. Declared props: name, size, src."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute > JSXIdentifier[name!=/^(?:variant|size|icon|iconRight|children|onClick|disabled|style|className|key|ref|className|style|children)$/]",
+        "message": "<Button> doesn't accept that prop. Declared props: variant, size, icon, iconRight, children, onClick, disabled, style, className."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='EmptyState'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|subtitle|cta|onAction|compact|key|ref|className|style|children)$/]",
+        "message": "<EmptyState> doesn't accept that prop. Declared props: title, subtitle, cta, onAction, compact."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='StatCard'] > JSXAttribute > JSXIdentifier[name!=/^(?:title|value|index|key|ref|className|style|children)$/]",
+        "message": "<StatCard> doesn't accept that prop. Declared props: title, value, index."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='StatusBadge'] > JSXAttribute > JSXIdentifier[name!=/^(?:variant|text|showIcon|size|key|ref|className|style|children)$/]",
+        "message": "<StatusBadge> doesn't accept that prop. Declared props: variant, text, showIcon, size."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='StatusBadge'] > JSXAttribute[name.name='size'] > Literal[value!=/^(?:sm|md|lg)$/]",
+        "message": "<StatusBadge> size must be one of 'sm' | 'md' | 'lg'."
       }
     ]
   },
@@ -80,7 +115,23 @@
     }
   ],
   "x-omelette": {
-    "components": {},
+    "components": {
+      "Avatar": {
+        "replaces": []
+      },
+      "Button": {
+        "replaces": []
+      },
+      "EmptyState": {
+        "replaces": []
+      },
+      "StatCard": {
+        "replaces": []
+      },
+      "StatusBadge": {
+        "replaces": []
+      }
+    },
     "tokens": [
       "--bg-canvas",
       "--bg-subtle",

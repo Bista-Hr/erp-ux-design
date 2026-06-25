@@ -1,0 +1,80 @@
+import PromotionsForm from '@/components/promotions/PromotionForm'
+import { departmentDTO } from '@/lib/dto/department-dto'
+import { designationDTO } from '@/lib/dto/designation-dto'
+import { employeeGetDTO } from '@/lib/dto/employee'
+import { jobGradeDTO } from '@/lib/dto/job-grade-dto'
+import { organizationalUnitDTO } from '@/lib/dto/organizational-unit-dto'
+import { zoneDTO } from '@/lib/dto/zone-dto'
+import { formatDisplayName } from '@/lib/utils/person-name'
+
+function getFirstQueryValue(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) return value[0]
+  return value
+}
+
+export default async function AddPromotions(
+  props: Readonly<{
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  }>
+) {
+  const params = await props.searchParams
+
+  // Employees pre-selected on the roster arrive as ?employeeIds=a,b,c
+  const employeeIdsParam = getFirstQueryValue(params.employeeIds)
+  const initialEmployeeIds = employeeIdsParam
+    ? employeeIdsParam.split(',').map((id) => id.trim()).filter(Boolean)
+    : []
+
+  const [employeesRes, zonesRes, branchesRes, departmentsRes, jobGradesRes, designationRes] =
+    await Promise.all([
+      employeeGetDTO.getEmployeesByDepartment(''),
+      zoneDTO.getAllZones(),
+      organizationalUnitDTO.getAllOrganizationalUnitsForDropdown(),
+      departmentDTO.getAllDepartments(),
+      jobGradeDTO.getAllJobGrades(),
+      designationDTO.getAllDesignations(),
+    ])
+
+  const employeeOptions = employeesRes.map((emp) => ({
+    value: emp.id,
+    label: formatDisplayName(emp),
+    image: emp.profilePictureUrl ?? '',
+  }))
+
+  const departmentOptions = departmentsRes.data.map((dept) => ({
+    value: dept.id,
+    label: dept.name,
+  }))
+
+  const zoneOptions = zonesRes.data.map((zone) => ({
+    value: zone.id,
+    label: zone.name,
+  }))
+
+  const branchOptions = branchesRes.map((branch) => ({
+    value: branch.id,
+    label: branch.name,
+  }))
+
+  const jobGradeOptions = jobGradesRes.data.map((grade) => ({
+    value: grade.id,
+    label: grade.name,
+  }))
+
+  const designationOptions = designationRes.data.map((designation) => ({
+    value: designation.id,
+    label: designation.name,
+  }))
+
+  return (
+    <PromotionsForm
+      initialEmployeeIds={initialEmployeeIds}
+      employeeOptions={employeeOptions}
+      departmentOptions={departmentOptions}
+      zoneOptions={zoneOptions}
+      branchOptions={branchOptions}
+      jobGradeOptions={jobGradeOptions}
+      designationOptions={designationOptions}
+    />
+  )
+}

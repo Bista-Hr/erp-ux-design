@@ -1,0 +1,204 @@
+'use client'
+
+import { Table } from 'flowers-nextjs-table'
+import { useId, useState } from 'react'
+import { Search } from 'lucide-react'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { SearchForm } from '@/components/layout/Search'
+import { SectionContainer } from '@/components/layout/SectionContainer'
+import { EmptyTableState } from '@/components/shared/EmptyTableState'
+import {
+  EmployeeSelectionRoster,
+  type EmployeeRosterRow,
+} from '@/components/shared/EmployeeSelectionRoster'
+import { StatusFilter } from '@/components/shared/StatusFilter'
+import { Input } from '@/components/ui/input'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { getPromotionColumns } from './PromotionsColumn'
+import 'flowers-nextjs-table/styles'
+import { useRouter } from '@bprogress/next/app'
+import ConfirmationDialog from '@/components/ui/confirmation-dialog'
+import type { PromotionColumns, PromotionResponseData } from '@/lib/types/Promotion-types'
+import type { PaginatedResponse } from '@/lib/types/utils-type'
+import ImportPromotionDialog from './bulk-upload/ImportPromotionDialog'
+
+type Segment = 'request' | 'approval'
+
+// API status enum (ApprovalStatus): Pending = 0, Approved = 1, Rejected = 2
+const STATUS_OPTIONS = [
+  { value: '1', label: 'Approved' },
+  { value: '0', label: 'Pending' },
+  { value: '2', label: 'Rejected' },
+]
+
+interface Props {
+  data: PaginatedResponse<PromotionResponseData>
+  /** Employees for the "Request" roster (single source of truth for creation). */
+  employees: EmployeeRosterRow[]
+  /** Current server-side status filter (single value, from the `status` query param). */
+  activeStatus?: string
+}
+
+const Promotions = ({ data, employees, activeStatus }: Props) => {
+  const [segment, setSegment] = useState<Segment>('approval')
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [promotionToDelete, setPromotionToDelete] = useState<PromotionResponseData | null>(null)
+  // Client-side search for the Request roster (kept separate from the approval
+  // queue's URL-driven SearchForm).
+  const [requestQuery, setRequestQuery] = useState('')
+  const { push } = useRouter()
+  const tableId = useId()
+
+  const handleViewPromotion = (promotion: PromotionResponseData) => {
+    push(`/promotions/${promotion.id}`)
+  }
+
+  const handleEditPromotion = (promotion: PromotionResponseData) => {
+    push(`/promotions/${promotion.id}/edit`)
+  }
+
+  const handleDeletePromotion = (promotion: PromotionResponseData) => {
+    setPromotionToDelete(promotion)
+    setIsDeleteDialogOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!promotionToDelete) return
+  }
+
+  const columns = getPromotionColumns({
+    onViewPromotion: handleViewPromotion,
+    onEditPromotion: handleEditPromotion,
+    onDeletePromotion: handleDeletePromotion,
+  })
+
+  // The roster is the single source of truth — selecting staff carries their ids
+  // into the create form (which shows them in an editable multi-select).
+  const handleProceedToCreate = (selectedIds: string[]) => {
+    const params = new URLSearchParams()
+    if (selectedIds.length > 0) params.set('employeeIds', selectedIds.join(','))
+    push(`/promotions/create?${params.toString()}`)
+  }
+
+  // The GET endpoint filters by a single `Status`, so we drive the URL with the
+  // first selected value (and clear it when empty). The StatusFilter UI still
+  // supports multi-select for forward-compatibility.
+  const handleStatusChange = (next: string[]) => {
+    const params = new URLSearchParams()
+    if (next.length > 0) params.set('status', next[0])
+    params.set('page', '1')
+    push(`/promotions?${params.toString()}`)
+  }
+
+  const buildPaginationUrl = (page: number) => {
+    const params = new URLSearchParams()
+    if (activeStatus) params.set('status', activeStatus)
+    params.set('page', String(page))
+    return `/promotions?${params.toString()}`
+  }
+
+  const renderApprovalQueue = () => {
+    if (data.data.length === 0) {
+      return (
+        <EmptyTableState
+          entityName="No Promotions Yet"
+          description="Promotions will appear here once they are created from the Request tab."
+        />
+      )
+    }
+
+    return (
+      <Table
+        classNames={{ table: 'w-full' }}
+        data={data.data as unknown as PromotionColumns[]}
+        columns={columns}
+        searchValue=""
+        key={`${tableId}-${activeStatus ?? 'all'}-${data.page}`}
+        itemsPerPage={data.pageSize}
+        paginationMode="manual"
+        totalPages={data.totalPages}
+        page={data.page}
+        onPageChange={(page) => push(buildPaginationUrl(page))}
+        showPageNumbers={true}
+        onRowClick={handleViewPromotion}
+      />
+    )
+  }
+
+  return (
+    <SectionContainer>
+      <PageHeader
+        title="Promotions"
+        description="Select staff to promote, and track approval status"
+      >
+        <ImportPromotionDialog />
+      </PageHeader>
+
+      <Tabs
+        value={segment}
+        onValueChange={(v) => setSegment(v as Segment)}
+        className="flex flex-col gap-4"
+      >
+        <div className="border-b px-6 py-4 flex items-center justify-between gap-4 @max-sm:flex-col-reverse @max-sm:items-stretch">
+          <TabsList className="bg-[#F6F8FA] p-1 w-fit">
+            <TabsTrigger value="request">Request</TabsTrigger>
+            <TabsTrigger value="approval">Approval</TabsTrigger>
+          </TabsList>
+
+          {segment === 'approval' ? (
+            <div className="flex items-center gap-3 @max-sm:w-full">
+              <StatusFilter
+                options={STATUS_OPTIONS}
+                selected={activeStatus ? [activeStatus] : []}
+                onChange={handleStatusChange}
+              />
+              <div className="md:w-72 w-full">
+                <SearchForm placeholder="Search promotions..." />
+              </div>
+            </div>
+          ) : (
+            <div className="relative md:w-72 w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                value={requestQuery}
+                onChange={(e) => setRequestQuery(e.target.value)}
+                placeholder="Search staff…"
+                className="pl-9"
+              />
+            </div>
+          )}
+        </div>
+
+        <TabsContent value="request" className="m-0 p-0">
+          {segment === 'request' ? (
+            <EmployeeSelectionRoster
+              employees={employees}
+              itemLabel="staff"
+              actionLabel="Create Promotion"
+              onProceed={handleProceedToCreate}
+              searchQuery={requestQuery}
+            />
+          ) : null}
+        </TabsContent>
+
+        <TabsContent value="approval" className="m-0 p-0">
+          {segment === 'approval' ? renderApprovalQueue() : null}
+        </TabsContent>
+      </Tabs>
+
+      <ConfirmationDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title="Archive Promotion"
+        content={`Are you sure you want to archive this promotion for ${promotionToDelete?.employeeName}? This action cannot be undone.`}
+        onConfirm={handleConfirmDelete}
+        onConfirmBtnText="Yes, Archive"
+        onCancelBtnText="Cancel"
+        iconType="warning"
+        lazy
+      />
+    </SectionContainer>
+  )
+}
+
+export default Promotions

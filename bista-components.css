@@ -183,7 +183,7 @@
 }
 
 /* ---- TARGET REQUESTS (appraisal) ------------------------------------------ */
-.tgt-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(460px,1fr));gap:20px}
+.tgt-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
 .tgt-obj-row{display:grid;grid-template-columns:1fr 1fr 120px;gap:14px;align-items:start}
 .tgt-goal-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 100px auto;gap:12px;align-items:start}
 .tgt-d-row{display:grid;grid-template-columns:1.8fr 1fr 1fr 90px;gap:16px;padding:13px 16px}

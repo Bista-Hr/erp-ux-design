@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Performance → Learning &amp; Development — Linkage Flow</title>
+<meta name="description" content="How the built Performance / Appraisal module flows through PIP, Leadership Pipeline and the IDP into the Learning & Development module.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../bista-components.css">
+<style>
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg-canvas); color:var(--text-primary); font-family:var(--font-ui); }
+  a{ text-decoration:none; color:inherit; }
+
+  .wrap{ max-width:1320px; margin:0 auto; padding:var(--space-10) var(--space-8) var(--space-16); }
+
+  /* header */
+  .maphead{ margin-bottom:var(--space-8); }
+  .maphead .kicker{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-ui); font-weight:700; font-size:12px; letter-spacing:.07em; text-transform:uppercase;
+    color:var(--warning-deep); background:var(--brand-yellow-tint); border:1px solid #F2E6A8;
+    padding:5px 12px; border-radius:var(--radius-full); margin-bottom:var(--space-4);
+  }
+  .maphead .kicker .dot{ width:7px; height:7px; border-radius:50%; background:var(--brand-yellow); }
+  .maphead h1{ font-family:var(--font-head); font-weight:800; font-size:36px; letter-spacing:-0.025em; color:var(--gray-900); margin:0 0 8px; }
+  .maphead p{ font-family:var(--font-ui); font-size:16px; line-height:1.55; color:var(--text-secondary); max-width:82ch; margin:0 0 var(--space-5); text-wrap:pretty; }
+  .maphead .jumpmap{ display:inline-flex; align-items:center; gap:8px; font-family:var(--font-ui); font-weight:600; font-size:13px; color:var(--brand-blue); border:1px solid #D6E0FF; background:#F4F7FF; padding:7px 14px; border-radius:var(--radius-full); }
+  .maphead .jumpmap i{ font-size:16px; }
+
+  /* status legend strip */
+  .statusbar{ display:flex; flex-wrap:wrap; gap:var(--space-5); padding:12px 18px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-lg); box-shadow:var(--shadow-card); margin-bottom:var(--space-8); }
+  .statusbar .si{ display:flex; align-items:center; gap:9px; font-family:var(--font-ui); font-size:13px; color:var(--text-secondary); }
+  .statusbar .si b{ color:var(--gray-900); font-weight:700; }
+  .statusbar .sw{ width:13px; height:13px; border-radius:4px; flex:none; }
+
+  /* band scaffolding */
+  .band{ margin-bottom:var(--space-5); }
+  .band-label{ display:flex; align-items:center; gap:10px; margin-bottom:var(--space-4); flex-wrap:wrap; }
+  .band-label .bl-num{ font-family:var(--font-head); font-weight:800; font-size:12px; color:#fff; background:var(--gray-900); border-radius:var(--radius-xs); padding:3px 9px; letter-spacing:.04em; }
+  .band-label h2{ font-family:var(--font-head); font-weight:700; font-size:17px; color:var(--gray-900); margin:0; }
+  .band-label .bl-tag{ font-family:var(--font-control); font-weight:600; font-size:11px; padding:3px 10px; border-radius:var(--radius-full); }
+  .tag-built{ background:var(--success-tint); color:var(--success-deep); }
+  .tag-design{ background:var(--brand-yellow-tint); color:var(--warning-deep); }
+  .tag-cross{ background:#F4F7FF; color:var(--brand-blue); }
+  .band-label .bl-rule{ flex:1; height:1px; background:var(--border); min-width:30px; }
+  .band-label .route{ font-family:var(--font-control); font-size:11px; color:var(--text-muted); }
+
+  /* flow connector */
+  .flow{ display:flex; align-items:center; justify-content:center; gap:14px; padding:var(--space-2) 0; }
+  .flow .line{ width:2px; height:22px; background:linear-gradient(var(--gray-300),var(--brand-yellow-dark)); border-radius:2px; }
+  .flow i{ font-size:22px; color:var(--brand-yellow-dark); }
+  .flow span{ font-family:var(--font-ui); font-weight:700; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted); }
+
+  /* generic surface card */
+  .surface{ background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow-card); overflow:hidden; }
+  .surface-top{ display:flex; align-items:center; gap:12px; padding:13px 20px; border-bottom:1px solid var(--border); }
+  .surface-top.amber{ background:linear-gradient(90deg, var(--brand-yellow-tint), var(--bg-surface)); }
+  .surface-top.green{ background:linear-gradient(90deg, var(--success-tint), var(--bg-surface)); }
+  .surface-top .st-mark{ width:30px; height:30px; border-radius:8px; flex:none; display:grid; place-items:center; }
+  .surface-top .st-mark i{ font-size:18px; }
+  .surface-top h3{ font-family:var(--font-head); font-weight:800; font-size:16px; color:var(--gray-900); margin:0; letter-spacing:-0.01em; }
+  .surface-top .st-sub{ font-family:var(--font-ui); font-size:12.5px; color:var(--text-secondary); }
+
+  /* CONFIG: balanced scorecard */
+  .config{ display:grid; grid-template-columns:1.35fr 1fr; gap:0; }
+  .config .left{ padding:var(--space-5); border-right:1px solid var(--divider); }
+  .config .right{ padding:var(--space-5); background:var(--gray-25); }
+  .bs-label{ font-family:var(--font-ui); font-weight:700; font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--text-muted); margin:0 0 12px; }
+  .persp{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .pcard{ border:1px solid var(--border); border-radius:var(--radius-md); padding:11px 13px; background:var(--bg-surface); }
+  .pcard .pi{ display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+  .pcard .pi i{ font-size:16px; }
+  .pcard .pi h4{ font-family:var(--font-head); font-weight:700; font-size:13px; color:var(--gray-900); margin:0; }
+  .pcard p{ font-family:var(--font-ui); font-size:11.5px; line-height:1.4; color:var(--text-muted); margin:0; }
+  .cascade{ display:flex; flex-direction:column; gap:9px; }
+  .cstep{ display:flex; gap:11px; align-items:flex-start; }
+  .cstep .cn{ width:24px; height:24px; border-radius:6px; flex:none; display:grid; place-items:center; font-family:var(--font-head); font-weight:800; font-size:11px; color:#fff; }
+  .cstep .cb h4{ font-family:var(--font-head); font-weight:700; font-size:13px; color:var(--gray-900); margin:0 0 1px; }
+  .cstep .cb p{ font-family:var(--font-ui); font-size:11.5px; line-height:1.4; color:var(--text-secondary); margin:0; }
+  .formula{ margin-top:14px; padding:10px 13px; border:1px dashed var(--border-strong); border-radius:var(--radius-md); background:var(--bg-surface); font-family:var(--font-control); font-size:11.5px; line-height:1.5; color:var(--gray-800); }
+  .formula b{ color:var(--brand-blue); }
+
+  /* CYCLE: 4 stages horizontal */
+  .cycle{ display:grid; grid-template-columns:repeat(4,1fr); }
+  .stage{ position:relative; padding:var(--space-5) var(--space-4); border-right:1px solid var(--divider); }
+  .stage:last-child{ border-right:0; }
+  .stage .sh{ display:flex; align-items:center; gap:9px; margin-bottom:8px; }
+  .stage .snum{ width:26px; height:26px; border-radius:50%; flex:none; display:grid; place-items:center; font-family:var(--font-head); font-weight:800; font-size:13px; color:#fff; }
+  .stage .si{ font-size:18px; }
+  .stage h4{ font-family:var(--font-head); font-weight:700; font-size:14.5px; color:var(--gray-900); margin:0 0 5px; line-height:1.15; }
+  .stage p{ font-family:var(--font-ui); font-size:12px; line-height:1.45; color:var(--text-secondary); margin:0 0 9px; }
+  .stage .who{ display:inline-flex; align-items:center; gap:6px; font-family:var(--font-control); font-weight:600; font-size:10.5px; padding:3px 9px; border-radius:var(--radius-full); background:var(--gray-100); color:var(--text-secondary); }
+  .stage:not(:last-child)::after{
+    content:"\EA6E"; font-family:"remixicon"; position:absolute; right:-11px; top:24px; z-index:3;
+    width:22px; height:22px; border-radius:50%; background:#fff; border:1px solid var(--border);
+    display:grid; place-items:center; font-size:14px; color:var(--gray-400);
+  }
+
+  /* SCORE GATE: branching */
+  .gate{ background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow-card); padding:var(--space-5) var(--space-6); }
+  .gate-head{ display:flex; align-items:center; gap:12px; margin-bottom:var(--space-5); }
+  .gate-head .gm{ width:34px; height:34px; border-radius:9px; background:var(--gray-900); display:grid; place-items:center; flex:none; }
+  .gate-head .gm i{ color:var(--brand-yellow); font-size:19px; }
+  .gate-head h3{ font-family:var(--font-head); font-weight:800; font-size:16px; color:var(--gray-900); margin:0; }
+  .gate-head p{ font-family:var(--font-ui); font-size:12.5px; color:var(--text-secondary); margin:2px 0 0; }
+  .branches{ display:grid; grid-template-columns:repeat(3,1fr); gap:var(--space-4); }
+  .branch{ border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+  .branch .bh{ padding:10px 14px; display:flex; align-items:center; gap:9px; }
+  .branch .bh .score{ font-family:var(--font-head); font-weight:800; font-size:13px; padding:2px 9px; border-radius:var(--radius-xs); color:#fff; }
+  .branch .bh h4{ font-family:var(--font-head); font-weight:700; font-size:14px; margin:0; }
+  .branch .bb{ padding:12px 14px 14px; background:var(--bg-surface); }
+  .branch .bb p{ font-family:var(--font-ui); font-size:12px; line-height:1.45; color:var(--text-secondary); margin:0 0 9px; }
+  .branch .bb .dest{ display:inline-flex; align-items:center; gap:7px; font-family:var(--font-control); font-weight:600; font-size:11px; padding:4px 10px; border-radius:var(--radius-full); }
+  .branch .bb .dest i{ font-size:13px; }
+  .branch .bb .route{ display:block; margin-top:8px; font-family:var(--font-control); font-size:10.5px; color:var(--text-muted); }
+
+  .b-pip .bh{ background:var(--error-tint); } .b-pip .bh .score{ background:var(--error); } .b-pip .bh h4{ color:var(--error); }
+  .b-pip .dest{ background:var(--error-tint); color:var(--error); }
+  .b-mid .bh{ background:var(--gray-100); } .b-mid .bh .score{ background:var(--gray-500); } .b-mid .bh h4{ color:var(--gray-700); }
+  .b-mid .dest{ background:var(--gray-100); color:var(--text-secondary); }
+  .b-top .bh{ background:var(--success-tint); } .b-top .bh .score{ background:var(--success); } .b-top .bh h4{ color:var(--success-deep); }
+  .b-top .dest{ background:var(--success-tint); color:var(--success-deep); }
+
+  /* IDP block */
+  .idp{ display:grid; grid-template-columns:1.1fr 1fr; }
+  .idp .il{ padding:var(--space-5); border-right:1px solid var(--divider); }
+  .idp .ir{ padding:var(--space-5); background:var(--gray-25); }
+  .idp h4.blk{ font-family:var(--font-ui); font-weight:700; font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--text-muted); margin:0 0 12px; }
+  .goalmeta{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+  .goalmeta .gm2{ font-family:var(--font-control); font-weight:600; font-size:11px; padding:4px 10px; border-radius:var(--radius-full); background:var(--bg-surface); border:1px solid var(--border); color:var(--gray-700); }
+  .idp .note{ font-family:var(--font-ui); font-size:12px; line-height:1.5; color:var(--text-secondary); margin:0 0 6px; }
+  .idp .note b{ color:var(--gray-900); }
+  .seventy{ display:flex; flex-direction:column; gap:9px; }
+  .sevrow{ display:grid; grid-template-columns:50px 1fr; gap:11px; align-items:center; }
+  .sevrow .pct{ font-family:var(--font-head); font-weight:800; font-size:18px; text-align:right; }
+  .sevrow .sv h5{ font-family:var(--font-head); font-weight:700; font-size:13px; color:var(--gray-900); margin:0 0 1px; }
+  .sevrow .sv p{ font-family:var(--font-ui); font-size:11px; line-height:1.35; color:var(--text-muted); margin:0; }
+  .reviews{ margin-top:14px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .reviews .rv{ display:inline-flex; align-items:center; gap:6px; font-family:var(--font-control); font-weight:600; font-size:10.5px; padding:4px 10px; border-radius:var(--radius-full); background:var(--brand-blue); color:#fff; }
+  .reviews .arr{ color:var(--gray-300); font-size:13px; }
+
+  /* HANDOFF — the hero connector */
+  .handoff{ background:linear-gradient(120deg, var(--gray-900), #1b2330); border-radius:var(--radius-xl); padding:var(--space-8) var(--space-8); color:#fff; box-shadow:var(--shadow-modal); position:relative; overflow:hidden; }
+  .handoff::after{ content:""; position:absolute; inset:0; background:radial-gradient(120% 140% at 88% -10%, rgba(255,216,0,.18), transparent 55%); pointer-events:none; }
+  .handoff .ho-top{ display:flex; align-items:center; gap:11px; margin-bottom:var(--space-4); position:relative; }
+  .handoff .ho-top .hm{ width:32px; height:32px; border-radius:8px; background:var(--brand-yellow); display:grid; place-items:center; flex:none; }
+  .handoff .ho-top .hm i{ color:var(--brand-ink); font-size:18px; }
+  .handoff .ho-top h3{ font-family:var(--font-head); font-weight:800; font-size:18px; margin:0; letter-spacing:-0.01em; }
+  .handoff > p{ font-family:var(--font-ui); font-size:13.5px; line-height:1.55; color:rgba(255,255,255,.78); margin:0 0 var(--space-5); max-width:80ch; position:relative; }
+  .agg{ display:grid; grid-template-columns:repeat(3,1fr); gap:var(--space-4); position:relative; }
+  .aggcard{ background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); border-radius:var(--radius-lg); padding:var(--space-4) var(--space-5); }
+  .aggcard .an{ font-family:var(--font-head); font-weight:800; font-size:22px; color:var(--brand-yellow); margin:0 0 2px; letter-spacing:-0.01em; }
+  .aggcard .al{ font-family:var(--font-ui); font-weight:700; font-size:13px; color:#fff; margin:0 0 3px; }
+  .aggcard .ad{ font-family:var(--font-ui); font-size:11.5px; line-height:1.4; color:rgba(255,255,255,.6); margin:0; }
+  .maps-to{ margin-top:var(--space-5); display:flex; align-items:center; gap:10px; flex-wrap:wrap; position:relative; font-family:var(--font-ui); font-size:13px; color:rgba(255,255,255,.78); }
+  .maps-to a{ display:inline-flex; align-items:center; gap:8px; font-weight:700; color:var(--brand-ink); background:var(--brand-yellow); padding:8px 15px; border-radius:var(--radius-full); box-shadow:var(--shadow-btn); }
+  .maps-to a i{ font-size:16px; }
+
+  /* terminal: talent */
+  .terminal{ display:flex; align-items:center; gap:16px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow-card); padding:var(--space-5) var(--space-6); }
+  .terminal .ti{ width:48px; height:48px; border-radius:12px; flex:none; display:grid; place-items:center; background:#6941C6; }
+  .terminal .ti i{ font-size:24px; color:#fff; }
+  .terminal .tc h3{ font-family:var(--font-head); font-weight:800; font-size:17px; color:var(--gray-900); margin:0 0 3px; }
+  .terminal .tc p{ font-family:var(--font-ui); font-size:13px; line-height:1.5; color:var(--text-secondary); margin:0; }
+  .terminal .tlater{ margin-left:auto; font-family:var(--font-control); font-weight:600; font-size:11px; padding:4px 11px; border-radius:var(--radius-full); background:var(--gray-100); color:var(--text-secondary); flex:none; }
+
+  @media (max-width:1000px){
+    .cycle{ grid-template-columns:1fr 1fr; }
+    .stage{ border-bottom:1px solid var(--divider); }
+    .stage::after{ display:none; }
+    .config,.idp{ grid-template-columns:1fr; }
+    .config .left,.idp .il{ border-right:0; border-bottom:1px solid var(--divider); }
+    .branches,.agg{ grid-template-columns:1fr; }
+    .persp{ grid-template-columns:1fr; }
+  }
+  @media (max-width:620px){
+    .cycle{ grid-template-columns:1fr; }
+    .maphead h1{ font-size:27px; }
+    .terminal{ flex-wrap:wrap; } .terminal .tlater{ margin-left:0; }
+  }
+  @media print{
+    body{ background:#fff; }
+    .wrap{ max-width:none; padding:0; }
+    .surface,.gate,.terminal,.statusbar{ box-shadow:none; }
+    .band,.handoff,.gate,.surface{ break-inside:avoid; }
+    .handoff{ background:var(--gray-900) !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <header class="maphead">
+      <span class="kicker"><span class="dot"></span>BISTA HR · Bistasol ERP · Cross-Module Flow</span>
+      <h1>Performance → Learning &amp; Development</h1>
+      <p>How the <strong>existing Performance / Appraisal module</strong> connects, end-to-end, into the Learning &amp; Development module being designed. An employee's appraisal score routes them into improvement, steady development, or the leadership pipeline — and every Individual Development Plan aggregates upward to become L&amp;D's demand signal.</p>
+      <a class="jumpmap" href="LD Module Map.html"><i class="ri-map-2-line"></i>Continues into the L&amp;D Module Map →</a>
+    </header>
+
+    <div class="statusbar">
+      <div class="si"><span class="sw" style="background:var(--success)"></span><b>Built</b> — live in the HR app today</div>
+      <div class="si"><span class="sw" style="background:var(--brand-yellow)"></span><b>In design</b> — L&amp;D module (next)</div>
+      <div class="si"><span class="sw" style="background:#6941C6"></span><b>Later</b> — Talent &amp; succession</div>
+    </div>
+
+    <!-- A · CONFIGURATION -->
+    <section class="band">
+      <div class="band-label">
+        <span class="bl-num">A</span>
+        <h2>Configuration — Balanced Scorecard</h2>
+        <span class="bl-tag tag-built">Built · Admin</span>
+        <span class="route">/system-administration/configurations</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="surface">
+        <div class="surface-top amber"><span class="st-mark" style="background:var(--brand-yellow)"><i class="ri-settings-5-line" style="color:var(--brand-ink)"></i></span><h3>The measurement framework</h3><span class="st-sub">— set once per period, cascades to every employee</span></div>
+        <div class="config">
+          <div class="left">
+            <p class="bs-label">Four perspectives</p>
+            <div class="persp">
+              <div class="pcard"><div class="pi"><i class="ri-money-dollar-circle-line" style="color:var(--success-deep)"></i><h4>Financial</h4></div><p>Revenue, profitability, cost management.</p></div>
+              <div class="pcard"><div class="pi"><i class="ri-emotion-happy-line" style="color:var(--brand-blue)"></i><h4>Customer</h4></div><p>Satisfaction, market share, brand.</p></div>
+              <div class="pcard"><div class="pi"><i class="ri-loop-right-line" style="color:var(--warning-deep)"></i><h4>Internal Process</h4></div><p>Efficiency, turnaround, quality.</p></div>
+              <div class="pcard"><div class="pi"><i class="ri-seedling-line" style="color:#6941C6"></i><h4>Learning &amp; Growth</h4></div><p>Capability, development, culture.</p></div>
+            </div>
+          </div>
+          <div class="right">
+            <p class="bs-label">Weighting cascade</p>
+            <div class="cascade">
+              <div class="cstep"><span class="cn" style="background:var(--brand-blue)">1</span><div class="cb"><h4>Perspectives</h4><p>Sum to 100% of company focus.</p></div></div>
+              <div class="cstep"><span class="cn" style="background:#6941C6">2</span><div class="cb"><h4>Objectives</h4><p>Weighted as % of their perspective.</p></div></div>
+              <div class="cstep"><span class="cn" style="background:var(--success)">3</span><div class="cb"><h4>Smart KPIs / Measures</h4><p>Weighted as % of their objective.</p></div></div>
+            </div>
+            <div class="formula">Final KPI weight = <b>Perspective%</b> × <b>Objective%</b> × <b>KPI%</b><br>e.g. 60% × 40% × 24% = <b>5.76%</b> of total performance</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flow"><span class="line"></span></div>
+    <div class="flow"><span>annual cycle</span><i class="ri-arrow-down-line"></i></div>
+
+    <!-- B · PERFORMANCE CYCLE -->
+    <section class="band">
+      <div class="band-label">
+        <span class="bl-num">B</span>
+        <h2>The Annual Performance Cycle</h2>
+        <span class="bl-tag tag-built">Built</span>
+        <span class="route">/appraisals/*</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="surface">
+        <div class="cycle">
+          <div class="stage">
+            <div class="sh"><span class="snum" style="background:var(--brand-blue)">1</span><i class="ri-flag-2-line si" style="color:var(--brand-blue)"></i></div>
+            <h4>Goal Setting</h4>
+            <p>Employee sets targets per perspective; weights must total 100%. Manager approves or rejects.</p>
+            <span class="who"><i class="ri-user-line"></i>Employee → Manager</span>
+          </div>
+          <div class="stage">
+            <div class="sh"><span class="snum" style="background:var(--brand-yellow-dark)">2</span><i class="ri-scales-3-line si" style="color:var(--brand-yellow-dark)"></i></div>
+            <h4>Performance Appraisal</h4>
+            <p>Two-in-one: employee self-appraises, then line manager appraises the same objectives.</p>
+            <span class="who"><i class="ri-team-line"></i>Self + Manager</span>
+          </div>
+          <div class="stage">
+            <div class="sh"><span class="snum" style="background:var(--warning-deep)">3</span><i class="ri-equalizer-line si" style="color:var(--warning-deep)"></i></div>
+            <h4>Moderation</h4>
+            <p>Scores are calibrated across the department for fairness and consistency.</p>
+            <span class="who"><i class="ri-government-line"></i>HRBP / Committee</span>
+          </div>
+          <div class="stage">
+            <div class="sh"><span class="snum" style="background:var(--success)">4</span><i class="ri-bnb-line si" style="color:var(--success)"></i></div>
+            <h4>Final Score &amp; Rating</h4>
+            <p>A consolidated score (out of 5) and rating band — the engine that drives what happens next.</p>
+            <span class="who"><i class="ri-star-line"></i>Score 1–5</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flow"><span class="line"></span></div>
+    <div class="flow"><span>score routes the employee</span><i class="ri-arrow-down-line"></i></div>
+
+    <!-- C · SCORE GATE -->
+    <section class="band">
+      <div class="band-label">
+        <span class="bl-num">C</span>
+        <h2>Score-Driven Routing</h2>
+        <span class="bl-tag tag-built">Built</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="gate">
+        <div class="gate-head">
+          <span class="gm"><i class="ri-git-branch-line"></i></span>
+          <div><h3>The appraisal doesn't end at a score</h3><p>It feeds the next intervention — this is the hinge between Performance and Development.</p></div>
+        </div>
+        <div class="branches">
+          <div class="branch b-pip">
+            <div class="bh"><span class="score">&lt; 3</span><h4>Below average</h4></div>
+            <div class="bb">
+              <p>Underperformers are enrolled into a structured <b>Performance Improvement Plan</b> with activities, milestones and progress reviews.</p>
+              <span class="dest"><i class="ri-refresh-line"></i>PIP Management</span>
+              <span class="route">/appraisals/pip-management</span>
+            </div>
+          </div>
+          <div class="branch b-mid">
+            <div class="bh"><span class="score">3 – 4</span><h4>Meets / solid</h4></div>
+            <div class="bb">
+              <p>Steady performers continue on their standard <b>Individual Development Plan</b> to grow within the role.</p>
+              <span class="dest"><i class="ri-user-star-line"></i>Standard IDP</span>
+              <span class="route">/appraisals/development-plan</span>
+            </div>
+          </div>
+          <div class="branch b-top">
+            <div class="bh"><span class="score">4 +</span><h4>High performer</h4></div>
+            <div class="bb">
+              <p>Top performers are flagged for the <b>Leadership Pipeline</b> and prioritised for development resources.</p>
+              <span class="dest"><i class="ri-node-tree"></i>Leadership Pipeline</span>
+              <span class="route">Talent &amp; succession · later</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flow"><span class="line"></span></div>
+    <div class="flow"><span>everyone plans development</span><i class="ri-arrow-down-line"></i></div>
+
+    <!-- D · IDP -->
+    <section class="band">
+      <div class="band-label">
+        <span class="bl-num">D</span>
+        <h2>Individual Development Plan (IDP)</h2>
+        <span class="bl-tag tag-built">Built</span>
+        <span class="route">/appraisals/development-plan</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="surface">
+        <div class="surface-top green"><span class="st-mark" style="background:var(--success)"><i class="ri-route-line" style="color:#fff"></i></span><h3>Set before the year begins · reviewed through it</h3><span class="st-sub">— the bridge from performance into learning</span></div>
+        <div class="idp">
+          <div class="il">
+            <h4 class="blk">Each development goal</h4>
+            <p class="note">Every employee sets <b>3 to 5 goals</b>. Each carries a type and priority, then breaks down into <b>activities</b>, and each activity names a <b>learning method</b>.</p>
+            <div class="goalmeta">
+              <span class="gm2">Type · Technical</span>
+              <span class="gm2">Type · Behavioral</span>
+              <span class="gm2">Type · Leadership</span>
+              <span class="gm2">Priority · High / Med / Low</span>
+            </div>
+            <p class="note" style="margin-top:4px;">Manager accepts the plan, then reviews progress at two checkpoints:</p>
+            <div class="reviews">
+              <span class="rv"><i class="ri-check-line"></i>Accept</span><span class="arr">→</span>
+              <span class="rv"><i class="ri-calendar-line"></i>Mid-year review</span><span class="arr">→</span>
+              <span class="rv"><i class="ri-calendar-check-line"></i>End-year review</span>
+            </div>
+          </div>
+          <div class="ir">
+            <h4 class="blk">Learning methods · the 70-20-10 model</h4>
+            <div class="seventy">
+              <div class="sevrow"><span class="pct" style="color:var(--success-deep)">70%</span><div class="sv"><h5>On-the-job experience</h5><p>Stretch assignments, job rotation, acting roles, leading projects.</p></div></div>
+              <div class="sevrow"><span class="pct" style="color:var(--brand-blue)">20%</span><div class="sv"><h5>Social learning</h5><p>Mentoring, coaching, peer groups, 360° feedback, communities of practice.</p></div></div>
+              <div class="sevrow"><span class="pct" style="color:var(--warning-deep)">10%</span><div class="sv"><h5>Formal training</h5><p>Courses, certifications, workshops, e-learning, leadership programmes.</p></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="flow"><span class="line"></span></div>
+    <div class="flow"><span>HRBP aggregates every IDP</span><i class="ri-arrow-down-line"></i></div>
+
+    <!-- E · HANDOFF -->
+    <section class="band">
+      <div class="band-label">
+        <span class="bl-num">E</span>
+        <h2>The Handoff into Learning &amp; Development</h2>
+        <span class="bl-tag tag-cross">Built → In design</span>
+        <span class="route">/appraisals/idp-management → L&amp;D</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="handoff">
+        <div class="ho-top"><span class="hm"><i class="ri-shake-hands-line"></i></span><h3>IDP demand becomes the L&amp;D demand signal</h3></div>
+        <p>HRBPs see every development plan in one overview — who's done, who hasn't, and what each person chose. Aggregated across the bank, those individual choices become L&amp;D's procurement and planning input. <em>“500 people want formal training in X; 200 want to understudy…”</em></p>
+        <div class="agg">
+          <div class="aggcard"><p class="an">10%</p><p class="al">Formal training demand</p><p class="ad">Courses &amp; certifications to source, schedule and cost → L&amp;D Program Catalog.</p></div>
+          <div class="aggcard"><p class="an">20%</p><p class="al">Coaching &amp; mentoring</p><p class="ad">Pairings to set up and oversee → L&amp;D coaching workflow.</p></div>
+          <div class="aggcard"><p class="an">70%</p><p class="al">On-the-job experiences</p><p class="ad">Rotations &amp; stretch assignments tracked against impact.</p></div>
+        </div>
+        <div class="maps-to">
+          <span>Feeds directly into</span>
+          <a href="LD Module Map.html"><i class="ri-focus-3-line"></i>L&amp;D Tier-3 Needs Assessment</a>
+          <a href="LD Requirements Brief.html"><i class="ri-file-text-line"></i>Requirements Brief</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="flow"><span class="line"></span></div>
+    <div class="flow"><span>and ultimately</span><i class="ri-arrow-down-line"></i></div>
+
+    <!-- F · TALENT -->
+    <section class="band" style="margin-bottom:0;">
+      <div class="band-label">
+        <span class="bl-num">F</span>
+        <h2>Talent &amp; Succession</h2>
+        <span class="bl-tag" style="background:#EDE7F9;color:#6941C6">Later</span>
+        <span class="bl-rule"></span>
+      </div>
+      <div class="terminal">
+        <span class="ti"><i class="ri-vip-crown-2-line"></i></span>
+        <div class="tc">
+          <h3>The end destination</h3>
+          <p>Performance scores identify the pipeline (4+) and PIP cases (under 3); development builds them; L&amp;D delivers it — all converging on talent management and succession planning.</p>
+        </div>
+        <span class="tlater">Mapped · delivered in a later phase</span>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>

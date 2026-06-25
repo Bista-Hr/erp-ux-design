@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- @dsCard group="Components · Actions" name="Buttons & Row Actions" subtitle="Button variants · sizes · icon · ViewDetails · RowActions" viewport="780x440" -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/mona-sans@latest/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../bista-components.css">
+<link rel="stylesheet" href="ds-card.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="ds-card.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/primitives/controls.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/primitives/ui.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/primitives/status-badge.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/primitives/empty-state.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/primitives/FileIcon.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/primitives/PageHeader.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/forms/Combobox.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/forms/StatusFilter.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/forms/SupportingDocsUploader.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/forms/MultiImageDropZone.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/forms/SupportingDocuments.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/overlays/Modal.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/overlays/ConfirmModal.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/overlays/Drawer.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/overlays/RejectionReasonModal.jsx"></script>
+  <script type="text/babel" src="../ui_kits/bista-hr/src/overlays/Toast.jsx"></script>
+  <script type="text/babel">
+const { useState } = React;
+function Spec({label, children}) { return (<div className="spec"><div className="spec-label">{label}</div><div className="spec-row">{children}</div></div>); }
+function SpecCol({label, children}) { return (<div className="spec"><div className="spec-label">{label}</div><div className="spec-col">{children}</div></div>); }
+
+function Demo(){
+  return (<div className="page">
+    <Spec label="Button variants">
+      <Button variant="primary" icon="add-line">Create Job Grade</Button>
+      <Button variant="stroke">Cancel</Button>
+      <Button variant="blue" icon="send-plane-line">Send</Button>
+      <Button variant="ghost" icon="more-2-fill">More</Button>
+      <Button variant="danger" icon="delete-bin-line">Archive</Button>
+      <Button variant="primary" disabled>Disabled</Button>
+    </Spec>
+    <Spec label="Sizes & icon-only">
+      <Button variant="primary">Default</Button>
+      <Button variant="primary" size="sm">Small</Button>
+      <Button variant="primary" size="xs">XSmall</Button>
+      <Button variant="stroke" icon="search-2-line" size="sm" />
+      <Button variant="primary" icon="add-line" />
+    </Spec>
+    <Spec label="ViewDetailsButton">
+      <ViewDetailsButton onClick={()=>{}} />
+      <ViewDetailsButton label="Open record" icon="external-link-line" onClick={()=>{}} />
+    </Spec>
+    <Spec label="RowActions — 2 inline (one-word) · 3+ collapse to a menu">
+      <UI.RowActions actions={[{label:'View Details',icon:'eye-line',onClick:()=>{}},{label:'Post Job',icon:'send-plane-line',onClick:()=>{}}]} />
+      <UI.RowActions actions={[{label:'View Details',icon:'eye-line',onClick:()=>{}},{label:'Edit',icon:'edit-line',onClick:()=>{}},{label:'Archive',icon:'archive-line',danger:true,onClick:()=>{}}]} />
+    </Spec>
+  </div>);
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo/>);
+  </script>
+</body>
+</html>
