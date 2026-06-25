@@ -363,7 +363,7 @@ function CatalogDetail({ program, enrollments, canMarkAttendance, onMarkAttendan
                 </div>
               )}
               {enrolled.length === 0
-                ? <EmptyState compact title="No one enrolled yet" subtitle="Use Enroll Learners to add participants to this program." />
+                ? <EmptyState compact variant="users" title="No one enrolled yet" subtitle="Use Enroll Learners to add participants to this program." />
                 : <table className="bh" style={{ margin: 0 }}>
                     <thead><tr><th>Learner</th><th>Department</th><th>Source</th><th>{attMode ? "Attendance" : "Status"}</th></tr></thead>
                     <tbody>

@@ -75,7 +75,7 @@ function EmployeesScreen({ employees, onOpen, onAdd, onEdit, onArchive, onImport
             ))}
             {shown.length === 0 && (
               <tr><td colSpan={8} style={{ padding: 0 }}>
-                <EmptyState compact title="No results found" subtitle="No employees match your search." />
+                <EmptyState compact variant="users" title="No results found" subtitle="No employees match your search." />
               </td></tr>
             )}
           </tbody>

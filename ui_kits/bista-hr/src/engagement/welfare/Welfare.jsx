@@ -49,7 +49,7 @@ function CircularsTable({ rows, q, setQ, tab, onOpen, onApprove, onReject, onArc
       )}
 
       {rows.length === 0
-        ? <EmptyState title={pending ? "No Pending Circulars" : "No Circulars Yet"} subtitle={pending ? "There are no circulars awaiting approval." : "Published circulars will appear here."} />
+        ? <EmptyState variant="message" title={pending ? "No Pending Circulars" : "No Circulars Yet"} subtitle={pending ? "There are no circulars awaiting approval." : "Published circulars will appear here."} />
         : <table className="bh">
             <thead><tr>
               <th>{pending ? "Submitted Date" : "Created Date"}</th><th>Title</th><th>Type</th>
@@ -78,7 +78,7 @@ function CircularsTable({ rows, q, setQ, tab, onOpen, onApprove, onReject, onArc
                   </td>
                 </tr>
               ))}
-              {shown.length === 0 && <tr><td colSpan={6} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No circular matches your filters." /></td></tr>}
+              {shown.length === 0 && <tr><td colSpan={6} style={{ padding: 0 }}><EmptyState compact variant="message" title="No results found" subtitle="No circular matches your filters." /></td></tr>}
             </tbody>
           </table>}
       {rows.length > 0 && shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}

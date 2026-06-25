@@ -53,7 +53,7 @@ function AdminLeaveRequestsView({ rows, onCreate, onOpen, onApprove, onReject })
                   </tr>
                 );
               })}
-              {shown.length === 0 && <tr><td colSpan={7} style={{ padding: 0 }}><EmptyState compact title="No requests found" subtitle="No leave requests match this view." /></td></tr>}
+              {shown.length === 0 && <tr><td colSpan={7} style={{ padding: 0 }}><EmptyState compact variant="leave" title="No requests found" subtitle="No leave requests match this view." /></td></tr>}
             </tbody>
           </table>
         </div>

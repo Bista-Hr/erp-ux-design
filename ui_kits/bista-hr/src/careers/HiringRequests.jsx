@@ -232,7 +232,7 @@ function HiringRequestsScreen({ onToast, lookups, onCreatePost, onSubPage }) {
           filters={hrFilters} onReset={() => { setFDept(""); setFStatus(""); setFStart(""); setFCreated(""); setApplied({ dept: "", status: "" }); }}
           onApply={() => setApplied({ dept: fDept, status: fStatus })} />
         {rows.length === 0
-          ? <EmptyState compact title="No hiring requests" subtitle="There is no data to show you right now." />
+          ? <EmptyState compact variant="job" title="No hiring requests" subtitle="There is no data to show you right now." />
           : <table className="bh">
               <thead><tr><th>Date Created</th><th>Job Title</th><th>Vacancies</th><th>Department</th><th>Start Date</th><th>Status</th><th style={{ width: 60 }}></th></tr></thead>
               <tbody>

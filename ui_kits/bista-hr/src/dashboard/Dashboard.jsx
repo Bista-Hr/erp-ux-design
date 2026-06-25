@@ -77,7 +77,7 @@ function CareersScreen({ onToast }) {
         <span className="bh-chip">{posts.length} open roles</span>
       </div>
       {posts.length === 0
-        ? <div className="card" style={{ padding: 8 }}><EmptyState title="No open roles" subtitle="There are no open positions to apply for right now." /></div>
+        ? <div className="card" style={{ padding: 8 }}><EmptyState variant="job" title="No open roles" subtitle="There are no open positions to apply for right now." /></div>
         : <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16 }}>
             {posts.map(p => {
               const isApplied = applied[p.id];

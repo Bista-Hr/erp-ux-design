@@ -146,7 +146,7 @@ function PreviewEmployeesScreen({ rows: initial, onCancel, onConfirm, onAddEmplo
                   </tr>
                 ))}
                 {shown.length === 0 && (
-                  <tr><td colSpan={8} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No employees match your search." /></td></tr>
+                  <tr><td colSpan={8} style={{ padding: 0 }}><EmptyState compact variant="users" title="No results found" subtitle="No employees match your search." /></td></tr>
                 )}
               </tbody>
             </table>

@@ -80,6 +80,13 @@ const PROMOTION_SEED = [
     effectiveDate: "Jun 01, 2026", dateSubmitted: "May 14, 2026", status: "Approved",
     justification: "Consistently strong assurance performance and readiness for a broader operational remit.",
     allowances: [], documents: [PROMO_DOC("Promotion Recommendation.pdf", "PDF", "1.2 MB", "Reference Letter"), PROMO_DOC("Performance Summary.xlsx", "XLSX", "84 KB", "Other")],
+    docUrls: [
+      "https://files.bistasol.com/promotions/Promotion-Recommendation.pdf",
+      "https://files.bistasol.com/promotions/Talent-Review-Notes.docx",
+      "https://files.bistasol.com/promotions/Performance-Summary.xlsx",
+      "https://files.bistasol.com/promotions/Board-Briefing-Deck.pptx",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/640px-Cat03.jpg",
+    ],
     approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: "5/16/2026, 2:08:34 PM",
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
   { id: 2, employees: ["Abass Abdul Mumin"], staffIds: "EMP-17431",

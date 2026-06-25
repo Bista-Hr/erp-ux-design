@@ -239,7 +239,7 @@ function DocumentsTab({ d, edit }) {
         </div>
         <div>
           {list.length === 0
-            ? <EmptyState compact title="No files yet" subtitle={`No ${noun.toLowerCase()}s have been uploaded for this employee.`} cta={`Upload ${noun}`} onAction={() => setUploadOpen(true)} />
+            ? <EmptyState compact variant="document" title="No files yet" subtitle={`No ${noun.toLowerCase()}s have been uploaded for this employee.`} cta={`Upload ${noun}`} onAction={() => setUploadOpen(true)} />
             : pg.pageItems.map((doc, i) => <DocFileRow key={i} doc={doc} onDownload={() => {}} onEdit={filter === "document" ? () => setEditingDoc(doc) : null} onDelete={() => doDelete(doc)} />)}
         </div>
         {list.length > 0 && <Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} />}

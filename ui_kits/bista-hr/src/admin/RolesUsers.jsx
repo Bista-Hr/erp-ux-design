@@ -509,7 +509,7 @@ function UsersScreen({ onToast, roles = [], canEdit = true }) {
                 </td>
               </tr>
             ))}
-            {shown.length === 0 && <tr><td colSpan={4} style={{ padding: 0 }}><EmptyState compact title="No users found" subtitle="No user matches your filters." /></td></tr>}
+            {shown.length === 0 && <tr><td colSpan={4} style={{ padding: 0 }}><EmptyState compact variant="users" title="No users found" subtitle="No user matches your filters." /></td></tr>}
           </tbody>
         </table>
         {shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}

@@ -78,7 +78,7 @@ function ApartmentsTable({ apartments, requests, onOpenApartment, onOpenRequest,
       {/* table */}
       {tab === "pending" ? (
         reqRows.length === 0
-          ? <EmptyState title="No Pending Requests" subtitle="There are no pending accommodation requests." />
+          ? <EmptyState variant="message" title="No Pending Requests" subtitle="There are no pending accommodation requests." />
           : <React.Fragment><table className="bh">
               <thead><tr><th>Request Sent On</th><th>Employee</th><th>Apartment Type</th><th>Duration</th><th>Reason</th></tr></thead>
               <tbody>
@@ -96,7 +96,7 @@ function ApartmentsTable({ apartments, requests, onOpenApartment, onOpenRequest,
             </table>
             {reqRows.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={reqPg.page} pages={reqPg.pages} onPrev={reqPg.prev} onNext={reqPg.next} /></div>}</React.Fragment>
       ) : aptRows.length === 0 ? (
-        <EmptyState title={tab === "all" ? "No Apartments Yet" : "No Available Apartments"}
+        <EmptyState variant="place" title={tab === "all" ? "No Apartments Yet" : "No Available Apartments"}
           subtitle={tab === "all" ? "Get started by creating your first apartment record." : "All apartments are currently occupied."} />
       ) : tab === "all" ? (
         <React.Fragment>

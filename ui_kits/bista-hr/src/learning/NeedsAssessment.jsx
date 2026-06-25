@@ -142,7 +142,7 @@ function NeedsAssessmentScreen({ onToast, onSubPage }) {
           <div className="bh-tablebox">
           <UI.FilterBar left={<Segmented items={NA_TABS} active={tier} onChange={setTier} />} search={q} onSearch={setQ} searchPlaceholder="Search needs…" />
           {filtered.length === 0
-            ? <EmptyState title="No training needs" subtitle="Add a need or adjust your filters." />
+            ? <EmptyState variant="assessment" title="No training needs" subtitle="Add a need or adjust your filters." />
             : <table className="bh">
                 <thead><tr><th>Need / Capability</th><th>Tier</th><th>Target</th><th>Priority</th><th>Status</th><th>Linked Program</th><th style={{ width: 48 }}></th></tr></thead>
                 <tbody>

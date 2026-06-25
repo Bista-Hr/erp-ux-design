@@ -105,7 +105,7 @@ function LeaveLanding({ periods, history, onView, onApply, onRequest, onEdit, on
         </div>
         <div style={{ border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden" }}>
           {history.length === 0
-            ? <EmptyState compact title="No leave history" subtitle="Approved and past leave will appear here." />
+            ? <EmptyState compact variant="leave" title="No leave history" subtitle="Approved and past leave will appear here." />
             : <div style={{ overflowX: "auto" }}>
                 <table className="bh">
                   <thead><tr><th>Date</th><th>Leave Type</th><th>Number of Days</th><th>Pending Time</th></tr></thead>

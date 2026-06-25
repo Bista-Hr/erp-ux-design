@@ -135,7 +135,7 @@ function AssessmentsScreen({ onToast }) {
         <div className="bh-tablebox">
         <UI.FilterBar left={asTabs} search={q} onSearch={setQ} searchPlaceholder="Search…" />
         {rows.length === 0
-          ? <EmptyState compact title="No assessments" subtitle="No assessments found in this category." />
+          ? <EmptyState compact variant="assessment" title="No assessments" subtitle="No assessments found in this category." />
           : <table className="bh">
               <thead><tr><th>Name</th><th>Job Title</th><th>Department</th><th>Scheduled</th><th>Status</th><th style={{ width: 60 }}></th></tr></thead>
               <tbody>

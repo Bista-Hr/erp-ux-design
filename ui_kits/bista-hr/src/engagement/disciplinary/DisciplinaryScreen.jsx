@@ -53,7 +53,7 @@ function DisciplinaryList({ cases, q, setQ, onCreate, onOpen, departments }) {
       )}
 
       {base.length === 0
-        ? <EmptyState title={tab === "pending" ? "No Pending Decisions" : "No Cases Found"}
+        ? <EmptyState variant={tab === "pending" ? "approval" : "document"} title={tab === "pending" ? "No Pending Decisions" : "No Cases Found"}
             subtitle={tab === "pending" ? "There are no cases pending decision at the moment." : "Get started by creating your first case."}
             cta={tab === "reports" ? "Create a case" : undefined} onAction={tab === "reports" ? onCreate : undefined} />
         : <table className="bh">
@@ -77,7 +77,7 @@ function DisciplinaryList({ cases, q, setQ, onCreate, onOpen, departments }) {
                   </td>
                 </tr>
               ))}
-              {shown.length === 0 && <tr><td colSpan={7} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No case matches your filters." /></td></tr>}
+              {shown.length === 0 && <tr><td colSpan={7} style={{ padding: 0 }}><EmptyState compact variant="document" title="No results found" subtitle="No case matches your filters." /></td></tr>}
             </tbody>
           </table>}
       {base.length > 0 && shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}

@@ -125,7 +125,7 @@ function LeaveBalancesView({ rows, onToast }) {
                 {pg.pageItems.map(r => (
                   <tr key={r.id}><td style={{ fontWeight: 600, textTransform: "uppercase" }}><span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}><Avatar name={r.employee} size={32} />{r.employee}</span></td><td>{r.type}</td><td>{r.year}</td><td>{r.entitled}</td><td>{r.used}</td><td style={{ fontWeight: 600 }}>{r.remaining}</td></tr>
                 ))}
-                {shown.length === 0 && <tr><td colSpan={6} style={{ padding: 0 }}><EmptyState compact title="No balances found" subtitle="No employee balances match your search." /></td></tr>}
+                {shown.length === 0 && <tr><td colSpan={6} style={{ padding: 0 }}><EmptyState compact variant="money" title="No balances found" subtitle="No employee balances match your search." /></td></tr>}
               </tbody>
             </table>
           </div>
@@ -145,7 +145,7 @@ function LeaveRecallsView({ onToast }) {
         <Button variant="primary" icon="add-line" onClick={() => onToast("Recall flow coming soon")}>Create Recall</Button>
       </div>
       <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
-        <EmptyState title="No leave recalls" subtitle="When you recall an employee from approved leave, it will appear here." />
+        <EmptyState variant="leave" title="No leave recalls" subtitle="When you recall an employee from approved leave, it will appear here." />
       </div>
     </div>
   );

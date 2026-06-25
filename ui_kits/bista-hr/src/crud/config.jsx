@@ -7,7 +7,7 @@
 const CONFIGS = {
   // ---- Department — modelled on the Figma "Adding Department" flow ----
   "Departments": {
-    title: "Departments", subtitle: "Manage your organization's departments.", cta: "Add Department", noun: "Department",
+    title: "Departments", subtitle: "Manage your organization's departments.", cta: "Add Department", noun: "Department", emptyVariant: "place",
     cols: [
       { key: "name", label: "Name" }, { key: "code", label: "Code" },
       { key: "orgUnit", label: "Organizational Unit" }, { key: "head", label: "Head of Department" },
@@ -35,7 +35,7 @@ const CONFIGS = {
   },
   "Branches/Units": {
     title: "Organizational Units", subtitle: "Manage your organization's structure and hierarchy.",
-    cta: "Create Unit/Branch", noun: "Unit/Branch",
+    cta: "Create Unit/Branch", noun: "Unit/Branch", emptyVariant: "place",
     hideSegment: true,                               // Figma list: Search + Show Filter, no status segment
     headerAction: { key: "orgTree", label: "View Organizational Tree", icon: "node-tree" },
     cols: [
@@ -70,7 +70,7 @@ const CONFIGS = {
     ],
   },
   "Zones": {
-    title: "Zones", subtitle: "Manage your organization's zones.", cta: "Create Zone", noun: "Zone",
+    title: "Zones", subtitle: "Manage your organization's zones.", cta: "Create Zone", noun: "Zone", emptyVariant: "place",
     hideStatus: true, hideSegment: true,            // Figma Zones list shows only Name + Code (no Status column / status filter)
     menu: [{ key: "viewBranches", label: "View Branches", icon: "git-branch-line" }],
     cols: [{ key: "name", label: "Name" }, { key: "code", label: "Code" }],

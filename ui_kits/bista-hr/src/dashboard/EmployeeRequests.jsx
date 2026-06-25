@@ -100,7 +100,7 @@ function ActivityHistory({ items, onView }) {
         </div>
       </div>
       {items.length === 0
-        ? <EmptyState compact title="No Activity Yet" subtitle="Your activity history will appear here." />
+        ? <EmptyState compact variant="message" title="No Activity Yet" subtitle="Your activity history will appear here." />
         : <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
             <table className="bh">
               <thead><tr><th>Request Type</th><th>Title</th><th>Date Submitted</th><th>Status</th><th style={{ width: 1 }}></th></tr></thead>

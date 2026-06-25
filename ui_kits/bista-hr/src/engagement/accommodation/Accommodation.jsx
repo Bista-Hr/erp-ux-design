@@ -53,7 +53,7 @@ function ApartmentCard({ apt, onOpen }) {
 
 function ApartmentsGrid({ rows, q, setQ, onOpen }) {
   const shown = rows.filter(r => q === "" || `${r.name} ${r.location} ${r.apartmentType}`.toLowerCase().includes(q.toLowerCase()));
-  if (rows.length === 0) return <EmptyState title="No accommodations yet" subtitle="Add a property to start managing staff accommodation." />;
+  if (rows.length === 0) return <EmptyState variant="place" title="No accommodations yet" subtitle="Add a property to start managing staff accommodation." />;
   return (
     <React.Fragment>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 18 }}>
@@ -64,7 +64,7 @@ function ApartmentsGrid({ rows, q, setQ, onOpen }) {
         <Button variant="stroke" size="sm" icon="equalizer-line">Show Filter</Button>
       </div>
       {shown.length === 0
-        ? <EmptyState compact title="No results found" subtitle="No accommodation matches your search." />
+        ? <EmptyState compact variant="place" title="No results found" subtitle="No accommodation matches your search." />
         : <div className="acc-grid">{shown.map(a => <ApartmentCard key={a.id} apt={a} onOpen={onOpen} />)}</div>}
     </React.Fragment>
   );
@@ -82,7 +82,7 @@ function PendingRequestsList({ rows, q, setQ, onOpen }) {
         </div>
       </div>
       {rows.length === 0
-        ? <EmptyState title="No pending requests" subtitle="Accommodation requests submitted by staff will appear here." />
+        ? <EmptyState variant="message" title="No pending requests" subtitle="Accommodation requests submitted by staff will appear here." />
         : <table className="bh">
             <thead><tr><th>Employee</th><th>Duration</th><th>Period</th><th>Requested On</th><th style={{ width: 130 }}></th></tr></thead>
             <tbody>
@@ -100,7 +100,7 @@ function PendingRequestsList({ rows, q, setQ, onOpen }) {
                   <td style={{ textAlign: "right" }}><ViewDetailsButton icon="eye-line" onClick={() => onOpen(r.accommodationRequestId)} /></td>
                 </tr>
               ))}
-              {shown.length === 0 && <tr><td colSpan={5} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No request matches your search." /></td></tr>}
+              {shown.length === 0 && <tr><td colSpan={5} style={{ padding: 0 }}><EmptyState compact variant="message" title="No results found" subtitle="No request matches your search." /></td></tr>}
             </tbody>
           </table>}
     </div>

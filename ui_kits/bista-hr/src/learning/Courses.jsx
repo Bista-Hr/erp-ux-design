@@ -278,7 +278,7 @@ function CourseDetail({ course, assignments, onAssign, onEdit }) {
       {/* tracking — its own card */}
       <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="group-line" title={`Tracking (${a.length} assignees)`}>
-          {a.length === 0 ? <EmptyState compact title="Not assigned yet" subtitle="Assign this course to learners to track progress." />
+          {a.length === 0 ? <EmptyState compact variant="users" title="Not assigned yet" subtitle="Assign this course to learners to track progress." />
             : <table className="bh" style={{ margin: 0 }}>
                 <thead><tr><th>Learner</th><th>Progress</th><th>Due</th><th>Status</th></tr></thead>
                 <tbody>{a.map(x => (

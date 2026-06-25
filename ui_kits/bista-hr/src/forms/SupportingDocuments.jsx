@@ -47,6 +47,32 @@ const sdBare = (u) => (u || "").toLowerCase().split("?")[0];
 const sdIsImage = (u) => SD_IMG_EXT.some(e => sdBare(u).endsWith(e));
 const sdIsPdf = (u) => sdBare(u).endsWith(".pdf");
 const sdName = (u) => { try { return decodeURIComponent(u.split("/").pop().split("?")[0]); } catch (e) { return u; } };
+// Seed + freshly "uploaded" docs point at mock storage that doesn't resolve. For the viewer/download
+// route those to a real, renderable sample of the SAME TYPE so dummy document views open something
+// that matches the tile's file type. Google's viewer renders pdf/doc/xls/ppt alike.
+const SD_SAMPLES = {
+  pdf: ["https://pdfobject.com/pdf/sample.pdf", "https://www.orimi.com/pdf-test.pdf"],
+  doc: ["https://calibre-ebook.com/downloads/demos/demo.docx", "https://scholar.harvard.edu/files/torman_personal/files/sampleworddocument.docx"],
+  xls: ["https://go.microsoft.com/fwlink/?LinkID=521962", "https://file-examples.com/storage/fe1170c2ce66e8d83a2b495/2017/02/file_example_XLSX_50.xlsx"],
+  ppt: ["https://scholar.harvard.edu/files/torman_personal/files/samplepptx.pptx"],
+};
+const sdHash = (s) => { let h = 0; for (let i = 0; i < (s || "").length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); };
+const sdIsMock = (u) => !u || /files\.bistasol\.com/i.test(u) || u.startsWith("blob:") || u.startsWith("mock:");
+const sdKind = (u) => {
+  const b = sdBare(u);
+  if (b.endsWith(".doc") || b.endsWith(".docx")) return "doc";
+  if (b.endsWith(".xls") || b.endsWith(".xlsx") || b.endsWith(".csv")) return "xls";
+  if (b.endsWith(".ppt") || b.endsWith(".pptx")) return "ppt";
+  return "pdf";
+};
+const sdRawUrl = (u) => {
+  if (sdIsImage(u) && !sdIsMock(u)) return u;
+  const arr = SD_SAMPLES[sdKind(u)] || SD_SAMPLES.pdf;
+  return arr[sdHash(u) % arr.length];
+};
+// Sample hosts send X-Frame-Options, so browsers (e.g. Arc) block direct iframe embedding.
+// Render docs through Google's embeddable viewer, which is made for iframing and handles every type.
+const sdFrameSrc = (u) => `https://docs.google.com/viewer?url=${encodeURIComponent(sdRawUrl(u))}&embedded=true`;
 
 // <img> that falls back to the branded FileIcon if the source fails to load (mock URLs, dead links).
 function SDImage({ url, cover, size = 64, alt }) {
@@ -75,15 +101,9 @@ function SupportingDocsGallery({ urls, index, onIndex, onClose }) {
       <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: 12, overflow: "hidden",
         width: "min(1100px, 95vw)", height: "min(92vh, 820px)", display: "flex", flexDirection: "column", boxShadow: "0 24px 64px rgba(16,24,40,.4)" }}>
         <div style={{ position: "relative", flex: 1, minHeight: 0, background: "rgba(0,0,0,.04)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {sdIsImage(cur)
+          {sdIsImage(cur) && !sdIsMock(cur)
             ? <SDImage url={cur} size={128} alt={`Document ${index + 1}`} />
-            : sdIsPdf(cur)
-              ? <iframe src={cur} title={`PDF ${index + 1}`} style={{ width: "100%", height: "100%", border: 0 }} />
-              : <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: 24 }}>
-                  <FileIcon name={sdName(cur)} size={128} />
-                  <div style={{ fontFamily: "var(--font-ui)", fontSize: 14, color: "var(--gray-600)", maxWidth: 360, textAlign: "center", wordBreak: "break-word" }}>{sdName(cur)}</div>
-                  <Button variant="primary" icon="download-2-line" onClick={() => window.open(cur, "_blank")}>Download File</Button>
-                </div>}
+            : <iframe src={sdFrameSrc(cur)} title={`Document ${index + 1}`} style={{ width: "100%", height: "100%", border: 0 }} />}
 
           {urls.length > 1 && (
             <React.Fragment>

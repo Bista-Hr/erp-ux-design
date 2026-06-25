@@ -47,7 +47,7 @@ function CrudScreen({ config, rows, onCreate, onEdit, onArchive, onMenuAction, c
         </div>
 
         {rows.length === 0
-          ? <EmptyState title="Nothing here yet" subtitle={canCreate ? `Get started by adding your first ${config.noun.toLowerCase()}.` : `There is no data to show you right now.`} cta={canCreate ? config.cta : null} onAction={canCreate ? onCreate : null} />
+          ? <EmptyState variant={config.emptyVariant} title="Nothing here yet" subtitle={canCreate ? `Get started by adding your first ${config.noun.toLowerCase()}.` : `There is no data to show you right now.`} cta={canCreate ? config.cta : null} onAction={canCreate ? onCreate : null} />
           : <React.Fragment>
             <table className="bh">
               <thead><tr>
@@ -90,7 +90,7 @@ function CrudScreen({ config, rows, onCreate, onEdit, onArchive, onMenuAction, c
                 ))}
                 {shown.length === 0 && (
                   <tr><td colSpan={config.cols.length + (config.hideStatus ? 0 : 1) + (hasRowMenu ? 1 : 0)} style={{ padding: 0 }}>
-                    <EmptyState compact title="No results found" subtitle={`No ${config.noun.toLowerCase()} matches your search.`} />
+                    <EmptyState compact variant={config.emptyVariant} title="No results found" subtitle={`No ${config.noun.toLowerCase()} matches your search.`} />
                   </td></tr>
                 )}
               </tbody>
@@ -131,7 +131,7 @@ function OrgTreeModal({ units = [], onClose }) {
       </div>
       <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 8 }}>
         {sorted.length === 0
-          ? <EmptyState compact title="No units yet" subtitle="Create a unit to see the hierarchy." />
+          ? <EmptyState compact variant="place" title="No units yet" subtitle="Create a unit to see the hierarchy." />
           : sorted.map(u => {
             const depth = Math.max(0, (Number(u.level) || 1) - 1);
             const isMgmt = u.type === "Management";

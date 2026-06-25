@@ -26,10 +26,94 @@ function EmptyIllustration({ size = 136 }) {
   );
 }
 
-function EmptyState({ title = "Nothing here yet", subtitle, cta, onAction, compact = false }) {
+// Variant illustrations. "search" keeps the canonical inline document+magnifier artwork.
+// EMPTY_ART = recoloured undraw SVG files; EMPTY_SVG = inline brand-styled artwork (same flat
+// gold language as the canonical illustration) for contexts that had no art yet.
+const EMPTY_ART = {
+  place:   "assets/empty/no-place.svg",   // building artwork — for tables describing places/locations
+  message: "assets/empty/no-message.svg",
+  money:   "assets/empty/no-money.svg",
+  users:   "assets/empty/no-money.svg".replace("no-money", "no-users"),
+};
+
+// Shared palette for the inline illustrations (matches EmptyIllustration).
+const _IS = { line: "#C8A900", tint: "#FFF0C9", gold: "#F4CE3C", gray: "#E8E5DD", white: "#FFFFFF" };
+const _svgProps = (size) => ({ width: size, height: size * (108 / 136), viewBox: "0 0 160 128", fill: "none", xmlns: "http://www.w3.org/2000/svg" });
+
+// Inline artwork keyed by variant. Each returns an <svg>.
+const EMPTY_SVG = {
+  // leave — wall calendar with a time-off check
+  leave: (size) => (
+    <svg {..._svgProps(size)}>
+      <rect x="46" y="20" width="6" height="18" rx="3" fill={_IS.line} />
+      <rect x="108" y="20" width="6" height="18" rx="3" fill={_IS.line} />
+      <rect x="30" y="30" width="100" height="86" rx="12" fill={_IS.white} stroke={_IS.line} strokeWidth="2" />
+      <path d="M30 42a12 12 0 0 1 12-12h76a12 12 0 0 1 12 12v10H30Z" fill={_IS.tint} />
+      <path d="M30 52h100" stroke={_IS.line} strokeWidth="2" />
+      <rect x="44" y="64" width="14" height="12" rx="3" fill={_IS.gray} />
+      <rect x="66" y="64" width="14" height="12" rx="3" fill={_IS.gray} />
+      <rect x="44" y="84" width="14" height="12" rx="3" fill={_IS.gray} />
+      <circle cx="98" cy="90" r="20" fill={_IS.gold} />
+      <path d="M89 90.5l6 6 12-13" stroke={_IS.white} strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  // job — briefcase (recruitment / job postings)
+  job: (size) => (
+    <svg {..._svgProps(size)}>
+      <path d="M63 46v-7a7 7 0 0 1 7-7h20a7 7 0 0 1 7 7v7" fill="none" stroke={_IS.line} strokeWidth="2" />
+      <rect x="32" y="46" width="96" height="70" rx="12" fill={_IS.white} stroke={_IS.line} strokeWidth="2" />
+      <rect x="40" y="66" width="80" height="42" rx="6" fill={_IS.tint} />
+      <path d="M32 64h96" stroke={_IS.line} strokeWidth="2" />
+      <rect x="71" y="70" width="18" height="13" rx="3.5" fill={_IS.gold} stroke={_IS.line} strokeWidth="1.6" />
+    </svg>
+  ),
+  // assessment / appraisal — clipboard checklist
+  assessment: (size) => (
+    <svg {..._svgProps(size)}>
+      <rect x="40" y="26" width="80" height="94" rx="12" fill={_IS.white} stroke={_IS.line} strokeWidth="2" />
+      <rect x="65" y="18" width="30" height="17" rx="6" fill={_IS.tint} stroke={_IS.line} strokeWidth="2" />
+      <circle cx="59" cy="56" r="6" fill={_IS.gold} />
+      <path d="M56.4 56l2 2 4-4.4" stroke={_IS.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M72 56h34" stroke={_IS.gray} strokeWidth="4" strokeLinecap="round" />
+      <circle cx="59" cy="78" r="6" fill={_IS.gold} />
+      <path d="M56.4 78l2 2 4-4.4" stroke={_IS.white} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M72 78h34" stroke={_IS.gray} strokeWidth="4" strokeLinecap="round" />
+      <circle cx="59" cy="100" r="6" fill={_IS.tint} stroke={_IS.line} strokeWidth="1.6" />
+      <path d="M72 100h22" stroke={_IS.gray} strokeWidth="4" strokeLinecap="round" />
+    </svg>
+  ),
+  // document / files
+  document: (size) => (
+    <svg {..._svgProps(size)}>
+      <path d="M48 22h34l28 28v50a8 8 0 0 1-8 8H48a8 8 0 0 1-8-8V30a8 8 0 0 1 8-8Z" fill={_IS.white} stroke={_IS.line} strokeWidth="2" strokeLinejoin="round" />
+      <path d="M82 22v22a4 4 0 0 0 4 4h24" fill={_IS.tint} stroke={_IS.line} strokeWidth="2" strokeLinejoin="round" />
+      <path d="M54 66h44M54 80h44M54 94h28" stroke={_IS.gray} strokeWidth="4" strokeLinecap="round" />
+    </svg>
+  ),
+  // approval — shield with a check
+  approval: (size) => (
+    <svg {..._svgProps(size)}>
+      <path d="M80 22l34 13v25c0 24-15 40-34 47-19-7-34-23-34-47V35Z" fill={_IS.white} stroke={_IS.line} strokeWidth="2" strokeLinejoin="round" />
+      <path d="M80 30l26 10v20c0 18-11 30-26 36-15-6-26-18-26-36V40Z" fill={_IS.tint} />
+      <path d="M66 70l10 10 20-22" stroke={_IS.gold} strokeWidth="5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+};
+
+function EmptyState({ title = "Nothing here yet", subtitle, cta, onAction, compact = false, variant = "search", illustration }) {
+  const v = illustration || variant;
+  const art = EMPTY_ART[v];
+  const inlineSvg = EMPTY_SVG[v];
+  const size = compact ? 168 : 196;
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: compact ? "48px 24px" : "64px 24px" }}>
-      <div style={{ marginBottom: 22 }}><EmptyIllustration /></div>
+      <div style={{ marginBottom: 22 }}>
+        {art
+          ? <img src={art} alt="" style={{ width: compact ? 180 : 220, height: "auto", display: "block" }} />
+          : inlineSvg
+            ? inlineSvg(size)
+            : <EmptyIllustration />}
+      </div>
       <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 18, lineHeight: 1.3, color: "var(--gray-900)" }}>{title}</div>
       {subtitle && <div className="bh-body" style={{ marginTop: 6, maxWidth: 360 }}>{subtitle}</div>}
       {cta && onAction && <div style={{ marginTop: 20 }}><Button variant="primary" icon="add-line" onClick={onAction}>{cta}</Button></div>}

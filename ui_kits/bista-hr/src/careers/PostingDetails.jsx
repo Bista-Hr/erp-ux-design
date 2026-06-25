@@ -94,7 +94,7 @@ function NameEmailCell({ name, email }) {
 }
 // ── table shell (matches the app: gray header, hover rows, view chip) ──
 function PostingTable({ columns, rows, onRow, empty }) {
-  if (!rows.length) return <EmptyState compact title={empty.title} subtitle={empty.sub} />;
+  if (!rows.length) return <EmptyState compact variant={empty.variant} title={empty.title} subtitle={empty.sub} />;
   return (
     <table className="bh">
       <thead><tr>{columns.map((c, i) => <th key={i} style={c.thStyle}>{c.header}</th>)}</tr></thead>
@@ -228,7 +228,7 @@ function AssessmentView({ apps, onOpen }) {
     <div>
       <div style={{ marginBottom: 14 }}><div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 16, color: "var(--gray-900)" }}>Interview Assessments</div><div className="bh-body" style={{ marginTop: 2 }}>Candidates scheduled for or completed assessment.</div></div>
       <PostingPanel subtabsRow={<SubTabs tabs={ASSESS_SUBTABS} active={tab} onChange={setTab} />}>
-        <PostingTable columns={cols} rows={rows} onRow={(r) => onOpen(r.id)} empty={{ title: "No assessments", sub: "No assessments found in this category." }} />
+        <PostingTable columns={cols} rows={rows} onRow={(r) => onOpen(r.id)} empty={{ variant: "assessment", title: "No assessments", sub: "No assessments found in this category." }} />
       </PostingPanel>
     </div>
   );
@@ -440,6 +440,7 @@ function JobPostsScreen({ onToast, lookups, onSubPage }) {
                 </td>
               </tr>
             ))}
+            {rows.length === 0 && <tr><td colSpan={7} style={{ padding: 0 }}><EmptyState compact variant="job" title="No job posts" subtitle="No job postings match your filters." /></td></tr>}
           </tbody>
         </table>
         <div className="flex items-center justify-between px-4 py-4 border-t border-gray-100">

@@ -224,7 +224,7 @@ function CareersFlow({ onToast }) {
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           {filtered.length === 0
-            ? <div className="card" style={{ padding: 8 }}><EmptyState title="No Open Positions" subtitle="There are no open positions matching your filters. Please check back later." /></div>
+            ? <div className="card" style={{ padding: 8 }}><EmptyState variant="job" title="No Open Positions" subtitle="There are no open positions matching your filters. Please check back later." /></div>
             : <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 16 }}>
                 {filtered.map(p => <CareerCardView key={p.id} posting={p} onOpen={(id) => setView({ mode: "detail", id })} />)}
               </div>}
