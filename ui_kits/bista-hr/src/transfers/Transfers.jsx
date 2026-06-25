@@ -198,8 +198,9 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
   // departmental transfer the department is unchanged, so titles come from the employee's department.
   const effDept = form.classification === "Intra-Departmental" ? (primary && primary.dept) || "" : form.newDepartment;
   const titleOptions = window.jobTitlesForDepartment(effDept);
-  const selectTitle = (v) => { const info = window.jobTitleInfo(v) || {}; setForm(s => ({ ...s, newJobTitle: v, newGrade: info.grade || "", newNotch: info.notch || "" })); };
+  const selectTitle = (v) => { const info = window.jobTitleInfo(v) || {}; setForm(s => ({ ...s, newJobTitle: v, newGrade: info.grade || "", newNotch: "" })); };
   const selectNewDept = (v) => setForm(s => ({ ...s, newDepartment: v, newJobTitle: "", newGrade: "", newNotch: "" }));
+  const notchOptions = window.notchesForGrade(form.newGrade);
   // Salary + allowances auto-fetched from Payroll once the title resolves grade + notch.
   const payroll = window.fetchPayroll(form.newGrade, form.newNotch);
   const salary = payroll ? payroll.salary : "";
@@ -257,12 +258,15 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
           <Field label="New Job Title" optional><Combobox value={form.newJobTitle} onChange={selectTitle} options={titleOptions} placeholder={effDept ? "Select new job title (optional)" : (form.classification === "Intra-Departmental" ? "Select employee(s) first" : "Select a department first")} noDataText={form.classification === "Intra-Departmental" ? "Select employee(s) first." : "Select a department first."} /></Field>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <Field label="Notch" optional><Combobox value={form.newNotch} onChange={v => set("newNotch", v)} options={notchOptions} icon="stack-line" placeholder={form.newGrade ? "Select notch" : "Select job title first"} noDataText="Select a job title first." /></Field>
           <Field label="Unit/Branch" optional><Combobox value={form.newUnit} onChange={v => set("newUnit", v)} options={LK.orgUnits || []} placeholder="Select unit / branch" /></Field>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
           <Field label="Proposed Effective Transfer Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
         </div>
       </FormCard>
 
-      <ResolvedRoleBenefits grade={form.newGrade} notch={form.newNotch} salary={salary} allowances={allowances} />
+      <ResolvedRoleBenefits grade={form.newGrade} salary={salary} allowances={allowances} />
 
       <FormCard title="Justification & Documents">
         <Field label="Reason / Justification"><Textarea rows={4} value={form.reason} onChange={e => set("reason", e.target.value)} placeholder="Explain the business justification for this transfer…" /></Field>

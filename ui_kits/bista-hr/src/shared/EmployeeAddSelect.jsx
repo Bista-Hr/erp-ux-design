@@ -11,7 +11,7 @@ function EmployeeAddSelect({ value = [], onChange, employees = [], placeholder =
   employees.forEach(e => { byId[e.id] = e; });
   const available = employees
     .filter(e => !value.includes(e.id))
-    .map(e => ({ value: e.id, label: `${e.name} · ${e.staffId || e.id}${e.dept ? " · " + e.dept : ""}` }));
+    .map(e => ({ value: e.id, label: e.name, name: e.name, sublabel: `${e.staffId || e.id}${e.dept ? " · " + e.dept : ""}` }));
   const add = (id) => { if (id && !value.includes(id)) onChange([...value, id]); };
   const remove = (id) => onChange(value.filter(x => x !== id));
   return (

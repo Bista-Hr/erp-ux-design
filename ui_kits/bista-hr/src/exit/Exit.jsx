@@ -153,7 +153,12 @@ function ExitList({ rows, q, setQ, tab, setTab, onCreate, onOpen, onArchive }) {
 /* ---------- initiate form (full page) ---------- */
 function ExitForm({ lookups, onCancel, onSubmit }) {
   const DIR = window.EMPLOYEE_DIRECTORY;
-  const empOptions = window.EMPLOYEE_NAMES;
+  // Employee options show staff ID + department under the name (same as the other P&C pickers).
+  const empOptions = (() => {
+    const seen = {};
+    return (window.EMPLOYEE_LIST || []).filter(e => { if (seen[e.name]) return false; seen[e.name] = 1; return true; })
+      .map(e => ({ value: e.name, label: e.name, name: e.name, sublabel: `${e.staffId || e.id}${e.dept ? " · " + e.dept : ""}` }));
+  })();
   const [employee, setEmployee] = useEx("");
   const [form, setForm] = useEx({ exitType: "", exitDate: "", reason: "", note: "", interviewRequired: false, interviewLocation: "", interviewDate: "", interviewTime: "" });
   const [docs, setDocs] = useEx({ keptUrls: [], newFiles: [] });

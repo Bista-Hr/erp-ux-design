@@ -100,8 +100,9 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
   const [docs, setDocs] = useJt({ keptUrls: initialData?.documents || [], newFiles: [] });
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
   const selectDept = (v) => setForm(s => ({ ...s, department: v, newTitle: "", grade: "", notch: "" }));
-  const selectTitle = (v) => { const info = window.jobTitleInfo(v) || {}; setForm(s => ({ ...s, newTitle: v, grade: info.grade || "", notch: info.notch || "" })); };
+  const selectTitle = (v) => { const info = window.jobTitleInfo(v) || {}; setForm(s => ({ ...s, newTitle: v, grade: info.grade || "", notch: "" })); };
   const titleOptions = window.jobTitlesForDepartment(form.department);
+  const notchOptions = window.notchesForGrade(form.grade);
   // Salary + allowances auto-fetched from Payroll once the title resolves grade + notch.
   const payroll = window.fetchPayroll(form.grade, form.notch);
   const salary = payroll ? payroll.salary : "";
@@ -123,10 +124,13 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
           <Field label="Department"><Combobox value={form.department} onChange={selectDept} options={LK.departments} placeholder="Select department" /></Field>
           <Field label="New Job Title"><Combobox value={form.newTitle} onChange={selectTitle} options={titleOptions} placeholder={form.department ? "Select job title" : "Select department first"} noDataText="Select a department first." /></Field>
         </div>
-        <Field label="Effective Date"><UI.DatePicker value={form.date} onSelect={d => set("date", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <Field label="Notch"><Combobox value={form.notch} onChange={v => set("notch", v)} options={notchOptions} icon="stack-line" placeholder={form.grade ? "Select notch" : "Select job title first"} noDataText="Select a job title first." /></Field>
+          <Field label="Effective Date"><UI.DatePicker value={form.date} onSelect={d => set("date", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
+        </div>
       </JtFormCard>
 
-      <ResolvedRoleBenefits grade={form.grade} notch={form.notch} salary={salary} allowances={allowances} />
+      <ResolvedRoleBenefits grade={form.grade} salary={salary} allowances={allowances} />
 
       <JtFormCard title="Reason & Documents">
         <Field label="Reason / Note" optional><Textarea rows={4} value={form.reason} onChange={e => set("reason", e.target.value)} placeholder="Reason or note for this change of job title…" /></Field>

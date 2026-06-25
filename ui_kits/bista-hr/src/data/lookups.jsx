@@ -38,6 +38,16 @@ function deriveLookups(data = {}) {
   const dedupe = (arr) => [...new Set(arr.filter(Boolean))];
   const names = (key) => dedupe((data[key] || []).map((r) => r.name));
   const live = (key, fallback) => (names(key).length ? names(key) : fallback);
+  // Employee selects show staff ID + department under the name. Build option objects keyed on
+  // NAME (existing records store the name) with `name` for the avatar and `sublabel` for ID · dept.
+  const dir = window.EMPLOYEE_LIST || [];
+  const byName = {}; dir.forEach(e => { byName[e.name] = e; });
+  const empNames = dedupe([...names("Employees"), ...LOOKUPS.employees, ...dir.map(e => e.name)]);
+  const employees = empNames.map(n => {
+    const e = byName[n];
+    const sub = e ? `${e.staffId || e.id}${e.dept ? " · " + e.dept : ""}` : "";
+    return sub ? { value: n, label: n, name: n, sublabel: sub } : { value: n, label: n, name: n };
+  });
   return {
     ...LOOKUPS,
     departments: live("Departments", LOOKUPS.departments),
@@ -47,8 +57,8 @@ function deriveLookups(data = {}) {
     // (Department ▸ Organizational Unit). City branches stay on the static `branches` list.
     orgUnits:    live("Branches/Units", LOOKUPS.orgUnits),
     zones:       live("Zones", LOOKUPS.zones),
-    // employees feed Head of Department / reporting selects — union roster + seeded heads
-    employees:   dedupe([...names("Employees"), ...LOOKUPS.employees]),
+    // employees feed Head of Department / reporting selects — rich options (name + ID · dept)
+    employees,
   };
 }
 

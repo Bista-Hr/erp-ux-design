@@ -121,8 +121,9 @@ function FormModal({ config, initial, onClose, onSubmit, lookups }) {
             </Field>
           );
         })}
-        <div style={{ gridColumn: "1 / -1", display: config.hideActive ? "none" : "block" }}>
-          <Checkbox checked={form.active} onChange={v => set("active", v)} label={config.activeLabel || "Active"} />
+        <div style={{ gridColumn: "1 / -1", display: config.hideActive ? "none" : "flex", alignItems: "center", gap: 10 }}>
+          <UI.Switch checked={form.active} onCheckedChange={v => set("active", v)} />
+          <span style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>{config.activeLabel || "Active"}</span>
         </div>
         {config.aiAssist && (
           <button onClick={aiFill} style={{ gridColumn: "1 / -1", justifySelf: "start", display: "inline-flex", alignItems: "center", gap: 6,

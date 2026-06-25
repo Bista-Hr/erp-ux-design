@@ -41,7 +41,7 @@ function PromotionRequest({ q, setQ, segment, setSegment, onCreate, title, subti
           <UI.FilterBar left={<Segmented items={["Request", "Approval"]} active={segment} onChange={setSegment} />}
             search={q} onSearch={setQ} searchPlaceholder="Search staff…" />
           <EmployeeSelectionRoster employees={promoRosterRows()} itemLabel="staff"
-            actionLabel="Create Promotion" onProceed={onCreate} searchQuery={q} />
+            actionLabel="New Promotion" onProceed={onCreate} searchQuery={q} />
         </div>
       </div>
     </div>
@@ -136,15 +136,16 @@ const AutoBadge = () => (
     <Icon name="sparkling-2-line" size={12} color="var(--brand-yellow-dark)" />Auto-populated
   </span>
 );
-// Shared "Resolved Role & Benefits" card — grade + notch + salary + allowances resolved from
-// the selected job title. Used identically by Promotions, Job Title and Transfers.
-function ResolvedRoleBenefits({ grade, notch, salary, allowances }) {
+// Shared "Resolved Role & Benefits" card — grade resolved from the selected job title; salary +
+// allowances fetch from grade + notch (notch is picked in the form's top card). Read-only.
+// Used identically by Promotions, Job Title and Transfers.
+function ResolvedRoleBenefits({ grade, salary, allowances }) {
   const list = allowances || [];
   return (
     <FormCard title="Resolved Role & Benefits" badge={<AutoBadge />}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>
         <Icon name="information-line" size={15} color="var(--gray-400)" />
-        Grade, notch, salary and allowances are resolved automatically from the selected job title and Payroll — they are not edited here.
+        Grade comes from the selected job title; salary &amp; allowances are resolved from grade + notch by Payroll — they are not edited here.
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
         <Field label="Job Grade">
@@ -153,21 +154,13 @@ function ResolvedRoleBenefits({ grade, notch, salary, allowances }) {
             <input value={grade || ""} readOnly placeholder="Auto from job title" style={{ color: grade ? "var(--gray-900)" : "var(--gray-400)" }} />
           </div>
         </Field>
-        <Field label="Notch">
-          <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
-            <Icon name="stack-line" size={18} style={{ color: "var(--icon-default)" }} />
-            <input value={notch || ""} readOnly placeholder="Auto from job title" style={{ color: notch ? "var(--gray-900)" : "var(--gray-400)" }} />
-          </div>
-        </Field>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
         <Field label="Salary">
           <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
             <Icon name="money-dollar-circle-line" size={18} style={{ color: "var(--icon-default)" }} />
             <input value={salary || ""} readOnly placeholder="Auto from grade & notch" style={{ color: salary ? "var(--gray-900)" : "var(--gray-400)" }} />
           </div>
         </Field>
-        <Field label="Allowances">
+        <Field label="Allowances" style={{ gridColumn: "1 / -1" }}>
           {list.length === 0
             ? <div className="input-wrap" style={{ background: "var(--gray-50)" }}><span style={{ flex: 1, fontFamily: "var(--font-control)", fontSize: 14, color: "var(--gray-400)" }}>Auto from grade & notch</span></div>
             : <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -216,8 +209,9 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
   // Cascade: Department narrows Job Titles; picking a Job Title auto-resolves its Grade + Notch
   // (and therefore Salary + Benefits, fetched below). Grade/Notch are not picked manually.
   const selectDept = (v) => setForm(s => ({ ...s, department: v, newJobTitle: "", grade: "", notch: "" }));
-  const selectTitle = (v) => { const info = window.jobTitleInfo(v) || {}; setForm(s => ({ ...s, newJobTitle: v, grade: info.grade || "", notch: info.notch || "" })); };
+  const selectTitle = (v) => { const info = window.jobTitleInfo(v) || {}; setForm(s => ({ ...s, newJobTitle: v, grade: info.grade || "", notch: "" })); };
   const titleOptions = window.jobTitlesForDepartment(form.department);
+  const notchOptions = window.notchesForGrade(form.grade);
 
   // New salary + allowances are AUTO-FETCHED from payroll once grade + notch are resolved.
   const payroll = window.fetchPayroll(form.grade, form.notch);
@@ -238,7 +232,7 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <PageHeader title={isEdit ? "Edit Promotion" : "Create Promotion"}
+      <PageHeader title={isEdit ? "Edit Promotion" : "New Promotion"}
         subtitle={isEdit ? "Update the promotion details." : "Select staff, set the new role and route for approval."} />
 
       <FormCard title="Employee Information">
@@ -249,10 +243,13 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
           <Field label="Department"><Combobox value={form.department} onChange={selectDept} options={LK.departments} placeholder="Select department" /></Field>
           <Field label="New Job Title"><Combobox value={form.newJobTitle} onChange={selectTitle} options={titleOptions} placeholder={form.department ? "Select job title" : "Select department first"} noDataText="Select a department first." /></Field>
         </div>
-        <Field label="Effective Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <Field label="Notch"><Combobox value={form.notch} onChange={v => set("notch", v)} options={notchOptions} icon="stack-line" placeholder={form.grade ? "Select notch" : "Select job title first"} noDataText="Select a job title first." /></Field>
+          <Field label="Effective Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
+        </div>
       </FormCard>
 
-      <ResolvedRoleBenefits grade={form.grade} notch={form.notch} salary={salary} allowances={allowances} />
+      <ResolvedRoleBenefits grade={form.grade} salary={salary} allowances={allowances} />
 
       <FormCard title="Justification">
         <Field label="Promotion Justification"><Textarea rows={4} value={form.justification} onChange={e => set("justification", e.target.value)} placeholder="Explain the rationale for this promotion…" /></Field>
@@ -270,7 +267,7 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" disabled={!valid} onClick={submit}>{isEdit ? "Save Changes" : "Create Promotion"}</Button>
+        <Button variant="primary" disabled={!valid} onClick={submit}>{isEdit ? "Save Changes" : "New Promotion"}</Button>
       </div>
     </div>
   );
@@ -364,7 +361,7 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
 
   usePromoEffect(() => {
     if (!onSubPage) return;
-    if (view.name === "add") onSubPage({ trail: [{ label: "Promotions", onClick: () => setView({ name: "list" }) }, { label: "Create Promotion" }] });
+    if (view.name === "add") onSubPage({ trail: [{ label: "Promotions", onClick: () => setView({ name: "list" }) }, { label: "New Promotion" }] });
     else if (view.name === "edit") onSubPage({ trail: [{ label: "Promotions", onClick: () => setView({ name: "list" }) }, { label: "Edit Promotion" }] });
     else if (view.name === "details") onSubPage({ trail: [{ label: "Promotions", onClick: () => setView({ name: "list" }) }, { label: "Promotion Approval" }] });
     else onSubPage(null);

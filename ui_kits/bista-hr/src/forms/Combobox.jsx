@@ -34,8 +34,11 @@ function OptionRow({ opt, selected, onClick, avatar }) {
         {selected && <Icon name="check-line" size={16} color="var(--brand-yellow-dark)" />}
       </span>
       {opt.image ? <img src={opt.image} alt="" width={20} height={20} style={{ borderRadius: "50%", flexShrink: 0 }} />
-        : avatar ? <Avatar name={opt.label} size={20} /> : null}
-      <span style={{ flex: 1 }}>{opt.label}</span>
+        : avatar ? <Avatar name={opt.name || opt.label} size={20} /> : null}
+      <span style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{opt.label}</span>
+        {opt.sublabel && <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)", lineHeight: 1.3 }}>{opt.sublabel}</span>}
+      </span>
     </button>
   );
 }
@@ -87,7 +90,7 @@ function Combobox({ value, onChange, options, placeholder = "Select option...", 
         {icon && !(avatar && sel) && <Icon name={icon} size={18} style={{ color: "var(--icon-default)" }} />}
         {sel
           ? <span style={{ flex: 1, display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "var(--font-control)", fontSize: 14, color: "var(--gray-900)" }}>
-              {sel.image ? <img src={sel.image} alt="" width={20} height={20} style={{ borderRadius: "50%" }} /> : avatar ? <Avatar name={sel.label} size={20} /> : null}{sel.label}
+              {sel.image ? <img src={sel.image} alt="" width={20} height={20} style={{ borderRadius: "50%" }} /> : avatar ? <Avatar name={sel.name || sel.label} size={20} /> : null}{sel.label}
             </span>
           : <span style={{ flex: 1, fontFamily: "var(--font-control)", fontSize: 14, color: "var(--gray-400)" }}>{placeholder}</span>}
         <Icon name="arrow-down-s-line" size={20} style={{ color: "var(--icon-default)", transition: "transform .15s", transform: open ? "rotate(180deg)" : "none" }} />
