@@ -165,7 +165,6 @@ function ExitForm({ lookups, onCancel, onSubmit }) {
   const [mails, setMails] = useEx([]);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
 
-  const meta = form.exitType ? exitMeta(form.exitType) : null;
   const primary = employee ? DIR[employee] : null;
   const autoItems = primary ? [
     { label: "Staff ID", value: primary.staffId },
@@ -181,23 +180,13 @@ function ExitForm({ lookups, onCancel, onSubmit }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <PageHeader title="Initiate Employee Exit"
-        subtitle="Initiate a voluntary or involuntary exit and start the clearance process." />
+        subtitle="Initiate an employee exit and start the clearance process." />
 
       <FormCard title="Exit Information">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
           <Field label="Exit Type"><Combobox value={form.exitType} onChange={v => setForm(s => ({ ...s, exitType: v, interviewRequired: exitMeta(v).interview }))} options={EXIT_TYPES.map(t => t.value)} placeholder="Select exit type" /></Field>
           <Field label="Employee Name"><Combobox value={employee} onChange={setEmployee} options={empOptions} placeholder="Select employee" avatar /></Field>
         </div>
-
-        {meta && (
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, borderRadius: 8, padding: "6px 12px", fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 12.5,
-              background: meta.classification === "Voluntary" ? "#E7F7EF" : "#FEF0E6", color: meta.classification === "Voluntary" ? "#1F8A5B" : "#B54708" }}>
-              <Icon name={meta.classification === "Voluntary" ? "user-follow-line" : "government-line"} size={15} color={meta.classification === "Voluntary" ? "#1F8A5B" : "#B54708"} />
-              {meta.classification} Exit
-            </span>
-          </div>
-        )}
 
         {primary && (
           <div>
@@ -208,9 +197,10 @@ function ExitForm({ lookups, onCancel, onSubmit }) {
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
           <Field label="Proposed / Approved Exit Date"><UI.DatePicker value={form.exitDate} onSelect={d => set("exitDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
-          <Field label="Reason for Exit"><Combobox value={form.reason} onChange={v => set("reason", v)} options={EXIT_REASONS} placeholder="Select reason" /></Field>
+          <div style={{ gridColumn: "1 / -1" }}>
+            <Field label="Reason for Exit"><UI.RichText value={form.reason} onChange={v => set("reason", v)} placeholder="Describe the reason for this exit…" /></Field>
+          </div>
         </div>
-        <Field label="Notes" optional><Textarea rows={3} value={form.note} onChange={e => set("note", e.target.value)} placeholder="Additional context for this exit…" /></Field>
       </FormCard>
 
       <FormCard title="Exit Interview">
