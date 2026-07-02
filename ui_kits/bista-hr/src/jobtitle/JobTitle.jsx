@@ -30,7 +30,7 @@ const jtEmail = (name) => name.toLowerCase().split(/\s+/).map((p, i) => i === 0 
 const JOBTITLE_SEED = [
   { id: 1, employees: ["Aaron Appiah"], staffIds: "EMP-18330",
     previousTitle: "Ag. Assurance Supervisor", newTitle: "Assurance Supervisor", grade: "Grade 4",
-    department: "Finance", zone: "Accra East", branch: "Abossey Okai",
+    department: "Finance", unit: "Assurance", zone: "Accra East", branch: "Abossey Okai",
     effectiveDate: "Jun 01, 2026", dateSubmitted: "May 14, 2026", status: "Approved",
     reason: "Confirmation in substantive role following a successful acting period.",
     documents: ["https://files.bistasol.com/jobtitle/Confirmation-Letter.pdf"],
@@ -38,7 +38,7 @@ const JOBTITLE_SEED = [
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
   { id: 2, employees: ["Bright Manu"], staffIds: "EMP-10876",
     previousTitle: "Software Engineer", newTitle: "Senior Software Engineer", grade: "Grade 3",
-    department: "Information Technology", zone: "East Zone", branch: "Tema",
+    department: "Information Technology", unit: "Engineering", zone: "East Zone", branch: "Tema",
     effectiveDate: "May 28, 2026", dateSubmitted: "May 10, 2026", status: "Pending",
     reason: "Re-designation to reflect expanded technical leadership responsibilities.",
     documents: ["https://files.bistasol.com/jobtitle/Role-Justification.docx"],
@@ -46,7 +46,7 @@ const JOBTITLE_SEED = [
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
   { id: 3, employees: ["Emmanuel Ansah"], staffIds: "EMP-10412",
     previousTitle: "HR Officer", newTitle: "HR Generalist", grade: "Grade 2",
-    department: "Human Resource", zone: "South Zone", branch: "Accra",
+    department: "Human Resource", unit: "HR Operations", zone: "South Zone", branch: "Accra",
     effectiveDate: "Jul 08, 2026", dateSubmitted: "May 18, 2026", status: "Pending",
     reason: "Title alignment with the new HR operating model and job architecture.",
     documents: ["https://files.bistasol.com/jobtitle/Job-Architecture-Memo.pdf"],
@@ -54,7 +54,7 @@ const JOBTITLE_SEED = [
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
   { id: 4, employees: ["Samuel Asante"], staffIds: "EMP-11233",
     previousTitle: "Teller", newTitle: "Senior Teller", grade: "Grade 1",
-    department: "Finance", zone: "West Zone", branch: "Takoradi",
+    department: "Finance", unit: "Retail", zone: "West Zone", branch: "Takoradi",
     effectiveDate: "Apr 30, 2026", dateSubmitted: "Apr 12, 2026", status: "Declined",
     reason: "Proposed re-designation; deferred pending completion of the role-banding review.",
     documents: ["https://files.bistasol.com/jobtitle/Banding-Review.xlsx"],
@@ -99,15 +99,16 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
   });
   const [docs, setDocs] = useJt({ keptUrls: initialData?.documents || [], newFiles: [] });
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
-  const selectDept = (v) => setForm(s => ({ ...s, department: v, newTitle: "", grade: "", notch: "" }));
-  const selectTitle = (v) => { const info = window.jobTitleInfo(v) || {}; setForm(s => ({ ...s, newTitle: v, grade: info.grade || "", notch: "" })); };
+  const selectDept = (v) => setForm(s => ({ ...s, department: v, newTitle: "" }));
+  const selectTitle = (v) => setForm(s => { const info = window.jobTitleInfo(v) || {}; const grade = info.grade || s.grade; return { ...s, newTitle: v, grade, notch: grade === s.grade ? s.notch : "" }; });
+  const selectGrade = (v) => setForm(s => ({ ...s, grade: v, notch: "" }));
   const titleOptions = window.jobTitlesForDepartment(form.department);
   const notchOptions = window.notchesForGrade(form.grade);
   // Salary + allowances auto-fetched from Payroll once the title resolves grade + notch.
   const payroll = window.fetchPayroll(form.grade, form.notch);
   const salary = payroll ? payroll.salary : "";
   const allowances = payroll ? payroll.allowances : [];
-  const valid = people.length > 0 && form.department && form.newTitle && form.date;
+  const valid = people.length > 0 && form.newTitle && form.date;
   const multi = people.length > 1;
 
   return (
@@ -120,20 +121,22 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
         <Field label="Employee(s)">
           <EmployeeAddSelect value={people} onChange={setPeople} employees={EMP} />
         </Field>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Department"><Combobox value={form.department} onChange={selectDept} options={LK.departments} placeholder="Select department" /></Field>
-          <Field label="New Job Title"><Combobox value={form.newTitle} onChange={selectTitle} options={titleOptions} placeholder={form.department ? "Select job title" : "Select department first"} noDataText="Select a department first." /></Field>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 20 }}>
+          <Field label="New Job Title"><Combobox value={form.newTitle} onChange={selectTitle} options={titleOptions} placeholder="Select job title" header={<JobTitleFilterHeader department={form.department} onChange={selectDept} departments={LK.departments} />} noDataText="No job title found for this department." /></Field>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Notch"><Combobox value={form.notch} onChange={v => set("notch", v)} options={notchOptions} icon="stack-line" placeholder={form.grade ? "Select notch" : "Select job title first"} noDataText="Select a job title first." /></Field>
+          <Field label="Job Grade" optional><Combobox value={form.grade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
+          <Field label="Notch" optional><Combobox value={form.notch} onChange={v => set("notch", v)} options={notchOptions} icon="stack-line" placeholder={form.grade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
           <Field label="Effective Date"><UI.DatePicker value={form.date} onSelect={d => set("date", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
         </div>
       </JtFormCard>
 
       <ResolvedRoleBenefits grade={form.grade} salary={salary} allowances={allowances} />
 
-      <JtFormCard title="Reason & Documents">
-        <Field label="Reason / Note" optional><Textarea rows={4} value={form.reason} onChange={e => set("reason", e.target.value)} placeholder="Reason or note for this change of job title…" /></Field>
+      <JtFormCard title="Comments & Documents">
+        <Field label="Comments" optional><UI.RichText value={form.reason} onChange={v => set("reason", v)} placeholder="Add comments for this change of job title…" /></Field>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Supporting Documents</label>
           <SupportingDocuments existingUrls={initialData?.documents || []} isEditMode={isEdit} onChange={setDocs} maxFiles={8} maxSizeMB={8} />
@@ -175,7 +178,7 @@ function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, 
         <table className="bh">
           <thead><tr>
             <th style={{ width: 44 }}><Checkbox checked={allShownSelected} onChange={toggleAll} /></th>
-            <th>Full Name</th><th>Employee ID</th><th>Current Job Title</th><th>Department</th><th>Branch</th><th style={{ width: 48 }}></th>
+            <th>Full Name</th><th>Employee ID</th><th>Current Job Title</th><th>Department</th><th>Unit/Branch</th><th>Zone</th><th style={{ width: 48 }}></th>
           </tr></thead>
           <tbody>
             {pg.pageItems.map(e => {
@@ -195,14 +198,15 @@ function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, 
                   <td>{e.staffId}</td>
                   <td>{e.title}</td>
                   <td>{e.dept}</td>
-                  <td>{e.branch}</td>
+                  <td>{[e.unit, e.branch].filter(Boolean).join(" · ") || "—"}</td>
+                  <td>{e.zone || "—"}</td>
                   <td style={{ textAlign: "right" }} onClick={ev => ev.stopPropagation()}>
                     <UI.RowActions actions={[{ label: "Assign Job Title", short: "Assign", icon: "user-add-line", onClick: () => onAssignOne(e.id) }]} />
                   </td>
                 </tr>
               );
             })}
-            {shown.length === 0 && <tr><td colSpan={7} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No staff matches your search." /></td></tr>}
+            {shown.length === 0 && <tr><td colSpan={8} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No staff matches your search." /></td></tr>}
           </tbody>
         </table>
       {shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
@@ -213,10 +217,21 @@ function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, 
 }
 
 /* ---------- requests list (approval queue) ---------- */
-function JobTitleList({ rows, q, setQ, tab, setTab, onOpen, onEdit, onArchive, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
+function JobTitleList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
   const [menu, setMenu] = useJt(null);
-  const byTab = rows.filter(r => tab.length === 0 || tab.includes(r.status));
-  const shown = byTab.filter(r => q === "" || r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newTitle.toLowerCase().includes(q.toLowerCase()));
+  const JT_BLANK = { status: "", department: "", unit: "", zone: "", grade: "" };
+  const [draft, setDraft] = useJt(JT_BLANK);
+  const [applied, setApplied] = useJt(JT_BLANK);
+  const optsOf = (key) => [...new Set(rows.map(r => r[key]).filter(Boolean))].sort();
+  const shown = rows.filter(r => {
+    if (q !== "" && !(r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newTitle.toLowerCase().includes(q.toLowerCase()))) return false;
+    if (applied.status && r.status !== applied.status) return false;
+    if (applied.department && r.department !== applied.department) return false;
+    if (applied.unit && r.unit !== applied.unit) return false;
+    if (applied.zone && r.zone !== applied.zone) return false;
+    if (applied.grade && r.grade !== applied.grade) return false;
+    return true;
+  });
   const pg = usePaged(shown, 10);
   const pendingShown = shown.filter(r => r.status === "Pending");
   const allPendingSel = pendingShown.length > 0 && pendingShown.every(r => sel.includes(r.id));
@@ -229,7 +244,15 @@ function JobTitleList({ rows, q, setQ, tab, setTab, onOpen, onEdit, onArchive, s
         <div className="bh-tablebox">
         <UI.FilterBar left={<Segmented items={["Assign", "Requests"]} active={segment} onChange={setSegment} />}
           search={q} onSearch={setQ} searchPlaceholder="Search job title changes…"
-          filters={[{ label: "Status", node: <StatusFilter value={tab} onChange={setTab} /> }]} />
+          filters={[
+            { label: "Status", node: <Combobox value={draft.status} onChange={v => setDraft(s => ({ ...s, status: v }))} options={["Pending", "Approved", "Declined"]} placeholder="All statuses" /> },
+            { label: "Department", node: <Combobox value={draft.department} onChange={v => setDraft(s => ({ ...s, department: v }))} options={optsOf("department")} placeholder="All departments" /> },
+            { label: "Unit/Branch", node: <Combobox value={draft.unit} onChange={v => setDraft(s => ({ ...s, unit: v }))} options={optsOf("unit")} placeholder="All units/branches" /> },
+            { label: "Zone", node: <Combobox value={draft.zone} onChange={v => setDraft(s => ({ ...s, zone: v }))} options={optsOf("zone")} placeholder="All zones" /> },
+            { label: "Job Grade", node: <Combobox value={draft.grade} onChange={v => setDraft(s => ({ ...s, grade: v }))} options={optsOf("grade")} placeholder="All grades" /> },
+          ]}
+          onReset={() => { setDraft(JT_BLANK); setApplied(JT_BLANK); }}
+          onApply={() => setApplied(draft)} />
         {rows.length === 0
           ? <EmptyState title="No assignments yet" subtitle="Assign a job title from the Assign tab to create a request." />
           : <table className="bh">
@@ -290,9 +313,9 @@ function JobTitleDetails({ record, onApprove, onReject, onUpdate, onToast }) {
     { label: "Employee Name", value: r.employees.join(", ") },
     { label: "Previous Job Title", value: r.previousTitle },
     { label: "New Job Title", value: r.newTitle },
-    { label: "Job Grade", value: r.grade },
-    { label: "Department / Unit", value: r.department },
-    { label: "Branch", value: r.branch },
+    { label: "Job Grade", value: r.grade || "—" },
+    { label: "Department", value: r.department },
+    { label: "Unit/Branch", value: [r.unit, r.branch].filter(Boolean).join(" · ") || "—" },
     { label: "Zone", value: r.zone },
     { label: "Effective Date", value: r.effectiveDate },
   ];
@@ -321,8 +344,8 @@ function JobTitleDetails({ record, onApprove, onReject, onUpdate, onToast }) {
       </div>
 
       <div className="card" style={{ padding: 0 }}>
-        <DetailCard icon="file-text-line" title="Reason / Justification">
-          <div style={{ background: "#F6F8FA", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }}>{r.reason || "—"}</div>
+        <DetailCard icon="file-text-line" title="Comments">
+          <div className="rt-content" style={{ background: "#F6F8FA", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }} dangerouslySetInnerHTML={{ __html: r.reason || "—" }} />
         </DetailCard>
       </div>
 
@@ -351,7 +374,6 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
   const [approvalSel, setApprovalSel] = useJt([]);
   const [lastCount, setLastCount] = useJt(0);        // held count so the bar shows it while sliding out
   const [q, setQ] = useJt("");
-  const [tab, setTab] = useJt([]);
   const [view, setView] = useJt({ name: "list" });   // list | add | edit | details
   const [confirm, setConfirm] = useJt(null);
 
@@ -387,7 +409,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
         const e = window.EMP_BY_ID[id] || {};
         return { id: jtId(), employees: [e.name || id], staffIds: e.staffId || id,
           previousTitle: e.title || "—", newTitle: f.title, grade: f.grade || e.grade || "—",
-          department: e.dept || "—", zone: e.zone || "—", branch: e.branch || "—",
+          department: e.dept || "—", unit: e.unit || "—", zone: e.zone || "—", branch: e.branch || "—",
           effectiveDate: fmtJtDate(f.date), dateSubmitted: todayJt(), status: "Pending",
           reason: f.reason || "", documents: allDocs, approvers: f.approvers || [],
           approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" };
@@ -445,7 +467,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
               onAssignOne={(n) => setView({ name: "add", initialEmployees: [n] })} segment={segment} setSegment={setSegment}
               title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status."
               headerAction={addAction} />
-          : <JobTitleList rows={records} q={q} setQ={setQ} tab={tab} setTab={setTab}
+          : <JobTitleList rows={records} q={q} setQ={setQ}
               onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => setView({ name: "edit", id: r.id })} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
               segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel}
               title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status."

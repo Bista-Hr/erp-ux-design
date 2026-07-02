@@ -84,10 +84,23 @@ const EXIT_SEED = [
 ];
 
 /* ---------- list ---------- */
-function ExitList({ rows, q, setQ, tab, setTab, onCreate, onOpen, onArchive }) {
+function ExitList({ rows, q, setQ, onCreate, onOpen, onArchive }) {
   const [menu, setMenu] = useEx(null);
-  const byTab = rows.filter(r => tab === "All" || r.status === tab);
-  const shown = byTab.filter(r => q === "" || `${r.employee} ${r.exitType}`.toLowerCase().includes(q.toLowerCase()));
+  // Versatile filter — draft (in-panel) vs applied. Status is just ONE dimension of the same
+  // Show/Hide Filter panel (Status · Exit Type · Department · Initiation Channel), for consistency
+  // across all People & Culture list pages.
+  const [draft, setDraft] = useEx({ status: "", exitType: "", dept: "", source: "" });
+  const [applied, setApplied] = useEx({ status: "", exitType: "", dept: "", source: "" });
+  const deptOptions = [...new Set(rows.map(r => r.dept).filter(Boolean))].sort();
+  const sourceOptions = [...new Set(rows.map(r => r.source).filter(Boolean))].sort();
+  const shown = rows.filter(r => {
+    if (q !== "" && !`${r.employee} ${r.exitType}`.toLowerCase().includes(q.toLowerCase())) return false;
+    if (applied.status && r.status !== applied.status) return false;
+    if (applied.exitType && r.exitType !== applied.exitType) return false;
+    if (applied.dept && r.dept !== applied.dept) return false;
+    if (applied.source && r.source !== applied.source) return false;
+    return true;
+  });
   const pg = usePaged(shown, 10);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -95,8 +108,16 @@ function ExitList({ rows, q, setQ, tab, setTab, onCreate, onOpen, onArchive }) {
         actions={<Button variant="primary" icon="add-line" onClick={onCreate}>Initiate Exit</Button>} />
       <div className="card" style={{ padding: 20, overflow: "visible" }}>
         <div className="bh-tablebox">
-        <UI.FilterBar left={<Segmented items={["All", "Pending", "In Progress", "Closed"]} active={tab} onChange={setTab} />}
-          search={q} onSearch={setQ} searchPlaceholder="Search exits…" />
+        <UI.FilterBar
+          search={q} onSearch={setQ} searchPlaceholder="Search exits…"
+          filters={[
+            { label: "Status", node: <Combobox value={draft.status} onChange={v => setDraft(s => ({ ...s, status: v }))} options={["Pending", "In Progress", "Closed"]} placeholder="All statuses" /> },
+            { label: "Exit Type", node: <Combobox value={draft.exitType} onChange={v => setDraft(s => ({ ...s, exitType: v }))} options={EXIT_TYPES.map(t => t.value)} placeholder="All exit types" /> },
+            { label: "Department", node: <Combobox value={draft.dept} onChange={v => setDraft(s => ({ ...s, dept: v }))} options={deptOptions} placeholder="All departments" /> },
+            { label: "Initiation Channel", node: <Combobox value={draft.source} onChange={v => setDraft(s => ({ ...s, source: v }))} options={sourceOptions} placeholder="All channels" /> },
+          ]}
+          onReset={() => { setDraft({ status: "", exitType: "", dept: "", source: "" }); setApplied({ status: "", exitType: "", dept: "", source: "" }); }}
+          onApply={() => setApplied(draft)} />
         {rows.length === 0
           ? <EmptyState title="No exits yet" subtitle="Initiate an employee exit to begin the clearance process." cta="Initiate Exit" onAction={onCreate} />
           : <table className="bh">
@@ -283,7 +304,6 @@ function ExitDetails({ exit, onToggleClearance, onToggleAll, onMarkInterview, on
         </div>
       )}
 
-      {/* Exit interview — driven by the user's interviewRequired toggle */}
       <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="chat-check-line" title="Exit Interview">
           {exit.interviewRequired
@@ -314,7 +334,6 @@ function ExitDetails({ exit, onToggleClearance, onToggleAll, onMarkInterview, on
         </DetailCard>
       </div>
 
-      {/* Clearance checklist */}
       <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="list-check-3" title="Clearance Checklist"
           action={
@@ -357,7 +376,6 @@ function ExitDetails({ exit, onToggleClearance, onToggleAll, onMarkInterview, on
         </DetailCard>
       </div>
 
-      {/* Supporting documents */}
       <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="attachment-2" title="Supporting Documents">
           <SupportingDocumentsList urls={exit.documents} />
@@ -442,7 +460,7 @@ function ExitScreen({ onToast, onSubPage, lookups }) {
   if (view.name === "add") body = <ExitForm lookups={lookups} onCancel={() => setView({ name: "list" })} onSubmit={submitExit} />;
   else if (view.name === "details" && current) body = <ExitDetails exit={current}
     onToggleClearance={toggleClearance} onToggleAll={toggleAll} onMarkInterview={markInterview} onClose={(r) => setConfirm({ kind: "close", row: r })} />;
-  else body = <ExitList rows={exits} q={q} setQ={setQ} tab={tab} setTab={setTab}
+  else body = <ExitList rows={exits} q={q} setQ={setQ}
     onCreate={() => setView({ name: "add" })} onOpen={(r) => setView({ name: "details", id: r.id })} onArchive={(r) => setConfirm({ kind: "archive", row: r })} />;
 
   const CONFIRM = {

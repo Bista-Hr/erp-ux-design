@@ -44,7 +44,7 @@ function OptionRow({ opt, selected, onClick, avatar }) {
 }
 
 // portal popover — fixed to the trigger rect, flips up near the bottom of the viewport
-function ComboPopover({ rect, options, search, setSearch, isSelected, onPick, onClose, noDataText = "No option found.", avatar }) {
+function ComboPopover({ rect, options, search, setSearch, isSelected, onPick, onClose, noDataText = "No option found.", avatar, header }) {
   if (!rect) return null;
   const filtered = options.filter(o => o.label.toLowerCase().includes(search.toLowerCase()));
   const GAP = 6, EST = 300;
@@ -61,11 +61,12 @@ function ComboPopover({ rect, options, search, setSearch, isSelected, onPick, on
     <React.Fragment>
       <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 1000 }} />
       <div style={panel}>
-        <div style={{ padding: 8, borderBottom: "1px solid var(--divider)", flexShrink: 0 }}>
-          <div className="input-wrap" style={{ padding: "7px 10px" }}>
+        <div style={{ padding: 8, borderBottom: "1px solid var(--divider)", flexShrink: 0, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <div className="input-wrap" style={{ padding: "7px 10px", flex: "1 1 150px", minWidth: 0 }}>
             <Icon name="search-2-line" size={16} style={{ color: "var(--icon-default)" }} />
             <input autoFocus placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} />
           </div>
+          {header && <div style={{ flex: "0 1 auto", minWidth: 168 }}>{header}</div>}
         </div>
         <div style={{ overflowY: "auto", padding: 6 }}>
           {filtered.length === 0
@@ -78,7 +79,7 @@ function ComboPopover({ rect, options, search, setSearch, isSelected, onPick, on
   );
 }
 
-function Combobox({ value, onChange, options, placeholder = "Select option...", icon, noDataText, avatar, disabled }) {
+function Combobox({ value, onChange, options, placeholder = "Select option...", icon, noDataText, avatar, disabled, header }) {
   const { ref, open, setOpen, rect } = usePopover();
   const [search, setSearch] = useState("");
   const opts = normOpts(options);
@@ -96,7 +97,7 @@ function Combobox({ value, onChange, options, placeholder = "Select option...", 
         <Icon name="arrow-down-s-line" size={20} style={{ color: "var(--icon-default)", transition: "transform .15s", transform: open ? "rotate(180deg)" : "none" }} />
       </div>
       {open && !disabled && (
-        <ComboPopover rect={rect} options={opts} search={search} setSearch={setSearch} noDataText={noDataText} avatar={avatar}
+        <ComboPopover rect={rect} options={opts} search={search} setSearch={setSearch} noDataText={noDataText} avatar={avatar} header={header}
           isSelected={v => v === value} onClose={close}
           onPick={v => { onChange(v === value ? "" : v); close(); }} />
       )}

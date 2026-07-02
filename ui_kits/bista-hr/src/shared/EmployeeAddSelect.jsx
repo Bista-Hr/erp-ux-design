@@ -29,8 +29,11 @@ function EmployeeAddSelect({ value = [], onChange, employees = [], placeholder =
                   border: "1px solid var(--gray-200)", borderRadius: 10, padding: "7px 8px 7px 8px", background: "#fff", boxShadow: "var(--shadow-input)" }}>
                   <Avatar name={e.name} size={32} />
                   <span style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                    <span style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{e.name}</span>
-                    <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)", lineHeight: 1.3 }}>{(e.staffId || e.id)}{e.dept ? " · " + e.dept : ""}</span>
+                    <span style={{ display: "flex", alignItems: "baseline", gap: 8, minWidth: 0 }}>
+                      <span style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{e.name}</span>
+                      <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)", whiteSpace: "nowrap", flexShrink: 0 }}>{e.staffId || e.id}</span>
+                    </span>
+                    <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{[e.dept, [e.unit, e.branch].filter(Boolean).join(" · ")].filter(Boolean).join(" · ") || "—"}</span>
                   </span>
                   <button type="button" onClick={() => remove(id)} title="Remove employee"
                     style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, marginLeft: 2,
@@ -49,3 +52,16 @@ function EmployeeAddSelect({ value = [], onChange, employees = [], placeholder =
 }
 
 Object.assign(window, { EmployeeAddSelect });
+
+// JobTitleFilterHeader — the "Filter by department" control that lives INSIDE the New Job Title
+// dropdown (via Combobox's `header` slot). It is a searchable department select (scales to any
+// number of departments) that only narrows the title list — it is NOT an employee-department
+// change and is never submitted. Shared by Promotions and Job Title.
+function JobTitleFilterHeader({ department, onChange, departments = [] }) {
+  const opts = [{ value: "", label: "All departments" }, ...departments.map(d => ({ value: d, label: d }))];
+  return (
+    <Combobox value={department} onChange={v => onChange(v || "")} options={opts} icon="filter-3-line" placeholder="All departments" noDataText="No department found." />
+  );
+}
+
+Object.assign(window, { JobTitleFilterHeader });

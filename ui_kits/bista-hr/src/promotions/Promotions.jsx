@@ -27,7 +27,7 @@ const approverLabel = (status) => status === "Approved" ? "Approved" : status ==
 function promoRosterRows() {
   return window.EMPLOYEE_LIST.map(e => ({
     id: e.id, name: e.name, employeeNumber: e.staffId, jobTitle: e.title,
-    jobGrade: e.grade, department: e.dept, profilePictureUrl: "",
+    jobGrade: e.grade, department: e.dept, unit: e.unit, branch: e.branch, zone: e.zone, profilePictureUrl: "",
   }));
 }
 
@@ -49,9 +49,20 @@ function PromotionRequest({ q, setQ, segment, setSegment, onCreate, title, subti
 }
 
 /* ---------- approval queue ---------- */
-function PromotionsList({ rows, q, setQ, tab, setTab, onOpen, onEdit, onArchive, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
-  const byTab = rows.filter(r => tab.length === 0 || tab.includes(r.status));
-  const shown = byTab.filter(r => q === "" || r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newRole.toLowerCase().includes(q.toLowerCase()));
+function PromotionsList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
+  const PROMO_BLANK = { status: "", department: "", unit: "", zone: "", grade: "" };
+  const [draft, setDraft] = usePromo(PROMO_BLANK);
+  const [applied, setApplied] = usePromo(PROMO_BLANK);
+  const optsOf = (key) => [...new Set(rows.map(r => r[key]).filter(Boolean))].sort();
+  const shown = rows.filter(r => {
+    if (q !== "" && !(r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newRole.toLowerCase().includes(q.toLowerCase()))) return false;
+    if (applied.status && r.status !== applied.status) return false;
+    if (applied.department && r.department !== applied.department) return false;
+    if (applied.unit && r.unit !== applied.unit) return false;
+    if (applied.zone && r.zone !== applied.zone) return false;
+    if (applied.grade && r.grade !== applied.grade) return false;
+    return true;
+  });
   const pg = usePaged(shown, 10);
   const pendingShown = shown.filter(r => r.status === "Pending");
   const allPendingSel = pendingShown.length > 0 && pendingShown.every(r => sel.includes(r.id));
@@ -64,7 +75,15 @@ function PromotionsList({ rows, q, setQ, tab, setTab, onOpen, onEdit, onArchive,
         <div className="bh-tablebox">
         <UI.FilterBar left={<Segmented items={["Request", "Approval"]} active={segment} onChange={setSegment} />}
           search={q} onSearch={setQ} searchPlaceholder="Search promotions…"
-          filters={[{ label: "Status", node: <StatusFilter value={tab} onChange={setTab} /> }]} />
+          filters={[
+            { label: "Status", node: <Combobox value={draft.status} onChange={v => setDraft(s => ({ ...s, status: v }))} options={["Pending", "Approved", "Declined"]} placeholder="All statuses" /> },
+            { label: "Department", node: <Combobox value={draft.department} onChange={v => setDraft(s => ({ ...s, department: v }))} options={optsOf("department")} placeholder="All departments" /> },
+            { label: "Unit/Branch", node: <Combobox value={draft.unit} onChange={v => setDraft(s => ({ ...s, unit: v }))} options={optsOf("unit")} placeholder="All units/branches" /> },
+            { label: "Zone", node: <Combobox value={draft.zone} onChange={v => setDraft(s => ({ ...s, zone: v }))} options={optsOf("zone")} placeholder="All zones" /> },
+            { label: "Job Grade", node: <Combobox value={draft.grade} onChange={v => setDraft(s => ({ ...s, grade: v }))} options={optsOf("grade")} placeholder="All grades" /> },
+          ]}
+          onReset={() => { setDraft(PROMO_BLANK); setApplied(PROMO_BLANK); }}
+          onApply={() => setApplied(draft)} />
         {rows.length === 0
           ? <EmptyState title="No promotions yet" subtitle="Select staff from the Request tab to raise a promotion." />
           : <table className="bh">
@@ -136,41 +155,22 @@ const AutoBadge = () => (
     <Icon name="sparkling-2-line" size={12} color="var(--brand-yellow-dark)" />Auto-populated
   </span>
 );
-// Shared "Resolved Role & Benefits" card — grade resolved from the selected job title; salary +
-// allowances fetch from grade + notch (notch is picked in the form's top card). Read-only.
+// Shared "Resolved Salary" card — salary is fetched from grade + notch by Payroll (read-only).
+// Job grade and job title are picked independently in the form; allowances are not shown here.
 // Used identically by Promotions, Job Title and Transfers.
 function ResolvedRoleBenefits({ grade, salary, allowances }) {
-  const list = allowances || [];
   return (
-    <FormCard title="Resolved Role & Benefits" badge={<AutoBadge />}>
+    <FormCard title="Resolved Salary" badge={<AutoBadge />}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>
         <Icon name="information-line" size={15} color="var(--gray-400)" />
-        Grade comes from the selected job title; salary &amp; allowances are resolved from grade + notch by Payroll — they are not edited here.
+        Salary is resolved from the job grade + notch by Payroll &mdash; it is not edited here.
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-        <Field label="Job Grade">
-          <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
-            <Icon name="bar-chart-grouped-line" size={18} style={{ color: "var(--icon-default)" }} />
-            <input value={grade || ""} readOnly placeholder="Auto from job title" style={{ color: grade ? "var(--gray-900)" : "var(--gray-400)" }} />
-          </div>
-        </Field>
         <Field label="Salary">
           <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
             <Icon name="money-dollar-circle-line" size={18} style={{ color: "var(--icon-default)" }} />
             <input value={salary || ""} readOnly placeholder="Auto from grade & notch" style={{ color: salary ? "var(--gray-900)" : "var(--gray-400)" }} />
           </div>
-        </Field>
-        <Field label="Allowances" style={{ gridColumn: "1 / -1" }}>
-          {list.length === 0
-            ? <div className="input-wrap" style={{ background: "var(--gray-50)" }}><span style={{ flex: 1, fontFamily: "var(--font-control)", fontSize: 14, color: "var(--gray-400)" }}>Auto from grade & notch</span></div>
-            : <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {list.map(a => (
-                  <span key={a.label} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--gray-50)", border: "1px solid var(--gray-200)", borderRadius: 8, padding: "6px 10px", fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-800)" }}>
-                    <span style={{ color: "var(--gray-500)" }}>{a.label}</span>
-                    <span style={{ fontWeight: 600, color: "var(--gray-900)" }}>{a.value}</span>
-                  </span>
-                ))}
-              </div>}
         </Field>
       </div>
     </FormCard>
@@ -206,10 +206,13 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
   const [mails, setMails] = usePromo(initialData?.notifyMails || []);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
 
-  // Cascade: Department narrows Job Titles; picking a Job Title auto-resolves its Grade + Notch
-  // (and therefore Salary + Benefits, fetched below). Grade/Notch are not picked manually.
-  const selectDept = (v) => setForm(s => ({ ...s, department: v, newJobTitle: "", grade: "", notch: "" }));
-  const selectTitle = (v) => { const info = window.jobTitleInfo(v) || {}; setForm(s => ({ ...s, newJobTitle: v, grade: info.grade || "", notch: "" })); };
+  // Job title and job grade are picked INDEPENDENTLY — a title is not always tied to a grade.
+  // Department narrows the Job Title list; Notch depends on the chosen Job Grade.
+  const selectDept = (v) => setForm(s => ({ ...s, department: v, newJobTitle: "" }));
+  // Picking a title suggests its default grade, but the grade stays editable — a title is not
+  // strictly tied to a grade, so the user can override it afterwards.
+  const selectTitle = (v) => setForm(s => { const info = window.jobTitleInfo(v) || {}; const grade = info.grade || s.grade; return { ...s, newJobTitle: v, grade, notch: grade === s.grade ? s.notch : "" }; });
+  const selectGrade = (v) => setForm(s => ({ ...s, grade: v, notch: "" }));
   const titleOptions = window.jobTitlesForDepartment(form.department);
   const notchOptions = window.notchesForGrade(form.grade);
 
@@ -239,20 +242,22 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
         <Field label="Employee(s)">
           <EmployeeAddSelect value={employees} onChange={setEmployees} employees={EMP} />
         </Field>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Department"><Combobox value={form.department} onChange={selectDept} options={LK.departments} placeholder="Select department" /></Field>
-          <Field label="New Job Title"><Combobox value={form.newJobTitle} onChange={selectTitle} options={titleOptions} placeholder={form.department ? "Select job title" : "Select department first"} noDataText="Select a department first." /></Field>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 20 }}>
+          <Field label="New Job Title"><Combobox value={form.newJobTitle} onChange={selectTitle} options={titleOptions} placeholder="Select job title" header={<JobTitleFilterHeader department={form.department} onChange={selectDept} departments={LK.departments} />} noDataText="No job title found for this department." /></Field>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Notch"><Combobox value={form.notch} onChange={v => set("notch", v)} options={notchOptions} icon="stack-line" placeholder={form.grade ? "Select notch" : "Select job title first"} noDataText="Select a job title first." /></Field>
+          <Field label="Job Grade"><Combobox value={form.grade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
+          <Field label="Notch"><Combobox value={form.notch} onChange={v => set("notch", v)} options={notchOptions} icon="stack-line" placeholder={form.grade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
           <Field label="Effective Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
         </div>
       </FormCard>
 
       <ResolvedRoleBenefits grade={form.grade} salary={salary} allowances={allowances} />
 
-      <FormCard title="Justification">
-        <Field label="Promotion Justification"><Textarea rows={4} value={form.justification} onChange={e => set("justification", e.target.value)} placeholder="Explain the rationale for this promotion…" /></Field>
+      <FormCard title="Comments">
+        <Field label="Comments"><UI.RichText value={form.justification} onChange={v => set("justification", v)} placeholder="Add comments about this promotion…" /></Field>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Supporting Documents</label>
@@ -283,9 +288,9 @@ function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
     { label: "New Job Title", value: promo.newRole },
     { label: "Job Grade", value: promo.grade },
     { label: "Notch", value: promo.notch || "—" },
-    { label: "Department / Unit", value: promo.deptUnit },
+    { label: "Department", value: promo.department || promo.deptUnit },
+    { label: "Unit/Branch", value: [promo.unit, promo.branch].filter(Boolean).join(" · ") || "—" },
     { label: "Zone", value: promo.zone },
-    { label: "Branch", value: promo.branch },
     { label: "Salary", value: promo.salary },
     { label: "Performance Rating", value: promo.performanceRating || "—" },
     { label: "Effective Date", value: promo.effectiveDate },
@@ -313,14 +318,6 @@ function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
 
       <div className="card" style={{ padding: 0 }}>
         <DetailCard icon="user-3-line" title="Employee Information"><DetailPanel items={empInfo} tint="gray" cols={4} /></DetailCard>
-      </div>
-
-      <div className="card" style={{ padding: 0 }}>
-        <DetailCard icon="hand-coin-line" title="Benefits & Allowances">
-          {promo.allowances && promo.allowances.length > 0
-            ? <DetailPanel items={promo.allowances} tint="cream" cols={3} />
-            : <EmptyState compact title="No allowances available" subtitle="No benefits or allowances are attached to this promotion." />}
-        </DetailCard>
       </div>
 
       <div className="card" style={{ padding: 0 }}>
@@ -355,7 +352,6 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
   const [rosterQ, setRosterQ] = usePromo("");
   const [approvalSel, setApprovalSel] = usePromo([]);
   const [q, setQ] = usePromo("");
-  const [tab, setTab] = usePromo([]);
   const [view, setView] = usePromo({ name: "list" });   // list | add | edit | details
   const [confirm, setConfirm] = usePromo(null);
 
@@ -385,6 +381,7 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
         previousRole: primary.title || "—", newRole: f.newJobTitle, previousGrade: primary.grade || "—", grade: f.grade, notch: f.notch,
         deptUnit: primary.dept || "—",
         department: primary.dept || "—",
+        unit: primary.unit || "—",
         zone: primary.zone || "—",
         branch: primary.branch || "—",
         previousSalary: primary.salary || "—", salary: f.salary || "—", performanceRating: primary.rating || "—",
@@ -452,7 +449,7 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
       ? <PromotionRequest q={rosterQ} setQ={setRosterQ} segment={segment} setSegment={setSegment}
           onCreate={(ids) => setView({ name: "add", initialEmployees: ids })}
           title="Promotions" subtitle="Select staff to promote, and track approval status." headerAction={headerAction} />
-      : <PromotionsList rows={promos} q={q} setQ={setQ} tab={tab} setTab={setTab}
+      : <PromotionsList rows={promos} q={q} setQ={setQ}
           onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => setView({ name: "edit", id: r.id })} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
           segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel}
           title="Promotions" subtitle="Select staff to promote, and track approval status." headerAction={headerAction} />
