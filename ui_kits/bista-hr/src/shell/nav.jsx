@@ -34,6 +34,7 @@ const NAV_MAIN = [
 
 const NAV_ADMIN = { name: "System Administration", icon: "settings-3-line", kind: "list", children: [
   { name: "Configuration", tabs: ["Corporate Perspectives", "Competencies", "KPI / Measures", "Periods", "Performance Ratings"] },
+  { name: "Notification Configurations" },
   { name: "User Management", tabs: ["Roles", "Users"] },
   { name: "Organization" },
 ]};

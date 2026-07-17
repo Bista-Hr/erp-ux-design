@@ -112,37 +112,200 @@ function UITextarea({ className, ...props }) {
 }
 
 // ── RichText (mirrors components/ui/rich-text-input.tsx — Quill “snow” look, value = HTML) ──
+// APP_PAGES: registry of in-app destinations for the link popover — { label, path, section }.
+// Kept flat so consuming apps can swap it for their real route map (window.UI_APP_PAGES).
+const UI_APP_PAGES = [
+  { label: "Dashboard", path: "/dashboard", section: "General" },
+  { label: "Notifications", path: "/dashboard/notifications", section: "General" },
+  { label: "Announcements", path: "/dashboard/announcements", section: "General" },
+  { label: "Employees", path: "/hr-management/employees", section: "HR Management" },
+  { label: "Employee Exit", path: "/hr-management/exit", section: "HR Management" },
+  { label: "Transfers", path: "/hr-management/transfers", section: "HR Management" },
+  { label: "Promotions", path: "/people-and-culture/promotions", section: "People & Culture" },
+  { label: "Job Title", path: "/people-and-culture/job-title", section: "People & Culture" },
+  { label: "Hiring Requests", path: "/recruitment/hiring-requests", section: "Recruitment" },
+  { label: "Job Posts", path: "/recruitment/job-posts", section: "Recruitment" },
+  { label: "Assessments", path: "/recruitment/assessments", section: "Recruitment" },
+  { label: "Leave", path: "/my-requests/leave", section: "My Requests" },
+  { label: "My Learning", path: "/learning/my-learning", section: "Learning & Development" },
+  { label: "Program Catalog", path: "/learning/program-catalog", section: "Learning & Development" },
+  { label: "Appraisals", path: "/performance/appraisals", section: "Performance" },
+  { label: "Notification Configurations", path: "/system-administration/notification-configurations", section: "System Administration" },
+];
+window.UI_APP_PAGES = window.UI_APP_PAGES || UI_APP_PAGES;
+
+// Link popover — two tabs: pick an in-app page (searchable, grouped by section) or paste a URL.
+function UILinkPopover({ onPick, onClose }) {
+  const [tab, setTab] = React.useState("page"); // page | url
+  const [q, setQ] = React.useState("");
+  const [url, setUrl] = React.useState("");
+  const pages = window.UI_APP_PAGES || [];
+  const shown = pages.filter(p => (p.label + " " + p.section + " " + p.path).toLowerCase().includes(q.toLowerCase()));
+  const groups = [...new Set(shown.map(p => p.section))];
+  return (
+    <div className="absolute left-2 top-9 z-50 w-72 rounded-md border border-input bg-white shadow-lg" onMouseDown={e => e.stopPropagation()}>
+      <div className="flex items-center gap-0.5 border-b border-input p-1.5">
+        <button type="button" onClick={() => setTab("page")} className={cn("rounded px-2 py-1 text-xs font-medium", tab === "page" ? "bg-gray-100 text-gray-900" : "text-gray-500 hover:text-gray-900")}><i className="ri-apps-line mr-1" />In-App Page</button>
+        <button type="button" onClick={() => setTab("url")} className={cn("rounded px-2 py-1 text-xs font-medium", tab === "url" ? "bg-gray-100 text-gray-900" : "text-gray-500 hover:text-gray-900")}><i className="ri-global-line mr-1" />External URL</button>
+        <button type="button" onClick={onClose} className="ml-auto rounded p-1 text-gray-400 hover:text-gray-900"><i className="ri-close-line" /></button>
+      </div>
+      {tab === "page" ? (
+        <div>
+          <div className="border-b border-input p-1.5">
+            <input autoFocus placeholder="Search pages…" value={q} onChange={e => setQ(e.target.value)}
+              className="w-full rounded border-0 px-2 py-1 text-sm outline-none" />
+          </div>
+          <div className="max-h-56 overflow-y-auto py-1">
+            {shown.length === 0 && <p className="px-3 py-4 text-center text-xs text-gray-400">No page found.</p>}
+            {groups.map(g => (
+              <div key={g}>
+                <div className="px-3 pb-0.5 pt-1.5 text-[10.5px] font-semibold uppercase tracking-wide text-gray-400">{g}</div>
+                {shown.filter(p => p.section === g).map(p => (
+                  <button key={p.path} type="button" onClick={() => onPick(p.path, p.label)}
+                    className="flex w-full items-center justify-between gap-2 px-3 py-1.5 text-left text-sm text-gray-800 hover:bg-gray-50">
+                    <span className="truncate">{p.label}</span>
+                    <span className="truncate font-mono text-[10.5px] text-gray-400">{p.path}</span>
+                  </button>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="flex gap-1.5 p-2">
+          <input autoFocus placeholder="https://…" value={url} onChange={e => setUrl(e.target.value)}
+            onKeyDown={e => { if (e.key === "Enter" && url.trim()) onPick(url.trim()); }}
+            className="flex-1 rounded-md border border-input px-2 py-1 text-sm outline-none focus:border-ring" />
+          <UIButton size="xs" disabled={!url.trim()} onClick={() => onPick(url.trim())}>Add</UIButton>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Tooltip (mirrors the shadcn tooltip — dark bubble on hover/focus) ──
+function UITooltip({ label, children, side = "top" }) {
+  const [show, setShow] = React.useState(false);
+  return (
+    <span className="relative inline-flex" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)} onFocus={() => setShow(true)} onBlur={() => setShow(false)}>
+      {children}
+      {show && (
+        <span className="pointer-events-none absolute z-50 whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-[11px] font-medium text-white shadow-md"
+          style={{ left: "50%", transform: "translateX(-50%)", ...(side === "top" ? { bottom: "calc(100% + 6px)" } : { top: "calc(100% + 6px)" }) }}>
+          {label}
+          <span style={{ position: "absolute", left: "50%", marginLeft: -4, transform: "rotate(45deg)", width: 8, height: 8, background: "#111827", ...(side === "top" ? { bottom: -3 } : { top: -3 }) }} />
+        </span>
+      )}
+    </span>
+  );
+}
+
 function UIRichText({ value = "", onChange, placeholder = "Type here...", className, error }) {
   const ref = React.useRef(null);
   const last = React.useRef(value);
+  const [linkOpen, setLinkOpen] = React.useState(false);
+  const savedSel = React.useRef(null);
   React.useEffect(() => { if (ref.current && value !== last.current) { ref.current.innerHTML = value || ""; last.current = value; } }, [value]);
   React.useEffect(() => { if (ref.current && !ref.current.innerHTML && value) { ref.current.innerHTML = value; } }, []);
   const exec = (cmd, arg) => { document.execCommand(cmd, false, arg); ref.current && ref.current.focus(); fire(); };
   const fire = () => { if (ref.current) { last.current = ref.current.innerHTML; onChange && onChange(ref.current.innerHTML); } };
   const Btn = ({ cmd, arg, icon, title }) => (
-    <button type="button" title={title} onMouseDown={e => { e.preventDefault(); exec(cmd, arg); }}
-      className="h-7 w-7 inline-flex items-center justify-center rounded text-gray-600 hover:bg-gray-100"><i className={"ri-" + icon} /></button>
+    <UITooltip label={title}>
+      <button type="button" aria-label={title} onMouseDown={e => { e.preventDefault(); exec(cmd, arg); }}
+        className="h-7 w-7 inline-flex items-center justify-center rounded text-gray-600 hover:bg-gray-100"><i className={"ri-" + icon} /></button>
+    </UITooltip>
   );
+  const openLink = () => {
+    const sel = window.getSelection();
+    savedSel.current = sel && sel.rangeCount > 0 ? sel.getRangeAt(0).cloneRange() : null;
+    setLinkOpen(o => !o);
+  };
+  const applyLink = (href, label) => {
+    setLinkOpen(false);
+    const sel = window.getSelection();
+    if (savedSel.current) { sel.removeAllRanges(); sel.addRange(savedSel.current); }
+    if (sel && sel.isCollapsed && label) {
+      document.execCommand("insertHTML", false, `<a href="${href}">${label}</a>`);
+    } else {
+      document.execCommand("createLink", false, href);
+    }
+    ref.current && ref.current.focus(); fire();
+  };
   return (
-    <div className={cn("rounded-md border bg-white flex flex-col overflow-hidden", error ? "border-destructive" : "border-input focus-within:border-ring", className)}>
+    <div className={cn("relative rounded-md border bg-white flex flex-col", linkOpen ? "" : "overflow-hidden", error ? "border-destructive" : "border-input focus-within:border-ring", className)}>
       <div className="flex items-center gap-1 border-b border-input px-2 py-1.5 flex-wrap">
         <Btn cmd="bold" icon="bold" title="Bold" /><Btn cmd="italic" icon="italic" title="Italic" /><Btn cmd="underline" icon="underline" title="Underline" /><Btn cmd="strikeThrough" icon="strikethrough" title="Strikethrough" />
         <span className="w-px h-5 bg-gray-200 mx-1" />
         <Btn cmd="insertUnorderedList" icon="list-unordered" title="Bulleted list" /><Btn cmd="insertOrderedList" icon="list-ordered-2" title="Numbered list" />
         <span className="w-px h-5 bg-gray-200 mx-1" />
-        <button type="button" title="Link" onMouseDown={e => { e.preventDefault(); const url = window.prompt("Enter URL"); if (url) exec("createLink", url); }} className="h-7 w-7 inline-flex items-center justify-center rounded text-gray-600 hover:bg-gray-100"><i className="ri-link" /></button>
-        <button type="button" title="Clear formatting" onMouseDown={e => { e.preventDefault(); exec("removeFormat"); }} className="h-7 w-7 inline-flex items-center justify-center rounded text-gray-600 hover:bg-gray-100"><i className="ri-format-clear" /></button>
+        <UITooltip label="Insert link"><button type="button" aria-label="Insert link" onMouseDown={e => { e.preventDefault(); openLink(); }} className={cn("h-7 w-7 inline-flex items-center justify-center rounded hover:bg-gray-100", linkOpen ? "bg-gray-100 text-gray-900" : "text-gray-600")}><i className="ri-link" /></button></UITooltip>
+        <UITooltip label="Clear formatting"><button type="button" aria-label="Clear formatting" onMouseDown={e => { e.preventDefault(); exec("removeFormat"); }} className="h-7 w-7 inline-flex items-center justify-center rounded text-gray-600 hover:bg-gray-100"><i className="ri-format-clear" /></button></UITooltip>
       </div>
+      {linkOpen && <UILinkPopover onPick={applyLink} onClose={() => setLinkOpen(false)} />}
       <div ref={ref} contentEditable suppressContentEditableWarning data-ph={placeholder} onInput={fire} onBlur={fire}
         className="bh-rte min-h-[120px] px-3 py-2 text-sm text-gray-900 outline-none" style={{ fontFamily: "inherit" }} />
     </div>
   );
 }
 
+// ── HtmlBodyEditor (email-body editor: Editor · HTML · Preview toggle) ──
+// Wraps UIRichText so non-technical users edit visually, while the HTML view exposes the raw
+// markup and Preview renders the final output. value IS the HTML string (same contract as
+// RichText). insertRef (optional): receives a fn(snippet) so callers (merge-field buttons)
+// can insert at the caret of whichever view is active.
+function UIHtmlBodyEditor({ value = "", onChange, placeholder = "Type here...", rows = 10, insertRef }) {
+  const [mode, setMode] = React.useState("editor"); // editor | html | preview
+  const taRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!insertRef) return;
+    insertRef.current = (snippet) => {
+      if (mode === "html" && taRef.current) {
+        const t = taRef.current, start = t.selectionStart ?? t.value.length, end = t.selectionEnd ?? start;
+        const next = t.value.slice(0, start) + snippet + t.value.slice(end);
+        onChange && onChange(next);
+        requestAnimationFrame(() => { t.focus(); const c = start + snippet.length; t.setSelectionRange(c, c); });
+      } else {
+        onChange && onChange((value || "") + snippet);
+      }
+    };
+  }, [mode, value, onChange]);
+  const TabBtn = ({ id, icon, label }) => (
+    <button type="button" onClick={() => setMode(id)}
+      className={cn("inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+        mode === id ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-900")}>
+      <i className={"ri-" + icon} />{label}
+    </button>
+  );
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="inline-flex items-center gap-0.5 self-start rounded-lg p-0.5" style={{ background: "#F6F8FA", border: "1px solid var(--gray-150)" }}>
+        <TabBtn id="editor" icon="edit-line" label="Editor" />
+        <TabBtn id="html" icon="code-s-slash-line" label="HTML" />
+        <TabBtn id="preview" icon="eye-line" label="Preview" />
+      </div>
+      {mode === "editor" && <UIRichText value={value} onChange={onChange} placeholder={placeholder} />}
+      {mode === "html" && (
+        <div className="rounded-md border border-input bg-white overflow-hidden focus-within:border-ring">
+          <textarea ref={taRef} rows={rows} value={value} onChange={e => onChange && onChange(e.target.value)} spellCheck={false}
+            className="w-full px-3 py-2 text-sm text-gray-900 outline-none resize-y" style={{ fontFamily: "ui-monospace, monospace", fontSize: 12.5, lineHeight: 1.6, border: 0, display: "block" }} />
+        </div>
+      )}
+      {mode === "preview" && (
+        <div className="rounded-md border border-input" style={{ background: "var(--gray-50)", padding: 16 }}>
+          <div className="rounded-md bg-white text-sm text-gray-900" style={{ border: "1px solid var(--gray-150)", padding: "20px 22px", maxWidth: 640, lineHeight: 1.6, minHeight: 80 }}
+            dangerouslySetInnerHTML={{ __html: value || "<span style='color:var(--gray-400)'>Nothing to preview yet.</span>" }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── DatePicker (mirrors components/ui/date-picker.tsx — outline trigger + popover calendar) ──
 const _MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-function UIDatePicker({ value, onSelect, placeholder = "Pick a date", error, className, withTime }) {
+function UIDatePicker({ value, onSelect, placeholder = "Pick a date", error, className, withTime, weekendRule }) {
   const [open, setOpen] = React.useState(false);
+  // weekendRule: weekends are OFF by default; a small inline toggle re-enables them.
+  const [allowWknd, setAllowWknd] = React.useState(false);
   const ref = React.useRef(null);
   const sel = value ? new Date(value) : null;
   const valid = sel && !isNaN(sel.getTime());
@@ -179,9 +342,21 @@ function UIDatePicker({ value, onSelect, placeholder = "Pick a date", error, cla
             {["Su","Mo","Tu","We","Th","Fr","Sa"].map(d => <span key={d} className="text-[11px] font-medium text-gray-400 py-1">{d}</span>)}
             {cells.map((d, i) => d === null ? <span key={i} /> : (() => {
               const isSel = valid && sel.getFullYear() === y && sel.getMonth() === m && sel.getDate() === d;
+              const dow = new Date(y, m, d).getDay();
+              const wkOff = weekendRule && !allowWknd && (dow === 0 || dow === 6);
+              if (wkOff) return <button key={i} type="button" disabled className="h-8 w-8 rounded-md text-sm text-gray-300 cursor-not-allowed">{d}</button>;
               return <button key={i} type="button" onClick={() => pick(d)} className={cn("h-8 w-8 rounded-md text-sm hover:bg-primary/10", isSel ? "bg-primary text-black font-semibold" : "text-gray-700")}>{d}</button>;
             })())}
           </div>
+          {weekendRule && (
+            <div className="mt-2 flex items-center justify-between border-t border-gray-100 pt-2">
+              <span className="inline-flex items-center gap-1 text-[11px] text-gray-400"><i className="ri-calendar-close-line" />Weekends off</span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="text-[11px] font-medium text-gray-600">Allow weekends</span>
+                <span style={{ transform: "scale(.75)", transformOrigin: "right center", display: "inline-flex" }}><UISwitch checked={allowWknd} onCheckedChange={setAllowWknd} /></span>
+              </span>
+            </div>
+          )}
           {withTime && (
             <div className="mt-3 flex items-center gap-2 border-t border-gray-100 pt-3">
               <i className="ri-time-line text-gray-500" />
@@ -254,7 +429,7 @@ function UIFilterField({ label, children }) {
 // FilterBar — RULE: 0 filters → none; 1 filter → inline dropdown box in the toolbar (no toggle);
 // 2+ filters → "Show/Hide Filter" toggle + panel grid + Reset/Apply.
 // `filters` = array of { label, node }  (node is the control, usually a <Combobox>).
-function UIFilterBar({ left, search, onSearch, searchPlaceholder = "Search...", filters, onReset, onApply }) {
+function UIFilterBar({ left, search, onSearch, searchPlaceholder = "Search...", filters, onReset, onApply, activeCount = 0 }) {
   const [open, setOpen] = React.useState(false);
   const list = Array.isArray(filters) ? filters.filter(Boolean) : null;
   const single = list && list.length === 1;
@@ -267,7 +442,12 @@ function UIFilterBar({ left, search, onSearch, searchPlaceholder = "Search...", 
         <div className="flex items-center gap-3">
           {onSearch && <div className="w-72 max-w-full"><UISearchInput value={search} onChange={onSearch} placeholder={searchPlaceholder} /></div>}
           {single && <div className="w-56">{list[0].node}</div>}
-          {(many || legacy) && <UIButton variant="outline" size="sm" onClick={() => setOpen(o => !o)}><i className="ri-filter-3-line" />{open ? "Hide Filter" : "Show Filter"}</UIButton>}
+          {(many || legacy) && (
+            <UIButton variant="outline" size="sm" className={open ? "border-primary/60 bg-primary-50" : undefined} onClick={() => setOpen(o => !o)}>
+              <i className="ri-filter-3-line" />{open ? "Hide Filter" : "Show Filter"}
+              {activeCount > 0 && <span className="ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-semibold text-black">{activeCount}</span>}
+            </UIButton>
+          )}
         </div>
       </div>
       {open && (many || legacy) && (
@@ -332,6 +512,6 @@ window.UI = {
   cn, Button: UIButton, Tabs: UITabs, TabsList: UITabsList, TabsTrigger: UITabsTrigger,
   Card: UICard, RadioPillGroup: UIRadioPillGroup, RadioGroup: UIRadioGroup, CheckboxGroup: UICheckboxGroup, Label: UILabel, Field: UIField, Input: UIInput, Textarea: UITextarea,
   Switch: UISwitch, StatCard: UIStatCard, QuestionItem: UIQuestionItem,
-  RichText: UIRichText, DatePicker: UIDatePicker,
+  RichText: UIRichText, HtmlBodyEditor: UIHtmlBodyEditor, LinkPopover: UILinkPopover, Tooltip: UITooltip, DatePicker: UIDatePicker,
   SearchInput: UISearchInput, FilterField: UIFilterField, FilterBar: UIFilterBar, RowActions: UIRowActions,
 };

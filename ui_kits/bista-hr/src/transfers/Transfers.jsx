@@ -73,17 +73,14 @@ const TRANSFER_SEED = [
 /* ---------- requests list (approval queue) ---------- */
 function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
   const [menu, setMenu] = useTr(null);
-  const TR_BLANK = { status: "", classification: "", newDept: "", newLocation: "", grade: "" };
+  const TR_BLANK = { status: "", newDept: "" };
   const [draft, setDraft] = useTr(TR_BLANK);
   const [applied, setApplied] = useTr(TR_BLANK);
   const optsOf = (key) => [...new Set(rows.map(r => r[key]).filter(Boolean))].sort();
   const shown = rows.filter(r => {
     if (q !== "" && !(r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newLocation.toLowerCase().includes(q.toLowerCase()))) return false;
     if (applied.status && r.status !== applied.status) return false;
-    if (applied.classification && r.classification !== applied.classification) return false;
     if (applied.newDept && r.newDept !== applied.newDept) return false;
-    if (applied.newLocation && r.newLocation !== applied.newLocation) return false;
-    if (applied.grade && r.grade !== applied.grade) return false;
     return true;
   });
   const pg = usePaged(shown, 10);
@@ -100,13 +97,10 @@ function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setS
           search={q} onSearch={setQ} searchPlaceholder="Search transfers…"
           filters={[
             { label: "Status", node: <Combobox value={draft.status} onChange={v => setDraft(s => ({ ...s, status: v }))} options={["Pending", "Approved", "Declined"]} placeholder="All statuses" /> },
-            { label: "Classification", node: <Combobox value={draft.classification} onChange={v => setDraft(s => ({ ...s, classification: v }))} options={TRANSFER_CLASSES} placeholder="All classifications" /> },
             { label: "Department", node: <Combobox value={draft.newDept} onChange={v => setDraft(s => ({ ...s, newDept: v }))} options={optsOf("newDept")} placeholder="All departments" /> },
-            { label: "Zone", node: <Combobox value={draft.newLocation} onChange={v => setDraft(s => ({ ...s, newLocation: v }))} options={optsOf("newLocation")} placeholder="All zones" /> },
-            { label: "Job Grade", node: <Combobox value={draft.grade} onChange={v => setDraft(s => ({ ...s, grade: v }))} options={optsOf("grade")} placeholder="All grades" /> },
           ]}
           onReset={() => { setDraft(TR_BLANK); setApplied(TR_BLANK); }}
-          onApply={() => setApplied(draft)} />
+          onApply={() => setApplied(draft)} activeCount={Object.values(applied).filter(Boolean).length} />
         {rows.length === 0
           ? <EmptyState title="No transfers yet" subtitle="Select staff from the Transfer tab to raise a transfer." />
           : <table className="bh">
@@ -188,124 +182,75 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
   const byId = window.EMP_BY_ID;
   const EMP = window.EMPLOYEE_LIST;
   const isEdit = !!initialData;
+  const isAssignMode = !initialData && (initialEmployees || []).length > 0;
   const initIds = initialData ? (initialData.employees || []).map(window.firstIdForName).filter(Boolean) : (initialEmployees || []);
   const [employees, setEmployees] = useTr(initIds);
   const [form, setForm] = useTr({
     classification: initialData?.classification || "", newLocation: initialData?.newLocation || "",
     newDepartment: initialData?.newDept || "", newUnit: initialData?.newUnit || "", newJobTitle: initialData?.newTitle || "",
     newGrade: initialData?.grade || "", newNotch: initialData?.notch || "",
+    lineManager: initialData?.lineManagerId || "",
     effectiveDate: initialData?.effectiveDate || "", reason: initialData?.reason || "" });
   const [docs, setDocs] = useTr({ keptUrls: initialData?.documents || [], newFiles: [] });
-  const [mails, setMails] = useTr([]);
+  const [notifyIds, setNotifyIds] = useTr(initialData?.notifyIds || []);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
 
   const primary = employees[0] ? byId[employees[0]] : null;
-  // A job title belongs to a department, so an intra-departmental transfer is only valid when
-  // every selected employee is in the SAME department. If a mix is selected, force Inter-
-  // Departmental and surface an error.
-  const deptList = [...new Set(employees.map(id => (byId[id] || {}).dept).filter(Boolean))];
-  const mixedDepts = deptList.length > 1;
-  useTrEffect(() => {
-    // A department conflict makes intra-departmental impossible — force Inter-Departmental whether
-    // the field was empty or set to Intra, so the banner's claim always matches the actual value.
-    if (mixedDepts && form.classification !== "Inter-Departmental") {
-      setForm(s => ({ ...s, classification: "Inter-Departmental", newJobTitle: "" }));
-    }
-  }, [mixedDepts, form.classification]);
-  // Cascade (mirrors Promotions / Job Title): the effective department narrows the Job Title list.
-  // Job title and job grade are picked INDEPENDENTLY — a title is not always tied to a grade.
-  // For an intra-departmental transfer the department is unchanged, so titles come from the
-  // employee's department.
-  const effDept = form.classification === "Intra-Departmental" ? (primary && primary.dept) || "" : form.newDepartment;
-  const titleOptions = window.jobTitlesForDepartment(effDept);
-  const selectTitle = (v) => setForm(s => { const info = window.jobTitleInfo(v) || {}; const newGrade = info.grade || s.newGrade; return { ...s, newJobTitle: v, newGrade, newNotch: newGrade === s.newGrade ? s.newNotch : "" }; });
+  // Job title, grade and department are INDEPENDENT picks — titles are not tied to departments
+  // and picking a title never auto-populates the grade. The DesignationCombobox's built-in
+  // department filter only narrows its list.
+  const selectTitle = (v) => set("newJobTitle", v);
   const selectGrade = (v) => setForm(s => ({ ...s, newGrade: v, newNotch: "" }));
-  const selectNewDept = (v) => setForm(s => ({ ...s, newDepartment: v, newJobTitle: "" }));
-  const notchOptions = window.notchesForGrade(form.newGrade);
-  // Salary + allowances auto-fetched from Payroll once the title resolves grade + notch.
-  const payroll = window.fetchPayroll(form.newGrade, form.newNotch);
-  const salary = payroll ? payroll.salary : "";
-  const allowances = payroll ? payroll.allowances : [];
+  const selectNewDept = (v) => set("newDepartment", v);
+  // The selected New Zone filters the Unit/Branch list — changing zone clears a mismatched pick.
+  const selectZone = (v) => setForm(s => ({ ...s, newLocation: v, newUnit: "" }));
+  const notchOptions = window.notchSalaryOptions(form.newGrade);
   const staffIds = employees.join(", ");
-  const autoItems = primary ? [
-    { label: "Staff ID(s)", value: staffIds },
-    { label: "Current Job Title", value: primary.title },
-    { label: "Current Grade", value: primary.grade },
-    { label: "Current Department", value: primary.dept },
-    { label: "Current Unit/Branch", value: [primary.unit, primary.branch].filter(Boolean).join(" · ") || "—" },
-    { label: "Current Zone", value: primary.zone },
-  ] : [];
 
-  const valid = employees.length > 0 && form.classification && form.newLocation && form.effectiveDate && form.reason.trim();
+  const hasDocs = (docs.keptUrls || []).length + (docs.newFiles || []).length > 0;
+  const valid = employees.length > 0 && form.classification && form.newLocation && form.newUnit && form.lineManager && form.effectiveDate
+    && (notchOptions.length === 0 || form.newNotch) && form.reason.trim() && hasDocs;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <PageHeader title={isEdit ? "Edit Transfer" : "Create Transfer"}
-        subtitle={isEdit ? "Update this transfer record." : "Select staff, set the new posting and route for approval."} />
+      <PageHeader title={isAssignMode ? "Assign Transfer" : isEdit ? "Edit Transfer" : "Create Transfer"}
+        subtitle={isAssignMode ? "Review the selected employees, then fill in the transfer details."
+          : isEdit ? "Update the transfer details." : "Select staff, set the new posting and route for approval."} />
 
       <FormCard title="Employee Information">
-        <Field label="Employee(s)"><EmployeeAddSelect value={employees} onChange={setEmployees} employees={EMP} /></Field>
-        {primary && employees.length === 1 && (
-          <div>
-            <div style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)", marginBottom: 6 }}>Auto-populated from employee record</div>
-            <DetailPanel items={autoItems} tint="gray" cols={3} />
-          </div>
-        )}
+        <Field label="Employee(s)"><EmployeeAddSelect value={employees} onChange={setEmployees} employees={EMP} disabled={isEdit} /></Field>
       </FormCard>
 
       <FormCard title="Transfer Details">
-        {mixedDepts && (
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 10, background: "#FEF3F2", border: "1px solid #FECDCA", borderRadius: "var(--radius-md)", padding: "10px 14px" }}>
-            <Icon name="error-warning-line" size={18} color="#D92D20" style={{ marginTop: 1, flexShrink: 0 }} />
-            <span style={{ fontFamily: "var(--font-ui)", fontSize: 13, color: "#B42318", lineHeight: 1.45 }}>
-              Selected employees belong to different departments ({deptList.join(", ")}). An intra-departmental transfer requires a single department, so this has been set to <b>Inter-Departmental</b>.
-            </span>
-          </div>
-        )}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Transfer Classification"><Combobox value={form.classification} disabled={mixedDepts} onChange={v => setForm(s => ({ ...s, classification: v, newDepartment: v === "Intra-Departmental" ? "" : s.newDepartment, newJobTitle: "" }))} options={TRANSFER_CLASSES} placeholder="Select classification" /></Field>
-          <Field label="New Zone"><Combobox value={form.newLocation} onChange={v => set("newLocation", v)} options={LK.zones} placeholder="Select new zone" /></Field>
-        </div>
-        {/* Department + Job Title always sit side by side (cascade pair) */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          {form.classification === "Intra-Departmental"
-            ? <Field label="Department">
-                <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
-                  <Icon name="building-line" size={18} style={{ color: "var(--icon-default)" }} />
-                  <input value={effDept} readOnly placeholder="Current department (unchanged)" style={{ color: effDept ? "var(--gray-900)" : "var(--gray-400)" }} />
-                </div>
-              </Field>
-            : <Field label="New Department"><Combobox value={form.newDepartment} onChange={selectNewDept} options={LK.departments} placeholder="Select new department" /></Field>}
-          <Field label="New Job Title" optional><Combobox value={form.newJobTitle} onChange={selectTitle} options={titleOptions} placeholder={effDept ? "Select new job title (optional)" : (form.classification === "Intra-Departmental" ? "Select employee(s) first" : "Select a department first")} noDataText={form.classification === "Intra-Departmental" ? "Select employee(s) first." : "Select a department first."} /></Field>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="New Job Grade" optional><Combobox value={form.newGrade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
-          <Field label="Notch" optional><Combobox value={form.newNotch} onChange={v => set("newNotch", v)} options={notchOptions} icon="stack-line" placeholder={form.newGrade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Unit/Branch" optional><Combobox value={form.newUnit} onChange={v => set("newUnit", v)} options={LK.orgUnits || []} placeholder="Select unit / branch" /></Field>
-          <Field label="Proposed Effective Transfer Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
+          <Field label="Transfer Classification"><Combobox value={form.classification} onChange={v => set("classification", v)} options={TRANSFER_CLASSES} placeholder="Select classification" /></Field>
+          <Field label="New Zone"><Combobox value={form.newLocation} onChange={selectZone} options={LK.zones} placeholder="Select zone" noDataText="No zone found" /></Field>
+          <Field label="New Organizational Unit/Branch"><UnitBranchCombobox value={form.newUnit} onChange={v => set("newUnit", v)} zone={form.newLocation} onZoneChange={selectZone} zones={LK.zones} /></Field>
+          <Field label="New Department"><Combobox value={form.newDepartment} onChange={selectNewDept} options={LK.departments} placeholder="Select new department" noDataText="No department found" /></Field>
+          <Field label="New Job Title" optional><DesignationCombobox value={form.newJobTitle} onChange={selectTitle} /></Field>
+          <Field label="New Job Grade"><Combobox value={form.newGrade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
+          <Field label="Notch"><Combobox value={form.newNotch} onChange={v => set("newNotch", v)} options={notchOptions} icon="stack-line" placeholder={form.newGrade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
+          <Field label="New Line Manager"><LineManagerField value={form.lineManager} onChange={v => set("lineManager", v)} employees={EMP} /></Field>
+          <Field label="Proposed Effective Transfer Date"><UI.DatePicker weekendRule value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
         </div>
       </FormCard>
 
-      <ResolvedRoleBenefits grade={form.newGrade} salary={salary} allowances={allowances} />
-
-      <FormCard title="Justification & Documents">
-        <Field label="Reason / Justification"><UI.RichText value={form.reason} onChange={v => set("reason", v)} placeholder="Explain the business justification for this transfer…" /></Field>
+      <FormCard title="Comments & Documents">
+        <Field label="Comments"><UI.RichText value={form.reason} onChange={v => set("reason", v)} placeholder="Add comments for this transfer…" /></Field>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Supporting Documents</label>
           <SupportingDocuments existingUrls={initialData?.documents || []} isEditMode={isEdit} onChange={setDocs} maxFiles={8} maxSizeMB={8} />
+          {!hasDocs && <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>At least one supporting document is required before this transfer can be submitted.</span>}
         </div>
       </FormCard>
 
       <FormCard title="Notification">
-        <EmailInputList label="Notify Stakeholders" description="Department / stakeholder mails" placeholder="eg. financedept@starret.com"
-          emails={mails} onChange={setMails} />
+        <NotifyPeopleField value={notifyIds} onChange={setNotifyIds} employees={EMP} />
       </FormCard>
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employees: employees.map(id => (byId[id] || {}).name || id), employeeIds: employees, primary, staffIds, ...form, docs, notifyMails: mails })}>{isEdit ? "Save Changes" : "Create Transfer"}</Button>
+        <Button variant="primary" icon="exchange-line" disabled={!valid} onClick={() => valid && onSubmit({ employees: employees.map(id => (byId[id] || {}).name || id), employeeIds: employees, primary, staffIds, ...form, docs, notifyIds })}>{isAssignMode ? `Assign Transfer${employees.length !== 1 ? "s" : ""}` : isEdit ? "Save Changes" : "Create Transfer"}</Button>
       </div>
     </div>
   );
@@ -325,6 +270,7 @@ function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
     { label: "Current Job Title", value: t.currentTitle },
     { label: "New Job Title", value: t.newTitle || "—" },
     { label: "Job Grade", value: t.grade },
+    { label: "New Line Manager", value: t.lineManager || "—" },
     { label: "Effective Date", value: t.effectiveDate },
   ];
   const approvalInfo = [
@@ -352,7 +298,7 @@ function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
       </div>
 
       <div className="card" style={{ padding: 0 }}>
-        <DetailCard icon="file-text-line" title="Reason / Justification">
+        <DetailCard icon="file-text-line" title="Comments">
           <div className="rt-content" style={{ background: "#F6F8FA", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }} dangerouslySetInnerHTML={{ __html: t.reason || "—" }} />
         </DetailCard>
       </div>
@@ -425,6 +371,8 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
         previousDept: p.dept || "—", newDept: f.newDepartment || p.dept || "—",
         previousUnit: p.unit || "—", newUnit: f.newUnit || "", currentTitle: p.title || "—", newTitle: f.newJobTitle || "",
         grade: f.newGrade || p.grade || "—", zone: p.zone || "—",
+        lineManagerId: f.lineManager || "", lineManager: (window.EMP_BY_ID[f.lineManager] || {}).name || "—",
+        notifyIds: f.notifyIds || [],
         effectiveDate: f.effectiveDate, dateSubmitted: todayTr(), status: "Pending",
         reason: f.reason, documents: allDocs, approvers: f.approvers || [],
         approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
@@ -437,6 +385,8 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
       setTransfers(ts => ts.map(t => t.id === c.id ? { ...t, employees: f.employees, classification: f.classification,
         newLocation: f.newLocation, newDept: f.newDepartment || t.newDept, newUnit: f.newUnit, newTitle: f.newJobTitle || "",
         grade: f.newGrade || t.grade,
+        lineManagerId: f.lineManager || t.lineManagerId || "", lineManager: (window.EMP_BY_ID[f.lineManager] || {}).name || t.lineManager || "—",
+        notifyIds: f.notifyIds || t.notifyIds || [],
         effectiveDate: f.effectiveDate, reason: f.reason, documents: allDocs, approvers: f.approvers || [] } : t));
       onToast("Transfer Updated", { tone: "success" });
       setView({ name: "list" });

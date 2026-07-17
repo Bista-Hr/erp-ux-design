@@ -26,7 +26,7 @@ function EmployeeSelectionRoster({ employees = [], itemLabel = "staff", actionLa
     const q = (query || "").trim().toLowerCase();
     if (!q) return employees;
     return employees.filter(e =>
-      `${e.name} ${e.employeeNumber || ""} ${e.jobTitle || ""} ${e.jobGrade || ""} ${e.department || ""} ${e.unit || ""} ${e.branch || ""} ${e.zone || ""}`
+      `${e.name} ${e.employeeNumber || ""} ${e.jobTitle || ""} ${e.department || ""} ${e.branch || ""}`
         .toLowerCase().includes(q));
   }, [employees, query]);
 
@@ -57,7 +57,7 @@ function EmployeeSelectionRoster({ employees = [], itemLabel = "staff", actionLa
         : <table className="bh">
             <thead><tr>
               <th style={{ width: 44 }}><Checkbox checked={allShown} onChange={toggleAll} /></th>
-              <th>Full Name</th><th>Employee ID</th><th>Current Job Title</th><th>Current Grade</th><th>Department</th><th>Unit/Branch</th><th>Zone</th>
+              <th>Full Name</th><th>Job Title</th><th>Department</th><th>Branch</th>
             </tr></thead>
             <tbody>
               {pg.pageItems.map(r => {
@@ -68,15 +68,15 @@ function EmployeeSelectionRoster({ employees = [], itemLabel = "staff", actionLa
                     <td>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
                         <Avatar name={r.name} src={r.profilePictureUrl || undefined} size={32} />
-                        <span style={{ fontWeight: 500, color: "var(--gray-900)" }}>{r.name}</span>
+                        <span style={{ display: "flex", flexDirection: "column" }}>
+                          <span style={{ fontWeight: 500, color: "var(--gray-900)" }}>{r.name}</span>
+                          <span style={{ fontSize: 12, color: "var(--gray-400)", lineHeight: 1.3 }}>ID: {r.employeeNumber || "—"}</span>
+                        </span>
                       </span>
                     </td>
-                    <td>{r.employeeNumber || "—"}</td>
                     <td>{r.jobTitle || "—"}</td>
-                    <td>{r.jobGrade || "—"}</td>
                     <td>{r.department || "—"}</td>
-                    <td>{[r.unit, r.branch].filter(Boolean).join(" · ") || "—"}</td>
-                    <td>{r.zone || "—"}</td>
+                    <td>{r.branch || "—"}</td>
                   </tr>
                 );
               })}

@@ -89,6 +89,7 @@ const RESOURCES = [
   { key: "Users",             label: "Users",                    group: "User Management", actions: ACTIONS_CRUD },
   { key: "Permissions",       label: "Permissions",              group: "User Management", actions: ACTIONS_CRUD },
   { key: "OrganizationProfile",label: "Organization Profile",    group: "User Management", actions: ["Read", "Update"] },
+  { key: "NotificationConfigs",label: "Notification Configurations", group: "User Management", actions: ["Read", "Update"] },
 ];
 
 const RES_BY_KEY = Object.fromEntries(RESOURCES.map(r => [r.key, r]));
@@ -136,6 +137,7 @@ const PAGE_RES = {
   "Employee Goals": "Measures", "KPI / Measures": "Measures", "Performance Ratings": "PerformanceRatings",
   // System Admin ▸ User Management / Organization
   "Roles": "Roles", "Users": "Users", "Organization": "OrganizationProfile",
+  "Notification Configurations": "NotificationConfigs",
 };
 
 // ---- Default roles (the six seeded bundles — fully editable in the UI) -------

@@ -157,3 +157,13 @@ function jobTitleInfo(title) {
   return { department: r.department || "", grade: r.grade || "", notch: r.notch || "Notch 1" };
 }
 Object.assign(window, { JOB_TITLE_FALLBACK, jobTitlesForDepartment, jobTitleInfo });
+
+// Notch options with resolved salary — matches production ("Notch 1 — GHS 4,200.00").
+// Falls back to the bare notch when payroll has no amount for (grade, notch).
+function notchSalaryOptions(grade) {
+  return notchesForGrade(grade).map(n => {
+    const p = fetchPayroll(grade, n);
+    return p && p.salary ? `${n} — ${p.salary}` : n;
+  });
+}
+Object.assign(window, { notchSalaryOptions });

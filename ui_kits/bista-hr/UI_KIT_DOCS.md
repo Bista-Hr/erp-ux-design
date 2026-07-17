@@ -88,13 +88,74 @@ Mirror `components/ui/input.tsx`/`label.tsx`.
 - `UI.Textarea`: standard props. `min-h-20 rounded-md border border-input`.
 
 > For **searchable selects** use the existing global `Combobox` (`value`, `onChange`, `options`,
-> `placeholder`, `noDataText`) — it is the kit's reusable popover select.
+> `placeholder`, `noDataText`) — it is the kit's reusable popover select. Extra props: `header`
+> (node rendered in the dropdown's search row, right of the input), `compact` (borderless muted
+> trigger for embedding inside another control's toolbar — mirrors a ghost shadcn SelectTrigger),
+> `disabled`, `icon`.
+
+## DesignationCombobox (global — job-title picker with department filter)
+Mirrors `components/shared/DesignationCombobox.tsx`. A `Combobox` for the **New Job Title** whose
+dropdown carries a compact department filter IN THE SEARCH ROW (right of the search input) — the
+department only narrows the title list; it is never part of the submitted payload. **Job titles are
+NOT tied to departments** — the full catalog shows by default; the filter state is INTERNAL when
+`department`/`onDepartmentChange` are omitted (the usual usage: `<DesignationCombobox value onChange />`).
+Picking a title NEVER auto-populates the grade. Used by Promotions / Transfers / Job Title forms.
+- Props: `value`, `onChange`, optional `options` / `department` / `onDepartmentChange` /
+  `departments`, `placeholder`, `noDataText`.
+
+## UnitBranchCombobox (global — unit/branch picker with zone filter)
+SAME pattern as DesignationCombobox: the **Organizational Unit/Branch** picker with a compact ZONE
+filter in the dropdown's search row (`window.unitBranchesForZone`). Pass `zone`/`onZoneChange` wired
+to the form's Zones field so a selected Zone filters this list (changing zone clears a mismatched
+pick). This field is MANDATORY on Promotions / Transfers / Job Title as "New Organizational
+Unit/Branch". Props: `value`, `onChange`, `zone`, `onZoneChange`, `zones`.
+
+## LineManagerField (global — New Line Manager, single field, Transfers only)
+ONE reusable combobox (same pattern as the employee pickers): options show the directory name with
+staff ID · dept sublabel + avatar, and once picked the SAME field shows the manager's other details
+(staff ID · location) as a caption beneath the trigger — no separate auto-populated fields.
+Props: `value` (employee id), `onChange`, `employees`. Used by the Transfer form only.
+
+## NotifyPeopleField (global — Teams-style notification picker, small chips + custom emails)
+Replaces raw email entry on the P&C Notification cards. Add PEOPLE from a directory combobox OR
+type a CUSTOM email (Enter / Add). Entries render as SMALL chips — tiny avatar + name for people,
+the colored EmailInputList chip style for custom emails — never the big employee cards. `value`
+mixes employee ids and raw email strings; emails resolve and send in the background.
+Props: `value`, `onChange`, `employees`, `label`, `hint`.
+
+## SupportingDocuments — in-form preview + required
+Tiles in the dropzone are now CLICKABLE and open the same `SupportingDocsGallery` lightbox used on
+detail pages (images render live; docs open a same-type sample). Supporting documents are a
+REQUIRED field on Promotions / Transfers / Job Title — forms gate submit on
+`keptUrls.length + newFiles.length > 0`.
 
 ## UI.RichText  (rich-text editor — mirrors rich-text-input.tsx)
 For ALL long description fields (Job Description, Key Duties, Qualifications, Skills, etc.) — never a
 plain textarea. Quill-"snow"-style toolbar (bold/italic/underline/strike · bullet/number list · link ·
 clear) over a contentEditable body; `value` is an HTML string. Props: `value`, `onChange(html)`,
 `placeholder`, `error`, `className`.
+**Link popover:** the Link button opens a two-tab popover instead of a URL prompt —
+**In-App Page** (searchable page list grouped by section, from `window.UI_APP_PAGES`
+`[{ label, path, section }]` — override it with the app's real route map) and **External URL**.
+With no text selected the page's name is inserted as the link text; a selection is wrapped.
+The picker itself is exported as **`UI.LinkPopover`** (`onPick(url, label?)`, `onClose`) — render it inside a
+`position:relative` wrapper to attach it to any trigger (e.g. the SMS template "Insert Link" button).
+
+## UI.Tooltip  (shadcn-style tooltip)
+`<UI.Tooltip label="Bold"><button…/></UI.Tooltip>` — dark bubble on hover/focus, `side="top"|"bottom"`.
+The `UI.RichText` toolbar wraps every formatting button (Bold, Italic, lists, Link, Clear…) in one.
+
+## UI.DatePicker — weekend rule
+Pass `weekendRule` and weekend dates render disabled by DEFAULT, with a compact "Allow weekends"
+mini-switch in the popover footer to re-enable them. All P&C effective-date fields (Promotions /
+Transfers / Job Title) pass `weekendRule`.
+
+## UI.HtmlBodyEditor  (email/in-app body editor with Editor · HTML · Preview toggle)
+For HTML EMAIL and IN-APP notification bodies (notification templates etc.). Wraps `UI.RichText` so non-technical users edit
+visually; the **HTML** tab exposes the raw markup in a mono textarea; **Preview** renders the final
+email on a letter-style card. `value` IS the HTML string (same contract as RichText). Props: `value`,
+`onChange(html)`, `placeholder`, `rows` (HTML tab height), `insertRef` (ref that receives a
+`fn(snippet)` inserting at the caret of the active view — wire merge-field buttons through it).
 
 ## UI.DatePicker  (mirrors date-picker.tsx)
 shadcn-style outline trigger + popover month calendar. Use for EVERY date field — never a typed
@@ -208,7 +269,9 @@ the filter affordance. **RULE (pass `filters` as an array of `{ label, node }`):
 **1 filter → inline dropdown box** in the toolbar (no toggle, applies live); **2+ filters →
 “Show/Hide Filter” toggle** + `#FAFAFA` panel grid + **Reset/Apply** footer.
 - `UI.FilterBar` props: `left`, `search`, `onSearch`, `searchPlaceholder`, `filters` (array of
-  `{ label, node }`; a legacy JSX fragment is treated as a 2+ panel), `onReset`, `onApply`.
+  `{ label, node }`; a legacy JSX fragment is treated as a 2+ panel), `onReset`, `onApply`,
+  `activeCount` (number of APPLIED filters — renders the primary count badge on the Show/Hide
+  Filter button, and the open button gets `border-primary/60 bg-primary-50`).
 - `UI.FilterField` props: `label`, `children`. `UI.SearchInput`: `value`, `onChange`, `placeholder`.
 ```jsx
 <UI.FilterBar left={<UI.Tabs …/>} search={q} onSearch={setQ}
@@ -221,6 +284,8 @@ the filter affordance. **RULE (pass `filters` as an array of `{ label, node }`):
 ## PageHeader (global, `src/primitives/PageHeader.jsx`)
 White card holding the page `title` + `subtitle` + right-side `actions`. Use at the top of every
 list / detail / create / edit page. The **breadcrumb** (not a back button) provides back navigation.
+Optional `children` render full-width BELOW the title/subtitle inside the same card — used for status
+badge rows (e.g. the Notification event editor header: "Dispatch wired" / per-request badges).
 
 **Container rule (always separate).** The `PageHeader` card and the table are ALWAYS distinct white
 `.card` containers — never merged into one — regardless of whether stats, info panels, or anything

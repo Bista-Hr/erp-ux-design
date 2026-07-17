@@ -15,7 +15,6 @@ const COUNTRY_LIST = [
 const LOOKUPS = {
   departments: ["Finance", "Human Resource", "Information Technology", "Marketing"],
   orgUnits:    ["Operations", "Technology", "Support Services"],
-  branches:    ["Accra", "Kumasi", "Tamale", "Cape Coast", "Takoradi"],
   zones:       ["West Zone", "Central Zones", "East Zone", "North Zone", "South Zone"],
   roles:       ["HR Manager", "Accountant", "Sales Officer", "Teller", "Engineer", "Analyst", "Officer"],
   jobGrades:   ["Grade 1", "Grade 2", "Grade 3", "Grade 4"],
@@ -28,6 +27,21 @@ const LOOKUPS = {
   // countries carry flag images so the Combobox renders a circular flag per option
   countries:   COUNTRY_LIST.map(c => ({ value: c.name, label: c.name, image: flagUrl(c.code) })),
 };
+LOOKUPS.branches = ["Accra", "Kumasi", "Tamale", "Cape Coast", "Takoradi"];
+
+// Organizational Units / Branches, each mapped to its ZONE — a selected Zone filters this list
+// (window.unitBranchesForZone), the same way Department filters Job Titles.
+const UNIT_BRANCHES = [
+  { name: "Accra Main", zone: "South Zone" }, { name: "Ridge Branch", zone: "South Zone" },
+  { name: "Kumasi Adum", zone: "Central Zones" }, { name: "Cape Coast Branch", zone: "Central Zones" },
+  { name: "Takoradi Harbour", zone: "West Zone" }, { name: "Tarkwa Branch", zone: "West Zone" },
+  { name: "Tema Industrial", zone: "East Zone" }, { name: "Ho Branch", zone: "East Zone" },
+  { name: "Tamale Central", zone: "North Zone" }, { name: "Bolgatanga Branch", zone: "North Zone" },
+];
+LOOKUPS.unitBranches = UNIT_BRANCHES.map(u => u.name);
+function unitBranchesForZone(zone) {
+  return UNIT_BRANCHES.filter(u => !zone || u.zone === zone).map(u => ({ value: u.name, label: u.name, sublabel: u.zone }));
+}
 
 // deriveLookups — overlay LIVE entity data onto the static base so every dropdown
 // reflects what the user actually manages. Departments created on the Departments page
@@ -62,4 +76,4 @@ function deriveLookups(data = {}) {
   };
 }
 
-Object.assign(window, { LOOKUPS, COUNTRY_LIST, flagUrl, deriveLookups });
+Object.assign(window, { LOOKUPS, COUNTRY_LIST, flagUrl, deriveLookups, UNIT_BRANCHES, unitBranchesForZone });

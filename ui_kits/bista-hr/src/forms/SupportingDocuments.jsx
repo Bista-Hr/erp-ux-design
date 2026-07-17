@@ -16,19 +16,36 @@ const { useState: useSD, useEffect: useSDEffect } = React;
 function SupportingDocuments({ existingUrls = [], isEditMode = false, onChange, maxFiles = 8, maxSizeMB = 8 }) {
   const [selectedFiles, setSelectedFiles] = useSD([]);
   const [removed, setRemoved] = useSD([]);
+  const [gallery, setGallery] = useSD(null);   // { urls, idx } — in-form preview, same lightbox as details
+  const objUrls = React.useRef(new Map());     // File → stable object URL (images) / mock: name (docs)
+  const urlFor = (f) => {
+    if (!objUrls.current.has(f)) objUrls.current.set(f, f.type && f.type.startsWith("image/") ? URL.createObjectURL(f) + "#.png" : "mock:" + f.name);
+    return objUrls.current.get(f);
+  };
   const emit = (files, rem) => onChange && onChange({ keptUrls: existingUrls.filter(u => !rem.includes(u)), newFiles: files });
+  const kept = existingUrls.filter(u => !removed.includes(u));
+  const previewUrls = [...kept, ...selectedFiles.map(urlFor)];
+  const openPreview = (idx) => setGallery({ idx });
   return (
-    <MultiImageDropZone
-      isEditMode={isEditMode}
-      selectedFiles={selectedFiles}
-      onFilesSelect={(files) => { setSelectedFiles(files); emit(files, removed); }}
-      existingImages={existingUrls}
-      removedImages={removed}
-      onRemoveExistingImage={(url) => { const r = [...removed, url]; setRemoved(r); emit(selectedFiles, r); }}
-      onRestoreImage={(url) => { const r = removed.filter(u => u !== url); setRemoved(r); emit(selectedFiles, r); }}
-      maxFiles={maxFiles}
-      maxSize={maxSizeMB * 1024 * 1024}
-    />
+    <React.Fragment>
+      <MultiImageDropZone
+        isEditMode={isEditMode}
+        selectedFiles={selectedFiles}
+        onFilesSelect={(files) => { setSelectedFiles(files); emit(files, removed); }}
+        existingImages={existingUrls}
+        removedImages={removed}
+        onRemoveExistingImage={(url) => { const r = [...removed, url]; setRemoved(r); emit(selectedFiles, r); }}
+        onRestoreImage={(url) => { const r = removed.filter(u => u !== url); setRemoved(r); emit(selectedFiles, r); }}
+        onPreviewExisting={(url) => openPreview(kept.indexOf(url))}
+        onPreviewFile={(i) => openPreview(kept.length + i)}
+        maxFiles={maxFiles}
+        maxSize={maxSizeMB * 1024 * 1024}
+      />
+      {gallery && previewUrls.length > 0 && (
+        <SupportingDocsGallery urls={previewUrls} index={Math.max(0, Math.min(gallery.idx, previewUrls.length - 1))}
+          onIndex={(i) => setGallery({ idx: i })} onClose={() => setGallery(null)} />
+      )}
+    </React.Fragment>
   );
 }
 // Turn { keptUrls, newFiles } into the final URL list (mock-uploads new files under `base`).
@@ -58,6 +75,8 @@ const SD_SAMPLES = {
 };
 const sdHash = (s) => { let h = 0; for (let i = 0; i < (s || "").length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); };
 const sdIsMock = (u) => !u || /files\.bistasol\.com/i.test(u) || u.startsWith("blob:") || u.startsWith("mock:");
+// blob: image URLs (in-form previews of freshly attached files) ARE directly renderable
+const sdRenderableImage = (u) => sdIsImage(u) && (u.startsWith("blob:") || !sdIsMock(u));
 const sdKind = (u) => {
   const b = sdBare(u);
   if (b.endsWith(".doc") || b.endsWith(".docx")) return "doc";
@@ -70,6 +89,8 @@ const sdRawUrl = (u) => {
   const arr = SD_SAMPLES[sdKind(u)] || SD_SAMPLES.pdf;
   return arr[sdHash(u) % arr.length];
 };
+const SD_TYPE_LABEL = { pdf: "PDF Document", doc: "Word Document", xls: "Excel Spreadsheet", ppt: "PowerPoint Presentation" };
+const sdTypeLabel = (u) => sdIsImage(u) ? "Image" : (SD_TYPE_LABEL[sdKind(u)] || "Document");
 // Sample hosts send X-Frame-Options, so browsers (e.g. Arc) block direct iframe embedding.
 // Render docs through Google's embeddable viewer, which is made for iframing and handles every type.
 const sdFrameSrc = (u) => `https://docs.google.com/viewer?url=${encodeURIComponent(sdRawUrl(u))}&embedded=true`;
@@ -101,7 +122,7 @@ function SupportingDocsGallery({ urls, index, onIndex, onClose }) {
       <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: 12, overflow: "hidden",
         width: "min(1100px, 95vw)", height: "min(92vh, 820px)", display: "flex", flexDirection: "column", boxShadow: "0 24px 64px rgba(16,24,40,.4)" }}>
         <div style={{ position: "relative", flex: 1, minHeight: 0, background: "rgba(0,0,0,.04)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {sdIsImage(cur) && !sdIsMock(cur)
+          {sdRenderableImage(cur)
             ? <SDImage url={cur} size={128} alt={`Document ${index + 1}`} />
             : <iframe src={sdFrameSrc(cur)} title={`Document ${index + 1}`} style={{ width: "100%", height: "100%", border: 0 }} />}
 
@@ -117,22 +138,29 @@ function SupportingDocsGallery({ urls, index, onIndex, onClose }) {
           </button>
         </div>
 
-        {urls.length > 1 && (
-          <div style={{ borderTop: "1px solid var(--border)", padding: 10 }}>
-            <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
+        {/* footer: solid bar with the current file's type + position — replaces the floating
+            thumbnail icons, which could visually mix with the scrolling document content. */}
+        <div style={{ position: "relative", zIndex: 5, flex: "none", borderTop: "1px solid var(--border)", background: "#fff",
+          padding: "8px 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+          {urls.length > 1 && (
+            <div style={{ display: "flex", gap: 8, overflowX: "auto", maxWidth: "100%", padding: 2 }}>
               {urls.map((u, i) => (
                 <button key={i} type="button" onClick={() => onIndex(i)}
-                  style={{ position: "relative", flexShrink: 0, width: 56, height: 56, borderRadius: 10, overflow: "hidden", cursor: "pointer", padding: 0,
+                  style={{ position: "relative", flexShrink: 0, width: 44, height: 44, borderRadius: 10, overflow: "hidden", cursor: "pointer", padding: 0,
                     border: `2px solid ${i === index ? "var(--brand-yellow-dark, var(--primary-500))" : "var(--gray-200)"}`,
+                    opacity: i === index ? 1 : .65,
                     display: "flex", alignItems: "center", justifyContent: "center", background: "var(--gray-50)" }}>
-                  {sdIsImage(u)
+                  {sdIsImage(u) || u.startsWith("blob:")
                     ? <SDImage url={u} cover alt={`Thumbnail ${i + 1}`} />
-                    : <FileIcon name={sdName(u)} size={28} />}
+                    : <FileIcon name={sdName(u)} size={24} />}
                 </button>
               ))}
             </div>
-          </div>
-        )}
+          )}
+          <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>
+            {sdTypeLabel(cur)}{urls.length > 1 ? ` · ${index + 1} of ${urls.length}` : ""}
+          </span>
+        </div>
       </div>
     </div>
   );
