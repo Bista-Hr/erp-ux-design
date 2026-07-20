@@ -122,6 +122,9 @@ function PromotionsList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, set
                         { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
                         { label: "Edit Details", short: "Edit", icon: "edit-2-line", onClick: () => onEdit(r) },
                         { label: "Archive", short: "Archive", icon: "archive-line", danger: true, onClick: () => onArchive(r) },
+                      ] : r.status === "Declined" ? [
+                        { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
+                        { label: "Review & Edit", short: "Review", icon: "edit-2-line", onClick: () => onEdit(r) },
                       ] : [
                         { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
                       ]} />
@@ -293,8 +296,9 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
 }
 
 /* ---------- details — "Promotion Approval" ---------- */
-function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
+function PromotionDetails({ promo, onApprove, onReject, onEdit, onAccept, onUpdate, onToast }) {
   const [rejectOpen, setRejectOpen] = usePromo(false);
+  const [trailOpen, setTrailOpen] = usePromo(false);
   const empInfo = [
     { label: "Employee Name", value: promo.employees.join(", ") },
     { label: "Staff ID(s)", value: promo.staffIds || "—" },
@@ -321,12 +325,15 @@ function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
         actions={
           <React.Fragment>
             <StatusBadge variant={STATUS_VARIANT[promo.status]} text={promo.status} />
+            <Button variant="stroke" icon="history-line" onClick={() => setTrailOpen(true)}>Audit Trail</Button>
             {pending && (
               <React.Fragment>
                 <Button variant="stroke" icon="close-line" onClick={() => setRejectOpen(true)} style={{ color: "#DC2626", borderColor: "#F3C2C2" }}>Reject Promotion</Button>
                 <Button variant="primary" icon="check-line" onClick={() => onApprove(promo)}>Approve</Button>
               </React.Fragment>
             )}
+            {promo.status === "Declined" && <Button variant="primary" icon="edit-2-line" onClick={() => onEdit(promo)}>Review & Edit</Button>}
+            {promo.status === "Approved" && !promo.accepted && <Button variant="primary" icon="user-follow-line" onClick={() => onAccept(promo)}>Record Employee Acceptance</Button>}
           </React.Fragment>
         } />
 
@@ -355,6 +362,10 @@ function PromotionDetails({ promo, onApprove, onReject, onUpdate, onToast }) {
       <RejectionReasonModal open={rejectOpen} onClose={() => setRejectOpen(false)}
         title="Reject Promotion" noun="promotion"
         onConfirm={(reason) => { setRejectOpen(false); onReject(promo, reason); }} />
+
+      <AuditTrailDrawer open={trailOpen} onClose={() => setTrailOpen(false)} name={promo.employees[0]}
+        sub={`${promo.staffIds} · ${promo.newRole}`} badge={<StatusBadge variant={STATUS_VARIANT[promo.status]} text={promo.status} />}
+        entries={promo.audit || []} />
     </div>
   );
 }
@@ -410,12 +421,14 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
         justification: f.justification, allowances: f.allowances || [], docUrls: allDocs,
         notifyIds: f.notifyIds || [], notifyPeople: (f.notifyIds || []).map(id => (byId[id] || {}).name || id),
         approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+        audit: [pncEntry({ action: 0, description: `Promotion request submitted — ${primary.title || "—"} → ${f.newJobTitle}`, justificationReason: f.justification, staffId: ids.join(", ") })],
       }, ...ps]);
       onToast("Promotion Submitted", { tone: "success" });
       setView({ name: "list" }); setSegment("Approval");
     } else if (c.kind === "edit") {
       const f = c.form;
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/promotions/");
+      const wasDeclined = (promos.find(p => p.id === c.id) || {}).status === "Declined";
       setPromos(ps => ps.map(p => p.id === c.id ? {
         ...p, employees: f.employees.map(id => (window.EMP_BY_ID[id] || {}).name || id), staffIds: f.employees.join(", "),
         newRole: f.newJobTitle, grade: f.grade, notch: f.notch, salary: f.salary, allowances: f.allowances || [],
@@ -423,8 +436,10 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
         effectiveDate: f.effectiveDate,
         justification: f.justification, docUrls: allDocs,
         notifyIds: f.notifyIds || [], notifyPeople: (f.notifyIds || []).map(id => (window.EMP_BY_ID[id] || {}).name || id),
+        ...(wasDeclined ? { status: "Pending", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A", rejectionReason: "", accepted: false } : {}),
+        audit: [...(p.audit || []), pncEntry({ action: wasDeclined ? 6 : 1, description: wasDeclined ? "Request revised and resubmitted for approval after rejection review" : "Request details updated", justificationReason: f.justification, staffId: f.employees.join(", ") })],
       } : p));
-      onToast("Promotion Updated", { tone: "success" });
+      onToast(wasDeclined ? "Promotion Resubmitted" : "Promotion Updated", { tone: "success" });
       setView({ name: "list" });
     } else if (c.kind === "archive") {
       setPromos(ps => ps.filter(p => p.id !== c.row.id));
@@ -432,16 +447,23 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
       setView({ name: "list" });
     } else if (c.kind === "approve") {
       const now = new Date().toLocaleString("en-US");
-      setPromos(ps => ps.map(p => p.id === c.row.id ? { ...p, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now } : p));
+      setPromos(ps => ps.map(p => p.id === c.row.id ? { ...p, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
+        audit: [...(p.audit || []), pncEntry({ action: 3, description: "Promotion approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: p.staffIds })] } : p));
       onToast("Promotion Approved", { tone: "success" });
+    } else if (c.kind === "accept") {
+      setPromos(ps => ps.map(p => p.id === c.row.id ? { ...p, accepted: true,
+        audit: [...(p.audit || []), pncEntry({ action: 7, description: "Employee accepted the promotion offer", actorName: `${p.employees[0]} (Employee)`, staffId: p.staffIds })] } : p));
+      onToast("Employee Acceptance Recorded", { tone: "success" });
     } else if (c.kind === "bulkApprove") {
       const now = new Date().toLocaleString("en-US");
-      setPromos(ps => ps.map(p => c.ids.includes(p.id) ? { ...p, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now } : p));
+      setPromos(ps => ps.map(p => c.ids.includes(p.id) ? { ...p, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
+        audit: [...(p.audit || []), pncEntry({ action: 3, description: "Promotion approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: p.staffIds })] } : p));
       onToast(`${c.ids.length} Promotion${c.ids.length > 1 ? "s" : ""} Approved`, { tone: "success" });
       setApprovalSel([]);
     } else if (c.kind === "bulkReject") {
       const now = new Date().toLocaleString("en-US");
-      setPromos(ps => ps.map(p => c.ids.includes(p.id) ? { ...p, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now } : p));
+      setPromos(ps => ps.map(p => c.ids.includes(p.id) ? { ...p, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now,
+        audit: [...(p.audit || []), pncEntry({ action: 4, description: "Promotion rejected", actorName: "Peter Bosrotsi (Head P&C)", staffId: p.staffIds })] } : p));
       onToast(`${c.ids.length} Promotion${c.ids.length > 1 ? "s" : ""} Rejected`, { tone: "error" });
       setApprovalSel([]);
     }
@@ -451,7 +473,8 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
   // reject from the detail page (with a captured reason) — commits immediately
   const rejectWithReason = (promo, reason) => {
     const now = new Date().toLocaleString("en-US");
-    setPromos(ps => ps.map(p => p.id === promo.id ? { ...p, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now, rejectionReason: reason } : p));
+    setPromos(ps => ps.map(p => p.id === promo.id ? { ...p, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now, rejectionReason: reason,
+      audit: [...(p.audit || []), pncEntry({ action: 4, description: "Promotion rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", justificationReason: reason, staffId: p.staffIds })] } : p));
     onToast("Promotion Rejected", { tone: "error" });
   };
 
@@ -467,6 +490,7 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
   else if (view.name === "edit" && editing) body = <PromotionForm lookups={lookups} initialData={editing} onCancel={() => setView({ name: "list" })} onSubmit={submitPromo} />;
   else if (view.name === "details" && current) body = <PromotionDetails promo={current}
     onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={rejectWithReason}
+    onEdit={(r) => setView({ name: "edit", id: r.id })} onAccept={(r) => setConfirm({ kind: "accept", row: r })}
     onUpdate={(partial) => setPromos(ps => ps.map(p => p.id === current.id ? { ...p, ...partial } : p))} onToast={onToast} />;
   else body = (
     segment === "Request"
@@ -484,6 +508,7 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
     edit:    { t: "Save Changes", m: "save these changes", l: "Yes, Save", i: "check-line", c: "Cancel" },
     archive: { t: "Archive Promotion", m: "archive this promotion", l: "Yes, Archive", i: "archive-line", c: "No" },
     approve: { t: "Approve Promotion", m: "approve this promotion", l: "Yes, Approve", i: "check-line", c: "No" },
+    accept:  { t: "Record Employee Acceptance", m: "record that the employee has accepted this promotion", l: "Yes, Record", i: "user-follow-line", c: "No" },
     bulkApprove: { t: "Approve Promotions", m: "approve", l: "Yes, Approve", i: "check-line", c: "No" },
     bulkReject:  { t: "Reject Promotions", m: "reject", l: "Yes, Reject", i: "close-line", c: "No" },
   };

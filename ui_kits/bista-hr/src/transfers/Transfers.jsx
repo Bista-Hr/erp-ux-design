@@ -31,7 +31,11 @@ const TRANSFER_SEED = [
     reason: "Workforce realignment to strengthen the Operations team at the Ridge branch.",
     documents: ["https://files.bistasol.com/transfers/Transfer-Recommendation.pdf", "https://files.bistasol.com/transfers/Handover-Checklist.docx"],
     approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: "5/16/2026, 2:08:34 PM",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [
+      { id: "tr1-1", action: 0, description: "Inter-Departmental transfer submitted — Finance → Operations, effective Jun 01, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-14T10:20:00Z", justificationReason: "Workforce realignment to strengthen the Operations team at the Ridge branch.", staffId: "EMP-18330" },
+      { id: "tr1-2", action: 3, description: "Transfer approved", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-05-16T14:08:00Z", justificationReason: null, staffId: "EMP-18330" },
+    ] },
   { id: 2, employees: ["Abass Abdul Mumin"], staffIds: "EMP-17431", classification: "Intra-Departmental",
     previousLocation: "Central Zones", newLocation: "West Zone", previousDept: "Operations", newDept: "Operations",
     previousUnit: "Branch Support", currentTitle: "Branch Support", newTitle: "",
@@ -40,7 +44,11 @@ const TRANSFER_SEED = [
     reason: "Relocation to cover staffing gap at the Takoradi branch within the same department.",
     documents: ["https://files.bistasol.com/transfers/Approval-Memo.pdf"],
     approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: "5/12/2026, 10:22:10 AM",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [
+      { id: "tr2-1", action: 0, description: "Intra-Departmental transfer submitted — Operations → Operations, effective May 28, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-10T09:00:00Z", justificationReason: "Relocation to cover staffing gap at the Takoradi branch within the same department.", staffId: "EMP-17431" },
+      { id: "tr2-2", action: 3, description: "Transfer approved", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-05-12T10:22:00Z", justificationReason: null, staffId: "EMP-17431" },
+    ] },
   { id: 3, employees: ["Aba Odum"], staffIds: "EMP-18389", classification: "Inter-Departmental",
     previousLocation: "Accra West", newLocation: "North Zone", previousDept: "Information Technology", newDept: "Operations",
     previousUnit: "Data & Analytics", currentTitle: "Data Scientist", newTitle: "Analytics Lead",
@@ -49,7 +57,8 @@ const TRANSFER_SEED = [
     reason: "Cross-functional move to embed analytics capability within the Operations department.",
     documents: ["https://files.bistasol.com/transfers/Business-Case.pdf"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [{ id: "tr3-1", action: 0, description: "Inter-Departmental transfer submitted — Information Technology → Operations, effective Jul 08, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-18T11:30:00Z", justificationReason: "Cross-functional move to embed analytics capability within the Operations department.", staffId: "EMP-18389" }] },
   { id: 4, employees: ["Franklin Brobbey"], staffIds: "EMP-10231", classification: "Intra-Departmental",
     previousLocation: "South Zone", newLocation: "West Zone", previousDept: "Finance", newDept: "Finance",
     previousUnit: "Accounts", currentTitle: "Accountant", newTitle: "",
@@ -58,7 +67,8 @@ const TRANSFER_SEED = [
     reason: "Employee request to transfer closer to family; role available at the Kumasi branch.",
     documents: ["https://files.bistasol.com/transfers/Employee-Request.docx", "https://files.bistasol.com/transfers/ID-Verification.jpg"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [{ id: "tr4-1", action: 0, description: "Intra-Departmental transfer submitted — Finance → Finance, effective May 28, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-09T08:15:00Z", justificationReason: "Employee request to transfer closer to family; role available at the Kumasi branch.", staffId: "EMP-10231" }] },
   { id: 5, employees: ["Samuel Boateng"], staffIds: "EMP-11002", classification: "Inter-Departmental",
     previousLocation: "West Zone", newLocation: "Central Zones", previousDept: "Marketing", newDept: "Operations",
     previousUnit: "Sales", currentTitle: "Sales Officer", newTitle: "Retail Officer",
@@ -67,7 +77,12 @@ const TRANSFER_SEED = [
     reason: "Proposed move to Retail Operations; deferred pending replacement at current branch.",
     documents: ["https://files.bistasol.com/transfers/Transfer-Proposal.pdf"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM" },
+    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM",
+    rejectionReason: "Deferred until a replacement Sales Officer is confirmed for the Kumasi branch — the branch cannot run below minimum staffing. Revise the effective date once the replacement's start date is known and resubmit.",
+    audit: [
+      { id: "tr5-1", action: 0, description: "Inter-Departmental transfer submitted — Marketing → Operations, effective Apr 30, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-04-12T10:05:00Z", justificationReason: "Proposed move to Retail Operations to broaden branch-level experience.", staffId: "EMP-11002" },
+      { id: "tr5-2", action: 4, description: "Transfer rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-04-18T09:14:00Z", justificationReason: "Deferred until a replacement Sales Officer is confirmed for the Kumasi branch — the branch cannot run below minimum staffing. Revise the effective date once the replacement's start date is known and resubmit.", staffId: "EMP-11002" },
+    ] },
 ];
 
 /* ---------- requests list (approval queue) ---------- */
@@ -268,8 +283,10 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
 }
 
 /* ---------- details — "Transfer Approval" ---------- */
-function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
+function TransferDetails({ transfer, onApprove, onReject, onEdit, onAccept, onUpdate, onToast }) {
   const t = transfer;
+  const [rejectOpen, setRejectOpen] = useTr(false);
+  const [trailOpen, setTrailOpen] = useTr(false);
   const info = [
     { label: "Employee Name", value: t.employees.join(", ") },
     { label: "Transfer Classification", value: t.classification },
@@ -295,12 +312,15 @@ function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
         actions={
           <React.Fragment>
             <StatusBadge variant={TR_STATUS_VARIANT[t.status]} text={t.status} />
+            <Button variant="stroke" icon="history-line" onClick={() => setTrailOpen(true)}>Audit Trail</Button>
             {pending && (
               <React.Fragment>
-                <Button variant="stroke" icon="close-line" onClick={() => onReject(t)}>Reject</Button>
+                <Button variant="stroke" icon="close-line" onClick={() => setRejectOpen(true)} style={{ color: "#DC2626", borderColor: "#F3C2C2" }}>Reject</Button>
                 <Button variant="primary" icon="check-line" onClick={() => onApprove(t)}>Approve</Button>
               </React.Fragment>
             )}
+            {t.status === "Declined" && <Button variant="primary" icon="edit-2-line" onClick={() => onEdit(t)}>Review & Edit</Button>}
+            {t.status === "Approved" && !t.accepted && <Button variant="primary" icon="user-follow-line" onClick={() => onAccept(t)}>Record Employee Acceptance</Button>}
           </React.Fragment>
         } />
 
@@ -339,7 +359,21 @@ function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
         <DetailCard icon="shield-check-line" title="Approval Information"><DetailPanel items={approvalInfo} tint="gray" cols={3} /></DetailCard>
       </div>
 
-      <WorkflowPanel workflowType="Transfer" record={t} onChange={(partial) => onUpdate(partial)} onToast={onToast} />
+      {t.rejectionReason && (
+        <div className="card" style={{ padding: 0 }}>
+          <DetailCard icon="error-warning-line" title="Reason For Rejection">
+            <div style={{ background: "#FEF2F2", border: "1px solid #FBD9D9", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }}>{t.rejectionReason}</div>
+          </DetailCard>
+        </div>
+      )}
+
+      <RejectionReasonModal open={rejectOpen} onClose={() => setRejectOpen(false)}
+        title="Reject Transfer" noun="transfer"
+        onConfirm={(reason) => { setRejectOpen(false); onReject(t, reason); }} />
+
+      <AuditTrailDrawer open={trailOpen} onClose={() => setTrailOpen(false)} name={t.employees[0]}
+        sub={`${t.staffIds} · ${t.classification}`} badge={<StatusBadge variant={TR_STATUS_VARIANT[t.status]} text={t.status} />}
+        entries={t.audit || []} />
     </div>
   );
 }
@@ -394,19 +428,23 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
         effectiveDate: f.effectiveDate, dateSubmitted: todayTr(), status: "Pending",
         reason: f.reason, documents: allDocs, approvers: f.approvers || [],
         approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+        audit: [pncEntry({ action: 0, description: `${f.classification} transfer submitted — ${p.dept || "—"} → ${f.newDepartment || p.dept || "—"}, effective ${f.effectiveDate}`, justificationReason: f.reason, staffId: f.staffIds })],
       }, ...ts]);
       onToast("Transfer Submitted", { tone: "success" });
       setView({ name: "list" });
     } else if (c.kind === "edit") {
       const f = c.form;
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/transfers/");
+      const wasDeclined = (transfers.find(t => t.id === c.id) || {}).status === "Declined";
       setTransfers(ts => ts.map(t => t.id === c.id ? { ...t, employees: f.employees, classification: f.classification,
         newLocation: f.newLocation, newDept: f.newDepartment || t.newDept, newUnit: f.newUnit, newTitle: f.newJobTitle || "",
         grade: f.newGrade || t.grade,
         lineManagerId: f.lineManager || t.lineManagerId || "", lineManager: (window.EMP_BY_ID[f.lineManager] || {}).name || t.lineManager || "—",
         notifyIds: f.notifyIds || t.notifyIds || [],
-        effectiveDate: f.effectiveDate, reason: f.reason, documents: allDocs, approvers: f.approvers || [] } : t));
-      onToast("Transfer Updated", { tone: "success" });
+        effectiveDate: f.effectiveDate, reason: f.reason, documents: allDocs, approvers: f.approvers || [],
+        ...(wasDeclined ? { status: "Pending", wfStatus: "Pending", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A", rejectionReason: "", accepted: false } : {}),
+        audit: [...(t.audit || []), pncEntry({ action: wasDeclined ? 6 : 1, description: wasDeclined ? "Request revised and resubmitted for approval after rejection review" : "Request details updated", justificationReason: f.reason, staffId: t.staffIds })] } : t));
+      onToast(wasDeclined ? "Transfer Resubmitted" : "Transfer Updated", { tone: "success" });
       setView({ name: "list" });
     } else if (c.kind === "bulk") {
       const f = c.form;
@@ -432,36 +470,44 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
       setView({ name: "list" });
     } else if (c.kind === "approve") {
       const now = new Date().toLocaleString("en-US");
-      const stamp = window.wfNow();
       setTransfers(ts => ts.map(t => t.id === c.row.id ? { ...t, status: "Approved", wfStatus: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
-        audit: [...(t.audit || []), { action: "Transfer approved", decision: "Approved", actor: "Peter Bosrotsi (Head P&C)", at: stamp }] } : t));
+        audit: [...(t.audit || []), pncEntry({ action: 3, description: "Transfer approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: t.staffIds })] } : t));
       onToast("Transfer Approved", { tone: "success" });
-    } else if (c.kind === "reject") {
-      const now = new Date().toLocaleString("en-US");
-      const stamp = window.wfNow();
-      setTransfers(ts => ts.map(t => t.id === c.row.id ? { ...t, status: "Declined", wfStatus: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now,
-        audit: [...(t.audit || []), { action: "Transfer declined", decision: "Declined", actor: "Peter Bosrotsi (Head P&C)", at: stamp }] } : t));
-      onToast("Transfer Rejected", { tone: "error" });
+    } else if (c.kind === "accept") {
+      setTransfers(ts => ts.map(t => t.id === c.row.id ? { ...t, accepted: true,
+        audit: [...(t.audit || []), pncEntry({ action: 7, description: "Employee accepted the transfer", actorName: `${t.employees[0]} (Employee)`, staffId: t.staffIds })] } : t));
+      onToast("Employee Acceptance Recorded", { tone: "success" });
     } else if (c.kind === "bulkApprove") {
       const now = new Date().toLocaleString("en-US");
       const ids = c.ids;
-      setTransfers(ts => ts.map(t => ids.includes(t.id) ? { ...t, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now } : t));
+      setTransfers(ts => ts.map(t => ids.includes(t.id) ? { ...t, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
+        audit: [...(t.audit || []), pncEntry({ action: 3, description: "Transfer approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: t.staffIds })] } : t));
       onToast(`${ids.length} Transfer${ids.length > 1 ? "s" : ""} Approved`, { tone: "success" });
       setApprovalSel([]);
     } else if (c.kind === "bulkReject") {
       const now = new Date().toLocaleString("en-US");
       const ids = c.ids;
-      setTransfers(ts => ts.map(t => ids.includes(t.id) ? { ...t, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now } : t));
+      setTransfers(ts => ts.map(t => ids.includes(t.id) ? { ...t, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now,
+        audit: [...(t.audit || []), pncEntry({ action: 4, description: "Transfer rejected", actorName: "Peter Bosrotsi (Head P&C)", staffId: t.staffIds })] } : t));
       onToast(`${ids.length} Transfer${ids.length > 1 ? "s" : ""} Rejected`, { tone: "error" });
       setApprovalSel([]);
     }
     setConfirm(null);
   };
 
+  // reject from the detail page with a captured reason — commits immediately + logs the trail
+  const rejectWithReason = (row, reason) => {
+    const now = new Date().toLocaleString("en-US");
+    setTransfers(ts => ts.map(t => t.id === row.id ? { ...t, status: "Declined", wfStatus: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now, rejectionReason: reason,
+      audit: [...(t.audit || []), pncEntry({ action: 4, description: "Transfer rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", justificationReason: reason, staffId: t.staffIds })] } : t));
+    onToast("Transfer Rejected", { tone: "error" });
+  };
+
   let body;
   if (view.name === "add") body = <TransferForm lookups={lookups} initialEmployees={view.initialEmployees} initialData={view.initialData} onCancel={() => setView({ name: "list" })} onSubmit={submitTransfer} />;
   else if (view.name === "details" && current) body = <TransferDetails transfer={current}
-    onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={(r) => setConfirm({ kind: "reject", row: r })}
+    onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={rejectWithReason}
+    onEdit={(r) => setView({ name: "add", initialData: r })} onAccept={(r) => setConfirm({ kind: "accept", row: r })}
     onUpdate={(partial) => setTransfers(ts => ts.map(t => t.id === current.id ? { ...t, ...partial } : t))} onToast={onToast} />;
   else body = (
     <React.Fragment>
@@ -490,7 +536,7 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
     bulk:    { t: "Raise Transfer", m: "raise this transfer", l: "Yes, Transfer", i: "exchange-line", c: "Cancel" },
     archive: { t: "Archive Transfer", m: "archive this transfer", l: "Yes, Archive", i: "archive-line", c: "No" },
     approve: { t: "Approve Transfer", m: "approve this transfer", l: "Yes, Approve", i: "check-line", c: "No" },
-    reject:  { t: "Reject Transfer", m: "reject this transfer", l: "Yes, Reject", i: "close-line", c: "No" },
+    accept:  { t: "Record Employee Acceptance", m: "record that the employee has accepted this transfer", l: "Yes, Record", i: "user-follow-line", c: "No" },
     bulkApprove: { t: "Approve Transfers", m: "approve", l: "Yes, Approve", i: "check-line", c: "No" },
     bulkReject:  { t: "Reject Transfers", m: "reject", l: "Yes, Reject", i: "close-line", c: "No" },
   };

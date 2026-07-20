@@ -104,6 +104,10 @@ const PROMOTION_SEED = [
     previousSalary: "GHS 8,000.00", salary: "GHS 9,200.00", performanceRating: "Very Good",
     effectiveDate: "Jun 01, 2026", dateSubmitted: "May 14, 2026", status: "Approved",
     justification: "Consistently strong assurance performance and readiness for a broader operational remit.",
+    audit: [
+      { id: "pr1-1", action: 0, description: "Promotion request submitted — Ag. Assurance Supervisor → Branch Support", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-14T10:00:00Z", justificationReason: "Consistently strong assurance performance and readiness for a broader operational remit.", staffId: "EMP-18330" },
+      { id: "pr1-2", action: 3, description: "Promotion approved", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-05-16T14:08:00Z", justificationReason: null, staffId: "EMP-18330" },
+    ],
     allowances: [], documents: [PROMO_DOC("Promotion Recommendation.pdf", "PDF", "1.2 MB", "Reference Letter"), PROMO_DOC("Performance Summary.xlsx", "XLSX", "84 KB", "Other")],
     docUrls: [
       "https://files.bistasol.com/promotions/Promotion-Recommendation.pdf",
@@ -152,7 +156,12 @@ const PROMOTION_SEED = [
     justification: "Recommended for promotion based on sales targets met over four consecutive quarters.",
     allowances: [], documents: [PROMO_DOC("Sales Record.xlsx", "XLSX", "210 KB", "Other")],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM" },
+    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM",
+    rejectionReason: "Budget headroom for Grade 2 in Marketing is exhausted for this cycle. Revisit with the Q3 budget or restate the case at the current grade with a notch adjustment, then resubmit.",
+    audit: [
+      { id: "pr5-1", action: 0, description: "Promotion request submitted — Sales Officer → Senior Sales Officer", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-04-12T10:05:00Z", justificationReason: "Recommended for promotion based on sales targets met over four consecutive quarters.", staffId: "EMP-11002" },
+      { id: "pr5-2", action: 4, description: "Promotion rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-04-18T09:14:00Z", justificationReason: "Budget headroom for Grade 2 in Marketing is exhausted for this cycle. Revisit with the Q3 budget or restate the case at the current grade with a notch adjustment, then resubmit.", staffId: "EMP-11002" },
+    ] },
 ];
 
 Object.assign(window, { EMPLOYEE_DIRECTORY, EMPLOYEE_NAMES, EMPLOYEE_LIST, EMP_BY_ID, firstIdForName, NOTCHES, notchesForGrade, gradeNotchCount, fetchPayroll, PROMOTION_SEED });

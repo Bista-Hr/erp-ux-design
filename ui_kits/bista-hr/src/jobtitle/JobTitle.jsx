@@ -35,7 +35,11 @@ const JOBTITLE_SEED = [
     reason: "Confirmation in substantive role following a successful acting period.",
     documents: ["https://files.bistasol.com/jobtitle/Confirmation-Letter.pdf"],
     approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: "5/16/2026, 2:08:34 PM",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [
+      { id: "jt1-1", action: 0, description: "Job title change submitted — Ag. Assurance Supervisor → Assurance Supervisor", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-14T10:00:00Z", justificationReason: "Confirmation in substantive role following a successful acting period.", staffId: "EMP-18330" },
+      { id: "jt1-2", action: 3, description: "Job title change approved", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-05-16T14:08:00Z", justificationReason: null, staffId: "EMP-18330" },
+    ] },
   { id: 2, employees: ["Bright Manu"], staffIds: "EMP-10876",
     previousTitle: "Software Engineer", newTitle: "Senior Software Engineer", grade: "Grade 3",
     department: "Information Technology", unit: "Engineering", zone: "East Zone", branch: "Tema",
@@ -43,7 +47,8 @@ const JOBTITLE_SEED = [
     reason: "Re-designation to reflect expanded technical leadership responsibilities.",
     documents: ["https://files.bistasol.com/jobtitle/Role-Justification.docx"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [{ id: "jt2-1", action: 0, description: "Job title change submitted — Software Engineer → Senior Software Engineer", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-10T09:30:00Z", justificationReason: "Re-designation to reflect expanded technical leadership responsibilities.", staffId: "EMP-10876" }] },
   { id: 3, employees: ["Emmanuel Ansah"], staffIds: "EMP-10412",
     previousTitle: "HR Officer", newTitle: "HR Generalist", grade: "Grade 2",
     department: "Human Resource", unit: "HR Operations", zone: "South Zone", branch: "Accra",
@@ -51,7 +56,8 @@ const JOBTITLE_SEED = [
     reason: "Title alignment with the new HR operating model and job architecture.",
     documents: ["https://files.bistasol.com/jobtitle/Job-Architecture-Memo.pdf"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [{ id: "jt3-1", action: 0, description: "Job title change submitted — HR Officer → HR Generalist", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-18T11:45:00Z", justificationReason: "Title alignment with the new HR operating model and job architecture.", staffId: "EMP-10412" }] },
   { id: 4, employees: ["Samuel Asante"], staffIds: "EMP-11233",
     previousTitle: "Teller", newTitle: "Senior Teller", grade: "Grade 1",
     department: "Finance", unit: "Retail", zone: "West Zone", branch: "Takoradi",
@@ -59,7 +65,12 @@ const JOBTITLE_SEED = [
     reason: "Proposed re-designation; deferred pending completion of the role-banding review.",
     documents: ["https://files.bistasol.com/jobtitle/Banding-Review.xlsx"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM" },
+    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM",
+    rejectionReason: "Deferred pending completion of the role-banding review — the Senior Teller band has not been ratified. Resubmit once the banding committee publishes the approved structure.",
+    audit: [
+      { id: "jt4-1", action: 0, description: "Job title change submitted — Teller → Senior Teller", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-04-12T10:10:00Z", justificationReason: "Proposed re-designation in recognition of consistent front-line performance.", staffId: "EMP-11233" },
+      { id: "jt4-2", action: 4, description: "Job title change rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-04-18T09:14:00Z", justificationReason: "Deferred pending completion of the role-banding review — the Senior Teller band has not been ratified. Resubmit once the banding committee publishes the approved structure.", staffId: "EMP-11233" },
+    ] },
 ];
 
 /* ---------- form section card (matches the Promotions full-page form) ---------- */
@@ -265,6 +276,9 @@ function JobTitleList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSe
                         { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
                         { label: "Edit Details", short: "Edit", icon: "edit-2-line", onClick: () => onEdit(r) },
                         { label: "Archive", short: "Archive", icon: "archive-line", danger: true, onClick: () => onArchive(r) },
+                      ] : r.status === "Declined" ? [
+                        { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
+                        { label: "Review & Edit", short: "Review", icon: "edit-2-line", onClick: () => onEdit(r) },
                       ] : [
                         { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
                       ]} />
@@ -283,8 +297,10 @@ function JobTitleList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSe
 }
 
 /* ---------- details — "Job Title Change Approval" ---------- */
-function JobTitleDetails({ record, onApprove, onReject, onUpdate, onToast }) {
+function JobTitleDetails({ record, onApprove, onReject, onEdit, onAccept, onUpdate, onToast }) {
   const r = record;
+  const [rejectOpen, setRejectOpen] = useJt(false);
+  const [trailOpen, setTrailOpen] = useJt(false);
   const info = [
     { label: "Employee Name", value: r.employees.join(", ") },
     { label: "Previous Job Title", value: r.previousTitle },
@@ -307,12 +323,15 @@ function JobTitleDetails({ record, onApprove, onReject, onUpdate, onToast }) {
         actions={
           <React.Fragment>
             <StatusBadge variant={JT_STATUS_VARIANT[r.status]} text={r.status} />
+            <Button variant="stroke" icon="history-line" onClick={() => setTrailOpen(true)}>Audit Trail</Button>
             {pending && (
               <React.Fragment>
-                <Button variant="stroke" icon="close-line" onClick={() => onReject(r)}>Reject</Button>
+                <Button variant="stroke" icon="close-line" onClick={() => setRejectOpen(true)} style={{ color: "#DC2626", borderColor: "#F3C2C2" }}>Reject</Button>
                 <Button variant="primary" icon="check-line" onClick={() => onApprove(r)}>Approve</Button>
               </React.Fragment>
             )}
+            {r.status === "Declined" && <Button variant="primary" icon="edit-2-line" onClick={() => onEdit(r)}>Review & Edit</Button>}
+            {r.status === "Approved" && !r.accepted && <Button variant="primary" icon="user-follow-line" onClick={() => onAccept(r)}>Record Employee Acceptance</Button>}
           </React.Fragment>
         } />
 
@@ -336,7 +355,21 @@ function JobTitleDetails({ record, onApprove, onReject, onUpdate, onToast }) {
         <DetailCard icon="shield-check-line" title="Approval Information"><DetailPanel items={approvalInfo} tint="gray" cols={3} /></DetailCard>
       </div>
 
-      <WorkflowPanel workflowType="JobTitle" record={r} onChange={(partial) => onUpdate(partial)} onToast={onToast} />
+      {r.rejectionReason && (
+        <div className="card" style={{ padding: 0 }}>
+          <DetailCard icon="error-warning-line" title="Reason For Rejection">
+            <div style={{ background: "#FEF2F2", border: "1px solid #FBD9D9", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }}>{r.rejectionReason}</div>
+          </DetailCard>
+        </div>
+      )}
+
+      <RejectionReasonModal open={rejectOpen} onClose={() => setRejectOpen(false)}
+        title="Reject Job Title Change" noun="job title change"
+        onConfirm={(reason) => { setRejectOpen(false); onReject(r, reason); }} />
+
+      <AuditTrailDrawer open={trailOpen} onClose={() => setTrailOpen(false)} name={r.employees[0]}
+        sub={`${r.staffIds} · ${r.newTitle}`} badge={<StatusBadge variant={JT_STATUS_VARIANT[r.status]} text={r.status} />}
+        entries={r.audit || []} />
     </div>
   );
 }
@@ -379,10 +412,13 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
       const f = c.form;
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/jobtitle/");
       if (f.editId) {
+        const wasDeclined = (records.find(r => r.id === f.editId) || {}).status === "Declined";
         setRecords(rs => rs.map(r => r.id === f.editId ? { ...r, employees: f.names.map(id => (window.EMP_BY_ID[id] || {}).name || id), staffIds: f.names.join(", "), newTitle: f.title, grade: f.grade || r.grade, notch: f.notch || r.notch, zone: f.zone || r.zone, branch: f.unitBranch || r.branch,
           notifyIds: f.notifyIds || r.notifyIds || [],
-          effectiveDate: fmtJtDate(f.date), reason: f.reason || "", approvers: f.approvers || [], documents: allDocs } : r));
-        onToast("Job Title Change Updated", { tone: "success" });
+          effectiveDate: fmtJtDate(f.date), reason: f.reason || "", approvers: f.approvers || [], documents: allDocs,
+          ...(wasDeclined ? { status: "Pending", wfStatus: "Pending", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A", rejectionReason: "", accepted: false } : {}),
+          audit: [...(r.audit || []), pncEntry({ action: wasDeclined ? 6 : 1, description: wasDeclined ? "Request revised and resubmitted for approval after rejection review" : "Request details updated", justificationReason: f.reason, staffId: r.staffIds })] } : r));
+        onToast(wasDeclined ? "Job Title Change Resubmitted" : "Job Title Change Updated", { tone: "success" });
         setView({ name: "list" });
         setConfirm(null); return;
       }
@@ -394,7 +430,8 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
           notifyIds: f.notifyIds || [],
           effectiveDate: fmtJtDate(f.date), dateSubmitted: todayJt(), status: "Pending",
           reason: f.reason || "", documents: allDocs, approvers: f.approvers || [],
-          approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" };
+          approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+          audit: [pncEntry({ action: 0, description: `Job title change submitted — ${e.title || "—"} → ${f.title}`, justificationReason: f.reason, staffId: e.staffId || id })] };
       });
       setRecords(rs => [...recs, ...rs]);
       onToast(f.names.length > 1 ? `Job Title Assigned to ${f.names.length} Employees` : "Job Title Assigned", { tone: "success" });
@@ -405,30 +442,37 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
       setView({ name: "list" });
     } else if (c.kind === "approve") {
       const now = new Date().toLocaleString("en-US");
-      const stamp = window.wfNow();
       setRecords(rs => rs.map(r => r.id === c.row.id ? { ...r, status: "Approved", wfStatus: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
-        audit: [...(r.audit || []), { action: "Job title change approved", decision: "Approved", actor: "Peter Bosrotsi (Head P&C)", at: stamp }] } : r));
+        audit: [...(r.audit || []), pncEntry({ action: 3, description: "Job title change approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: r.staffIds })] } : r));
       onToast("Job Title Change Approved", { tone: "success" });
-    } else if (c.kind === "reject") {
-      const now = new Date().toLocaleString("en-US");
-      const stamp = window.wfNow();
-      setRecords(rs => rs.map(r => r.id === c.row.id ? { ...r, status: "Declined", wfStatus: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now,
-        audit: [...(r.audit || []), { action: "Job title change declined", decision: "Declined", actor: "Peter Bosrotsi (Head P&C)", at: stamp }] } : r));
-      onToast("Job Title Change Rejected", { tone: "error" });
+    } else if (c.kind === "accept") {
+      setRecords(rs => rs.map(r => r.id === c.row.id ? { ...r, accepted: true,
+        audit: [...(r.audit || []), pncEntry({ action: 7, description: "Employee accepted the job title change", actorName: `${r.employees[0]} (Employee)`, staffId: r.staffIds })] } : r));
+      onToast("Employee Acceptance Recorded", { tone: "success" });
     } else if (c.kind === "bulkApprove") {
       const now = new Date().toLocaleString("en-US");
       const ids = c.ids;
-      setRecords(rs => rs.map(r => ids.includes(r.id) ? { ...r, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now } : r));
+      setRecords(rs => rs.map(r => ids.includes(r.id) ? { ...r, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
+        audit: [...(r.audit || []), pncEntry({ action: 3, description: "Job title change approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: r.staffIds })] } : r));
       onToast(`${ids.length} Job Title Change${ids.length > 1 ? "s" : ""} Approved`, { tone: "success" });
       setApprovalSel([]);
     } else if (c.kind === "bulkReject") {
       const now = new Date().toLocaleString("en-US");
       const ids = c.ids;
-      setRecords(rs => rs.map(r => ids.includes(r.id) ? { ...r, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now } : r));
+      setRecords(rs => rs.map(r => ids.includes(r.id) ? { ...r, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now,
+        audit: [...(r.audit || []), pncEntry({ action: 4, description: "Job title change rejected", actorName: "Peter Bosrotsi (Head P&C)", staffId: r.staffIds })] } : r));
       onToast(`${ids.length} Job Title Change${ids.length > 1 ? "s" : ""} Rejected`, { tone: "error" });
       setApprovalSel([]);
     }
     setConfirm(null);
+  };
+
+  // reject from the detail page with a captured reason — commits immediately + logs the trail
+  const rejectWithReason = (row, reason) => {
+    const now = new Date().toLocaleString("en-US");
+    setRecords(rs => rs.map(r => r.id === row.id ? { ...r, status: "Declined", wfStatus: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now, rejectionReason: reason,
+      audit: [...(r.audit || []), pncEntry({ action: 4, description: "Job title change rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", justificationReason: reason, staffId: r.staffIds })] } : r));
+    onToast("Job Title Change Rejected", { tone: "error" });
   };
 
   let body;
@@ -438,7 +482,8 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
     body = <JobTitleForm lookups={lookups} initialData={editing} onCancel={() => setView({ name: "list" })} onSubmit={submitAssign} />;
   } else if (view.name === "details" && current) {
     body = <JobTitleDetails record={current}
-      onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={(r) => setConfirm({ kind: "reject", row: r })}
+      onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={rejectWithReason}
+      onEdit={(r) => setView({ name: "edit", id: r.id })} onAccept={(r) => setConfirm({ kind: "accept", row: r })}
       onUpdate={(partial) => setRecords(rs => rs.map(x => x.id === current.id ? { ...x, ...partial } : x))} onToast={onToast} />;
   } else {
     const addAction = <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add", initialEmployees: [] })}>Assign Job Title</Button>;
@@ -462,7 +507,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
     assign:  { t: "Assign Job Title", m: "assign this job title", l: "Yes, Assign", i: "user-add-line", c: "Cancel" },
     archive: { t: "Archive Job Title Change", m: "archive this job title change", l: "Yes, Archive", i: "archive-line", c: "No" },
     approve: { t: "Approve Job Title Change", m: "approve this job title change", l: "Yes, Approve", i: "check-line", c: "No" },
-    reject:  { t: "Reject Job Title Change", m: "reject this job title change", l: "Yes, Reject", i: "close-line", c: "No" },
+    accept:  { t: "Record Employee Acceptance", m: "record that the employee has accepted this job title change", l: "Yes, Record", i: "user-follow-line", c: "No" },
     bulkApprove: { t: "Approve Job Title Changes", m: "approve", l: "Yes, Approve", i: "check-line", c: "No" },
     bulkReject:  { t: "Reject Job Title Changes", m: "reject", l: "Yes, Reject", i: "close-line", c: "No" },
   };

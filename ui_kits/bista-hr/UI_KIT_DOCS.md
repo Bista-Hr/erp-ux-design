@@ -323,3 +323,12 @@ The shell renders `<Breadcrumb trail={…}>` in place of the horizontal tab bar.
 - **Assessments** (`careers/Assessments.jsx`): assessor's interview queue, weighted-construct scoring.
 - Application pipeline actions follow `ApplicationActionButtons` exactly (Send/Approve/Reject Shortlist →
   Schedule for Assessment → Approve for Hiring → Send Offer → Hired).
+
+## PncAuditTrail (shared/PncAuditTrail.jsx)
+Reusable audit trail for P&C request cycles (Exit, Promotions, Transfers, Job Title).
+Entries mirror the backend shape: `{ id, action (enum int), description, actorName, occurredAt (ISO), justificationReason, staffId }`.
+Action enum: 0 Submitted · 1 Updated · 2 Interview Completed · 3 Approved · 4 Rejected · 5 Closed · 6 Resubmitted · 7 Employee Accepted (drives the timeline dot color).
+- `PncAuditTrail({ entries })` — timeline: dot (action tone), **actorName · staffId**, right-aligned date, description, and a wrapping "Comment" panel for `justificationReason` (HTML is stripped).
+- `AuditTrailDrawer({ open, onClose, name, sub, badge, entries })` — right-side Drawer with an employee header card (Avatar + name + sub + status badge) above the trail. Opened from an "Audit Trail" stroke button in the detail PageHeader — never render the trail as an in-page card.
+- `pncEntry({ action, description, justificationReason?, staffId?, actorName? })` — builds a backend-shaped entry (auto id + ISO occurredAt).
+Interactive cycle convention: reject captures a reason (RejectionReasonModal) and logs action 4; a Declined request offers "Review & Edit" (list row + detail header) — resubmitting flips it back to Pending, clears rejection fields and logs action 6; an Approved request offers "Record Employee Acceptance" logging action 7.
