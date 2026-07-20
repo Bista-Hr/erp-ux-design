@@ -119,9 +119,9 @@ function Tabs({ items, active, onChange }) {
     </div>
   );
 }
-function Segmented({ items, active, onChange }) {
+function Segmented({ items, active, onChange, style }) {
   return (
-    <div className="seg">
+    <div className="seg" style={{ background: "#F6F8FA", ...style }}>
       {items.map(t => <button key={t} className={t === active ? "active" : ""} onClick={() => onChange(t)}>{t}</button>)}
     </div>
   );

@@ -51,7 +51,7 @@ function NotchEditor({ value, onChange }) {
   );
 }
 
-function FormModal({ config, initial, onClose, onSubmit, lookups }) {
+function FormModal({ config, initial, onClose, onSubmit, lookups, rows }) {
   const LK = lookups || window.LOOKUPS;
   const editing = !!initial;
   const [form, setForm] = useState(() => {
@@ -59,9 +59,49 @@ function FormModal({ config, initial, onClose, onSubmit, lookups }) {
     config.fields.forEach(fl => f[fl.key] = initial ? (initial[fl.key] ?? (fl.type === "notches" ? DEFAULT_NOTCHES.slice() : "")) : (fl.type === "notches" ? DEFAULT_NOTCHES.slice() : ""));
     return f;
   });
-  const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
+  // set() also handles fillTarget: changing the source field populates the target when it's
+  // empty or still holds the previous auto-filled value (user edits win). fillTemplate derives
+  // "Grade {value}"-style strings; fillInitials derives initials ("Senior Executive" → "SE").
+  const initialsOf = (str) => String(str || "").trim().split(/\s+/).map(w => (w.match(/[A-Za-z0-9]/) || [""])[0].toUpperCase()).join("");
+  const set = (k, v) => setForm(s => {
+    const next = { ...s, [k]: v };
+    // cascade: an auto-filled target may itself have a fillTarget (Grade → Name → Code)
+    const applyFill = (key, val, prevVal) => {
+      const fl = config.fields.find(f => f.key === key);
+      if (!fl || !fl.fillTarget || !(fl.fillTemplate || fl.fillInitials)) return;
+      const derive = (src) => fl.fillInitials ? initialsOf(src) : fl.fillTemplate.replace("{value}", String(src ?? "").trim());
+      const cur = String(next[fl.fillTarget] || "").trim();
+      const auto = derive(val);
+      if (String(val).trim() !== "" && auto !== "" && (cur === "" || cur === derive(prevVal))) {
+        const prevTarget = next[fl.fillTarget];
+        next[fl.fillTarget] = auto;
+        applyFill(fl.fillTarget, auto, prevTarget);
+      }
+    };
+    applyFill(k, v, s[k]);
+    return next;
+  });
+  // required-field errors show BEFORE submission: a field reveals "X is required" once
+  // the user has touched it (blur or edit) and left it empty.
+  const [touched, setTouched] = React.useState({});
+  const markTouched = k => setTouched(t => t[k] ? t : ({ ...t, [k]: true }));
   const requiredKeys = config.fields.filter(fl => !fl.optional).map(fl => fl.key);
-  const valid = requiredKeys.every(k => String(form[k] || "").trim() !== "");
+  // unique fields: an already-existing value (excluding the row being edited) raises an inline error
+  const dupErrors = {};
+  config.fields.forEach(fl => {
+    if (!fl.unique) return;
+    const v = String(form[fl.key] ?? "").trim();
+    if (v === "") return;
+    if ((rows || []).some(r => (!initial || r.id !== initial.id) && String(r[fl.key] ?? "").trim() === v))
+      dupErrors[fl.key] = (fl.uniqueError || `This ${fl.label.toLowerCase()} already exists.`).replace("{value}", v);
+  });
+  // pattern fields: invalid characters raise the same inline error treatment, live as the user types
+  config.fields.forEach(fl => {
+    if (!fl.pattern) return;
+    const v = String(form[fl.key] ?? "").trim();
+    if (v !== "" && !(new RegExp(fl.pattern)).test(v)) dupErrors[fl.key] = fl.patternError || `Invalid ${fl.label.toLowerCase()}.`;
+  });
+  const valid = requiredKeys.every(k => String(form[k] || "").trim() !== "") && Object.keys(dupErrors).length === 0;
   const verb = config.verb || "Create";
   const createTitle = config.addTitle || `${verb} ${config.noun}`;
 
@@ -103,6 +143,7 @@ function FormModal({ config, initial, onClose, onSubmit, lookups }) {
         {config.fields.map(fl => {
           const opts = fl.lookup ? (LK[fl.lookup] || []) : fl.options;
           const isUser = fl.lookup === "employees" || fl.avatar;
+          const fieldError = dupErrors[fl.key] || (touched[fl.key] && !fl.optional && fl.type !== "notches" && String(form[fl.key] ?? "").trim() === "" ? `${fl.label} is required` : "");
           return (
             <Field key={fl.key} label={fl.label} optional={fl.optional} style={{ gridColumn: fl.full ? "1 / -1" : "auto" }}>
               {fl.type === "select"
@@ -110,14 +151,19 @@ function FormModal({ config, initial, onClose, onSubmit, lookups }) {
                 : fl.type === "multiselect"
                   ? <MultiSelectCombobox value={form[fl.key] || []} onChange={v => set(fl.key, v)} options={opts} placeholder={fl.placeholder} avatar={isUser} />
                   : fl.type === "textarea"
-                    ? <Textarea placeholder={fl.placeholder} value={form[fl.key]} onChange={e => set(fl.key, e.target.value)} />
+                    ? <Textarea placeholder={fl.placeholder} value={form[fl.key]} onChange={e => set(fl.key, e.target.value)} onBlur={() => markTouched(fl.key)} />
                     : fl.type === "date"
                       ? <UI.DatePicker value={form[fl.key] || ""} onSelect={d => set(fl.key, `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`)} placeholder={fl.placeholder || "Pick a date"} />
                       : fl.type === "number"
-                        ? <Input type="number" min={fl.min ?? 0} placeholder={fl.placeholder} value={form[fl.key]} onChange={e => set(fl.key, e.target.value)} />
+                        ? <Input type="number" min={fl.min ?? 0} placeholder={fl.placeholder} value={form[fl.key]} onChange={e => set(fl.key, e.target.value)} onBlur={() => markTouched(fl.key)} />
                         : fl.type === "notches"
                           ? <NotchEditor value={form[fl.key]} onChange={v => set(fl.key, v)} />
-                          : <Input placeholder={fl.placeholder} value={form[fl.key]} onChange={e => set(fl.key, e.target.value)} />}
+                          : <Input placeholder={fl.placeholder} value={form[fl.key]} onChange={e => set(fl.key, e.target.value)} onBlur={() => markTouched(fl.key)} />}
+              {fieldError && (
+                <div style={{ marginTop: 2, display: "flex", alignItems: "center", gap: 6, fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--error)" }}>
+                  <Icon name="error-warning-line" size={14} color="var(--error)" />{fieldError}
+                </div>
+              )}
             </Field>
           );
         })}

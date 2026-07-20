@@ -1,9 +1,10 @@
 // BISTA HR · shell/Notifications — full-page notifications inbox (two-pane master-detail).
-// Mirrors the attached "Inbox" reference: a left rail (soft gradient header + tabs + list) and a
-// right reading pane (the selected notification, or an empty state). Notifications are derived LIVE
-// from the shared window.HRStores — L&D program invitations and course assignments for the signed-in
-// user — plus a few standard HR notices, so it stays consistent with the single source of truth.
-// Responsive: ≥1000px container shows both panes; narrower shows list, then the reading pane on select.
+// Left rail (header + tabs + list) and a right reading pane — the layout we're sticking to.
+// Items follow the API's DashboardNotification field structure — { id, title, message,
+// employeeName, createdAt } (lib/types/hr-types.ts) — no icon/category/CTA fields exist on the
+// endpoint, so rows render title + message + employeeName + time only. `unread` is client-side
+// read tracking. Sources: live HRStores (L&D invitations/assignments) mapped into the same shape.
+// Responsive: ≥820px container shows both panes; narrower shows list, then the reading pane on select.
 const { useState: useNt } = React;
 
 function buildNotifications() {
@@ -12,48 +13,37 @@ function buildNotifications() {
   const out = [];
   get("ldEnrollments").filter(e => e.learner === me && e.status === "Invited").forEach(e => {
     const p = get("ldPrograms").find(x => x.id === e.programId) || {};
-    out.push({ id: "inv" + e.id, cat: "Learning", icon: "calendar-event-line", tint: "#F4F7FF", color: "var(--brand-blue)",
-      title: "Program invitation", from: "Learning & Development", time: "Just now", unread: true,
-      body: `You've been invited to ${p.title}. Please confirm your attendance — or decline with a reason — in My Learning. ${p.startDate ? "Starts " + p.startDate + "." : ""}`,
-      cta: { label: "Open My Learning", icon: "graduation-cap-line" } });
+    out.push({ id: "inv" + e.id, title: "Program invitation", employeeName: "Learning & Development", createdAt: "Just now", unread: true,
+      message: `You've been invited to ${p.title}. Please confirm your attendance — or decline with a reason — in My Learning. ${p.startDate ? "Starts " + p.startDate + "." : ""}` });
   });
   get("ldAssignments").filter(a => a.learner === me && a.status !== "Completed").forEach(a => {
     const c = get("ldCourses").find(x => x.id === a.courseId) || {};
-    out.push({ id: "asg" + a.id, cat: "Learning", icon: "graduation-cap-line", tint: "var(--brand-yellow-tint)", color: "var(--brand-yellow-dark)",
-      title: a.status === "Not Started" ? "New course assigned" : "Course in progress", from: "Learning & Development", time: "Today", unread: a.status === "Not Started",
-      body: `"${c.title}" is in your classroom. ${a.due && a.due !== "—" ? "Complete it by " + a.due + "." : ""} You're ${a.progress || 0}% through.`,
-      cta: { label: "Go to course", icon: "play-line" } });
+    out.push({ id: "asg" + a.id, title: a.status === "Not Started" ? "New course assigned" : "Course in progress", employeeName: "Learning & Development", createdAt: "Today", unread: a.status === "Not Started",
+      message: `"${c.title}" is in your classroom. ${a.due && a.due !== "—" ? "Complete it by " + a.due + "." : ""} You're ${a.progress || 0}% through.` });
   });
-  // pre-course self-assessment pending (confirmed program, no L2 pre score yet)
   get("ldEnrollments").filter(e => e.learner === me && e.status === "Confirmed").forEach(e => {
     const ev = get("ldEvaluations").find(r => r.programId === e.programId && r.learner === me);
     if (ev && ev.l2Pre != null) return;
     const p = get("ldPrograms").find(x => x.id === e.programId) || {};
-    out.push({ id: "l2" + e.id, cat: "Learning", icon: "scales-3-line", tint: "var(--brand-yellow-tint)", color: "var(--brand-yellow-dark)",
-      title: "Pre-course self-assessment", from: "Learning & Development", time: "Today", unread: true,
-      body: `Rate yourself before ${p.title} — the same questions repeat afterwards to evidence your learning (Level 2).`,
-      cta: { label: "Start assessment", icon: "edit-line" } });
+    out.push({ id: "l2" + e.id, title: "Pre-course self-assessment", employeeName: "Learning & Development", createdAt: "Today", unread: true,
+      message: `Rate yourself before ${p.title} — the same questions repeat afterwards to evidence your learning (Level 2).` });
   });
-  // programs I coordinate
   get("ldPrograms").filter(p => p.coordinator === me).forEach(p => {
     const att = get("ldEnrollments").filter(e => e.programId === p.id);
     const going = att.filter(e => e.status === "Confirmed" || e.status === "Attended").length;
-    out.push({ id: "coord" + p.id, cat: "Events", icon: "user-star-line", tint: "var(--brand-yellow-tint)", color: "var(--brand-yellow-dark)",
-      title: "You coordinate this event", from: "Learning & Development", time: "This week", unread: false,
-      body: `You're the coordinator for ${p.title} (${p.startDate || "date TBC"} · ${p.venue || p.mode}). ${going} confirmed so far — manage attendance and the roster.`,
-      cta: { label: "Manage event", icon: "user-follow-line" } });
+    out.push({ id: "coord" + p.id, title: "You coordinate this event", employeeName: "Learning & Development", createdAt: "This week", unread: false,
+      message: `You're the coordinator for ${p.title} (${p.startDate || "date TBC"} · ${p.venue || p.mode}). ${going} confirmed so far — manage attendance and the roster.` });
   });
   out.push(
-    { id: "leave1", cat: "Approvals", icon: "checkbox-circle-line", tint: "var(--success-tint)", color: "var(--success-deep)", title: "Leave request approved", from: "Line Manager", time: "2h ago", unread: false, body: "Your annual leave request (3 days) has been approved. The dates are now reflected on your leave calendar." },
-    { id: "appr1", cat: "Approvals", icon: "user-follow-line", tint: "var(--brand-yellow-tint)", color: "var(--brand-yellow-dark)", title: "Action needed — appraisal sign-off", from: "Performance", time: "Yesterday", unread: true, body: "Your mid-year appraisal is ready for your acknowledgement. Review your ratings and sign off in Performance ▸ Appraisals." },
-    { id: "pay1", cat: "Updates", icon: "bank-card-line", tint: "var(--gray-100)", color: "var(--gray-600)", title: "Payslip available", from: "Payroll", time: "Yesterday", unread: true, body: "Your June 2026 payslip is now available. Open Documents ▸ Pay Slips to download it." },
-    { id: "ann1", cat: "Updates", icon: "notification-3-line", tint: "var(--brand-yellow-tint)", color: "var(--brand-yellow-dark)", title: "New announcement", from: "Internal Comms", time: "2d ago", unread: false, body: "A staff town hall has been scheduled for this Friday at 3:00 PM. See Announcements for the agenda and joining details." },
+    { id: "leave1", title: "Leave request approved", employeeName: "Line Manager", createdAt: "2h ago", unread: false, message: "Your annual leave request (3 days) has been approved. The dates are now reflected on your leave calendar." },
+    { id: "appr1", title: "Action needed — appraisal sign-off", employeeName: "Performance", createdAt: "Yesterday", unread: true, message: "Your mid-year appraisal is ready for your acknowledgement. Review your ratings and sign off in Performance ▸ Appraisals." },
+    { id: "pay1", title: "Payslip available", employeeName: "Payroll", createdAt: "Yesterday", unread: true, message: "Your June 2026 payslip is now available. Open Documents ▸ Pay Slips to download it." },
+    { id: "ann1", title: "New announcement", employeeName: "Internal Comms", createdAt: "2d ago", unread: false, message: "A staff town hall has been scheduled for this Friday at 3:00 PM. See Announcements for the agenda and joining details." },
   );
   return out;
 }
 
-const NT_TABS = ["All", "Unread", "Learning", "Events", "Approvals"];
-const NT_NO_USERS = "assets/illustrations/no-users.svg";
+const NT_TABS = ["All", "Unread"];
 const NT_NO_MESSAGE = "assets/illustrations/no-message.svg";
 
 function NotifRow({ n, active, onClick }) {
@@ -62,17 +52,16 @@ function NotifRow({ n, active, onClick }) {
       background: active ? "var(--gray-50)" : "#fff", cursor: "pointer", textAlign: "left", transition: "background .12s" }}
       onMouseEnter={e => { if (!active) e.currentTarget.style.background = "var(--gray-50)"; }}
       onMouseLeave={e => { if (!active) e.currentTarget.style.background = "#fff"; }}>
-      <span style={{ position: "relative", flex: "none" }}>
-        <span style={{ width: 40, height: 40, borderRadius: "50%", background: n.tint, display: "grid", placeItems: "center" }}><Icon name={n.icon} size={19} color={n.color} /></span>
-        {n.unread && <span style={{ position: "absolute", top: 0, right: 0, width: 11, height: 11, borderRadius: "50%", background: "var(--brand-yellow-dark)", border: "2px solid #fff" }} />}
+      <span style={{ flex: "none", width: 8, display: "flex", justifyContent: "center", paddingTop: 6 }}>
+        {n.unread && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--brand-yellow-dark)" }} />}
       </span>
       <span style={{ flex: 1, minWidth: 0 }}>
         <span style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, marginBottom: 2 }}>
-          <span style={{ fontFamily: "var(--font-ui)", fontWeight: n.unread ? 700 : 600, fontSize: 13.5, color: "var(--gray-900)", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{n.title}</span>
-          <span style={{ fontFamily: "var(--font-ui)", fontSize: 11, color: "var(--gray-400)", flex: "none" }}>{n.time}</span>
+          <span style={{ fontFamily: "var(--font-ui)", fontWeight: n.unread ? 400 : 500, fontSize: 13.5, color: "var(--gray-900)", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{n.title}</span>
+          <span style={{ fontFamily: "var(--font-ui)", fontSize: 11, color: "var(--gray-400)", flex: "none" }}>{n.createdAt}</span>
         </span>
-        <span style={{ display: "block", fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-500)", lineHeight: 1.45, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{n.body}</span>
-        <span style={{ display: "block", fontFamily: "var(--font-ui)", fontSize: 11, color: "var(--gray-400)", marginTop: 4 }}>{n.from}</span>
+        <span style={{ display: "block", fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-500)", lineHeight: 1.45, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{n.message}</span>
+        <span style={{ display: "block", fontFamily: "var(--font-ui)", fontSize: 11, color: "var(--gray-400)", marginTop: 4 }}>{n.employeeName}</span>
       </span>
     </button>
   );
@@ -86,31 +75,28 @@ function NotificationsPage({ onToast, onActiveChange }) {
   React.useEffect(() => { onActiveChange && onActiveChange(activeId != null); }, [activeId]);
   React.useEffect(() => () => { onActiveChange && onActiveChange(false); }, []);
 
-  const filtered = items.filter(n => tab === "All" ? true : tab === "Unread" ? n.unread : n.cat === tab);
+  const filtered = items.filter(n => tab === "All" ? true : n.unread);
   const active = items.find(n => n.id === activeId) || null;
   const unreadCount = items.filter(n => n.unread).length;
   const open = (n) => { setActiveId(n.id); setItems(list => list.map(x => x.id === n.id ? { ...x, unread: false } : x)); };
-  const markAllRead = () => { setItems(list => list.map(x => ({ ...x, unread: false }))); onToast && onToast("All notifications marked read", { tone: "success" }); };
+  const PAGE_SIZE = 8;
+  const [page, setPage] = useNt(1);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const shown = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   return (
     <div style={{ height: "100%" }}>
       <div className="nt-shell" style={{ overflow: "hidden", display: "flex", height: "100%", background: "#fff" }}>
         {/* LEFT RAIL — solid header + tabs + list */}
         <div className="nt-rail">
-          <div style={{ position: "relative", padding: "22px 22px", borderBottom: "1px solid var(--divider)", background: "var(--primary-50, #FFF9E0)", overflow: "hidden" }}>
-            <svg viewBox="0 0 220 120" preserveAspectRatio="none" style={{ position: "absolute", top: 0, right: 0, width: 220, height: "100%", pointerEvents: "none" }}>
-              <path d="M120 0 C150 30, 170 50, 230 40" fill="none" stroke="var(--primary)" strokeWidth="1.5" opacity="0.55" />
-              <path d="M140 0 C170 34, 192 56, 250 48" fill="none" stroke="var(--primary)" strokeWidth="1.5" opacity="0.4" />
-              <path d="M160 -6 C190 30, 214 54, 268 44" fill="none" stroke="var(--primary)" strokeWidth="1.5" opacity="0.28" />
-            </svg>
-            <div style={{ position: "relative", zIndex: 1 }}>
-              <div style={{ fontFamily: "var(--font-head)", fontWeight: 800, fontSize: 22, color: "var(--gray-900)", letterSpacing: "-.01em" }}>Notifications</div>
-              <div style={{ fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-500)", marginTop: 3 }}>Approvals, learning and updates</div>
-            </div>
+          <div style={{ padding: "20px 20px", borderBottom: "1px solid var(--divider)", background: "var(--primary-50, #FFF9E0)" }}>
+            <div style={{ fontFamily: "var(--font-head)", fontWeight: 800, fontSize: 20, color: "var(--gray-900)", letterSpacing: "-.01em" }}>Notifications</div>
+            <div style={{ fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-500)", marginTop: 2 }}>Notifications addressed to you for this organisation</div>
           </div>
           <div style={{ padding: "10px 14px", borderBottom: "1px solid var(--divider)", background: "#fff", display: "flex", alignItems: "center", gap: 8 }}>
             <div style={{ flex: 1, minWidth: 0, overflowX: "auto" }}>
-              <UI.Tabs value={tab} onValueChange={(t) => { setTab(t); setActiveId(null); }}>
+              <UI.Tabs value={tab} onValueChange={(t) => { setTab(t); setActiveId(null); setPage(1); }}>
                 <UI.TabsList>
                   {NT_TABS.map(t => (
                     <UI.TabsTrigger key={t} value={t}>{t}{t === "Unread" && unreadCount > 0 ? ` (${unreadCount})` : ""}</UI.TabsTrigger>
@@ -118,48 +104,45 @@ function NotificationsPage({ onToast, onActiveChange }) {
                 </UI.TabsList>
               </UI.Tabs>
             </div>
-            <button type="button" onClick={markAllRead} title="Mark all read" style={{ flex: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, borderRadius: 8, border: "1px solid var(--border)", background: "#fff", cursor: "pointer", color: "var(--gray-500)" }}><Icon name="check-double-line" size={18} color="var(--gray-500)" /></button>
           </div>
           <div style={{ flex: 1, overflowY: "auto", background: "#fff" }}>
-            {filtered.length === 0
-              ? <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "56px 24px", textAlign: "center" }}>
-                  <img src={NT_NO_USERS} alt="" style={{ width: 92, height: "auto", marginBottom: 16 }} />
-                  <div style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)", maxWidth: 200, lineHeight: 1.5 }}>No notifications in this view</div>
-                </div>
-              : filtered.map(n => <NotifRow key={n.id} n={n} active={n.id === activeId} onClick={() => open(n)} />)}
+            {shown.length === 0
+              ? <div style={{ padding: "56px 24px", textAlign: "center", fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-400)" }}>No notifications in this view.</div>
+              : shown.map(n => <NotifRow key={n.id} n={n} active={n.id === activeId} onClick={() => open(n)} />)}
           </div>
+          {totalPages > 1 && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid var(--divider)", background: "#fff", padding: "6px 12px", flex: "none" }}>
+              <button type="button" disabled={safePage <= 1} onClick={() => setPage(p => Math.max(1, p - 1))} style={{ display: "inline-flex", alignItems: "center", gap: 4, border: 0, background: "none", borderRadius: 8, padding: "6px 10px", cursor: safePage <= 1 ? "default" : "pointer", opacity: safePage <= 1 ? 0.45 : 1, fontFamily: "var(--font-ui)", fontSize: 13, fontWeight: 500, color: "var(--gray-700)" }}><Icon name="arrow-left-s-line" size={16} color="var(--gray-700)" />Prev</button>
+              <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>Page {safePage} of {totalPages}</span>
+              <button type="button" disabled={safePage >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} style={{ display: "inline-flex", alignItems: "center", gap: 4, border: 0, background: "none", borderRadius: 8, padding: "6px 10px", cursor: safePage >= totalPages ? "default" : "pointer", opacity: safePage >= totalPages ? 0.45 : 1, fontFamily: "var(--font-ui)", fontSize: 13, fontWeight: 500, color: "var(--gray-700)" }}>Next<Icon name="arrow-right-s-line" size={16} color="var(--gray-700)" /></button>
+            </div>
+          )}
         </div>
 
-        {/* RIGHT PANE — email-style reading view */}
+        {/* RIGHT PANE — reading view */}
         <div className={"nt-read" + (active ? " open" : "")}>
           {active ? (
             <React.Fragment>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 20px", borderBottom: "1px solid var(--divider)", background: "#fff", flex: "none" }}>
-                <button type="button" onClick={() => setActiveId(null)} className="nt-back" style={{ border: 0, background: "none", cursor: "pointer", display: "none", padding: 4 }}><Icon name="arrow-left-line" size={20} color="var(--gray-600)" /></button>
-                <span className="bh-chip" style={{ color: active.color, background: active.tint }}>{active.cat}</span>
-                <span style={{ flex: 1 }} />
-                <button type="button" title="Archive" style={{ border: 0, background: "none", cursor: "pointer", padding: 6, borderRadius: 8 }}><Icon name="archive-line" size={18} color="var(--gray-400)" /></button>
+              <div className="nt-backbar" style={{ display: "none", alignItems: "center", gap: 8, padding: "10px 16px", borderBottom: "1px solid var(--divider)", background: "#fff", flex: "none" }}>
+                <button type="button" onClick={() => setActiveId(null)} aria-label="Back to list" style={{ border: 0, background: "none", cursor: "pointer", padding: 6, borderRadius: 8, display: "inline-flex" }}><Icon name="arrow-left-line" size={20} color="var(--gray-600)" /></button>
+                <span style={{ fontFamily: "var(--font-ui)", fontSize: 13.5, fontWeight: 500, color: "var(--gray-700)" }}>Back</span>
               </div>
               <div style={{ flex: 1, overflowY: "auto" }}>
                 <div style={{ padding: "24px 28px" }}>
-                  <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 22, color: "var(--gray-900)", lineHeight: 1.3 }}>{active.title}</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18 }}>
-                    <span style={{ width: 44, height: 44, borderRadius: "50%", background: active.tint, display: "grid", placeItems: "center", flex: "none" }}><Icon name={active.icon} size={21} color={active.color} /></span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 14, color: "var(--gray-900)" }}>{active.from}</div>
-                      <div style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>to me · {active.time}</div>
-                    </div>
+                  <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 20, color: "var(--gray-900)", lineHeight: 1.35 }}>{active.title}</div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginTop: 10 }}>
+                    <span style={{ fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 14, color: "var(--gray-900)" }}>{active.employeeName}</span>
+                    <span style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>to me · {active.createdAt}</span>
                   </div>
-                  <div style={{ height: 1, background: "var(--divider)", margin: "22px 0" }} />
-                  <div style={{ fontFamily: "var(--font-ui)", fontSize: 15, color: "var(--gray-700)", lineHeight: 1.75, maxWidth: 640 }}>{active.body}</div>
-                  {active.cta && <div style={{ marginTop: 26 }}><Button variant="primary" icon={active.cta.icon} onClick={() => onToast && onToast(active.cta.label, {})}>{active.cta.label}</Button></div>}
+                  <div style={{ height: 1, background: "var(--divider)", margin: "20px 0" }} />
+                  <div style={{ fontFamily: "var(--font-ui)", fontSize: 15, color: "var(--gray-700)", lineHeight: 1.85, maxWidth: 672, whiteSpace: "pre-line" }}>{active.message}</div>
                 </div>
               </div>
             </React.Fragment>
           ) : (
             <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 40, textAlign: "center", background: "#fff" }}>
-              <img src={NT_NO_MESSAGE} alt="" style={{ width: 150, height: "auto", marginBottom: 24 }} />
-              <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 18, color: "var(--gray-700)" }}>Select a notification</div>
+              <img src={NT_NO_MESSAGE} alt="" style={{ width: 80, height: "auto", marginBottom: 12 }} />
+              <div style={{ fontFamily: "var(--font-head)", fontWeight: 500, fontSize: 18, color: "var(--gray-700)" }}>Select a notification</div>
               <div style={{ fontFamily: "var(--font-ui)", fontSize: 14, color: "var(--gray-400)", marginTop: 6, lineHeight: 1.6, maxWidth: 320 }}>Choose an item from the list to read it here.</div>
             </div>
           )}
@@ -173,7 +156,7 @@ function NotificationsPage({ onToast, onActiveChange }) {
           .nt-read{ position:fixed; inset:0; transform:translateX(100%); transition:transform .25s ease; z-index:300; }
           .nt-read.open{ transform:none; }
           .nt-shell:has(.nt-read.open) .nt-rail{ display:none; }
-          .nt-read .nt-back{ display:flex !important; }
+          .nt-read .nt-backbar{ display:flex !important; }
         }
       `}</style>
     </div>

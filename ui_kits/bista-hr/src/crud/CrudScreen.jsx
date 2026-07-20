@@ -65,7 +65,15 @@ function CrudScreen({ config, rows, onCreate, onEdit, onArchive, onMenuAction, c
                             ? <StatusBadge variant={String(r[c.key] || "").toLowerCase()} text={r[c.key]} size="sm" />
                             : c.type === "count"
                               ? <span className="bh-chip">{(r[c.key] || []).length}</span>
-                              : (r[c.key] ?? "") !== "" ? r[c.key] : (c.fallback ? <span style={{ color: "var(--gray-400)" }}>{c.fallback}</span> : r[c.key])}
+                              : c.type === "missing-tag"
+                                ? ((r[c.key] ?? "") !== "" ? r[c.key]
+                                  : <button type="button" onClick={() => canEdit && onEdit(r)}
+                                      style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "3px 10px", borderRadius: 999,
+                                        border: "1px dashed var(--brand-yellow-dark)", background: "var(--warning-tint)", color: "var(--warning-deep)",
+                                        fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 12, whiteSpace: "nowrap", cursor: canEdit ? "pointer" : "default" }}>
+                                      <Icon name="add-line" size={13} color="var(--warning-deep)" />{c.missingLabel || "Add"}
+                                    </button>)
+                                : (r[c.key] ?? "") !== "" ? r[c.key] : (c.fallback ? <span style={{ color: "var(--gray-400)" }}>{c.fallback}</span> : r[c.key])}
                       </td>
                     ))}
                     {!config.hideStatus && <td><StatusDot active={r.active} /></td>}

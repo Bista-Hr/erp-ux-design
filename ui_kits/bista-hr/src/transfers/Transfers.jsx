@@ -31,7 +31,11 @@ const TRANSFER_SEED = [
     reason: "Workforce realignment to strengthen the Operations team at the Ridge branch.",
     documents: ["https://files.bistasol.com/transfers/Transfer-Recommendation.pdf", "https://files.bistasol.com/transfers/Handover-Checklist.docx"],
     approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: "5/16/2026, 2:08:34 PM",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [
+      { id: "tr1-1", action: 0, description: "Inter-Departmental transfer submitted — Finance → Operations, effective Jun 01, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-14T10:20:00Z", justificationReason: "Workforce realignment to strengthen the Operations team at the Ridge branch.", staffId: "EMP-18330" },
+      { id: "tr1-2", action: 3, description: "Transfer approved", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-05-16T14:08:00Z", justificationReason: null, staffId: "EMP-18330" },
+    ] },
   { id: 2, employees: ["Abass Abdul Mumin"], staffIds: "EMP-17431", classification: "Intra-Departmental",
     previousLocation: "Central Zones", newLocation: "West Zone", previousDept: "Operations", newDept: "Operations",
     previousUnit: "Branch Support", currentTitle: "Branch Support", newTitle: "",
@@ -40,7 +44,11 @@ const TRANSFER_SEED = [
     reason: "Relocation to cover staffing gap at the Takoradi branch within the same department.",
     documents: ["https://files.bistasol.com/transfers/Approval-Memo.pdf"],
     approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: "5/12/2026, 10:22:10 AM",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [
+      { id: "tr2-1", action: 0, description: "Intra-Departmental transfer submitted — Operations → Operations, effective May 28, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-10T09:00:00Z", justificationReason: "Relocation to cover staffing gap at the Takoradi branch within the same department.", staffId: "EMP-17431" },
+      { id: "tr2-2", action: 3, description: "Transfer approved", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-05-12T10:22:00Z", justificationReason: null, staffId: "EMP-17431" },
+    ] },
   { id: 3, employees: ["Aba Odum"], staffIds: "EMP-18389", classification: "Inter-Departmental",
     previousLocation: "Accra West", newLocation: "North Zone", previousDept: "Information Technology", newDept: "Operations",
     previousUnit: "Data & Analytics", currentTitle: "Data Scientist", newTitle: "Analytics Lead",
@@ -49,7 +57,8 @@ const TRANSFER_SEED = [
     reason: "Cross-functional move to embed analytics capability within the Operations department.",
     documents: ["https://files.bistasol.com/transfers/Business-Case.pdf"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [{ id: "tr3-1", action: 0, description: "Inter-Departmental transfer submitted — Information Technology → Operations, effective Jul 08, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-18T11:30:00Z", justificationReason: "Cross-functional move to embed analytics capability within the Operations department.", staffId: "EMP-18389" }] },
   { id: 4, employees: ["Franklin Brobbey"], staffIds: "EMP-10231", classification: "Intra-Departmental",
     previousLocation: "South Zone", newLocation: "West Zone", previousDept: "Finance", newDept: "Finance",
     previousUnit: "Accounts", currentTitle: "Accountant", newTitle: "",
@@ -58,7 +67,8 @@ const TRANSFER_SEED = [
     reason: "Employee request to transfer closer to family; role available at the Kumasi branch.",
     documents: ["https://files.bistasol.com/transfers/Employee-Request.docx", "https://files.bistasol.com/transfers/ID-Verification.jpg"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [{ id: "tr4-1", action: 0, description: "Intra-Departmental transfer submitted — Finance → Finance, effective May 28, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-09T08:15:00Z", justificationReason: "Employee request to transfer closer to family; role available at the Kumasi branch.", staffId: "EMP-10231" }] },
   { id: 5, employees: ["Samuel Boateng"], staffIds: "EMP-11002", classification: "Inter-Departmental",
     previousLocation: "West Zone", newLocation: "Central Zones", previousDept: "Marketing", newDept: "Operations",
     previousUnit: "Sales", currentTitle: "Sales Officer", newTitle: "Retail Officer",
@@ -67,23 +77,25 @@ const TRANSFER_SEED = [
     reason: "Proposed move to Retail Operations; deferred pending replacement at current branch.",
     documents: ["https://files.bistasol.com/transfers/Transfer-Proposal.pdf"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM" },
+    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM",
+    rejectionReason: "Deferred until a replacement Sales Officer is confirmed for the Kumasi branch — the branch cannot run below minimum staffing. Revise the effective date once the replacement's start date is known and resubmit.",
+    audit: [
+      { id: "tr5-1", action: 0, description: "Inter-Departmental transfer submitted — Marketing → Operations, effective Apr 30, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-04-12T10:05:00Z", justificationReason: "Proposed move to Retail Operations to broaden branch-level experience.", staffId: "EMP-11002" },
+      { id: "tr5-2", action: 4, description: "Transfer rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-04-18T09:14:00Z", justificationReason: "Deferred until a replacement Sales Officer is confirmed for the Kumasi branch — the branch cannot run below minimum staffing. Revise the effective date once the replacement's start date is known and resubmit.", staffId: "EMP-11002" },
+    ] },
 ];
 
 /* ---------- requests list (approval queue) ---------- */
 function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
   const [menu, setMenu] = useTr(null);
-  const TR_BLANK = { status: "", classification: "", newDept: "", newLocation: "", grade: "" };
+  const TR_BLANK = { status: "", newDept: "" };
   const [draft, setDraft] = useTr(TR_BLANK);
   const [applied, setApplied] = useTr(TR_BLANK);
   const optsOf = (key) => [...new Set(rows.map(r => r[key]).filter(Boolean))].sort();
   const shown = rows.filter(r => {
     if (q !== "" && !(r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newLocation.toLowerCase().includes(q.toLowerCase()))) return false;
     if (applied.status && r.status !== applied.status) return false;
-    if (applied.classification && r.classification !== applied.classification) return false;
     if (applied.newDept && r.newDept !== applied.newDept) return false;
-    if (applied.newLocation && r.newLocation !== applied.newLocation) return false;
-    if (applied.grade && r.grade !== applied.grade) return false;
     return true;
   });
   const pg = usePaged(shown, 10);
@@ -96,23 +108,20 @@ function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setS
       <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
       <div className="card" style={{ padding: 20 }}>
         <div className="bh-tablebox">
-        <UI.FilterBar left={<Segmented items={["Requests", "Approvals"]} active={segment} onChange={setSegment} />}
+        <UI.FilterBar left={<Segmented items={["Request", "Approvals"]} active={segment} onChange={setSegment} />}
           search={q} onSearch={setQ} searchPlaceholder="Search transfers…"
           filters={[
             { label: "Status", node: <Combobox value={draft.status} onChange={v => setDraft(s => ({ ...s, status: v }))} options={["Pending", "Approved", "Declined"]} placeholder="All statuses" /> },
-            { label: "Classification", node: <Combobox value={draft.classification} onChange={v => setDraft(s => ({ ...s, classification: v }))} options={TRANSFER_CLASSES} placeholder="All classifications" /> },
             { label: "Department", node: <Combobox value={draft.newDept} onChange={v => setDraft(s => ({ ...s, newDept: v }))} options={optsOf("newDept")} placeholder="All departments" /> },
-            { label: "Zone", node: <Combobox value={draft.newLocation} onChange={v => setDraft(s => ({ ...s, newLocation: v }))} options={optsOf("newLocation")} placeholder="All zones" /> },
-            { label: "Job Grade", node: <Combobox value={draft.grade} onChange={v => setDraft(s => ({ ...s, grade: v }))} options={optsOf("grade")} placeholder="All grades" /> },
           ]}
           onReset={() => { setDraft(TR_BLANK); setApplied(TR_BLANK); }}
-          onApply={() => setApplied(draft)} />
+          onApply={() => setApplied(draft)} activeCount={Object.values(applied).filter(Boolean).length} />
         {rows.length === 0
           ? <EmptyState title="No transfers yet" subtitle="Select staff from the Transfer tab to raise a transfer." />
           : <table className="bh">
               <thead><tr>
                 <th style={{ width: 44 }}><Checkbox checked={allPendingSel} onChange={toggleAll} /></th>
-                <th>Employee Name</th><th>Zone</th><th>Effective Date</th><th>Classification</th><th>Status</th><th>Approved By</th><th style={{ width: 48 }}></th>
+                <th>Employee Name</th><th>Department</th><th>Classification</th><th>Effective Date</th><th>Status</th><th>Approved By</th><th style={{ width: 48 }}></th>
               </tr></thead>
               <tbody>
                 {pg.pageItems.map(r => {
@@ -132,20 +141,22 @@ function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setS
                     </td>
                     <td>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                        <span style={{ color: "var(--gray-500)" }}>{r.previousLocation}</span>
+                        <span style={{ color: "var(--gray-500)" }}>{r.previousDept}</span>
                         <Icon name="arrow-right-line" size={15} color="var(--gray-400)" />
-                        <span style={{ color: "var(--gray-900)", fontWeight: 500 }}>{r.newLocation}</span>
+                        <span style={{ color: "var(--gray-900)", fontWeight: 500 }}>{r.newDept}</span>
                       </span>
                     </td>
-                    <td>{r.effectiveDate}</td>
                     <td><span style={{ fontSize: 13, color: "var(--gray-700)" }}>{r.classification}</span></td>
+                    <td>{r.effectiveDate}</td>
                     <td><StatusBadge variant={TR_STATUS_VARIANT[r.status]} text={r.status} size="sm" /></td>
                     <td>{r.approvedBy && r.approvedBy !== "N/A" ? r.approvedBy : "—"}</td>
                     <td style={{ textAlign: "right" }} onClick={e => e.stopPropagation()}>
-                      <UI.RowActions actions={[
+                      <UI.RowActions forceMenu actions={r.status !== "Approved" ? [
                         { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
                         { label: "Edit Transfer", short: "Edit", icon: "edit-2-line", onClick: () => onEdit(r) },
                         { label: "Archive Transfer", short: "Archive", icon: "archive-line", danger: true, onClick: () => onArchive(r) },
+                      ] : [
+                        { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
                       ]} />
                     </td>
                   </tr>
@@ -165,14 +176,14 @@ function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setS
 function TransferRoster({ q, setQ, segment, setSegment, onCreate, title, subtitle, headerAction }) {
   const rows = window.EMPLOYEE_LIST.map(e => ({
     id: e.id, name: e.name, employeeNumber: e.staffId, jobTitle: e.title,
-    jobGrade: e.grade, department: e.dept, unit: e.unit, branch: e.branch, zone: e.zone, profilePictureUrl: "",
+    jobGrade: e.grade, department: e.dept, unit: e.unit, branch: e.branch, zone: e.zone, profilePictureUrl: e.profilePictureUrl || "",
   }));
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
       <div className="card" style={{ padding: 20 }}>
         <div className="bh-tablebox">
-        <UI.FilterBar left={<Segmented items={["Requests", "Approvals"]} active={segment} onChange={setSegment} />}
+        <UI.FilterBar left={<Segmented items={["Request", "Approvals"]} active={segment} onChange={setSegment} />}
           search={q} onSearch={setQ} searchPlaceholder="Search staff…" />
         <EmployeeSelectionRoster employees={rows} itemLabel="staff"
           actionLabel="Create Transfer" onProceed={onCreate} searchQuery={q} />
@@ -188,132 +199,94 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
   const byId = window.EMP_BY_ID;
   const EMP = window.EMPLOYEE_LIST;
   const isEdit = !!initialData;
+  const isAssignMode = !initialData && (initialEmployees || []).length > 0;
   const initIds = initialData ? (initialData.employees || []).map(window.firstIdForName).filter(Boolean) : (initialEmployees || []);
   const [employees, setEmployees] = useTr(initIds);
   const [form, setForm] = useTr({
     classification: initialData?.classification || "", newLocation: initialData?.newLocation || "",
     newDepartment: initialData?.newDept || "", newUnit: initialData?.newUnit || "", newJobTitle: initialData?.newTitle || "",
     newGrade: initialData?.grade || "", newNotch: initialData?.notch || "",
+    lineManager: initialData?.lineManagerId || "",
     effectiveDate: initialData?.effectiveDate || "", reason: initialData?.reason || "" });
   const [docs, setDocs] = useTr({ keptUrls: initialData?.documents || [], newFiles: [] });
-  const [mails, setMails] = useTr([]);
+  const [notifyIds, setNotifyIds] = useTr(initialData?.notifyIds || []);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
 
   const primary = employees[0] ? byId[employees[0]] : null;
-  // A job title belongs to a department, so an intra-departmental transfer is only valid when
-  // every selected employee is in the SAME department. If a mix is selected, force Inter-
-  // Departmental and surface an error.
-  const deptList = [...new Set(employees.map(id => (byId[id] || {}).dept).filter(Boolean))];
-  const mixedDepts = deptList.length > 1;
-  useTrEffect(() => {
-    // A department conflict makes intra-departmental impossible — force Inter-Departmental whether
-    // the field was empty or set to Intra, so the banner's claim always matches the actual value.
-    if (mixedDepts && form.classification !== "Inter-Departmental") {
-      setForm(s => ({ ...s, classification: "Inter-Departmental", newJobTitle: "" }));
-    }
-  }, [mixedDepts, form.classification]);
-  // Cascade (mirrors Promotions / Job Title): the effective department narrows the Job Title list.
-  // Job title and job grade are picked INDEPENDENTLY — a title is not always tied to a grade.
-  // For an intra-departmental transfer the department is unchanged, so titles come from the
-  // employee's department.
-  const effDept = form.classification === "Intra-Departmental" ? (primary && primary.dept) || "" : form.newDepartment;
-  const titleOptions = window.jobTitlesForDepartment(effDept);
-  const selectTitle = (v) => setForm(s => { const info = window.jobTitleInfo(v) || {}; const newGrade = info.grade || s.newGrade; return { ...s, newJobTitle: v, newGrade, newNotch: newGrade === s.newGrade ? s.newNotch : "" }; });
+  // Job title, grade and department are INDEPENDENT picks — titles are not tied to departments
+  // and picking a title never auto-populates the grade. The DesignationCombobox's built-in
+  // department filter only narrows its list.
+  const selectTitle = (v) => set("newJobTitle", v);
   const selectGrade = (v) => setForm(s => ({ ...s, newGrade: v, newNotch: "" }));
-  const selectNewDept = (v) => setForm(s => ({ ...s, newDepartment: v, newJobTitle: "" }));
-  const notchOptions = window.notchesForGrade(form.newGrade);
-  // Salary + allowances auto-fetched from Payroll once the title resolves grade + notch.
-  const payroll = window.fetchPayroll(form.newGrade, form.newNotch);
-  const salary = payroll ? payroll.salary : "";
-  const allowances = payroll ? payroll.allowances : [];
+  const selectNewDept = (v) => set("newDepartment", v);
+  // The selected New Zone filters the Unit/Branch list — changing zone clears a mismatched pick.
+  const selectZone = (v) => setForm(s => ({ ...s, newLocation: v, newUnit: "" }));
+  const notchOptions = window.notchSalaryOptions(form.newGrade);
+  // Salary is resolved from (grade, notch) into a read-only field — same as Promotions/Job Title.
+  const trPayroll = window.fetchPayroll(form.newGrade, (form.newNotch || "").split(" — ")[0]);
+  const trSalary = trPayroll ? trPayroll.salary : "";
   const staffIds = employees.join(", ");
-  const autoItems = primary ? [
-    { label: "Staff ID(s)", value: staffIds },
-    { label: "Current Job Title", value: primary.title },
-    { label: "Current Grade", value: primary.grade },
-    { label: "Current Department", value: primary.dept },
-    { label: "Current Unit/Branch", value: [primary.unit, primary.branch].filter(Boolean).join(" · ") || "—" },
-    { label: "Current Zone", value: primary.zone },
-  ] : [];
 
-  const valid = employees.length > 0 && form.classification && form.newLocation && form.effectiveDate && form.reason.trim();
+  const hasDocs = (docs.keptUrls || []).length + (docs.newFiles || []).length > 0;
+  const valid = employees.length > 0 && form.classification && form.newLocation && form.newUnit && form.lineManager && form.effectiveDate
+    && (notchOptions.length === 0 || form.newNotch) && form.reason.trim() && hasDocs;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <PageHeader title={isEdit ? "Edit Transfer" : "Create Transfer"}
-        subtitle={isEdit ? "Update this transfer record." : "Select staff, set the new posting and route for approval."} />
+      <PageHeader title={isAssignMode ? "Assign Transfer" : isEdit ? "Edit Transfer" : "Create Transfer"}
+        subtitle={isAssignMode ? "Review the selected employees, then fill in the transfer details."
+          : isEdit ? "Update the transfer details." : "Select staff, set the new posting and route for approval."} />
 
       <FormCard title="Employee Information">
-        <Field label="Employee(s)"><EmployeeAddSelect value={employees} onChange={setEmployees} employees={EMP} /></Field>
-        {primary && employees.length === 1 && (
-          <div>
-            <div style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)", marginBottom: 6 }}>Auto-populated from employee record</div>
-            <DetailPanel items={autoItems} tint="gray" cols={3} />
-          </div>
-        )}
+        <Field label="Employee(s)"><EmployeeAddSelect value={employees} onChange={setEmployees} employees={EMP} disabled={isEdit} /></Field>
       </FormCard>
 
       <FormCard title="Transfer Details">
-        {mixedDepts && (
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 10, background: "#FEF3F2", border: "1px solid #FECDCA", borderRadius: "var(--radius-md)", padding: "10px 14px" }}>
-            <Icon name="error-warning-line" size={18} color="#D92D20" style={{ marginTop: 1, flexShrink: 0 }} />
-            <span style={{ fontFamily: "var(--font-ui)", fontSize: 13, color: "#B42318", lineHeight: 1.45 }}>
-              Selected employees belong to different departments ({deptList.join(", ")}). An intra-departmental transfer requires a single department, so this has been set to <b>Inter-Departmental</b>.
-            </span>
-          </div>
-        )}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Transfer Classification"><Combobox value={form.classification} disabled={mixedDepts} onChange={v => setForm(s => ({ ...s, classification: v, newDepartment: v === "Intra-Departmental" ? "" : s.newDepartment, newJobTitle: "" }))} options={TRANSFER_CLASSES} placeholder="Select classification" /></Field>
-          <Field label="New Zone"><Combobox value={form.newLocation} onChange={v => set("newLocation", v)} options={LK.zones} placeholder="Select new zone" /></Field>
-        </div>
-        {/* Department + Job Title always sit side by side (cascade pair) */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          {form.classification === "Intra-Departmental"
-            ? <Field label="Department">
-                <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
-                  <Icon name="building-line" size={18} style={{ color: "var(--icon-default)" }} />
-                  <input value={effDept} readOnly placeholder="Current department (unchanged)" style={{ color: effDept ? "var(--gray-900)" : "var(--gray-400)" }} />
-                </div>
-              </Field>
-            : <Field label="New Department"><Combobox value={form.newDepartment} onChange={selectNewDept} options={LK.departments} placeholder="Select new department" /></Field>}
-          <Field label="New Job Title" optional><Combobox value={form.newJobTitle} onChange={selectTitle} options={titleOptions} placeholder={effDept ? "Select new job title (optional)" : (form.classification === "Intra-Departmental" ? "Select employee(s) first" : "Select a department first")} noDataText={form.classification === "Intra-Departmental" ? "Select employee(s) first." : "Select a department first."} /></Field>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="New Job Grade" optional><Combobox value={form.newGrade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
-          <Field label="Notch" optional><Combobox value={form.newNotch} onChange={v => set("newNotch", v)} options={notchOptions} icon="stack-line" placeholder={form.newGrade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Unit/Branch" optional><Combobox value={form.newUnit} onChange={v => set("newUnit", v)} options={LK.orgUnits || []} placeholder="Select unit / branch" /></Field>
-          <Field label="Proposed Effective Transfer Date"><UI.DatePicker value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
+          <Field label="Transfer Classification"><Combobox value={form.classification} onChange={v => set("classification", v)} options={TRANSFER_CLASSES} placeholder="Select classification" /></Field>
+          <Field label="New Zone"><Combobox value={form.newLocation} onChange={selectZone} options={LK.zones} placeholder="Select zone" noDataText="No zone found" /></Field>
+          <Field label="New Organizational Unit/Branch"><UnitBranchCombobox value={form.newUnit} onChange={v => set("newUnit", v)} zone={form.newLocation} onZoneChange={selectZone} zones={LK.zones} /></Field>
+          <Field label="New Department"><Combobox value={form.newDepartment} onChange={selectNewDept} options={LK.departments} placeholder="Select new department" noDataText="No department found" /></Field>
+          <Field label="New Job Title" optional><DesignationCombobox value={form.newJobTitle} onChange={selectTitle} /></Field>
+          <Field label="New Job Grade"><Combobox value={form.newGrade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
+          <Field label="Notch"><Combobox value={form.newNotch} onChange={v => set("newNotch", v)} options={notchOptions} icon="stack-line" placeholder={form.newGrade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
+          <Field label="Salary">
+            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
+              <Icon name="money-dollar-circle-line" size={18} style={{ color: "var(--icon-default)" }} />
+              <input value={trSalary ? `${trSalary} / month` : ""} readOnly placeholder="Auto from grade & notch" style={{ color: trSalary ? "var(--gray-900)" : "var(--gray-400)" }} />
+            </div>
+          </Field>
+          <Field label="New Line Manager"><LineManagerField value={form.lineManager} onChange={v => set("lineManager", v)} employees={EMP} /></Field>
+          <Field label="Proposed Effective Transfer Date"><UI.DatePicker weekendRule value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
         </div>
       </FormCard>
 
-      <ResolvedRoleBenefits grade={form.newGrade} salary={salary} allowances={allowances} />
-
-      <FormCard title="Justification & Documents">
-        <Field label="Reason / Justification"><UI.RichText value={form.reason} onChange={v => set("reason", v)} placeholder="Explain the business justification for this transfer…" /></Field>
+      <FormCard title="Comments & Documents">
+        <Field label="Comments"><UI.RichText value={form.reason} onChange={v => set("reason", v)} placeholder="Add comments for this transfer…" /></Field>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Supporting Documents</label>
           <SupportingDocuments existingUrls={initialData?.documents || []} isEditMode={isEdit} onChange={setDocs} maxFiles={8} maxSizeMB={8} />
+          {!hasDocs && <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>At least one supporting document is required before this transfer can be submitted.</span>}
         </div>
       </FormCard>
 
       <FormCard title="Notification">
-        <EmailInputList label="Notify Stakeholders" description="Department / stakeholder mails" placeholder="eg. financedept@starret.com"
-          emails={mails} onChange={setMails} />
+        <NotifyPeopleField value={notifyIds} onChange={setNotifyIds} employees={EMP} />
       </FormCard>
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit({ employees: employees.map(id => (byId[id] || {}).name || id), employeeIds: employees, primary, staffIds, ...form, docs, notifyMails: mails })}>{isEdit ? "Save Changes" : "Create Transfer"}</Button>
+        <Button variant="primary" icon="exchange-line" disabled={!valid} onClick={() => valid && onSubmit({ employees: employees.map(id => (byId[id] || {}).name || id), employeeIds: employees, primary, staffIds, ...form, docs, notifyIds })}>{isAssignMode ? `Assign Transfer${employees.length !== 1 ? "s" : ""}` : isEdit ? "Save Changes" : "Create Transfer"}</Button>
       </div>
     </div>
   );
 }
 
 /* ---------- details — "Transfer Approval" ---------- */
-function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
+function TransferDetails({ transfer, onApprove, onReject, onEdit, onAccept, onUpdate, onToast }) {
   const t = transfer;
+  const [rejectOpen, setRejectOpen] = useTr(false);
+  const [trailOpen, setTrailOpen] = useTr(false);
   const info = [
     { label: "Employee Name", value: t.employees.join(", ") },
     { label: "Transfer Classification", value: t.classification },
@@ -325,6 +298,7 @@ function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
     { label: "Current Job Title", value: t.currentTitle },
     { label: "New Job Title", value: t.newTitle || "—" },
     { label: "Job Grade", value: t.grade },
+    { label: "New Line Manager", value: t.lineManager || "—" },
     { label: "Effective Date", value: t.effectiveDate },
   ];
   const approvalInfo = [
@@ -338,12 +312,15 @@ function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
         actions={
           <React.Fragment>
             <StatusBadge variant={TR_STATUS_VARIANT[t.status]} text={t.status} />
+            <Button variant="stroke" icon="history-line" onClick={() => setTrailOpen(true)}>Audit Trail</Button>
             {pending && (
               <React.Fragment>
-                <Button variant="stroke" icon="close-line" onClick={() => onReject(t)}>Reject</Button>
+                <Button variant="stroke" icon="close-line" onClick={() => setRejectOpen(true)} style={{ color: "#DC2626", borderColor: "#F3C2C2" }}>Reject</Button>
                 <Button variant="primary" icon="check-line" onClick={() => onApprove(t)}>Approve</Button>
               </React.Fragment>
             )}
+            {t.status === "Declined" && <Button variant="primary" icon="edit-2-line" onClick={() => onEdit(t)}>Review & Edit</Button>}
+            {t.status === "Approved" && !t.accepted && <Button variant="primary" icon="user-follow-line" onClick={() => onAccept(t)}>Record Employee Acceptance</Button>}
           </React.Fragment>
         } />
 
@@ -352,7 +329,7 @@ function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
       </div>
 
       <div className="card" style={{ padding: 0 }}>
-        <DetailCard icon="file-text-line" title="Reason / Justification">
+        <DetailCard icon="file-text-line" title="Comments">
           <div className="rt-content" style={{ background: "#F6F8FA", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }} dangerouslySetInnerHTML={{ __html: t.reason || "—" }} />
         </DetailCard>
       </div>
@@ -382,7 +359,21 @@ function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
         <DetailCard icon="shield-check-line" title="Approval Information"><DetailPanel items={approvalInfo} tint="gray" cols={3} /></DetailCard>
       </div>
 
-      <WorkflowPanel workflowType="Transfer" record={t} onChange={(partial) => onUpdate(partial)} onToast={onToast} />
+      {t.rejectionReason && (
+        <div className="card" style={{ padding: 0 }}>
+          <DetailCard icon="error-warning-line" title="Reason For Rejection">
+            <div style={{ background: "#FEF2F2", border: "1px solid #FBD9D9", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }}>{t.rejectionReason}</div>
+          </DetailCard>
+        </div>
+      )}
+
+      <RejectionReasonModal open={rejectOpen} onClose={() => setRejectOpen(false)}
+        title="Reject Transfer" noun="transfer"
+        onConfirm={(reason) => { setRejectOpen(false); onReject(t, reason); }} />
+
+      <AuditTrailDrawer open={trailOpen} onClose={() => setTrailOpen(false)} name={t.employees[0]}
+        sub={`${t.staffIds} · ${t.classification}`} badge={<StatusBadge variant={TR_STATUS_VARIANT[t.status]} text={t.status} />}
+        entries={t.audit || []} />
     </div>
   );
 }
@@ -391,7 +382,7 @@ function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
 function TransfersScreen({ onToast, onSubPage, lookups }) {
   const DIR = window.EMPLOYEE_DIRECTORY;
   const [transfers, setTransfers] = useTr(TRANSFER_SEED);
-  const [segment, setSegment] = useTr("Requests");   // Requests (roster) | Approval
+  const [segment, setSegment] = useTr("Request");   // Request (roster) | Approvals
   const [rosterQ, setRosterQ] = useTr("");
   const [selected, setSelected] = useTr([]);
   const [approvalSel, setApprovalSel] = useTr([]);   // selected pending rows in Approvals queue
@@ -412,7 +403,14 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
 
   const current = view.name === "details" ? transfers.find(t => t.id === view.id) : null;
 
-  const submitTransfer = (f) => setConfirm({ kind: view.initialData ? "edit" : "add", form: f, id: view.initialData?.id });
+  // Demotion guard: warn (Proceed Anyway / Cancel) before the normal submit confirmation
+  // when the new grade/notch ranks below an employee's current placement.
+  const submitTransfer = (f) => {
+    const next = () => setConfirm({ kind: view.initialData ? "edit" : "add", form: f, id: view.initialData?.id });
+    const hits = window.demotionCheck({ employeeIds: f.employeeIds, grade: f.newGrade, notch: f.newNotch });
+    if (hits.length) window.confirmDemotion({ items: hits, noun: "transfer", onProceed: next });
+    else next();
+  };
   const submitBulk = (f) => setConfirm({ kind: "bulk", form: f });
   const runConfirm = () => {
     const c = confirm;
@@ -425,20 +423,28 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
         previousDept: p.dept || "—", newDept: f.newDepartment || p.dept || "—",
         previousUnit: p.unit || "—", newUnit: f.newUnit || "", currentTitle: p.title || "—", newTitle: f.newJobTitle || "",
         grade: f.newGrade || p.grade || "—", zone: p.zone || "—",
+        lineManagerId: f.lineManager || "", lineManager: (window.EMP_BY_ID[f.lineManager] || {}).name || "—",
+        notifyIds: f.notifyIds || [],
         effectiveDate: f.effectiveDate, dateSubmitted: todayTr(), status: "Pending",
         reason: f.reason, documents: allDocs, approvers: f.approvers || [],
         approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+        audit: [pncEntry({ action: 0, description: `${f.classification} transfer submitted — ${p.dept || "—"} → ${f.newDepartment || p.dept || "—"}, effective ${f.effectiveDate}`, justificationReason: f.reason, staffId: f.staffIds })],
       }, ...ts]);
       onToast("Transfer Submitted", { tone: "success" });
       setView({ name: "list" });
     } else if (c.kind === "edit") {
       const f = c.form;
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/transfers/");
+      const wasDeclined = (transfers.find(t => t.id === c.id) || {}).status === "Declined";
       setTransfers(ts => ts.map(t => t.id === c.id ? { ...t, employees: f.employees, classification: f.classification,
         newLocation: f.newLocation, newDept: f.newDepartment || t.newDept, newUnit: f.newUnit, newTitle: f.newJobTitle || "",
         grade: f.newGrade || t.grade,
-        effectiveDate: f.effectiveDate, reason: f.reason, documents: allDocs, approvers: f.approvers || [] } : t));
-      onToast("Transfer Updated", { tone: "success" });
+        lineManagerId: f.lineManager || t.lineManagerId || "", lineManager: (window.EMP_BY_ID[f.lineManager] || {}).name || t.lineManager || "—",
+        notifyIds: f.notifyIds || t.notifyIds || [],
+        effectiveDate: f.effectiveDate, reason: f.reason, documents: allDocs, approvers: f.approvers || [],
+        ...(wasDeclined ? { status: "Pending", wfStatus: "Pending", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A", rejectionReason: "", accepted: false } : {}),
+        audit: [...(t.audit || []), pncEntry({ action: wasDeclined ? 6 : 1, description: wasDeclined ? "Request revised and resubmitted for approval after rejection review" : "Request details updated", justificationReason: f.reason, staffId: t.staffIds })] } : t));
+      onToast(wasDeclined ? "Transfer Resubmitted" : "Transfer Updated", { tone: "success" });
       setView({ name: "list" });
     } else if (c.kind === "bulk") {
       const f = c.form;
@@ -464,40 +470,48 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
       setView({ name: "list" });
     } else if (c.kind === "approve") {
       const now = new Date().toLocaleString("en-US");
-      const stamp = window.wfNow();
       setTransfers(ts => ts.map(t => t.id === c.row.id ? { ...t, status: "Approved", wfStatus: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
-        audit: [...(t.audit || []), { action: "Transfer approved", decision: "Approved", actor: "Peter Bosrotsi (Head P&C)", at: stamp }] } : t));
+        audit: [...(t.audit || []), pncEntry({ action: 3, description: "Transfer approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: t.staffIds })] } : t));
       onToast("Transfer Approved", { tone: "success" });
-    } else if (c.kind === "reject") {
-      const now = new Date().toLocaleString("en-US");
-      const stamp = window.wfNow();
-      setTransfers(ts => ts.map(t => t.id === c.row.id ? { ...t, status: "Declined", wfStatus: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now,
-        audit: [...(t.audit || []), { action: "Transfer declined", decision: "Declined", actor: "Peter Bosrotsi (Head P&C)", at: stamp }] } : t));
-      onToast("Transfer Rejected", { tone: "error" });
+    } else if (c.kind === "accept") {
+      setTransfers(ts => ts.map(t => t.id === c.row.id ? { ...t, accepted: true,
+        audit: [...(t.audit || []), pncEntry({ action: 7, description: "Employee accepted the transfer", actorName: `${t.employees[0]} (Employee)`, staffId: t.staffIds })] } : t));
+      onToast("Employee Acceptance Recorded", { tone: "success" });
     } else if (c.kind === "bulkApprove") {
       const now = new Date().toLocaleString("en-US");
       const ids = c.ids;
-      setTransfers(ts => ts.map(t => ids.includes(t.id) ? { ...t, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now } : t));
+      setTransfers(ts => ts.map(t => ids.includes(t.id) ? { ...t, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
+        audit: [...(t.audit || []), pncEntry({ action: 3, description: "Transfer approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: t.staffIds })] } : t));
       onToast(`${ids.length} Transfer${ids.length > 1 ? "s" : ""} Approved`, { tone: "success" });
       setApprovalSel([]);
     } else if (c.kind === "bulkReject") {
       const now = new Date().toLocaleString("en-US");
       const ids = c.ids;
-      setTransfers(ts => ts.map(t => ids.includes(t.id) ? { ...t, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now } : t));
+      setTransfers(ts => ts.map(t => ids.includes(t.id) ? { ...t, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now,
+        audit: [...(t.audit || []), pncEntry({ action: 4, description: "Transfer rejected", actorName: "Peter Bosrotsi (Head P&C)", staffId: t.staffIds })] } : t));
       onToast(`${ids.length} Transfer${ids.length > 1 ? "s" : ""} Rejected`, { tone: "error" });
       setApprovalSel([]);
     }
     setConfirm(null);
   };
 
+  // reject from the detail page with a captured reason — commits immediately + logs the trail
+  const rejectWithReason = (row, reason) => {
+    const now = new Date().toLocaleString("en-US");
+    setTransfers(ts => ts.map(t => t.id === row.id ? { ...t, status: "Declined", wfStatus: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now, rejectionReason: reason,
+      audit: [...(t.audit || []), pncEntry({ action: 4, description: "Transfer rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", justificationReason: reason, staffId: t.staffIds })] } : t));
+    onToast("Transfer Rejected", { tone: "error" });
+  };
+
   let body;
   if (view.name === "add") body = <TransferForm lookups={lookups} initialEmployees={view.initialEmployees} initialData={view.initialData} onCancel={() => setView({ name: "list" })} onSubmit={submitTransfer} />;
   else if (view.name === "details" && current) body = <TransferDetails transfer={current}
-    onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={(r) => setConfirm({ kind: "reject", row: r })}
+    onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={rejectWithReason}
+    onEdit={(r) => setView({ name: "add", initialData: r })} onAccept={(r) => setConfirm({ kind: "accept", row: r })}
     onUpdate={(partial) => setTransfers(ts => ts.map(t => t.id === current.id ? { ...t, ...partial } : t))} onToast={onToast} />;
   else body = (
     <React.Fragment>
-      {segment === "Requests"
+      {segment === "Request"
         ? <TransferRoster q={rosterQ} setQ={setRosterQ} segment={segment} setSegment={setSegment}
             onCreate={(ids) => setView({ name: "add", initialEmployees: ids })}
             title="Transfers" subtitle="Transfer or bulk-transfer staff, and track approval status."
@@ -522,7 +536,7 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
     bulk:    { t: "Raise Transfer", m: "raise this transfer", l: "Yes, Transfer", i: "exchange-line", c: "Cancel" },
     archive: { t: "Archive Transfer", m: "archive this transfer", l: "Yes, Archive", i: "archive-line", c: "No" },
     approve: { t: "Approve Transfer", m: "approve this transfer", l: "Yes, Approve", i: "check-line", c: "No" },
-    reject:  { t: "Reject Transfer", m: "reject this transfer", l: "Yes, Reject", i: "close-line", c: "No" },
+    accept:  { t: "Record Employee Acceptance", m: "record that the employee has accepted this transfer", l: "Yes, Record", i: "user-follow-line", c: "No" },
     bulkApprove: { t: "Approve Transfers", m: "approve", l: "Yes, Approve", i: "check-line", c: "No" },
     bulkReject:  { t: "Reject Transfers", m: "reject", l: "Yes, Reject", i: "close-line", c: "No" },
   };

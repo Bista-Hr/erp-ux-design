@@ -24,13 +24,20 @@ const CONFIGS = {
   },
   "Job Grades": {
     title: "Job Grades", subtitle: "Manage your organization's job grades.", cta: "Create Job Grade", noun: "Job Grade",
-    cols: [{ key: "name", label: "Name" }, { key: "code", label: "Code" }, { key: "level", label: "Level", fallback: "Not Set" }, { key: "notches", label: "Notches", type: "count" }],
+    // Grade column: legacy grades saved without a level (backend still calls it "level")
+    // render a clickable "Add Grade" tag that opens the edit form on that row.
+    cols: [{ key: "name", label: "Name" }, { key: "level", label: "Grade", type: "missing-tag", missingLabel: "Add Grade" }, { key: "code", label: "Code", fallback: "Not Set" }, { key: "notches", label: "Notches", type: "count" }],
     fields: [
-      { key: "name", label: "Name", placeholder: "Grade A" },
-      { key: "code", label: "Code", placeholder: "GA" },
-      { key: "level", label: "Level", type: "number", placeholder: "1", optional: true },
+      // Grade (was "Level") comes FIRST: it is the unique key. Picking it auto-fills an empty
+      // Name as "Grade {n}" (fillTarget/fillTemplate); a duplicate grade raises an inline error.
+      { key: "level", label: "Grade", type: "number", min: 1, placeholder: "1", unique: true, uniqueError: "Grade {value} already exists.", fillTarget: "name", fillTemplate: "Grade {value}" },
+      // Name in turn auto-fills an empty Code with its initials (e.g. "Senior Executive" → "SE").
+      { key: "name", label: "Name", placeholder: "Grade 1", fillTarget: "code", fillInitials: true },
       { key: "notches", label: "Notches", type: "notches", full: true, optional: true },
       { key: "description", label: "Description", type: "textarea", placeholder: "Highest grade level for senior executives", full: true },
+      // Code stays optional in the UI (initials are the fallback) but the backend requires it
+      // and rejects anything outside [A-Za-z0-9_-] — validated live so Zod never surprises.
+      { key: "code", label: "Code", placeholder: "GA", optional: true, pattern: "^[A-Za-z0-9_-]+$", patternError: "Code can only contain letters, numbers, hyphens, and underscores" },
     ],
   },
   "Branches/Units": {
@@ -236,6 +243,7 @@ const SEED = {
     { id: 2, name: "Grade 2", code: "G2", level: "2", notches: [1, 2, 3, 4], description: "Standard professional grade.", active: true },
     { id: 3, name: "Grade 3", code: "G3", level: "3", notches: [1, 2, 3, 4, 5], description: "Senior professional grade.", active: true },
     { id: 4, name: "Grade 4", code: "G4", level: "4", notches: [1, 2, 3, 4, 5, 6], description: "Management grade for department heads.", active: false },
+    { id: 5, name: "Senior Executive", code: "SE", level: "", notches: [1, 2, 3], description: "Legacy grade added before grade levels were required.", active: true },
   ],
   "Branches/Units": [
     { id: 1, name: "Executive Management", head: "Leslie Alexandre", type: "Management", department: "N/A", level: "1", active: true },

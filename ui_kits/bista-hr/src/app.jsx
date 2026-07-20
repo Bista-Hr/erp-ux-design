@@ -182,6 +182,8 @@ function App() {
   // System Administration ▸ Configuration ▸ Performance Ratings (ranges editor) + Organization (org profile)
   const isPerfRatings = isList && pageName === "Performance Ratings";
   const isOrg = isList && pageName === "Organization";
+  // System Administration ▸ Notification Configurations (features → events → event editor)
+  const isNotifConfig = isList && pageName === "Notification Configurations";
   // Recruitment ▸ Job Posts (admin posting details + applicant pipeline)
   const isJobPosts = isList && pageName === "Job Posts";
   // Recruitment ▸ Hiring Requests (raise → approve/reject gate) + Assessments (assessor queue)
@@ -334,6 +336,8 @@ function App() {
                                   ? <PerformanceRatingsScreen onToast={pushToast} />
                                   : isOrg
                                   ? <OrganizationScreen onToast={pushToast} />
+                                  : isNotifConfig
+                                  ? <NotificationConfigScreen onToast={pushToast} onSubPage={setSubPage} />
                                   : <CrudScreen key={pageName} config={cfg} rows={rows}
                                   onCreate={openCreate} onEdit={openEdit} onArchive={askArchive} onMenuAction={handleMenuAction}
                                   canCreate={pageCan(perms, pageName, "Create")} canEdit={pageCan(perms, pageName, "Update")} canArchive={pageCan(perms, pageName, "Delete")} />}
@@ -349,7 +353,7 @@ function App() {
 
       {/* Phase 2: the form (create / edit) */}
       {form && (
-        <FormModal config={cfg} initial={form.mode === "edit" ? form.row : null}
+        <FormModal config={cfg} initial={form.mode === "edit" ? form.row : null} rows={data[pageName] || []}
           onClose={() => setForm(null)} onSubmit={submitForm} lookups={lookups} />
       )}
 
