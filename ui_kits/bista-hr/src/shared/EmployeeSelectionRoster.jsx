@@ -57,7 +57,7 @@ function EmployeeSelectionRoster({ employees = [], itemLabel = "staff", actionLa
         : <table className="bh">
             <thead><tr>
               <th style={{ width: 44 }}><Checkbox checked={allShown} onChange={toggleAll} /></th>
-              <th>Full Name</th><th>Job Title</th><th>Department</th><th>Branch</th>
+              <th>Full Name</th><th>Job Title</th><th>Department</th><th>Unit/Branch</th>
             </tr></thead>
             <tbody>
               {pg.pageItems.map(r => {
@@ -67,7 +67,7 @@ function EmployeeSelectionRoster({ employees = [], itemLabel = "staff", actionLa
                     <td onClick={ev => ev.stopPropagation()}><Checkbox checked={on} onChange={() => toggle(r.id)} /></td>
                     <td>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-                        <Avatar name={r.name} src={r.profilePictureUrl || undefined} size={32} />
+                        <ProfileAvatar employeeId={r.id} name={r.name} src={r.profilePictureUrl || undefined} size={32} />
                         <span style={{ display: "flex", flexDirection: "column" }}>
                           <span style={{ fontWeight: 500, color: "var(--gray-900)" }}>{r.name}</span>
                           <span style={{ fontSize: 12, color: "var(--gray-400)", lineHeight: 1.3 }}>ID: {r.employeeNumber || "—"}</span>
@@ -76,7 +76,7 @@ function EmployeeSelectionRoster({ employees = [], itemLabel = "staff", actionLa
                     </td>
                     <td>{r.jobTitle || "—"}</td>
                     <td>{r.department || "—"}</td>
-                    <td>{r.branch || "—"}</td>
+                    <td>{r.unit || r.branch || "—"}</td>
                   </tr>
                 );
               })}

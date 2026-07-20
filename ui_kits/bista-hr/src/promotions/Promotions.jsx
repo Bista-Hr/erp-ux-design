@@ -27,7 +27,7 @@ const approverLabel = (status) => status === "Approved" ? "Approved" : status ==
 function promoRosterRows() {
   return window.EMPLOYEE_LIST.map(e => ({
     id: e.id, name: e.name, employeeNumber: e.staffId, jobTitle: e.title,
-    jobGrade: e.grade, department: e.dept, unit: e.unit, branch: e.branch, zone: e.zone, profilePictureUrl: "",
+    jobGrade: e.grade, department: e.dept, unit: e.unit, branch: e.branch, zone: e.zone, profilePictureUrl: e.profilePictureUrl || "",
   }));
 }
 
@@ -221,7 +221,7 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
   const notchOptions = window.notchSalaryOptions(form.grade);
 
   // New salary + allowances are AUTO-FETCHED from payroll once grade + notch are resolved
-  // (kept on the record; the notch options already surface the salary inline).
+  // and surfaced in the read-only Salary field (notch options stay plain).
   const payroll = window.fetchPayroll(form.grade, (form.notch || "").split(" — ")[0]);
   const salary = payroll ? payroll.salary : "";
   const allowances = payroll ? payroll.allowances : [];
@@ -258,6 +258,12 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
           <Field label="New Job Title"><DesignationCombobox value={form.newJobTitle} onChange={selectTitle} /></Field>
           <Field label="Job Grade"><Combobox value={form.grade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
           <Field label="Notch"><Combobox value={form.notch} onChange={v => set("notch", v)} options={notchOptions} icon="stack-line" placeholder={form.grade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
+          <Field label="Salary">
+            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
+              <Icon name="money-dollar-circle-line" size={18} style={{ color: "var(--icon-default)" }} />
+              <input value={salary ? `${salary} / month` : ""} readOnly placeholder="Auto from grade & notch" style={{ color: salary ? "var(--gray-900)" : "var(--gray-400)" }} />
+            </div>
+          </Field>
           <Field label="Zones"><Combobox value={form.zone} onChange={selectZone} options={LK.zones} placeholder="Select zone" noDataText="No zone found" /></Field>
           <Field label="New Organizational Unit/Branch"><UnitBranchCombobox value={form.unitBranch} onChange={v => set("unitBranch", v)} zone={form.zone} onZoneChange={selectZone} zones={LK.zones} /></Field>
           <Field label="Effective Date"><UI.DatePicker weekendRule value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
@@ -375,7 +381,14 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
   const current = view.name === "details" ? promos.find(p => p.id === view.id) : null;
   const editing = view.name === "edit" ? promos.find(p => p.id === view.id) : null;
 
-  const submitPromo = (f) => setConfirm({ kind: view.name === "edit" ? "edit" : "add", form: f, id: view.id });
+  // Demotion guard: if the picked grade/notch ranks below any selected employee's current
+  // placement, warn (Proceed Anyway / Cancel) BEFORE the normal submit confirmation.
+  const submitPromo = (f) => {
+    const next = () => setConfirm({ kind: view.name === "edit" ? "edit" : "add", form: f, id: view.id });
+    const hits = window.demotionCheck({ employeeIds: f.employees, grade: f.grade, notch: f.notch });
+    if (hits.length) window.confirmDemotion({ items: hits, noun: "promotion", onProceed: next });
+    else next();
+  };
   const runConfirm = () => {
     const c = confirm;
     if (c.kind === "add") {

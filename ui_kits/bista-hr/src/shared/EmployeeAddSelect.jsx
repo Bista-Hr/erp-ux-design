@@ -6,6 +6,7 @@
 //   Props: value (string[] of staff ids), onChange(string[]), employees ([{ id, name, staffId,
 //          title, grade, dept }]), placeholder, emptyText.
 // Reusable across every multi-employee People & Culture form (Promotions / Transfers / Job Title).
+// The card's ProfileAvatar is the app-wide affordance: click the avatar → employment-details sheet.
 function EmployeeAddSelect({ value = [], onChange, employees = [], placeholder = "Add employee — search by name or staff ID", emptyText = "No employees added yet." }) {
   const byId = {};
   employees.forEach(e => { byId[e.id] = e; });
@@ -27,7 +28,7 @@ function EmployeeAddSelect({ value = [], onChange, employees = [], placeholder =
               return (
                 <div key={id} style={{ display: "inline-flex", alignItems: "center", gap: 10, minWidth: 0,
                   border: "1px solid var(--gray-200)", borderRadius: 10, padding: "7px 8px 7px 8px", background: "#fff", boxShadow: "var(--shadow-input)" }}>
-                  <Avatar name={e.name} size={32} />
+                  <ProfileAvatar employeeId={id} name={e.name} size={32} />
                   <span style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
                     <span style={{ display: "flex", alignItems: "baseline", gap: 8, minWidth: 0 }}>
                       <span style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{e.name}</span>

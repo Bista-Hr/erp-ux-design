@@ -27,6 +27,31 @@ EMPLOYEE_LIST.push({ id: "EMP-20114", name: "Samuel Boateng", staffId: "EMP-2011
   grade: "Grade 1", dept: "Operations", unit: "Field Operations", zone: "East Zone", branch: "Tema", salary: "GHS 4,300.00", rating: "Good" });
 const EMP_BY_ID = {};
 EMPLOYEE_LIST.forEach(e => { EMP_BY_ID[e.id] = e; });
+// MOCK: default profile pictures for a handful of employees (stable stock faces) — the rest
+// keep initials avatars, so both drawer/preview states are demoable.
+const MOCK_PROFILE_PICS = {
+  "EMP-18330": "https://i.pravatar.cc/512?img=12",
+  "EMP-18389": "https://i.pravatar.cc/512?img=47",
+  "EMP-10876": "https://i.pravatar.cc/512?img=33",
+  "EMP-11002": "https://i.pravatar.cc/512?img=15",
+  "EMP-10412": "https://i.pravatar.cc/512?img=53",
+};
+// MOCK: promotion-relevant employment fields (mirrors the employee API record: notch,
+// reportingManager, dateEmployed, employmentType, yearsOfService, isConfirmed). Deterministic
+// from the staff-id digits so values are stable & demoable across reloads.
+EMPLOYEE_LIST.forEach((e, i) => {
+  const n = parseInt(e.staffId.replace(/\D/g, ""), 10) || 0;
+  if (!e.profilePictureUrl) e.profilePictureUrl = MOCK_PROFILE_PICS[e.staffId] || "";
+  if (!e.notch) e.notch = "Notch " + (1 + n % 3);
+  if (!e.reportingManager) e.reportingManager = EMPLOYEE_LIST[(i + 1) % EMPLOYEE_LIST.length].name;
+  if (!e.dateEmployed) {
+    const y = 2016 + (n % 9);
+    e.dateEmployed = new Date(y, n % 12, 1 + (n % 27)).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+    e.yearsOfService = Math.max(0, 2026 - y);
+  }
+  if (!e.employmentType) e.employmentType = n % 4 === 0 ? "Contract" : "Full Time";
+  if (e.isConfirmed == null) e.isConfirmed = n % 5 !== 0;
+});
 // first staff id matching a name — used to migrate legacy name-based records to ids on edit
 const firstIdForName = (name) => (EMPLOYEE_LIST.find(e => e.name === name) || {}).id;
 
@@ -158,12 +183,9 @@ function jobTitleInfo(title) {
 }
 Object.assign(window, { JOB_TITLE_FALLBACK, jobTitlesForDepartment, jobTitleInfo });
 
-// Notch options with resolved salary — matches production ("Notch 1 — GHS 4,200.00").
-// Falls back to the bare notch when payroll has no amount for (grade, notch).
+// Notch options stay PLAIN ("Notch 1") — matches production: salary lives in its own
+// read-only Salary field resolved from (grade, notch), not inline in the notch label.
 function notchSalaryOptions(grade) {
-  return notchesForGrade(grade).map(n => {
-    const p = fetchPayroll(grade, n);
-    return p && p.salary ? `${n} — ${p.salary}` : n;
-  });
+  return notchesForGrade(grade);
 }
 Object.assign(window, { notchSalaryOptions });

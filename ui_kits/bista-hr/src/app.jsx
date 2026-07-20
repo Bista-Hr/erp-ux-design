@@ -353,7 +353,7 @@ function App() {
 
       {/* Phase 2: the form (create / edit) */}
       {form && (
-        <FormModal config={cfg} initial={form.mode === "edit" ? form.row : null}
+        <FormModal config={cfg} initial={form.mode === "edit" ? form.row : null} rows={data[pageName] || []}
           onClose={() => setForm(null)} onSubmit={submitForm} lookups={lookups} />
       )}
 

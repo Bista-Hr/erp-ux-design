@@ -111,6 +111,9 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
   // A selected Zone filters the Unit/Branch list — changing zone clears a mismatched pick.
   const selectZone = (v) => setForm(s => ({ ...s, zone: v, unitBranch: "" }));
   const notchOptions = window.notchSalaryOptions(form.grade);
+  // Salary is resolved from (grade, notch) into a read-only field — same as Promotions/Transfers.
+  const jtPayroll = window.fetchPayroll(form.grade, (form.notch || "").split(" — ")[0]);
+  const jtSalary = jtPayroll ? jtPayroll.salary : "";
   const hasDocs = (docs.keptUrls || []).length + (docs.newFiles || []).length > 0;
   const valid = people.length > 0 && form.department && form.newTitle && form.grade && (notchOptions.length === 0 || form.notch)
     && form.zone && form.unitBranch && form.date && form.reason.trim() && hasDocs;
@@ -134,6 +137,12 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
           <Field label="New Job Title"><DesignationCombobox value={form.newTitle} onChange={selectTitle} /></Field>
           <Field label="Job Grade"><Combobox value={form.grade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
           <Field label="Notch"><Combobox value={form.notch} onChange={v => set("notch", v)} options={notchOptions} icon="stack-line" placeholder={form.grade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
+          <Field label="Salary">
+            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
+              <Icon name="money-dollar-circle-line" size={18} style={{ color: "var(--icon-default)" }} />
+              <input value={jtSalary ? `${jtSalary} / month` : ""} readOnly placeholder="Auto from grade & notch" style={{ color: jtSalary ? "var(--gray-900)" : "var(--gray-400)" }} />
+            </div>
+          </Field>
           <Field label="Zones"><Combobox value={form.zone} onChange={selectZone} options={LK.zones} placeholder="Select zone" noDataText="No zone found" /></Field>
           <Field label="New Organizational Unit/Branch"><UnitBranchCombobox value={form.unitBranch} onChange={v => set("unitBranch", v)} zone={form.zone} onZoneChange={selectZone} zones={LK.zones} /></Field>
           <Field label="Effective Date"><UI.DatePicker weekendRule value={form.date} onSelect={d => set("date", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
@@ -168,7 +177,7 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
 function JobTitleRoster({ q, setQ, onCreate, segment, setSegment, title, subtitle, headerAction }) {
   const rows = window.EMPLOYEE_LIST.map(e => ({
     id: e.id, name: e.name, employeeNumber: e.staffId, jobTitle: e.title,
-    jobGrade: e.grade, department: e.dept, branch: e.branch, profilePictureUrl: "",
+    jobGrade: e.grade, department: e.dept, branch: e.branch, profilePictureUrl: e.profilePictureUrl || "",
   }));
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -356,7 +365,14 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
   const current = view.name === "details" ? records.find(r => r.id === view.id) : null;
   const editing = view.name === "edit" ? records.find(r => r.id === view.id) : null;
 
-  const submitAssign = (f) => setConfirm({ kind: "assign", form: f });
+  // Demotion guard: warn (Proceed Anyway / Cancel) before the normal submit confirmation
+  // when the picked grade/notch ranks below an employee's current placement.
+  const submitAssign = (f) => {
+    const next = () => setConfirm({ kind: "assign", form: f });
+    const hits = window.demotionCheck({ employeeIds: f.names, grade: f.grade, notch: f.notch });
+    if (hits.length) window.confirmDemotion({ items: hits, noun: "job title change", onProceed: next });
+    else next();
+  };
   const runConfirm = () => {
     const c = confirm;
     if (c.kind === "assign") {

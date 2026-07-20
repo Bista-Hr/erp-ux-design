@@ -93,7 +93,7 @@ function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setS
       <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
       <div className="card" style={{ padding: 20 }}>
         <div className="bh-tablebox">
-        <UI.FilterBar left={<Segmented items={["Requests", "Approvals"]} active={segment} onChange={setSegment} />}
+        <UI.FilterBar left={<Segmented items={["Request", "Approvals"]} active={segment} onChange={setSegment} />}
           search={q} onSearch={setQ} searchPlaceholder="Search transfers…"
           filters={[
             { label: "Status", node: <Combobox value={draft.status} onChange={v => setDraft(s => ({ ...s, status: v }))} options={["Pending", "Approved", "Declined"]} placeholder="All statuses" /> },
@@ -106,7 +106,7 @@ function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setS
           : <table className="bh">
               <thead><tr>
                 <th style={{ width: 44 }}><Checkbox checked={allPendingSel} onChange={toggleAll} /></th>
-                <th>Employee Name</th><th>Zone</th><th>Effective Date</th><th>Classification</th><th>Status</th><th>Approved By</th><th style={{ width: 48 }}></th>
+                <th>Employee Name</th><th>Department</th><th>Classification</th><th>Effective Date</th><th>Status</th><th>Approved By</th><th style={{ width: 48 }}></th>
               </tr></thead>
               <tbody>
                 {pg.pageItems.map(r => {
@@ -126,20 +126,22 @@ function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setS
                     </td>
                     <td>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                        <span style={{ color: "var(--gray-500)" }}>{r.previousLocation}</span>
+                        <span style={{ color: "var(--gray-500)" }}>{r.previousDept}</span>
                         <Icon name="arrow-right-line" size={15} color="var(--gray-400)" />
-                        <span style={{ color: "var(--gray-900)", fontWeight: 500 }}>{r.newLocation}</span>
+                        <span style={{ color: "var(--gray-900)", fontWeight: 500 }}>{r.newDept}</span>
                       </span>
                     </td>
-                    <td>{r.effectiveDate}</td>
                     <td><span style={{ fontSize: 13, color: "var(--gray-700)" }}>{r.classification}</span></td>
+                    <td>{r.effectiveDate}</td>
                     <td><StatusBadge variant={TR_STATUS_VARIANT[r.status]} text={r.status} size="sm" /></td>
                     <td>{r.approvedBy && r.approvedBy !== "N/A" ? r.approvedBy : "—"}</td>
                     <td style={{ textAlign: "right" }} onClick={e => e.stopPropagation()}>
-                      <UI.RowActions actions={[
+                      <UI.RowActions forceMenu actions={r.status !== "Approved" ? [
                         { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
                         { label: "Edit Transfer", short: "Edit", icon: "edit-2-line", onClick: () => onEdit(r) },
                         { label: "Archive Transfer", short: "Archive", icon: "archive-line", danger: true, onClick: () => onArchive(r) },
+                      ] : [
+                        { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
                       ]} />
                     </td>
                   </tr>
@@ -159,14 +161,14 @@ function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setS
 function TransferRoster({ q, setQ, segment, setSegment, onCreate, title, subtitle, headerAction }) {
   const rows = window.EMPLOYEE_LIST.map(e => ({
     id: e.id, name: e.name, employeeNumber: e.staffId, jobTitle: e.title,
-    jobGrade: e.grade, department: e.dept, unit: e.unit, branch: e.branch, zone: e.zone, profilePictureUrl: "",
+    jobGrade: e.grade, department: e.dept, unit: e.unit, branch: e.branch, zone: e.zone, profilePictureUrl: e.profilePictureUrl || "",
   }));
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
       <div className="card" style={{ padding: 20 }}>
         <div className="bh-tablebox">
-        <UI.FilterBar left={<Segmented items={["Requests", "Approvals"]} active={segment} onChange={setSegment} />}
+        <UI.FilterBar left={<Segmented items={["Request", "Approvals"]} active={segment} onChange={setSegment} />}
           search={q} onSearch={setQ} searchPlaceholder="Search staff…" />
         <EmployeeSelectionRoster employees={rows} itemLabel="staff"
           actionLabel="Create Transfer" onProceed={onCreate} searchQuery={q} />
@@ -205,6 +207,9 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
   // The selected New Zone filters the Unit/Branch list — changing zone clears a mismatched pick.
   const selectZone = (v) => setForm(s => ({ ...s, newLocation: v, newUnit: "" }));
   const notchOptions = window.notchSalaryOptions(form.newGrade);
+  // Salary is resolved from (grade, notch) into a read-only field — same as Promotions/Job Title.
+  const trPayroll = window.fetchPayroll(form.newGrade, (form.newNotch || "").split(" — ")[0]);
+  const trSalary = trPayroll ? trPayroll.salary : "";
   const staffIds = employees.join(", ");
 
   const hasDocs = (docs.keptUrls || []).length + (docs.newFiles || []).length > 0;
@@ -230,6 +235,12 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
           <Field label="New Job Title" optional><DesignationCombobox value={form.newJobTitle} onChange={selectTitle} /></Field>
           <Field label="New Job Grade"><Combobox value={form.newGrade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
           <Field label="Notch"><Combobox value={form.newNotch} onChange={v => set("newNotch", v)} options={notchOptions} icon="stack-line" placeholder={form.newGrade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
+          <Field label="Salary">
+            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
+              <Icon name="money-dollar-circle-line" size={18} style={{ color: "var(--icon-default)" }} />
+              <input value={trSalary ? `${trSalary} / month` : ""} readOnly placeholder="Auto from grade & notch" style={{ color: trSalary ? "var(--gray-900)" : "var(--gray-400)" }} />
+            </div>
+          </Field>
           <Field label="New Line Manager"><LineManagerField value={form.lineManager} onChange={v => set("lineManager", v)} employees={EMP} /></Field>
           <Field label="Proposed Effective Transfer Date"><UI.DatePicker weekendRule value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
         </div>
@@ -337,7 +348,7 @@ function TransferDetails({ transfer, onApprove, onReject, onUpdate, onToast }) {
 function TransfersScreen({ onToast, onSubPage, lookups }) {
   const DIR = window.EMPLOYEE_DIRECTORY;
   const [transfers, setTransfers] = useTr(TRANSFER_SEED);
-  const [segment, setSegment] = useTr("Requests");   // Requests (roster) | Approval
+  const [segment, setSegment] = useTr("Request");   // Request (roster) | Approvals
   const [rosterQ, setRosterQ] = useTr("");
   const [selected, setSelected] = useTr([]);
   const [approvalSel, setApprovalSel] = useTr([]);   // selected pending rows in Approvals queue
@@ -358,7 +369,14 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
 
   const current = view.name === "details" ? transfers.find(t => t.id === view.id) : null;
 
-  const submitTransfer = (f) => setConfirm({ kind: view.initialData ? "edit" : "add", form: f, id: view.initialData?.id });
+  // Demotion guard: warn (Proceed Anyway / Cancel) before the normal submit confirmation
+  // when the new grade/notch ranks below an employee's current placement.
+  const submitTransfer = (f) => {
+    const next = () => setConfirm({ kind: view.initialData ? "edit" : "add", form: f, id: view.initialData?.id });
+    const hits = window.demotionCheck({ employeeIds: f.employeeIds, grade: f.newGrade, notch: f.newNotch });
+    if (hits.length) window.confirmDemotion({ items: hits, noun: "transfer", onProceed: next });
+    else next();
+  };
   const submitBulk = (f) => setConfirm({ kind: "bulk", form: f });
   const runConfirm = () => {
     const c = confirm;
@@ -447,7 +465,7 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
     onUpdate={(partial) => setTransfers(ts => ts.map(t => t.id === current.id ? { ...t, ...partial } : t))} onToast={onToast} />;
   else body = (
     <React.Fragment>
-      {segment === "Requests"
+      {segment === "Request"
         ? <TransferRoster q={rosterQ} setQ={setRosterQ} segment={segment} setSegment={setSegment}
             onCreate={(ids) => setView({ name: "add", initialEmployees: ids })}
             title="Transfers" subtitle="Transfer or bulk-transfer staff, and track approval status."

@@ -89,7 +89,9 @@ function CropView({ src, onBack, onApply }) {
   );
 }
 
-function ProfilePictureModal({ name, photo, onClose, onSave }) {
+// `previewOnly` renders a read-only large preview (no upload/crop) — used outside My Info,
+// e.g. the shared EmployeeEmploymentDrawer; editing stays exclusive to the ESS My Info flow.
+function ProfilePictureModal({ name, photo, onClose, onSave, previewOnly }) {
   const [file, setFile] = usePP(null);          // { name, size, src }
   const [preview, setPreview] = usePP(null);    // current (possibly cropped) data URL
   const [cropping, setCropping] = usePP(false);
@@ -107,7 +109,7 @@ function ProfilePictureModal({ name, photo, onClose, onSave }) {
   const removeFile = () => { setFile(null); setPreview(null); };
 
   return (
-    <Modal onClose={onClose} width={620}>
+    <Modal onClose={onClose} width={512}>{/* matches the codebase dialog (sm:max-w-lg) */}
       <input ref={inputRef} type="file" accept="image/*" onChange={onPick} style={{ display: "none" }} />
 
       {cropping ? (
@@ -126,19 +128,30 @@ function ProfilePictureModal({ name, photo, onClose, onSave }) {
 
           <div style={{ padding: 24 }}>
             {!file ? (
-              // ---- empty state ----
-              <div style={{ background: "var(--gray-75)", borderRadius: "var(--radius-lg)", padding: "56px 24px",
-                display: "flex", flexDirection: "column", alignItems: "center", gap: 18 }}>
-                <Avatar name={name} size={180} src={photo} />
-                {!photo && <div className="bh-body">No profile picture</div>}
+              // ---- preview (square — mirrors shared/ProfilePictureEditor: aspect-square box,
+              // blurred cover backdrop + object-contain image when a photo exists) ----
+              <div style={{ position: "relative", width: "100%", aspectRatio: "1 / 1", maxHeight: photo ? undefined : 384, borderRadius: "var(--radius-lg)", overflow: "hidden",
+                background: "var(--gray-75)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {photo ? (
+                  <React.Fragment>
+                    <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${photo})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(16px)", opacity: .6 }}></div>
+                    <img src={photo} alt={name} style={{ position: "relative", zIndex: 1, width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+                  </React.Fragment>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+                    <Avatar name={name} size={128} />
+                    <div className="bh-body">No profile picture</div>
+                  </div>
+                )}
               </div>
             ) : (
               // ---- file selected ----
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                <div style={{ position: "relative", background: "var(--gray-75)", borderRadius: "var(--radius-lg)", overflow: "hidden",
-                  display: "flex", alignItems: "center", justifyContent: "center", minHeight: 300 }}>
-                  <img src={preview} alt="" style={{ maxWidth: "100%", maxHeight: 420, display: "block" }} />
-                  <button onClick={removeFile} title="Remove" style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32,
+                <div style={{ position: "relative", width: "100%", aspectRatio: "1 / 1", background: "var(--gray-75)", borderRadius: "var(--radius-lg)", overflow: "hidden",
+                  display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${preview})`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(16px)", opacity: .6 }}></div>
+                  <img src={preview} alt="" style={{ position: "relative", zIndex: 1, width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+                  <button onClick={removeFile} title="Remove" style={{ position: "absolute", top: 12, right: 12, width: 32, height: 32, zIndex: 2,
                     borderRadius: "50%", border: 0, cursor: "pointer", background: "var(--error)", color: "#fff",
                     display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Icon name="close-line" size={18} color="#fff" />
@@ -157,7 +170,7 @@ function ProfilePictureModal({ name, photo, onClose, onSave }) {
           </div>
 
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, padding: "0 24px 24px" }}>
-            {!file
+            {previewOnly ? null : !file
               ? <Button variant="stroke" icon="upload-2-line" onClick={pick}>Upload New Picture</Button>
               : <React.Fragment>
                   <Button variant="stroke" onClick={pick}>Change</Button>
