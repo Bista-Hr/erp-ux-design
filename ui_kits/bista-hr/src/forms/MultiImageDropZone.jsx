@@ -24,6 +24,7 @@ function MultiImageDropZone({
   removedImages = [], isEditMode = true, maxFiles = 10, maxSize = MIDZ_MAX,
   idleText = "Add file here", idleTextEmpty = "Upload file here",
   acceptedFileTypesText = "(jpeg, jpg, png, PDF, DOC, DOCX)", accept = MIDZ_ACCEPT, multiple = true,
+  onPreviewExisting, onPreviewFile,
 }) {
   const inputRef = useMidzRef(null);
   const [previews, setPreviews] = useMidz([]);   // dataURL | null, index-aligned with selectedFiles
@@ -94,8 +95,9 @@ function MultiImageDropZone({
                   </div>;
               return (
                 <div key={`existing-${url}`} className="bh-midz-card" style={{ position: "relative" }}>
-                  <div style={{ width: 160, height: 160, borderRadius: 12, overflow: "hidden", border: "1px solid var(--border)", background: "var(--gray-50)",
-                    display: "flex", alignItems: "center", justifyContent: "center", opacity: removed ? 0.4 : 1, transition: "opacity .15s" }}>{inner}</div>
+                  <div onClick={() => { if (!removed && onPreviewExisting) onPreviewExisting(url); }} title={onPreviewExisting && !removed ? "Click to preview" : undefined}
+                    style={{ width: 160, height: 160, borderRadius: 12, overflow: "hidden", border: "1px solid var(--border)", background: "var(--gray-50)",
+                    display: "flex", alignItems: "center", justifyContent: "center", opacity: removed ? 0.4 : 1, transition: "opacity .15s", cursor: onPreviewExisting && !removed ? "pointer" : undefined }}>{inner}</div>
                   {removed && onRestoreImage ? (
                     <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRestoreImage(url); }}
                       style={{ position: "absolute", inset: 0, borderRadius: 12, border: "none", cursor: "pointer", background: "rgba(0,0,0,.6)",
@@ -123,8 +125,9 @@ function MultiImageDropZone({
                   </div>;
               return (
                 <div key={file.name + file.size + i} className="bh-midz-card" style={{ position: "relative" }}>
-                  <div style={{ width: 160, height: 160, borderRadius: 12, overflow: "hidden", border: `1px solid ${isEditMode ? "#93C5FD" : "var(--border)"}`,
-                    background: "var(--gray-50)", display: "flex", alignItems: "center", justifyContent: "center" }}>{inner}</div>
+                  <div onClick={() => onPreviewFile && onPreviewFile(i)} title={onPreviewFile ? "Click to preview" : undefined}
+                    style={{ width: 160, height: 160, borderRadius: 12, overflow: "hidden", border: `1px solid ${isEditMode ? "#93C5FD" : "var(--border)"}`,
+                    background: "var(--gray-50)", display: "flex", alignItems: "center", justifyContent: "center", cursor: onPreviewFile ? "pointer" : undefined }}>{inner}</div>
                   {isEditMode && <span style={{ position: "absolute", top: -8, left: -8, background: "#2563EB", color: "#fff", fontFamily: "var(--font-ui)", fontWeight: 700, fontSize: 10, padding: "2px 6px", borderRadius: 5, zIndex: 1 }}>NEW</span>}
                   <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); removeFile(i); }} className="bh-midz-x"
                     style={{ position: "absolute", top: -8, right: -8, width: 24, height: 24, borderRadius: 999, border: "none", cursor: "pointer",

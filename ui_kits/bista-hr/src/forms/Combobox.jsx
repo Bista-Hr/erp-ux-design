@@ -48,10 +48,12 @@ function ComboPopover({ rect, options, search, setSearch, isSelected, onPick, on
   if (!rect) return null;
   const filtered = options.filter(o => o.label.toLowerCase().includes(search.toLowerCase()));
   const GAP = 6, EST = 300;
+  const width = Math.max(rect.width, 208);
+  const left = Math.min(rect.left, window.innerWidth - width - 8);
   const spaceBelow = window.innerHeight - rect.bottom;
   const openUp = spaceBelow < EST && rect.top > spaceBelow;
   const panel = {
-    position: "fixed", zIndex: 1001, width: rect.width, left: rect.left,
+    position: "fixed", zIndex: 1001, width, left,
     ...(openUp ? { bottom: window.innerHeight - rect.top + GAP, maxHeight: rect.top - 16 }
                : { top: rect.bottom + GAP, maxHeight: spaceBelow - 16 }),
     background: "#fff", border: "1px solid var(--border)", borderRadius: "var(--radius-md)",
@@ -61,13 +63,24 @@ function ComboPopover({ rect, options, search, setSearch, isSelected, onPick, on
     <React.Fragment>
       <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 1000 }} />
       <div style={panel}>
-        <div style={{ padding: 8, borderBottom: "1px solid var(--divider)", flexShrink: 0, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-          <div className="input-wrap" style={{ padding: "7px 10px", flex: "1 1 150px", minWidth: 0 }}>
-            <Icon name="search-2-line" size={16} style={{ color: "var(--icon-default)" }} />
-            <input autoFocus placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} />
+        {header ? (
+          /* flush search row — borderless input | vertical divider | compact filter cell */
+          <div style={{ display: "flex", alignItems: "stretch", borderBottom: "1px solid var(--divider)", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flex: "1 1 auto", minWidth: 0, padding: "10px 12px" }}>
+              <Icon name="search-2-line" size={16} style={{ color: "var(--icon-default)", flexShrink: 0 }} />
+              <input autoFocus placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)}
+                style={{ flex: 1, minWidth: 0, border: 0, outline: "none", background: "none", fontFamily: "var(--font-control)", fontSize: 14, color: "var(--gray-900)" }} />
+            </div>
+            <div style={{ display: "flex", alignItems: "center", flexShrink: 0, borderLeft: "1px solid var(--divider)", padding: "0 8px" }}>{header}</div>
           </div>
-          {header && <div style={{ flex: "0 1 auto", minWidth: 168 }}>{header}</div>}
-        </div>
+        ) : (
+          <div style={{ padding: 8, borderBottom: "1px solid var(--divider)", flexShrink: 0 }}>
+            <div className="input-wrap" style={{ padding: "7px 10px" }}>
+              <Icon name="search-2-line" size={16} style={{ color: "var(--icon-default)" }} />
+              <input autoFocus placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} />
+            </div>
+          </div>
+        )}
         <div style={{ overflowY: "auto", padding: 6 }}>
           {filtered.length === 0
             ? <div style={{ padding: "16px 10px", textAlign: "center", fontFamily: "var(--font-ui)", fontSize: 13, color: "var(--gray-400)" }}>{noDataText}</div>
@@ -79,19 +92,44 @@ function ComboPopover({ rect, options, search, setSearch, isSelected, onPick, on
   );
 }
 
-function Combobox({ value, onChange, options, placeholder = "Select option...", icon, noDataText, avatar, disabled, header }) {
+function Combobox({ value, onChange, options, placeholder = "Select option...", icon, noDataText, avatar, disabled, header, compact }) {
   const { ref, open, setOpen, rect } = usePopover();
   const [search, setSearch] = useState("");
   const opts = normOpts(options);
   const sel = opts.find(o => o.value === value) || (value ? { value, label: String(value) } : null);
   const close = () => { setOpen(false); setSearch(""); };
+  // compact — borderless, muted trigger used INSIDE another control's search row (e.g. the
+  // department filter of DesignationCombobox). Mirrors the shadcn ghost SelectTrigger.
+  if (compact) {
+    return (
+      <div ref={ref} style={{ position: "relative", flexShrink: 0 }}>
+        <button type="button" disabled={disabled} onClick={() => (open ? close() : setOpen(true))}
+          onMouseEnter={e => { e.currentTarget.style.color = "var(--gray-900)"; }}
+          onMouseLeave={e => { if (!open) e.currentTarget.style.color = sel ? "var(--gray-700)" : "var(--gray-500)"; }}
+          style={{ display: "inline-flex", alignItems: "center", gap: 6, border: 0, background: "none", borderRadius: 6,
+            padding: "6px 8px", cursor: "pointer", fontFamily: "var(--font-ui)", fontSize: 12, fontWeight: 500,
+            color: open ? "var(--gray-900)" : sel ? "var(--gray-700)" : "var(--gray-500)", maxWidth: 192, whiteSpace: "nowrap" }}>
+          <Icon name="filter-3-line" size={12} style={{ flexShrink: 0 }} />
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{sel ? sel.label : placeholder}</span>
+          <Icon name="arrow-down-s-line" size={14} style={{ flexShrink: 0, opacity: 0.5, transition: "transform .15s", transform: open ? "rotate(180deg)" : "none" }} />
+        </button>
+        {open && !disabled && (
+          <ComboPopover rect={rect} options={opts} search={search} setSearch={setSearch} noDataText={noDataText}
+            isSelected={v => v === value} onClose={close}
+            onPick={v => { onChange(v === value ? "" : v); close(); }} />
+        )}
+      </div>
+    );
+  }
   return (
     <div ref={ref} style={{ position: "relative" }}>
       <div className="input-wrap" style={{ cursor: disabled ? "not-allowed" : "pointer", background: disabled ? "var(--gray-50)" : undefined, opacity: disabled ? 0.7 : 1 }} onClick={() => { if (disabled) return; open ? close() : setOpen(true); }}>
         {icon && !(avatar && sel) && <Icon name={icon} size={18} style={{ color: "var(--icon-default)" }} />}
         {sel
-          ? <span style={{ flex: 1, display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "var(--font-control)", fontSize: 14, color: "var(--gray-900)" }}>
-              {sel.image ? <img src={sel.image} alt="" width={20} height={20} style={{ borderRadius: "50%" }} /> : avatar ? <Avatar name={sel.name || sel.label} size={20} /> : null}{sel.label}
+          ? <span style={{ flex: 1, minWidth: 0, display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "var(--font-control)", fontSize: 14, color: "var(--gray-900)" }}>
+              {sel.image ? <img src={sel.image} alt="" width={20} height={20} style={{ borderRadius: "50%" }} /> : avatar ? <Avatar name={sel.name || sel.label} size={20} /> : null}
+              <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{sel.label}</span>
+              {sel.sublabel && <span style={{ marginLeft: "auto", flexShrink: 1, minWidth: 0, fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{sel.sublabel}</span>}
             </span>
           : <span style={{ flex: 1, fontFamily: "var(--font-control)", fontSize: 14, color: "var(--gray-400)" }}>{placeholder}</span>}
         <Icon name="arrow-down-s-line" size={20} style={{ color: "var(--icon-default)", transition: "transform .15s", transform: open ? "rotate(180deg)" : "none" }} />

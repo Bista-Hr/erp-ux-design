@@ -5,7 +5,7 @@
 // "back" navigation; this card carries the title.
 //   <PageHeader title="Promotion Approval" subtitle="Review and approve or reject promotions."
 //     actions={<Button>…</Button>} />
-function PageHeader({ title, subtitle, icon, actions, style }) {
+function PageHeader({ title, subtitle, icon, actions, style, children }) {
   return (
     <div className="card" style={{ padding: "20px 24px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap", ...style }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, minWidth: 0 }}>
@@ -16,6 +16,7 @@ function PageHeader({ title, subtitle, icon, actions, style }) {
         </div>
       </div>
       {actions && <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>{actions}</div>}
+      {children && <div style={{ flexBasis: "100%", minWidth: 0 }}>{children}</div>}
     </div>
   );
 }

@@ -104,6 +104,13 @@ const EXIT_SEED = [
     source: "ESS (Employee)", status: "In Progress", interviewRequired: true, interviewDone: true,
     interviewLocation: "P&C Boardroom, Ridge", interviewDate: "Jun 24, 2026", interviewTime: "10:00 AM",
     clearance: freshClearance(["indebtedness", "leaveCash", "assets"]),
+    audit: [
+      { id: "a1-1", action: 0, description: "Resignation — effective Jun 30, 2026", actorName: "Aba Odum (ESS)", occurredAt: "2026-05-02T09:14:00Z", justificationReason: "Accepted a senior data science role at another institution offering broader responsibility and a clearer growth path. I remain committed to a smooth handover and will serve the full one-month notice period, documenting all in-flight models and dashboards for the team.", staffId: "EMP-18389" },
+      { id: "a1-2", action: 2, description: "Exit interview held at P&C Boardroom, Ridge", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-06-24T11:05:00Z", justificationReason: null, staffId: "EMP-18389" },
+      { id: "a1-3", action: 1, description: "Indebtedness & Final Settlement Spooling marked cleared", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-06-25T15:40:00Z", justificationReason: null, staffId: "EMP-18389" },
+      { id: "a1-4", action: 1, description: "Annual Leave Cash Impact Quantified marked cleared", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-06-26T10:02:00Z", justificationReason: null, staffId: "EMP-18389" },
+      { id: "a1-5", action: 1, description: "Asset Return / Retention marked cleared", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-06-27T16:18:00Z", justificationReason: null, staffId: "EMP-18389" },
+    ],
     documents: ["https://files.bistasol.com/exits/Resignation-Letter.pdf"] },
   { id: 2, employee: "Abass Abdul Mumin", staffId: "EMP-17431", exitType: "Retirement", exitDate: "Aug 15, 2026", dateSubmitted: "Jun 15, 2026",
     reason: "Attained Retirement Age", note: "Auto-triggered two months before attaining 60 years.",
@@ -111,12 +118,14 @@ const EXIT_SEED = [
     source: "System Auto-Trigger", status: "Pending", interviewRequired: true, interviewDone: false,
     interviewLocation: "", interviewDate: "", interviewTime: "",
     clearance: freshClearance([]),
+    audit: [{ id: "a2-1", action: 0, description: "Retirement — effective Aug 15, 2026", actorName: "System Auto-Trigger", occurredAt: "2026-06-15T06:00:00Z", justificationReason: "Auto-triggered two months ahead of the employee attaining the statutory retirement age of 60 years, per the retirement policy.", staffId: "EMP-17431" }],
     documents: ["https://files.bistasol.com/exits/Retirement-Notice.pdf"] },
   { id: 3, employee: "Samuel Boateng", staffId: "EMP-11002", exitType: "Termination", exitDate: "May 20, 2026", dateSubmitted: "May 06, 2026",
     reason: "Performance", note: "Termination following the performance improvement process.",
     title: "Sales Officer", dept: "Marketing", branch: "Kumasi", zone: "West Zone", grade: "Grade 1",
     source: "P&C/P&CBP", status: "Pending", interviewRequired: false, interviewDone: false,
     clearance: freshClearance([]),
+    audit: [{ id: "a3-1", action: 0, description: "Termination — effective May 20, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-06T14:22:00Z", justificationReason: "Termination following completion of the performance improvement process. Two consecutive PIP cycles closed below the required threshold despite documented coaching, revised targets and weekly check-ins with the line manager.", staffId: "EMP-11002" }],
     documents: ["https://files.bistasol.com/exits/Termination-Approval.pdf"] },
   { id: 4, employee: "Franklin Brobbey", staffId: "EMP-10231", exitType: "Resignation", exitDate: "Mar 31, 2026", dateSubmitted: "Feb 28, 2026",
     reason: "Relocation", note: "Relocating abroad with family.",
@@ -124,6 +133,12 @@ const EXIT_SEED = [
     source: "ESS (Employee)", status: "Closed", interviewRequired: true, interviewDone: true,
     interviewLocation: "Microsoft Teams (remote)", interviewDate: "Mar 26, 2026", interviewTime: "2:30 PM",
     clearance: freshClearance(CLEARANCE_TEMPLATE.map(c => c.key)),
+    audit: [
+      { id: "a4-1", action: 0, description: "Resignation — effective Mar 31, 2026", actorName: "Franklin Brobbey (ESS)", occurredAt: "2026-02-28T08:47:00Z", justificationReason: "Relocating abroad with family.", staffId: "EMP-10231" },
+      { id: "a4-2", action: 2, description: "Exit interview held remotely via Microsoft Teams", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-03-26T15:10:00Z", justificationReason: null, staffId: "EMP-10231" },
+      { id: "a4-3", action: 1, description: "All clearance items marked cleared", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-03-30T17:02:00Z", justificationReason: null, staffId: "EMP-10231" },
+      { id: "a4-4", action: 5, description: "All clearance points completed — exit process closed.", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-03-31T09:00:00Z", justificationReason: null, staffId: "EMP-10231" },
+    ],
     audit: [
       { id: "a4-1", action: 0, description: "Resignation — effective Mar 31, 2026", actorName: "Franklin Brobbey (ESS)", occurredAt: "2026-02-28T08:47:00Z", justificationReason: "Relocating abroad with family.", staffId: "EMP-10231" },
       { id: "a4-2", action: 2, description: "Exit interview held remotely via Microsoft Teams", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-03-26T15:10:00Z", justificationReason: null, staffId: "EMP-10231" },
@@ -643,6 +658,7 @@ function ExitScreen({ onToast, onSubPage, lookups }) {
         status: "Pending", interviewRequired: f.interviewRequired, interviewDone: false,
         interviewLocation: f.interviewLocation || "", interviewDate: f.interviewDate || "", interviewTime: f.interviewTime || "",
         clearance: freshClearance([]), documents: SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/exits/"),
+        audit: [{ id: pncAuditId(), action: 0, description: `${f.exitType} — effective ${f.exitDate}`, actorName: "Peter Bosrotsi (P&C)", occurredAt: new Date().toISOString(), justificationReason: f.reason || null, staffId: p.staffId || "—" }],
       }, ...es]);
       onToast("Exit Initiated", { tone: "success" });
       setView({ name: "list" });

@@ -35,7 +35,11 @@ const JOBTITLE_SEED = [
     reason: "Confirmation in substantive role following a successful acting period.",
     documents: ["https://files.bistasol.com/jobtitle/Confirmation-Letter.pdf"],
     approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: "5/16/2026, 2:08:34 PM",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [
+      { id: "jt1-1", action: 0, description: "Job title change submitted — Ag. Assurance Supervisor → Assurance Supervisor", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-14T10:00:00Z", justificationReason: "Confirmation in substantive role following a successful acting period.", staffId: "EMP-18330" },
+      { id: "jt1-2", action: 3, description: "Job title change approved", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-05-16T14:08:00Z", justificationReason: null, staffId: "EMP-18330" },
+    ] },
   { id: 2, employees: ["Bright Manu"], staffIds: "EMP-10876",
     previousTitle: "Software Engineer", newTitle: "Senior Software Engineer", grade: "Grade 3",
     department: "Information Technology", unit: "Engineering", zone: "East Zone", branch: "Tema",
@@ -43,7 +47,8 @@ const JOBTITLE_SEED = [
     reason: "Re-designation to reflect expanded technical leadership responsibilities.",
     documents: ["https://files.bistasol.com/jobtitle/Role-Justification.docx"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [{ id: "jt2-1", action: 0, description: "Job title change submitted — Software Engineer → Senior Software Engineer", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-10T09:30:00Z", justificationReason: "Re-designation to reflect expanded technical leadership responsibilities.", staffId: "EMP-10876" }] },
   { id: 3, employees: ["Emmanuel Ansah"], staffIds: "EMP-10412",
     previousTitle: "HR Officer", newTitle: "HR Generalist", grade: "Grade 2",
     department: "Human Resource", unit: "HR Operations", zone: "South Zone", branch: "Accra",
@@ -51,7 +56,8 @@ const JOBTITLE_SEED = [
     reason: "Title alignment with the new HR operating model and job architecture.",
     documents: ["https://files.bistasol.com/jobtitle/Job-Architecture-Memo.pdf"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" },
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [{ id: "jt3-1", action: 0, description: "Job title change submitted — HR Officer → HR Generalist", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-18T11:45:00Z", justificationReason: "Title alignment with the new HR operating model and job architecture.", staffId: "EMP-10412" }] },
   { id: 4, employees: ["Samuel Asante"], staffIds: "EMP-11233",
     previousTitle: "Teller", newTitle: "Senior Teller", grade: "Grade 1",
     department: "Finance", unit: "Retail", zone: "West Zone", branch: "Takoradi",
@@ -59,7 +65,12 @@ const JOBTITLE_SEED = [
     reason: "Proposed re-designation; deferred pending completion of the role-banding review.",
     documents: ["https://files.bistasol.com/jobtitle/Banding-Review.xlsx"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM" },
+    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM",
+    rejectionReason: "Deferred pending completion of the role-banding review — the Senior Teller band has not been ratified. Resubmit once the banding committee publishes the approved structure.",
+    audit: [
+      { id: "jt4-1", action: 0, description: "Job title change submitted — Teller → Senior Teller", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-04-12T10:10:00Z", justificationReason: "Proposed re-designation in recognition of consistent front-line performance.", staffId: "EMP-11233" },
+      { id: "jt4-2", action: 4, description: "Job title change rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-04-18T09:14:00Z", justificationReason: "Deferred pending completion of the role-banding review — the Senior Teller band has not been ratified. Resubmit once the banding committee publishes the approved structure.", staffId: "EMP-11233" },
+    ] },
 ];
 
 /* ---------- form section card (matches the Promotions full-page form) ---------- */
@@ -94,122 +105,100 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
     newTitle: initialData?.newTitle || "",
     grade: initialData?.grade || "",
     notch: initialData?.notch || "",
+    zone: initialData?.zone || "",
+    unitBranch: initialData?.unitBranch || "",
     date: "",
     reason: initialData?.reason || "",
   });
   const [docs, setDocs] = useJt({ keptUrls: initialData?.documents || [], newFiles: [] });
+  const [notifyIds, setNotifyIds] = useJt(initialData?.notifyIds || []);
   const set = (k, v) => setForm(s => ({ ...s, [k]: v }));
-  const selectDept = (v) => setForm(s => ({ ...s, department: v, newTitle: "" }));
-  const selectTitle = (v) => setForm(s => { const info = window.jobTitleInfo(v) || {}; const grade = info.grade || s.grade; return { ...s, newTitle: v, grade, notch: grade === s.grade ? s.notch : "" }; });
+  // Job title, grade and department are INDEPENDENT picks — titles are not tied to departments
+  // and picking a title never auto-populates the grade. The DesignationCombobox's built-in
+  // department filter only narrows its list.
+  const selectDept = (v) => set("department", v);
+  const selectTitle = (v) => set("newTitle", v);
   const selectGrade = (v) => setForm(s => ({ ...s, grade: v, notch: "" }));
-  const titleOptions = window.jobTitlesForDepartment(form.department);
-  const notchOptions = window.notchesForGrade(form.grade);
-  // Salary + allowances auto-fetched from Payroll once the title resolves grade + notch.
-  const payroll = window.fetchPayroll(form.grade, form.notch);
-  const salary = payroll ? payroll.salary : "";
-  const allowances = payroll ? payroll.allowances : [];
-  const valid = people.length > 0 && form.newTitle && form.date;
+  // A selected Zone filters the Unit/Branch list — changing zone clears a mismatched pick.
+  const selectZone = (v) => setForm(s => ({ ...s, zone: v, unitBranch: "" }));
+  const notchOptions = window.notchSalaryOptions(form.grade);
+  // Salary is resolved from (grade, notch) into a read-only field — same as Promotions/Transfers.
+  const jtPayroll = window.fetchPayroll(form.grade, (form.notch || "").split(" — ")[0]);
+  const jtSalary = jtPayroll ? jtPayroll.salary : "";
+  const hasDocs = (docs.keptUrls || []).length + (docs.newFiles || []).length > 0;
+  const valid = people.length > 0 && form.department && form.newTitle && form.grade && (notchOptions.length === 0 || form.notch)
+    && form.zone && form.unitBranch && form.date && form.reason.trim() && hasDocs;
   const multi = people.length > 1;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <PageHeader title={isEdit ? "Edit Job Title Change" : "Assign Job Title"}
-        subtitle={isEdit ? "Update this change of job title request."
+        subtitle={isEdit ? "Update this job title change request before approval."
           : "Select staff, choose the new job title and route the change for approval."} />
 
       <JtFormCard title="Employee Information">
         <Field label="Employee(s)">
           <EmployeeAddSelect value={people} onChange={setPeople} employees={EMP} />
         </Field>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 20 }}>
-          <Field label="New Job Title"><Combobox value={form.newTitle} onChange={selectTitle} options={titleOptions} placeholder="Select job title" header={<JobTitleFilterHeader department={form.department} onChange={selectDept} departments={LK.departments} />} noDataText="No job title found for this department." /></Field>
-        </div>
+      </JtFormCard>
+
+      <JtFormCard title="New Role Details">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Job Grade" optional><Combobox value={form.grade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
-          <Field label="Notch" optional><Combobox value={form.notch} onChange={v => set("notch", v)} options={notchOptions} icon="stack-line" placeholder={form.grade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-          <Field label="Effective Date"><UI.DatePicker value={form.date} onSelect={d => set("date", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
+          <Field label="New Department"><Combobox value={form.department} onChange={selectDept} options={LK.departments} icon="building-line" placeholder="Select new department" noDataText="No department found" /></Field>
+          <Field label="New Job Title"><DesignationCombobox value={form.newTitle} onChange={selectTitle} /></Field>
+          <Field label="Job Grade"><Combobox value={form.grade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
+          <Field label="Notch"><Combobox value={form.notch} onChange={v => set("notch", v)} options={notchOptions} icon="stack-line" placeholder={form.grade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
+          <Field label="Salary">
+            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
+              <Icon name="money-dollar-circle-line" size={18} style={{ color: "var(--icon-default)" }} />
+              <input value={jtSalary ? `${jtSalary} / month` : ""} readOnly placeholder="Auto from grade & notch" style={{ color: jtSalary ? "var(--gray-900)" : "var(--gray-400)" }} />
+            </div>
+          </Field>
+          <Field label="Zones"><Combobox value={form.zone} onChange={selectZone} options={LK.zones} placeholder="Select zone" noDataText="No zone found" /></Field>
+          <Field label="New Organizational Unit/Branch"><UnitBranchCombobox value={form.unitBranch} onChange={v => set("unitBranch", v)} zone={form.zone} onZoneChange={selectZone} zones={LK.zones} /></Field>
+          <Field label="Effective Date"><UI.DatePicker weekendRule value={form.date} onSelect={d => set("date", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
         </div>
       </JtFormCard>
 
-      <ResolvedRoleBenefits grade={form.grade} salary={salary} allowances={allowances} />
-
       <JtFormCard title="Comments & Documents">
-        <Field label="Comments" optional><UI.RichText value={form.reason} onChange={v => set("reason", v)} placeholder="Add comments for this change of job title…" /></Field>
+        <Field label="Comments"><UI.RichText value={form.reason} onChange={v => set("reason", v)} placeholder="Add comments for this change of job title…" /></Field>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Supporting Documents</label>
           <SupportingDocuments existingUrls={initialData?.documents || []} isEditMode={isEdit} onChange={setDocs} maxFiles={8} maxSizeMB={8} />
+          {!hasDocs && <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>At least one supporting document is required before this request can be submitted.</span>}
         </div>
+      </JtFormCard>
+
+      <JtFormCard title="Notification">
+        <NotifyPeopleField value={notifyIds} onChange={setNotifyIds} employees={EMP} />
       </JtFormCard>
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
         <Button variant="primary" icon={isEdit ? "check-line" : "user-add-line"} disabled={!valid}
-          onClick={() => valid && onSubmit({ names: people, title: form.newTitle, grade: form.grade, notch: form.notch, date: form.date, reason: form.reason, docs, editId: initialData?.id })}>
-          {isEdit ? "Save Changes" : (multi ? `Assign Job Title to ${people.length}` : "Assign Job Title")}
+          onClick={() => valid && onSubmit({ names: people, department: form.department, title: form.newTitle, grade: form.grade, notch: form.notch, zone: form.zone, unitBranch: form.unitBranch, notifyIds, date: form.date, reason: form.reason, docs, editId: initialData?.id })}>
+          {isEdit ? "Update Request" : (multi ? `Assign Job Title to ${people.length}` : "Assign Job Title")}
         </Button>
       </div>
     </div>
   );
 }
 
-/* ---------- employee roster (checkboxes; bulk action lives in the floating bar) ---------- */
-function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, setSegment, title, subtitle, headerAction }) {
-  const EMP = window.EMPLOYEE_LIST;
-  const [menu, setMenu] = useJt(null);
-  const shown = EMP.filter(e => {
-    if (q === "") return true;
-    return `${e.name} ${e.staffId} ${e.title} ${e.dept}`.toLowerCase().includes(q.toLowerCase());
-  });
-  const shownIds = shown.map(e => e.id);
-  const toggle = (id) => setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
-  const allShownSelected = shown.length > 0 && shownIds.every(id => selected.includes(id));
-  const toggleAll = () => setSelected(allShownSelected ? selected.filter(id => !shownIds.includes(id)) : [...new Set([...selected, ...shownIds])]);
-  const pg = usePaged(shown, 10);
-
+/* ---------- employee roster (shared EmployeeSelectionRoster — single source of truth) ---------- */
+function JobTitleRoster({ q, setQ, onCreate, segment, setSegment, title, subtitle, headerAction }) {
+  const rows = window.EMPLOYEE_LIST.map(e => ({
+    id: e.id, name: e.name, employeeNumber: e.staffId, jobTitle: e.title,
+    jobGrade: e.grade, department: e.dept, branch: e.branch, profilePictureUrl: e.profilePictureUrl || "",
+  }));
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
       <div className="card" style={{ padding: 20 }}>
         <div className="bh-tablebox">
-        <UI.FilterBar left={<Segmented items={["Assign", "Requests"]} active={segment} onChange={setSegment} />}
+        <UI.FilterBar left={<Segmented items={["Request", "Approvals"]} active={segment} onChange={setSegment} />}
           search={q} onSearch={setQ} searchPlaceholder="Search staff…" />
-        <table className="bh">
-          <thead><tr>
-            <th style={{ width: 44 }}><Checkbox checked={allShownSelected} onChange={toggleAll} /></th>
-            <th>Full Name</th><th>Employee ID</th><th>Current Job Title</th><th>Department</th><th>Unit/Branch</th><th>Zone</th><th style={{ width: 48 }}></th>
-          </tr></thead>
-          <tbody>
-            {pg.pageItems.map(e => {
-              const on = selected.includes(e.id);
-              return (
-                <tr key={e.id} className="jt-roster-row" style={{ cursor: "pointer", background: on ? "#FFFBEB" : undefined }} onClick={() => toggle(e.id)}>
-                  <td onClick={ev => ev.stopPropagation()}><Checkbox checked={on} onChange={() => toggle(e.id)} /></td>
-                  <td>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-                      <Avatar name={e.name} size={32} />
-                      <span style={{ display: "flex", flexDirection: "column" }}>
-                        <span style={{ fontWeight: 500, color: "var(--gray-900)" }}>{e.name}</span>
-                        <span style={{ fontSize: 12, color: "var(--gray-400)" }}>{jtEmail(e.name)}</span>
-                      </span>
-                    </span>
-                  </td>
-                  <td>{e.staffId}</td>
-                  <td>{e.title}</td>
-                  <td>{e.dept}</td>
-                  <td>{[e.unit, e.branch].filter(Boolean).join(" · ") || "—"}</td>
-                  <td>{e.zone || "—"}</td>
-                  <td style={{ textAlign: "right" }} onClick={ev => ev.stopPropagation()}>
-                    <UI.RowActions actions={[{ label: "Assign Job Title", short: "Assign", icon: "user-add-line", onClick: () => onAssignOne(e.id) }]} />
-                  </td>
-                </tr>
-              );
-            })}
-            {shown.length === 0 && <tr><td colSpan={8} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No staff matches your search." /></td></tr>}
-          </tbody>
-        </table>
-      {shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
+        <EmployeeSelectionRoster employees={rows} itemLabel="staff"
+          actionLabel="Assign Job Title" onProceed={onCreate} searchQuery={q} />
         </div>
       </div>
     </div>
@@ -219,17 +208,15 @@ function JobTitleRoster({ q, setQ, selected, setSelected, onAssignOne, segment, 
 /* ---------- requests list (approval queue) ---------- */
 function JobTitleList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
   const [menu, setMenu] = useJt(null);
-  const JT_BLANK = { status: "", department: "", unit: "", zone: "", grade: "" };
+  const JT_BLANK = { status: "", department: "", archived: "" };
   const [draft, setDraft] = useJt(JT_BLANK);
   const [applied, setApplied] = useJt(JT_BLANK);
   const optsOf = (key) => [...new Set(rows.map(r => r[key]).filter(Boolean))].sort();
   const shown = rows.filter(r => {
+    if (r.archived && applied.archived !== "Include archived") return false;
     if (q !== "" && !(r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newTitle.toLowerCase().includes(q.toLowerCase()))) return false;
     if (applied.status && r.status !== applied.status) return false;
     if (applied.department && r.department !== applied.department) return false;
-    if (applied.unit && r.unit !== applied.unit) return false;
-    if (applied.zone && r.zone !== applied.zone) return false;
-    if (applied.grade && r.grade !== applied.grade) return false;
     return true;
   });
   const pg = usePaged(shown, 10);
@@ -242,17 +229,15 @@ function JobTitleList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSe
       <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
       <div className="card" style={{ padding: 20 }}>
         <div className="bh-tablebox">
-        <UI.FilterBar left={<Segmented items={["Assign", "Requests"]} active={segment} onChange={setSegment} />}
+        <UI.FilterBar left={<Segmented items={["Request", "Approvals"]} active={segment} onChange={setSegment} />}
           search={q} onSearch={setQ} searchPlaceholder="Search job title changes…"
           filters={[
             { label: "Status", node: <Combobox value={draft.status} onChange={v => setDraft(s => ({ ...s, status: v }))} options={["Pending", "Approved", "Declined"]} placeholder="All statuses" /> },
             { label: "Department", node: <Combobox value={draft.department} onChange={v => setDraft(s => ({ ...s, department: v }))} options={optsOf("department")} placeholder="All departments" /> },
-            { label: "Unit/Branch", node: <Combobox value={draft.unit} onChange={v => setDraft(s => ({ ...s, unit: v }))} options={optsOf("unit")} placeholder="All units/branches" /> },
-            { label: "Zone", node: <Combobox value={draft.zone} onChange={v => setDraft(s => ({ ...s, zone: v }))} options={optsOf("zone")} placeholder="All zones" /> },
-            { label: "Job Grade", node: <Combobox value={draft.grade} onChange={v => setDraft(s => ({ ...s, grade: v }))} options={optsOf("grade")} placeholder="All grades" /> },
+            { label: "Archived Requests", node: <Combobox value={draft.archived} onChange={v => setDraft(s => ({ ...s, archived: v }))} options={["Include archived"]} placeholder="Exclude archived" /> },
           ]}
           onReset={() => { setDraft(JT_BLANK); setApplied(JT_BLANK); }}
-          onApply={() => setApplied(draft)} />
+          onApply={() => setApplied(draft)} activeCount={Object.values(applied).filter(Boolean).length} />
         {rows.length === 0
           ? <EmptyState title="No assignments yet" subtitle="Assign a job title from the Assign tab to create a request." />
           : <table className="bh">
@@ -287,10 +272,15 @@ function JobTitleList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSe
                     <td><StatusBadge variant={JT_STATUS_VARIANT[r.status]} text={r.status} size="sm" /></td>
                     <td>{r.approvedBy && r.approvedBy !== "N/A" ? r.approvedBy : "—"}</td>
                     <td style={{ textAlign: "right" }} onClick={e => e.stopPropagation()}>
-                      <UI.RowActions actions={[
+                      <UI.RowActions forceMenu actions={r.status === "Pending" ? [
                         { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
-                        { label: "Edit Request", short: "Edit", icon: "edit-2-line", onClick: () => onEdit(r) },
-                        { label: "Archive Request", short: "Archive", icon: "archive-line", danger: true, onClick: () => onArchive(r) },
+                        { label: "Edit Details", short: "Edit", icon: "edit-2-line", onClick: () => onEdit(r) },
+                        { label: "Archive", short: "Archive", icon: "archive-line", danger: true, onClick: () => onArchive(r) },
+                      ] : r.status === "Declined" ? [
+                        { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
+                        { label: "Review & Edit", short: "Review", icon: "edit-2-line", onClick: () => onEdit(r) },
+                      ] : [
+                        { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
                       ]} />
                     </td>
                   </tr>
@@ -307,13 +297,16 @@ function JobTitleList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSe
 }
 
 /* ---------- details — "Job Title Change Approval" ---------- */
-function JobTitleDetails({ record, onApprove, onReject, onUpdate, onToast }) {
+function JobTitleDetails({ record, onApprove, onReject, onEdit, onAccept, onUpdate, onToast }) {
   const r = record;
+  const [rejectOpen, setRejectOpen] = useJt(false);
+  const [trailOpen, setTrailOpen] = useJt(false);
   const info = [
     { label: "Employee Name", value: r.employees.join(", ") },
     { label: "Previous Job Title", value: r.previousTitle },
     { label: "New Job Title", value: r.newTitle },
     { label: "Job Grade", value: r.grade || "—" },
+    { label: "Notch", value: r.notch || "—" },
     { label: "Department", value: r.department },
     { label: "Unit/Branch", value: [r.unit, r.branch].filter(Boolean).join(" · ") || "—" },
     { label: "Zone", value: r.zone },
@@ -330,12 +323,15 @@ function JobTitleDetails({ record, onApprove, onReject, onUpdate, onToast }) {
         actions={
           <React.Fragment>
             <StatusBadge variant={JT_STATUS_VARIANT[r.status]} text={r.status} />
+            <Button variant="stroke" icon="history-line" onClick={() => setTrailOpen(true)}>Audit Trail</Button>
             {pending && (
               <React.Fragment>
-                <Button variant="stroke" icon="close-line" onClick={() => onReject(r)}>Reject</Button>
+                <Button variant="stroke" icon="close-line" onClick={() => setRejectOpen(true)} style={{ color: "#DC2626", borderColor: "#F3C2C2" }}>Reject</Button>
                 <Button variant="primary" icon="check-line" onClick={() => onApprove(r)}>Approve</Button>
               </React.Fragment>
             )}
+            {r.status === "Declined" && <Button variant="primary" icon="edit-2-line" onClick={() => onEdit(r)}>Review & Edit</Button>}
+            {r.status === "Approved" && !r.accepted && <Button variant="primary" icon="user-follow-line" onClick={() => onAccept(r)}>Record Employee Acceptance</Button>}
           </React.Fragment>
         } />
 
@@ -359,7 +355,21 @@ function JobTitleDetails({ record, onApprove, onReject, onUpdate, onToast }) {
         <DetailCard icon="shield-check-line" title="Approval Information"><DetailPanel items={approvalInfo} tint="gray" cols={3} /></DetailCard>
       </div>
 
-      <WorkflowPanel workflowType="JobTitle" record={r} onChange={(partial) => onUpdate(partial)} onToast={onToast} />
+      {r.rejectionReason && (
+        <div className="card" style={{ padding: 0 }}>
+          <DetailCard icon="error-warning-line" title="Reason For Rejection">
+            <div style={{ background: "#FEF2F2", border: "1px solid #FBD9D9", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }}>{r.rejectionReason}</div>
+          </DetailCard>
+        </div>
+      )}
+
+      <RejectionReasonModal open={rejectOpen} onClose={() => setRejectOpen(false)}
+        title="Reject Job Title Change" noun="job title change"
+        onConfirm={(reason) => { setRejectOpen(false); onReject(r, reason); }} />
+
+      <AuditTrailDrawer open={trailOpen} onClose={() => setTrailOpen(false)} name={r.employees[0]}
+        sub={`${r.staffIds} · ${r.newTitle}`} badge={<StatusBadge variant={JT_STATUS_VARIANT[r.status]} text={r.status} />}
+        entries={r.audit || []} />
     </div>
   );
 }
@@ -368,11 +378,9 @@ function JobTitleDetails({ record, onApprove, onReject, onUpdate, onToast }) {
 function JobTitleScreen({ onToast, onSubPage, lookups }) {
   const DIR = window.EMPLOYEE_DIRECTORY;
   const [records, setRecords] = useJt(JOBTITLE_SEED);
-  const [segment, setSegment] = useJt("Assign");   // Assign (roster) | Requests
+  const [segment, setSegment] = useJt("Request");   // Request (roster) | Approvals
   const [rosterQ, setRosterQ] = useJt("");
-  const [selected, setSelected] = useJt([]);
   const [approvalSel, setApprovalSel] = useJt([]);
-  const [lastCount, setLastCount] = useJt(0);        // held count so the bar shows it while sliding out
   const [q, setQ] = useJt("");
   const [view, setView] = useJt({ name: "list" });   // list | add | edit | details
   const [confirm, setConfirm] = useJt(null);
@@ -387,66 +395,84 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
     return () => onSubPage(null);
   }, [view]);
 
-  useJtEffect(() => { if (selected.length) setLastCount(selected.length); }, [selected.length]);
-
   const current = view.name === "details" ? records.find(r => r.id === view.id) : null;
   const editing = view.name === "edit" ? records.find(r => r.id === view.id) : null;
 
-  const submitAssign = (f) => setConfirm({ kind: "assign", form: f });
+  // Demotion guard: warn (Proceed Anyway / Cancel) before the normal submit confirmation
+  // when the picked grade/notch ranks below an employee's current placement.
+  const submitAssign = (f) => {
+    const next = () => setConfirm({ kind: "assign", form: f });
+    const hits = window.demotionCheck({ employeeIds: f.names, grade: f.grade, notch: f.notch });
+    if (hits.length) window.confirmDemotion({ items: hits, noun: "job title change", onProceed: next });
+    else next();
+  };
   const runConfirm = () => {
     const c = confirm;
     if (c.kind === "assign") {
       const f = c.form;
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/jobtitle/");
       if (f.editId) {
-        setRecords(rs => rs.map(r => r.id === f.editId ? { ...r, employees: f.names.map(id => (window.EMP_BY_ID[id] || {}).name || id), staffIds: f.names.join(", "), newTitle: f.title, grade: f.grade || r.grade,
-          effectiveDate: fmtJtDate(f.date), reason: f.reason || "", approvers: f.approvers || [], documents: allDocs } : r));
-        onToast("Job Title Change Updated", { tone: "success" });
+        const wasDeclined = (records.find(r => r.id === f.editId) || {}).status === "Declined";
+        setRecords(rs => rs.map(r => r.id === f.editId ? { ...r, employees: f.names.map(id => (window.EMP_BY_ID[id] || {}).name || id), staffIds: f.names.join(", "), newTitle: f.title, grade: f.grade || r.grade, notch: f.notch || r.notch, zone: f.zone || r.zone, branch: f.unitBranch || r.branch,
+          notifyIds: f.notifyIds || r.notifyIds || [],
+          effectiveDate: fmtJtDate(f.date), reason: f.reason || "", approvers: f.approvers || [], documents: allDocs,
+          ...(wasDeclined ? { status: "Pending", wfStatus: "Pending", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A", rejectionReason: "", accepted: false } : {}),
+          audit: [...(r.audit || []), pncEntry({ action: wasDeclined ? 6 : 1, description: wasDeclined ? "Request revised and resubmitted for approval after rejection review" : "Request details updated", justificationReason: f.reason, staffId: r.staffIds })] } : r));
+        onToast(wasDeclined ? "Job Title Change Resubmitted" : "Job Title Change Updated", { tone: "success" });
         setView({ name: "list" });
         setConfirm(null); return;
       }
       const recs = f.names.map(id => {
         const e = window.EMP_BY_ID[id] || {};
         return { id: jtId(), employees: [e.name || id], staffIds: e.staffId || id,
-          previousTitle: e.title || "—", newTitle: f.title, grade: f.grade || e.grade || "—",
-          department: e.dept || "—", unit: e.unit || "—", zone: e.zone || "—", branch: e.branch || "—",
+          previousTitle: e.title || "—", newTitle: f.title, grade: f.grade || e.grade || "—", notch: f.notch || "—",
+          department: e.dept || "—", unit: e.unit || "—", zone: f.zone || e.zone || "—", branch: f.unitBranch || e.branch || "—",
+          notifyIds: f.notifyIds || [],
           effectiveDate: fmtJtDate(f.date), dateSubmitted: todayJt(), status: "Pending",
           reason: f.reason || "", documents: allDocs, approvers: f.approvers || [],
-          approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A" };
+          approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+          audit: [pncEntry({ action: 0, description: `Job title change submitted — ${e.title || "—"} → ${f.title}`, justificationReason: f.reason, staffId: e.staffId || id })] };
       });
       setRecords(rs => [...recs, ...rs]);
       onToast(f.names.length > 1 ? `Job Title Assigned to ${f.names.length} Employees` : "Job Title Assigned", { tone: "success" });
-      setSelected([]); setView({ name: "list" }); setSegment("Requests");
+      setView({ name: "list" }); setSegment("Approvals");
     } else if (c.kind === "archive") {
-      setRecords(rs => rs.filter(r => r.id !== c.row.id));
+      setRecords(rs => rs.map(r => r.id === c.row.id ? { ...r, archived: true } : r));
       onToast("Job Title Change Archived", { tone: "error" });
       setView({ name: "list" });
     } else if (c.kind === "approve") {
       const now = new Date().toLocaleString("en-US");
-      const stamp = window.wfNow();
       setRecords(rs => rs.map(r => r.id === c.row.id ? { ...r, status: "Approved", wfStatus: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
-        audit: [...(r.audit || []), { action: "Job title change approved", decision: "Approved", actor: "Peter Bosrotsi (Head P&C)", at: stamp }] } : r));
+        audit: [...(r.audit || []), pncEntry({ action: 3, description: "Job title change approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: r.staffIds })] } : r));
       onToast("Job Title Change Approved", { tone: "success" });
-    } else if (c.kind === "reject") {
-      const now = new Date().toLocaleString("en-US");
-      const stamp = window.wfNow();
-      setRecords(rs => rs.map(r => r.id === c.row.id ? { ...r, status: "Declined", wfStatus: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now,
-        audit: [...(r.audit || []), { action: "Job title change declined", decision: "Declined", actor: "Peter Bosrotsi (Head P&C)", at: stamp }] } : r));
-      onToast("Job Title Change Rejected", { tone: "error" });
+    } else if (c.kind === "accept") {
+      setRecords(rs => rs.map(r => r.id === c.row.id ? { ...r, accepted: true,
+        audit: [...(r.audit || []), pncEntry({ action: 7, description: "Employee accepted the job title change", actorName: `${r.employees[0]} (Employee)`, staffId: r.staffIds })] } : r));
+      onToast("Employee Acceptance Recorded", { tone: "success" });
     } else if (c.kind === "bulkApprove") {
       const now = new Date().toLocaleString("en-US");
       const ids = c.ids;
-      setRecords(rs => rs.map(r => ids.includes(r.id) ? { ...r, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now } : r));
+      setRecords(rs => rs.map(r => ids.includes(r.id) ? { ...r, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
+        audit: [...(r.audit || []), pncEntry({ action: 3, description: "Job title change approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: r.staffIds })] } : r));
       onToast(`${ids.length} Job Title Change${ids.length > 1 ? "s" : ""} Approved`, { tone: "success" });
       setApprovalSel([]);
     } else if (c.kind === "bulkReject") {
       const now = new Date().toLocaleString("en-US");
       const ids = c.ids;
-      setRecords(rs => rs.map(r => ids.includes(r.id) ? { ...r, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now } : r));
+      setRecords(rs => rs.map(r => ids.includes(r.id) ? { ...r, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now,
+        audit: [...(r.audit || []), pncEntry({ action: 4, description: "Job title change rejected", actorName: "Peter Bosrotsi (Head P&C)", staffId: r.staffIds })] } : r));
       onToast(`${ids.length} Job Title Change${ids.length > 1 ? "s" : ""} Rejected`, { tone: "error" });
       setApprovalSel([]);
     }
     setConfirm(null);
+  };
+
+  // reject from the detail page with a captured reason — commits immediately + logs the trail
+  const rejectWithReason = (row, reason) => {
+    const now = new Date().toLocaleString("en-US");
+    setRecords(rs => rs.map(r => r.id === row.id ? { ...r, status: "Declined", wfStatus: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now, rejectionReason: reason,
+      audit: [...(r.audit || []), pncEntry({ action: 4, description: "Job title change rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", justificationReason: reason, staffId: r.staffIds })] } : r));
+    onToast("Job Title Change Rejected", { tone: "error" });
   };
 
   let body;
@@ -456,15 +482,16 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
     body = <JobTitleForm lookups={lookups} initialData={editing} onCancel={() => setView({ name: "list" })} onSubmit={submitAssign} />;
   } else if (view.name === "details" && current) {
     body = <JobTitleDetails record={current}
-      onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={(r) => setConfirm({ kind: "reject", row: r })}
+      onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={rejectWithReason}
+      onEdit={(r) => setView({ name: "edit", id: r.id })} onAccept={(r) => setConfirm({ kind: "accept", row: r })}
       onUpdate={(partial) => setRecords(rs => rs.map(x => x.id === current.id ? { ...x, ...partial } : x))} onToast={onToast} />;
   } else {
-    const addAction = <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add", initialEmployees: [] })}>Add Job Title</Button>;
+    const addAction = <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add", initialEmployees: [] })}>Assign Job Title</Button>;
     body = (
       <React.Fragment>
-        {segment === "Assign"
-          ? <JobTitleRoster q={rosterQ} setQ={setRosterQ} selected={selected} setSelected={setSelected}
-              onAssignOne={(n) => setView({ name: "add", initialEmployees: [n] })} segment={segment} setSegment={setSegment}
+        {segment === "Request"
+          ? <JobTitleRoster q={rosterQ} setQ={setRosterQ}
+              onCreate={(ids) => setView({ name: "add", initialEmployees: ids })} segment={segment} setSegment={setSegment}
               title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status."
               headerAction={addAction} />
           : <JobTitleList rows={records} q={q} setQ={setQ}
@@ -480,7 +507,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
     assign:  { t: "Assign Job Title", m: "assign this job title", l: "Yes, Assign", i: "user-add-line", c: "Cancel" },
     archive: { t: "Archive Job Title Change", m: "archive this job title change", l: "Yes, Archive", i: "archive-line", c: "No" },
     approve: { t: "Approve Job Title Change", m: "approve this job title change", l: "Yes, Approve", i: "check-line", c: "No" },
-    reject:  { t: "Reject Job Title Change", m: "reject this job title change", l: "Yes, Reject", i: "close-line", c: "No" },
+    accept:  { t: "Record Employee Acceptance", m: "record that the employee has accepted this job title change", l: "Yes, Record", i: "user-follow-line", c: "No" },
     bulkApprove: { t: "Approve Job Title Changes", m: "approve", l: "Yes, Approve", i: "check-line", c: "No" },
     bulkReject:  { t: "Reject Job Title Changes", m: "reject", l: "Yes, Reject", i: "close-line", c: "No" },
   };
@@ -498,23 +525,13 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
     return `Are you sure you want to ${CONFIRM[c.kind].m}?`;
   };
 
-  const barVisible = view.name === "list" && segment === "Assign" && selected.length > 0;
-  const barCount = selected.length || lastCount;
-  const approvalBarVisible = view.name === "list" && segment === "Requests" && approvalSel.length > 0;
+  const approvalBarVisible = view.name === "list" && segment === "Approvals" && approvalSel.length > 0;
 
   return (
     <React.Fragment>
       {body}
 
-      {/* floating bulk-assign bar (fixed bottom-right, animates in/out; count pops) */}
-      <div className={`jt-assignbar ${barVisible ? "" : "hidden"}`}>
-        <span className="jt-count" key={barCount}>{barCount}</span>
-        <span style={{ fontFamily: "var(--font-ui)", fontSize: 14, color: "var(--gray-700)" }}>staff selected</span>
-        <button className="jt-clear" onClick={() => setSelected([])}>Clear</button>
-        <Button variant="primary" icon="user-add-line" onClick={() => setView({ name: "add", initialEmployees: selected })}>Assign Job Title</Button>
-      </div>
-
-      {/* floating bulk-approval bar (Requests queue) */}
+      {/* floating bulk-approval bar (Approvals queue) */}
       <BulkBar count={approvalSel.length} noun="changes selected" visible={approvalBarVisible} onClear={() => setApprovalSel([])}>
         <Button variant="stroke" icon="close-line" onClick={() => setConfirm({ kind: "bulkReject", ids: approvalSel })}>Reject</Button>
         <Button variant="primary" icon="check-line" onClick={() => setConfirm({ kind: "bulkApprove", ids: approvalSel })}>Approve</Button>

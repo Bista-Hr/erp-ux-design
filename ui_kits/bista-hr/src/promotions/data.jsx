@@ -27,6 +27,31 @@ EMPLOYEE_LIST.push({ id: "EMP-20114", name: "Samuel Boateng", staffId: "EMP-2011
   grade: "Grade 1", dept: "Operations", unit: "Field Operations", zone: "East Zone", branch: "Tema", salary: "GHS 4,300.00", rating: "Good" });
 const EMP_BY_ID = {};
 EMPLOYEE_LIST.forEach(e => { EMP_BY_ID[e.id] = e; });
+// MOCK: default profile pictures for a handful of employees (stable stock faces) — the rest
+// keep initials avatars, so both drawer/preview states are demoable.
+const MOCK_PROFILE_PICS = {
+  "EMP-18330": "https://i.pravatar.cc/512?img=12",
+  "EMP-18389": "https://i.pravatar.cc/512?img=47",
+  "EMP-10876": "https://i.pravatar.cc/512?img=33",
+  "EMP-11002": "https://i.pravatar.cc/512?img=15",
+  "EMP-10412": "https://i.pravatar.cc/512?img=53",
+};
+// MOCK: promotion-relevant employment fields (mirrors the employee API record: notch,
+// reportingManager, dateEmployed, employmentType, yearsOfService, isConfirmed). Deterministic
+// from the staff-id digits so values are stable & demoable across reloads.
+EMPLOYEE_LIST.forEach((e, i) => {
+  const n = parseInt(e.staffId.replace(/\D/g, ""), 10) || 0;
+  if (!e.profilePictureUrl) e.profilePictureUrl = MOCK_PROFILE_PICS[e.staffId] || "";
+  if (!e.notch) e.notch = "Notch " + (1 + n % 3);
+  if (!e.reportingManager) e.reportingManager = EMPLOYEE_LIST[(i + 1) % EMPLOYEE_LIST.length].name;
+  if (!e.dateEmployed) {
+    const y = 2016 + (n % 9);
+    e.dateEmployed = new Date(y, n % 12, 1 + (n % 27)).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+    e.yearsOfService = Math.max(0, 2026 - y);
+  }
+  if (!e.employmentType) e.employmentType = n % 4 === 0 ? "Contract" : "Full Time";
+  if (e.isConfirmed == null) e.isConfirmed = n % 5 !== 0;
+});
 // first staff id matching a name — used to migrate legacy name-based records to ids on edit
 const firstIdForName = (name) => (EMPLOYEE_LIST.find(e => e.name === name) || {}).id;
 
@@ -79,6 +104,10 @@ const PROMOTION_SEED = [
     previousSalary: "GHS 8,000.00", salary: "GHS 9,200.00", performanceRating: "Very Good",
     effectiveDate: "Jun 01, 2026", dateSubmitted: "May 14, 2026", status: "Approved",
     justification: "Consistently strong assurance performance and readiness for a broader operational remit.",
+    audit: [
+      { id: "pr1-1", action: 0, description: "Promotion request submitted — Ag. Assurance Supervisor → Branch Support", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-14T10:00:00Z", justificationReason: "Consistently strong assurance performance and readiness for a broader operational remit.", staffId: "EMP-18330" },
+      { id: "pr1-2", action: 3, description: "Promotion approved", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-05-16T14:08:00Z", justificationReason: null, staffId: "EMP-18330" },
+    ],
     allowances: [], documents: [PROMO_DOC("Promotion Recommendation.pdf", "PDF", "1.2 MB", "Reference Letter"), PROMO_DOC("Performance Summary.xlsx", "XLSX", "84 KB", "Other")],
     docUrls: [
       "https://files.bistasol.com/promotions/Promotion-Recommendation.pdf",
@@ -127,7 +156,12 @@ const PROMOTION_SEED = [
     justification: "Recommended for promotion based on sales targets met over four consecutive quarters.",
     allowances: [], documents: [PROMO_DOC("Sales Record.xlsx", "XLSX", "210 KB", "Other")],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM" },
+    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM",
+    rejectionReason: "Budget headroom for Grade 2 in Marketing is exhausted for this cycle. Revisit with the Q3 budget or restate the case at the current grade with a notch adjustment, then resubmit.",
+    audit: [
+      { id: "pr5-1", action: 0, description: "Promotion request submitted — Sales Officer → Senior Sales Officer", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-04-12T10:05:00Z", justificationReason: "Recommended for promotion based on sales targets met over four consecutive quarters.", staffId: "EMP-11002" },
+      { id: "pr5-2", action: 4, description: "Promotion rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-04-18T09:14:00Z", justificationReason: "Budget headroom for Grade 2 in Marketing is exhausted for this cycle. Revisit with the Q3 budget or restate the case at the current grade with a notch adjustment, then resubmit.", staffId: "EMP-11002" },
+    ] },
 ];
 
 Object.assign(window, { EMPLOYEE_DIRECTORY, EMPLOYEE_NAMES, EMPLOYEE_LIST, EMP_BY_ID, firstIdForName, NOTCHES, notchesForGrade, gradeNotchCount, fetchPayroll, PROMOTION_SEED });
@@ -157,3 +191,10 @@ function jobTitleInfo(title) {
   return { department: r.department || "", grade: r.grade || "", notch: r.notch || "Notch 1" };
 }
 Object.assign(window, { JOB_TITLE_FALLBACK, jobTitlesForDepartment, jobTitleInfo });
+
+// Notch options stay PLAIN ("Notch 1") — matches production: salary lives in its own
+// read-only Salary field resolved from (grade, notch), not inline in the notch label.
+function notchSalaryOptions(grade) {
+  return notchesForGrade(grade);
+}
+Object.assign(window, { notchSalaryOptions });
