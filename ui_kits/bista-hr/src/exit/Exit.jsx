@@ -139,12 +139,6 @@ const EXIT_SEED = [
       { id: "a4-3", action: 1, description: "All clearance items marked cleared", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-03-30T17:02:00Z", justificationReason: null, staffId: "EMP-10231" },
       { id: "a4-4", action: 5, description: "All clearance points completed — exit process closed.", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-03-31T09:00:00Z", justificationReason: null, staffId: "EMP-10231" },
     ],
-    audit: [
-      { id: "a4-1", action: 0, description: "Resignation — effective Mar 31, 2026", actorName: "Franklin Brobbey (ESS)", occurredAt: "2026-02-28T08:47:00Z", justificationReason: "Relocating abroad with family.", staffId: "EMP-10231" },
-      { id: "a4-2", action: 2, description: "Exit interview held remotely via Microsoft Teams", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-03-26T15:10:00Z", justificationReason: null, staffId: "EMP-10231" },
-      { id: "a4-3", action: 1, description: "All clearance items marked cleared", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-03-30T17:02:00Z", justificationReason: null, staffId: "EMP-10231" },
-      { id: "a4-4", action: 5, description: "All clearance points completed — exit process closed.", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-03-31T09:00:00Z", justificationReason: null, staffId: "EMP-10231" },
-    ],
     documents: ["https://files.bistasol.com/exits/Resignation-Letter.pdf", "https://files.bistasol.com/exits/Clearance-Form.pdf"] },
   { id: 5, employee: "Efua Mensimah", staffId: "EMP-14567", exitType: "Resignation", exitDate: "Jul 15, 2026", dateSubmitted: "Jun 01, 2026",
     reason: "Personal Reasons", note: "",
