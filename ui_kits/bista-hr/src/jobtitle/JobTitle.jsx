@@ -16,7 +16,7 @@ const { useState: useJt, useEffect: useJtEffect } = React;
 
 let JT_SEQ = 850;
 const jtId = () => ++JT_SEQ;
-const JT_STATUS_VARIANT = { Approved: "approved", Pending: "pending", Declined: "rejected" };
+const JT_STATUS_VARIANT = { Approved: "approved", Pending: "pending", Rejected: "rejected", Returned: "returned", Draft: "draft" };
 const todayJt = () => new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 const fmtJtDate = (v) => {
   if (!v) return "—";
@@ -34,11 +34,11 @@ const JOBTITLE_SEED = [
     effectiveDate: "Jun 01, 2026", dateSubmitted: "May 14, 2026", status: "Approved",
     reason: "Confirmation in substantive role following a successful acting period.",
     documents: ["https://files.bistasol.com/jobtitle/Confirmation-Letter.pdf"],
-    approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: "5/16/2026, 2:08:34 PM",
+    approvedBy: "Angela Osei", approverEmail: "aosei@gcb.com.gh", approvedAt: "5/16/2026, 2:08:34 PM",
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
     audit: [
       { id: "jt1-1", action: 0, description: "Job title change submitted — Ag. Assurance Supervisor → Assurance Supervisor", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-14T10:00:00Z", justificationReason: "Confirmation in substantive role following a successful acting period.", staffId: "EMP-18330" },
-      { id: "jt1-2", action: 3, description: "Job title change approved", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-05-16T14:08:00Z", justificationReason: null, staffId: "EMP-18330" },
+      { id: "jt1-2", action: 3, description: "Job title change approved", actorName: "Angela Osei (Head P&C)", occurredAt: "2026-05-16T14:08:00Z", justificationReason: null, staffId: "EMP-18330" },
     ] },
   { id: 2, employees: ["Bright Manu"], staffIds: "EMP-10876",
     previousTitle: "Software Engineer", newTitle: "Senior Software Engineer", grade: "Grade 3",
@@ -61,16 +61,39 @@ const JOBTITLE_SEED = [
   { id: 4, employees: ["Samuel Asante"], staffIds: "EMP-11233",
     previousTitle: "Teller", newTitle: "Senior Teller", grade: "Grade 1",
     department: "Finance", unit: "Retail", zone: "West Zone", branch: "Takoradi",
-    effectiveDate: "Apr 30, 2026", dateSubmitted: "Apr 12, 2026", status: "Declined",
+    effectiveDate: "Apr 30, 2026", dateSubmitted: "Apr 12, 2026", status: "Rejected",
     reason: "Proposed re-designation; deferred pending completion of the role-banding review.",
     documents: ["https://files.bistasol.com/jobtitle/Banding-Review.xlsx"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM",
+    rejectedBy: "Angela Osei", rejectorEmail: "aosei@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM",
     rejectionReason: "Deferred pending completion of the role-banding review — the Senior Teller band has not been ratified. Resubmit once the banding committee publishes the approved structure.",
     audit: [
       { id: "jt4-1", action: 0, description: "Job title change submitted — Teller → Senior Teller", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-04-12T10:10:00Z", justificationReason: "Proposed re-designation in recognition of consistent front-line performance.", staffId: "EMP-11233" },
-      { id: "jt4-2", action: 4, description: "Job title change rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-04-18T09:14:00Z", justificationReason: "Deferred pending completion of the role-banding review — the Senior Teller band has not been ratified. Resubmit once the banding committee publishes the approved structure.", staffId: "EMP-11233" },
+      { id: "jt4-2", action: 4, description: "Job title change rejected — request closed", actorName: "Angela Osei (Head P&C)", occurredAt: "2026-04-18T09:14:00Z", justificationReason: "Deferred pending completion of the role-banding review — the Senior Teller band has not been ratified. Resubmit once the banding committee publishes the approved structure.", staffId: "EMP-11233" },
     ] },
+  { id: 5, employees: ["Aba Odum"], staffIds: "EMP-18389",
+    previousTitle: "Data Scientist", newTitle: "Senior Data Scientist", grade: "Grade 5", notch: "Notch 2",
+    department: "Information Technology", unit: "Data & Analytics", zone: "Accra West", branch: "Ridge",
+    effectiveDate: "Jul 20, 2026", dateSubmitted: "Jun 25, 2026", status: "Returned",
+    reason: "Re-designation to reflect the senior analytics scope taken on since the platform rebuild.",
+    documents: ["https://files.bistasol.com/jobtitle/Scope-Summary.pdf"],
+    approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    returnedBy: "Angela Osei", returnedAt: "6/27/2026, 9:41:12 AM",
+    returnReason: "The proposed title is not in the ratified job architecture — use 'Lead Data Scientist' or raise the new title with Org Design first, then resubmit.",
+    audit: [
+      { id: "jt5-1", action: 0, description: "Job title change submitted — Data Scientist → Senior Data Scientist", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-06-25T10:10:00Z", justificationReason: "Re-designation to reflect the senior analytics scope taken on since the platform rebuild.", staffId: "EMP-18389" },
+      { id: "jt5-2", action: 4, description: "Job title change returned to initiator for correction", actorName: "Angela Osei (Head P&C)", occurredAt: "2026-06-27T09:41:00Z", justificationReason: "The proposed title is not in the ratified job architecture — use 'Lead Data Scientist' or raise the new title with Org Design first, then resubmit.", staffId: "EMP-18389" },
+    ] },
+  { id: 6, employees: ["Samuel Boateng"], staffIds: "EMP-11002",
+    previousTitle: "Sales Officer", newTitle: "Senior Sales Officer", grade: "Grade 2", notch: "",
+    department: "Marketing", unit: "Sales", zone: "West Zone", branch: "Kumasi",
+    effectiveDate: "—", dateSubmitted: "—", status: "Draft",
+    reason: "Pending confirmation of the Q3 sales structure before routing for approval.",
+    documents: [],
+    approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [{ id: "jt6-1", action: 1, description: "Job title change drafted — saved for later completion", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-07-21T14:20:00Z", justificationReason: null, staffId: "EMP-11002" }] },
 ];
 
 /* ---------- form section card (matches the Promotions full-page form) ---------- */
@@ -94,10 +117,12 @@ const JtAutoBadge = () => (
 
 /* ---------- assign / edit (FULL PAGE — mirrors the Promotion form for consistency) ---------- */
 // Department narrows the Job Title list; picking a Job Title auto-resolves its Grade (read-only).
-function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubmit }) {
+function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubmit, onSaveDraft }) {
   const LK = lookups || window.LOOKUPS;
   const EMP = window.EMPLOYEE_LIST;
   const isEdit = !!initialData;
+  const isReturned = initialData?.status === "Returned";
+  const isDraft = initialData?.status === "Draft";
   const initIds = initialData ? (initialData.employees || []).map(window.firstIdForName).filter(Boolean) : (initialEmployees || []);
   const [people, setPeople] = useJt(initIds);
   const [form, setForm] = useJt({
@@ -106,8 +131,8 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
     grade: initialData?.grade || "",
     notch: initialData?.notch || "",
     zone: initialData?.zone || "",
-    unitBranch: initialData?.unitBranch || "",
-    date: "",
+    unitBranch: initialData?.unitBranch || initialData?.branch || "",
+    date: initialData?.effectiveDate && initialData.effectiveDate !== "—" ? initialData.effectiveDate : "",
     reason: initialData?.reason || "",
   });
   const [docs, setDocs] = useJt({ keptUrls: initialData?.documents || [], newFiles: [] });
@@ -132,9 +157,23 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <PageHeader title={isEdit ? "Edit Job Title Change" : "Assign Job Title"}
-        subtitle={isEdit ? "Update this job title change request before approval."
+      <PageHeader title={isReturned ? "Review & Update Job Title Change" : isDraft ? "Continue Draft Job Title Change" : isEdit ? "Edit Job Title Change" : "Assign Job Title"}
+        subtitle={isReturned ? "Address the return reason below, update the request and resubmit for approval."
+          : isDraft ? "Pick up where you left off, then submit for approval."
+          : isEdit ? "Update this job title change request before approval."
           : "Select staff, choose the new job title and route the change for approval."} />
+
+      {isReturned && initialData?.returnReason && (
+        <div className="card" style={{ padding: 0, border: "1px solid #FED7AA", background: "#FFFBEB" }}>
+          <div style={{ display: "flex", gap: 12, padding: "16px 20px" }}>
+            <Icon name="arrow-go-back-line" size={20} color="#D97706" style={{ flexShrink: 0, marginTop: 2 }} />
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <span style={{ fontFamily: "var(--font-control)", fontWeight: 600, fontSize: 14, color: "var(--gray-900)" }}>Returned for correction{initialData.returnedBy ? ` by ${initialData.returnedBy}` : ""}{initialData.returnedAt && initialData.returnedAt !== "N/A" ? ` · ${initialData.returnedAt}` : ""}</span>
+              <span style={{ fontFamily: "var(--font-ui)", fontSize: 13.5, lineHeight: "21px", color: "var(--gray-800)" }}>{initialData.returnReason}</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <JtFormCard title="Employee Information">
         <Field label="Employee(s)">
@@ -175,9 +214,10 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" icon={isEdit ? "check-line" : "user-add-line"} disabled={!valid}
+        {onSaveDraft && !isReturned && <Button variant="stroke" icon="draft-line" disabled={people.length === 0} onClick={() => onSaveDraft({ names: people, department: form.department, title: form.newTitle, grade: form.grade, notch: form.notch, zone: form.zone, unitBranch: form.unitBranch, notifyIds, date: form.date, reason: form.reason, docs, editId: initialData?.id })}>Save as Draft</Button>}
+        <Button variant="primary" icon={isReturned ? "send-plane-line" : isEdit && !isDraft ? "check-line" : "user-add-line"} disabled={!valid}
           onClick={() => valid && onSubmit({ names: people, department: form.department, title: form.newTitle, grade: form.grade, notch: form.notch, zone: form.zone, unitBranch: form.unitBranch, notifyIds, date: form.date, reason: form.reason, docs, editId: initialData?.id })}>
-          {isEdit ? "Update Request" : (multi ? `Assign Job Title to ${people.length}` : "Assign Job Title")}
+          {isReturned ? "Resubmit for Approval" : isDraft ? "Submit Request" : isEdit ? "Update Request" : (multi ? `Assign Job Title to ${people.length}` : "Assign Job Title")}
         </Button>
       </div>
     </div>
@@ -206,14 +246,14 @@ function JobTitleRoster({ q, setQ, onCreate, segment, setSegment, title, subtitl
 }
 
 /* ---------- requests list (approval queue) ---------- */
-function JobTitleList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
+function JobTitleList({ rows, q, setQ, onOpen, onEdit, onDeleteDraft, tab, setTab, segItems, permsOf, canDecide, showDrafts, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
   const [menu, setMenu] = useJt(null);
-  const JT_BLANK = { status: "", department: "", archived: "" };
+  const JT_BLANK = { status: "", department: "" };
   const [draft, setDraft] = useJt(JT_BLANK);
   const [applied, setApplied] = useJt(JT_BLANK);
   const optsOf = (key) => [...new Set(rows.map(r => r[key]).filter(Boolean))].sort();
   const shown = rows.filter(r => {
-    if (r.archived && applied.archived !== "Include archived") return false;
+    if (tab === "All" ? r.status === "Draft" : tab === "Drafts" ? r.status !== "Draft" : r.status !== tab) return false;
     if (q !== "" && !(r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newTitle.toLowerCase().includes(q.toLowerCase()))) return false;
     if (applied.status && r.status !== applied.status) return false;
     if (applied.department && r.department !== applied.department) return false;
@@ -229,28 +269,43 @@ function JobTitleList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSe
       <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
       <div className="card" style={{ padding: 20 }}>
         <div className="bh-tablebox">
-        <UI.FilterBar left={<Segmented items={["Request", "Approvals"]} active={segment} onChange={setSegment} />}
+        <UI.FilterBar left={<Segmented items={segItems || ["Request", "Approvals"]} active={segment} onChange={setSegment} />}
           search={q} onSearch={setQ} searchPlaceholder="Search job title changes…"
           filters={[
-            { label: "Status", node: <Combobox value={draft.status} onChange={v => setDraft(s => ({ ...s, status: v }))} options={["Pending", "Approved", "Declined"]} placeholder="All statuses" /> },
+            { label: "Status", node: <Combobox value={draft.status} onChange={v => setDraft(s => ({ ...s, status: v }))} options={["Pending", "Approved", "Rejected", "Returned"]} placeholder="All statuses" /> },
             { label: "Department", node: <Combobox value={draft.department} onChange={v => setDraft(s => ({ ...s, department: v }))} options={optsOf("department")} placeholder="All departments" /> },
-            { label: "Archived Requests", node: <Combobox value={draft.archived} onChange={v => setDraft(s => ({ ...s, archived: v }))} options={["Include archived"]} placeholder="Exclude archived" /> },
           ]}
           onReset={() => { setDraft(JT_BLANK); setApplied(JT_BLANK); }}
           onApply={() => setApplied(draft)} activeCount={Object.values(applied).filter(Boolean).length} />
+        <div style={{ display: "flex", gap: 2, padding: "0 16px", borderBottom: "1px solid var(--divider)" }}>
+          {["All", "Pending", "Returned", ...(showDrafts ? ["Drafts"] : [])].map(t => {
+            const n = t === "Returned" ? rows.filter(r => r.status === "Returned").length : t === "Drafts" ? rows.filter(r => r.status === "Draft").length : 0;
+            const on = tab === t;
+            return (
+              <button key={t} type="button" onClick={() => setTab(t)}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6, border: 0, background: "none", cursor: "pointer", padding: "11px 12px",
+                  fontFamily: "var(--font-control)", fontSize: 14, fontWeight: on ? 600 : 500, color: on ? "var(--gray-900)" : "var(--gray-400)",
+                  boxShadow: on ? "inset 0 -2px 0 var(--brand-yellow)" : "none" }}>
+                {t}
+                {n > 0 && <span style={{ background: t === "Returned" ? "#FFF7ED" : "var(--gray-100)", border: t === "Returned" ? "1px solid #FED7AA" : "1px solid var(--gray-200)", color: t === "Returned" ? "#B45309" : "var(--gray-500)", borderRadius: 999, padding: "1px 7px", fontSize: 11.5, fontWeight: 600, fontFamily: "var(--font-ui)" }}>{n}</span>}
+              </button>
+            );
+          })}
+        </div>
         {rows.length === 0
           ? <EmptyState title="No assignments yet" subtitle="Assign a job title from the Assign tab to create a request." />
           : <table className="bh">
               <thead><tr>
-                <th style={{ width: 44 }}><Checkbox checked={allPendingSel} onChange={toggleAll} /></th>
+                <th style={{ width: 44 }}>{canDecide ? <Checkbox checked={allPendingSel} onChange={toggleAll} /> : null}</th>
                 <th>Employee Name</th><th>Job Title</th><th>Effective Date</th><th>Status</th><th>Approved By</th><th style={{ width: 48 }}></th>
               </tr></thead>
               <tbody>
                 {pg.pageItems.map(r => {
-                  const canSelect = r.status === "Pending";
+                  const P = permsOf ? permsOf(r) : { canEdit: true, canDecide: true };
+                  const canSelect = r.status === "Pending" && canDecide;
                   const on = sel.includes(r.id);
                   return (
-                  <tr key={r.id} style={{ cursor: "pointer", background: on ? "#FFFBEB" : undefined }} onClick={() => onOpen(r)}>
+                  <tr key={r.id} style={{ cursor: "pointer", background: on ? "#FFFBEB" : undefined }} onClick={() => r.status === "Draft" ? onEdit(r) : onOpen(r)}>
                     <td onClick={ev => ev.stopPropagation()}>{canSelect ? <Checkbox checked={on} onChange={() => toggle(r.id)} /> : null}</td>
                     <td>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
@@ -269,16 +324,26 @@ function JobTitleList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSe
                       </span>
                     </td>
                     <td>{r.effectiveDate}</td>
-                    <td><StatusBadge variant={JT_STATUS_VARIANT[r.status]} text={r.status} size="sm" /></td>
+                    <td>
+                      <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                          <StatusBadge variant={JT_STATUS_VARIANT[r.status]} text={r.status} size="sm" />
+                          {r.status === "Pending" && r.hasBeenCorrected && <span title="Corrected and resubmitted after a return" style={{ background: "#FFF7ED", border: "1px solid #FED7AA", color: "#B45309", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-ui)" }}>Corrected</span>}
+                        </span>
+                        {r.status === "Returned" && <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "#B45309", textDecoration: "underline", textUnderlineOffset: 2 }}>View return reason</span>}
+                      </span>
+                    </td>
                     <td>{r.approvedBy && r.approvedBy !== "N/A" ? r.approvedBy : "—"}</td>
                     <td style={{ textAlign: "right" }} onClick={e => e.stopPropagation()}>
-                      <UI.RowActions forceMenu actions={r.status === "Pending" ? [
+                      <UI.RowActions actions={r.status === "Draft" ? [
+                        { label: "Continue Editing", short: "Continue", icon: "edit-2-line", onClick: () => onEdit(r) },
+                        { label: "Delete Draft", short: "Delete", icon: "delete-bin-6-line", danger: true, onClick: () => onDeleteDraft(r) },
+                      ] : r.status === "Pending" && P.canEdit ? [
                         { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
                         { label: "Edit Details", short: "Edit", icon: "edit-2-line", onClick: () => onEdit(r) },
-                        { label: "Archive", short: "Archive", icon: "archive-line", danger: true, onClick: () => onArchive(r) },
-                      ] : r.status === "Declined" ? [
+                      ] : r.status === "Returned" && P.canEdit ? [
                         { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
-                        { label: "Review & Edit", short: "Review", icon: "edit-2-line", onClick: () => onEdit(r) },
+                        { label: "Review & Update", short: "Review", icon: "edit-2-line", onClick: () => onEdit(r) },
                       ] : [
                         { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
                       ]} />
@@ -286,7 +351,7 @@ function JobTitleList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSe
                   </tr>
                   );
                 })}
-                {shown.length === 0 && <tr><td colSpan={7} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No job title change matches your search." /></td></tr>}
+                {shown.length === 0 && <tr><td colSpan={7} style={{ padding: 0 }}><EmptyState compact title={tab === "Drafts" ? "No drafts" : tab === "Returned" ? "No returned requests" : "No results found"} subtitle={tab === "Drafts" ? "Save a job title change as a draft to continue it later." : tab === "Returned" ? "Requests returned for correction will appear here." : "No job title change matches your search."} /></td></tr>}
               </tbody>
             </table>}
         {rows.length > 0 && shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
@@ -297,9 +362,11 @@ function JobTitleList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSe
 }
 
 /* ---------- details — "Job Title Change Approval" ---------- */
-function JobTitleDetails({ record, onApprove, onReject, onEdit, onAccept, onUpdate, onToast }) {
+function JobTitleDetails({ record, perms, onApprove, onReject, onReturn, onEdit, onAccept, onUpdate, onToast }) {
   const r = record;
+  const P = perms || { canEdit: true, canDecide: true, isSubject: false };
   const [rejectOpen, setRejectOpen] = useJt(false);
+  const [returnOpen, setReturnOpen] = useJt(false);
   const [trailOpen, setTrailOpen] = useJt(false);
   const info = [
     { label: "Employee Name", value: r.employees.join(", ") },
@@ -323,15 +390,18 @@ function JobTitleDetails({ record, onApprove, onReject, onEdit, onAccept, onUpda
         actions={
           <React.Fragment>
             <StatusBadge variant={JT_STATUS_VARIANT[r.status]} text={r.status} />
+            {r.status === "Pending" && r.hasBeenCorrected && <span title="This request was corrected and resubmitted after a return" style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#FFF7ED", border: "1px solid #FED7AA", color: "#B45309", borderRadius: 999, padding: "3px 10px", fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 12 }}><Icon name="refresh-line" size={13} color="#B45309" />Corrected & Resubmitted</span>}
+            <PncViewOnlyChip perms={P} />
             <Button variant="stroke" icon="history-line" onClick={() => setTrailOpen(true)}>Audit Trail</Button>
-            {pending && (
+            {pending && P.canDecide && (
               <React.Fragment>
+                <Button variant="stroke" icon="arrow-go-back-line" onClick={() => setReturnOpen(true)} style={{ color: "#B45309", borderColor: "#FED7AA" }}>Return for Correction</Button>
                 <Button variant="stroke" icon="close-line" onClick={() => setRejectOpen(true)} style={{ color: "#DC2626", borderColor: "#F3C2C2" }}>Reject</Button>
                 <Button variant="primary" icon="check-line" onClick={() => onApprove(r)}>Approve</Button>
               </React.Fragment>
             )}
-            {r.status === "Declined" && <Button variant="primary" icon="edit-2-line" onClick={() => onEdit(r)}>Review & Edit</Button>}
-            {r.status === "Approved" && !r.accepted && <Button variant="primary" icon="user-follow-line" onClick={() => onAccept(r)}>Record Employee Acceptance</Button>}
+            {r.status === "Returned" && P.canEdit && <Button variant="primary" icon="edit-2-line" onClick={() => onEdit(r)}>Review & Update</Button>}
+            {r.status === "Approved" && !r.accepted && P.canEdit && <Button variant="primary" icon="user-follow-line" onClick={() => onAccept(r)}>Record Employee Acceptance</Button>}
           </React.Fragment>
         } />
 
@@ -355,10 +425,24 @@ function JobTitleDetails({ record, onApprove, onReject, onEdit, onAccept, onUpda
         <DetailCard icon="shield-check-line" title="Approval Information"><DetailPanel items={approvalInfo} tint="gray" cols={3} /></DetailCard>
       </div>
 
-      {r.rejectionReason && (
+      {r.status === "Returned" && r.returnReason && (
+        <div className="card" style={{ padding: 0 }}>
+          <DetailCard icon="arrow-go-back-line" title="Reason For Return">
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ background: "#FFFBEB", border: "1px solid #FED7AA", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }}>{r.returnReason}</div>
+              <span style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>Returned by {r.returnedBy || "—"}{r.returnedAt && r.returnedAt !== "N/A" ? ` · ${r.returnedAt}` : ""} — review the reason, update the request and resubmit for approval.</span>
+            </div>
+          </DetailCard>
+        </div>
+      )}
+
+      {r.status === "Rejected" && r.rejectionReason && (
         <div className="card" style={{ padding: 0 }}>
           <DetailCard icon="error-warning-line" title="Reason For Rejection">
-            <div style={{ background: "#FEF2F2", border: "1px solid #FBD9D9", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }}>{r.rejectionReason}</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ background: "#FEF2F2", border: "1px solid #FBD9D9", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }}>{r.rejectionReason}</div>
+              <span style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>Rejected by {r.rejectedBy || "—"}{r.rejectedAt && r.rejectedAt !== "N/A" ? ` · ${r.rejectedAt}` : ""} — a rejection is final; this request is closed.</span>
+            </div>
           </DetailCard>
         </div>
       )}
@@ -366,6 +450,10 @@ function JobTitleDetails({ record, onApprove, onReject, onEdit, onAccept, onUpda
       <RejectionReasonModal open={rejectOpen} onClose={() => setRejectOpen(false)}
         title="Reject Job Title Change" noun="job title change"
         onConfirm={(reason) => { setRejectOpen(false); onReject(r, reason); }} />
+
+      <RejectionReasonModal open={returnOpen} onClose={() => setReturnOpen(false)}
+        title="Return for Correction" noun="job title change" tone="warning"
+        onConfirm={(reason) => { setReturnOpen(false); onReturn(r, reason); }} />
 
       <AuditTrailDrawer open={trailOpen} onClose={() => setTrailOpen(false)} name={r.employees[0]}
         sub={`${r.staffIds} · ${r.newTitle}`} badge={<StatusBadge variant={JT_STATUS_VARIANT[r.status]} text={r.status} />}
@@ -378,10 +466,14 @@ function JobTitleDetails({ record, onApprove, onReject, onEdit, onAccept, onUpda
 function JobTitleScreen({ onToast, onSubPage, lookups }) {
   const DIR = window.EMPLOYEE_DIRECTORY;
   const [records, setRecords] = useJt(JOBTITLE_SEED);
+  const actor = usePncActor();
+  const permsOf = (r) => pncPermsFor(actor, r);
   const [segment, setSegment] = useJt("Request");   // Request (roster) | Approvals
   const [rosterQ, setRosterQ] = useJt("");
   const [approvalSel, setApprovalSel] = useJt([]);
   const [q, setQ] = useJt("");
+  const [tab, setTab] = useJt("All");
+  const [bulkRejectIds, setBulkRejectIds] = useJt(null);
   const [view, setView] = useJt({ name: "list" });   // list | add | edit | details
   const [confirm, setConfirm] = useJt(null);
 
@@ -389,7 +481,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
     if (!onSubPage) return;
     const toList = () => setView({ name: "list" });
     if (view.name === "add") onSubPage({ trail: [{ label: "Job Title", onClick: toList }, { label: "Assign Job Title" }] });
-    else if (view.name === "edit") onSubPage({ trail: [{ label: "Job Title", onClick: toList }, { label: "Edit Job Title Change" }] });
+    else if (view.name === "edit") { const er = records.find(r => r.id === view.id) || {}; onSubPage({ trail: [{ label: "Job Title", onClick: toList }, { label: er.status === "Returned" ? "Review & Update" : er.status === "Draft" ? "Continue Draft" : "Edit Job Title Change" }] }); }
     else if (view.name === "details") onSubPage({ trail: [{ label: "Job Title", onClick: toList }, { label: "Job Title Change Approval" }] });
     else onSubPage(null);
     return () => onSubPage(null);
@@ -412,19 +504,23 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
       const f = c.form;
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/jobtitle/");
       if (f.editId) {
-        const wasDeclined = (records.find(r => r.id === f.editId) || {}).status === "Declined";
+        const prevStatus = (records.find(r => r.id === f.editId) || {}).status;
+        const wasReturned = prevStatus === "Returned";
+        const wasDraft = prevStatus === "Draft";
         setRecords(rs => rs.map(r => r.id === f.editId ? { ...r, employees: f.names.map(id => (window.EMP_BY_ID[id] || {}).name || id), staffIds: f.names.join(", "), newTitle: f.title, grade: f.grade || r.grade, notch: f.notch || r.notch, zone: f.zone || r.zone, branch: f.unitBranch || r.branch,
           notifyIds: f.notifyIds || r.notifyIds || [],
           effectiveDate: fmtJtDate(f.date), reason: f.reason || "", approvers: f.approvers || [], documents: allDocs,
-          ...(wasDeclined ? { status: "Pending", wfStatus: "Pending", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A", rejectionReason: "", accepted: false } : {}),
-          audit: [...(r.audit || []), pncEntry({ action: wasDeclined ? 6 : 1, description: wasDeclined ? "Request revised and resubmitted for approval after rejection review" : "Request details updated", justificationReason: f.reason, staffId: r.staffIds })] } : r));
-        onToast(wasDeclined ? "Job Title Change Resubmitted" : "Job Title Change Updated", { tone: "success" });
+          ...(wasReturned ? { status: "Pending", wfStatus: "Pending", hasBeenCorrected: true, returnedBy: "N/A", returnedAt: "N/A", returnReason: "", dateSubmitted: todayJt(), accepted: false } : {}),
+          ...(wasDraft ? { status: "Pending", wfStatus: "Pending", dateSubmitted: todayJt() } : {}),
+          audit: [...(r.audit || []), pncEntry({ action: wasReturned ? 6 : wasDraft ? 0 : 1, description: wasReturned ? "Request corrected and resubmitted for approval after return" : wasDraft ? `Draft submitted for approval — ${f.title}` : "Request details updated", justificationReason: f.reason, staffId: r.staffIds })] } : r));
+        onToast(wasReturned ? "Corrected & Resubmitted for Approval" : wasDraft ? "Job Title Change Submitted" : "Job Title Change Updated", { tone: "success" });
+        if (wasReturned || wasDraft) setTab("All");
         setView({ name: "list" });
         setConfirm(null); return;
       }
       const recs = f.names.map(id => {
         const e = window.EMP_BY_ID[id] || {};
-        return { id: jtId(), employees: [e.name || id], staffIds: e.staffId || id,
+        return { id: jtId(), employees: [e.name || id], staffIds: e.staffId || id, createdBy: actor.name,
           previousTitle: e.title || "—", newTitle: f.title, grade: f.grade || e.grade || "—", notch: f.notch || "—",
           department: e.dept || "—", unit: e.unit || "—", zone: f.zone || e.zone || "—", branch: f.unitBranch || e.branch || "—",
           notifyIds: f.notifyIds || [],
@@ -436,14 +532,13 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
       setRecords(rs => [...recs, ...rs]);
       onToast(f.names.length > 1 ? `Job Title Assigned to ${f.names.length} Employees` : "Job Title Assigned", { tone: "success" });
       setView({ name: "list" }); setSegment("Approvals");
-    } else if (c.kind === "archive") {
-      setRecords(rs => rs.map(r => r.id === c.row.id ? { ...r, archived: true } : r));
-      onToast("Job Title Change Archived", { tone: "error" });
-      setView({ name: "list" });
+    } else if (c.kind === "deleteDraft") {
+      setRecords(rs => rs.filter(r => r.id !== c.row.id));
+      onToast("Draft Deleted", { tone: "error" });
     } else if (c.kind === "approve") {
       const now = new Date().toLocaleString("en-US");
-      setRecords(rs => rs.map(r => r.id === c.row.id ? { ...r, status: "Approved", wfStatus: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
-        audit: [...(r.audit || []), pncEntry({ action: 3, description: "Job title change approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: r.staffIds })] } : r));
+      setRecords(rs => rs.map(r => r.id === c.row.id ? { ...r, status: "Approved", wfStatus: "Approved", approvedBy: actor.name, approverEmail: actor.email, approvedAt: now,
+        audit: [...(r.audit || []), pncEntry({ action: 3, description: "Job title change approved", actorName: `${actor.name} (${actor.role})`, staffId: r.staffIds })] } : r));
       onToast("Job Title Change Approved", { tone: "success" });
     } else if (c.kind === "accept") {
       setRecords(rs => rs.map(r => r.id === c.row.id ? { ...r, accepted: true,
@@ -452,50 +547,92 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
     } else if (c.kind === "bulkApprove") {
       const now = new Date().toLocaleString("en-US");
       const ids = c.ids;
-      setRecords(rs => rs.map(r => ids.includes(r.id) ? { ...r, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
-        audit: [...(r.audit || []), pncEntry({ action: 3, description: "Job title change approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: r.staffIds })] } : r));
+      setRecords(rs => rs.map(r => ids.includes(r.id) ? { ...r, status: "Approved", approvedBy: actor.name, approverEmail: actor.email, approvedAt: now,
+        audit: [...(r.audit || []), pncEntry({ action: 3, description: "Job title change approved", actorName: `${actor.name} (${actor.role})`, staffId: r.staffIds })] } : r));
       onToast(`${ids.length} Job Title Change${ids.length > 1 ? "s" : ""} Approved`, { tone: "success" });
-      setApprovalSel([]);
-    } else if (c.kind === "bulkReject") {
-      const now = new Date().toLocaleString("en-US");
-      const ids = c.ids;
-      setRecords(rs => rs.map(r => ids.includes(r.id) ? { ...r, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now,
-        audit: [...(r.audit || []), pncEntry({ action: 4, description: "Job title change rejected", actorName: "Peter Bosrotsi (Head P&C)", staffId: r.staffIds })] } : r));
-      onToast(`${ids.length} Job Title Change${ids.length > 1 ? "s" : ""} Rejected`, { tone: "error" });
       setApprovalSel([]);
     }
     setConfirm(null);
   };
 
-  // reject from the detail page with a captured reason — commits immediately + logs the trail
+  // reject from the detail page — TERMINAL: the request is closed with a captured reason
   const rejectWithReason = (row, reason) => {
     const now = new Date().toLocaleString("en-US");
-    setRecords(rs => rs.map(r => r.id === row.id ? { ...r, status: "Declined", wfStatus: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now, rejectionReason: reason,
-      audit: [...(r.audit || []), pncEntry({ action: 4, description: "Job title change rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", justificationReason: reason, staffId: r.staffIds })] } : r));
+    setRecords(rs => rs.map(r => r.id === row.id ? { ...r, status: "Rejected", wfStatus: "Rejected", rejectedBy: actor.name, rejectorEmail: actor.email, rejectedAt: now, rejectionReason: reason,
+      audit: [...(r.audit || []), pncEntry({ action: 4, description: "Job title change rejected — request closed", actorName: `${actor.name} (${actor.role})`, justificationReason: reason, staffId: r.staffIds })] } : r));
     onToast("Job Title Change Rejected", { tone: "error" });
+  };
+
+  // return from the detail page — sends the request BACK to the initiator for correction + resubmit
+  const returnWithReason = (row, reason) => {
+    const now = new Date().toLocaleString("en-US");
+    setRecords(rs => rs.map(r => r.id === row.id ? { ...r, status: "Returned", returnedBy: actor.name, returnedAt: now, returnReason: reason,
+      audit: [...(r.audit || []), pncEntry({ action: 4, description: "Job title change returned to initiator for correction", actorName: `${actor.name} (${actor.role})`, justificationReason: reason, staffId: r.staffIds })] } : r));
+    onToast("Returned to Initiator for Correction");
+  };
+
+  // bulk reject — captures ONE reason applied to the whole selection
+  const bulkRejectWithReason = (reason) => {
+    const now = new Date().toLocaleString("en-US");
+    const ids = bulkRejectIds || [];
+    setRecords(rs => rs.map(r => ids.includes(r.id) ? { ...r, status: "Rejected", rejectedBy: actor.name, rejectorEmail: actor.email, rejectedAt: now, rejectionReason: reason,
+      audit: [...(r.audit || []), pncEntry({ action: 4, description: "Job title change rejected — request closed", actorName: `${actor.name} (${actor.role})`, justificationReason: reason, staffId: r.staffIds })] } : r));
+    onToast(`${ids.length} Job Title Change${ids.length > 1 ? "s" : ""} Rejected`, { tone: "error" });
+    setApprovalSel([]); setBulkRejectIds(null);
+  };
+
+  // save-as-draft — ≥1 employee, no other validation; drafts live in the Drafts tab
+  const saveDraft = (f) => {
+    const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/jobtitle/");
+    const names = f.names.map(id => (window.EMP_BY_ID[id] || {}).name || id);
+    const first = window.EMP_BY_ID[f.names[0]] || {};
+    const editingDraft = f.editId && (records.find(r => r.id === f.editId) || {}).status === "Draft";
+    if (editingDraft) {
+      setRecords(rs => rs.map(r => r.id === f.editId ? { ...r, employees: names, staffIds: f.names.join(", ") || "—", newTitle: f.title || "—", grade: f.grade || r.grade, notch: f.notch || "",
+        department: f.department || r.department, zone: f.zone || r.zone, branch: f.unitBranch || r.branch,
+        notifyIds: f.notifyIds || [], effectiveDate: f.date ? fmtJtDate(f.date) : "—", reason: f.reason || "", documents: allDocs } : r));
+    } else {
+      setRecords(rs => [{ id: jtId(), employees: names, staffIds: f.names.join(", ") || "—", createdBy: actor.name,
+        previousTitle: first.title || "—", newTitle: f.title || "—", grade: f.grade || first.grade || "—", notch: f.notch || "",
+        department: f.department || first.dept || "—", unit: first.unit || "—", zone: f.zone || first.zone || "—", branch: f.unitBranch || first.branch || "—",
+        notifyIds: f.notifyIds || [],
+        effectiveDate: f.date ? fmtJtDate(f.date) : "—", dateSubmitted: "—", status: "Draft",
+        reason: f.reason || "", documents: allDocs,
+        approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+        audit: [pncEntry({ action: 1, description: "Job title change drafted — saved for later completion", staffId: f.names.join(", ") })],
+      }, ...rs]);
+    }
+    onToast("Draft Saved", { tone: "success" });
+    setView({ name: "list" }); setSegment("Approvals"); setTab("Drafts");
   };
 
   let body;
   if (view.name === "add") {
-    body = <JobTitleForm lookups={lookups} initialEmployees={view.initialEmployees} onCancel={() => setView({ name: "list" })} onSubmit={submitAssign} />;
+    body = <JobTitleForm lookups={lookups} initialEmployees={view.initialEmployees} onCancel={() => setView({ name: "list" })} onSubmit={submitAssign} onSaveDraft={saveDraft} />;
   } else if (view.name === "edit" && editing) {
-    body = <JobTitleForm lookups={lookups} initialData={editing} onCancel={() => setView({ name: "list" })} onSubmit={submitAssign} />;
+    body = <JobTitleForm lookups={lookups} initialData={editing} onCancel={() => setView({ name: "list" })} onSubmit={submitAssign} onSaveDraft={editing.status === "Draft" ? saveDraft : null} />;
   } else if (view.name === "details" && current) {
-    body = <JobTitleDetails record={current}
-      onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={rejectWithReason}
+    body = <JobTitleDetails record={current} perms={permsOf(current)}
+      onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={rejectWithReason} onReturn={returnWithReason}
       onEdit={(r) => setView({ name: "edit", id: r.id })} onAccept={(r) => setConfirm({ kind: "accept", row: r })}
       onUpdate={(partial) => setRecords(rs => rs.map(x => x.id === current.id ? { ...x, ...partial } : x))} onToast={onToast} />;
   } else {
-    const addAction = <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add", initialEmployees: [] })}>Assign Job Title</Button>;
+    const addAction = (
+      <React.Fragment>
+        <PncActorSwitch />
+        {actor.canCreate && <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add", initialEmployees: [] })}>Assign Job Title</Button>}
+      </React.Fragment>
+    );
     body = (
       <React.Fragment>
-        {segment === "Request"
+        {(segment === "Request" && actor.canCreate)
           ? <JobTitleRoster q={rosterQ} setQ={setRosterQ}
               onCreate={(ids) => setView({ name: "add", initialEmployees: ids })} segment={segment} setSegment={setSegment}
               title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status."
               headerAction={addAction} />
-          : <JobTitleList rows={records} q={q} setQ={setQ}
-              onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => setView({ name: "edit", id: r.id })} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
+          : <JobTitleList rows={records.filter(r => r.status !== "Draft" || permsOf(r).canEdit)} q={q} setQ={setQ}
+              onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => setView({ name: "edit", id: r.id })} onDeleteDraft={(r) => setConfirm({ kind: "deleteDraft", row: r })}
+              tab={tab} setTab={setTab} permsOf={permsOf} canDecide={actor.canDecide} showDrafts={actor.canCreate} segItems={actor.canCreate ? ["Request", "Approvals"] : ["Approvals"]}
               segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel}
               title="Job Title" subtitle="Assign or bulk-assign job titles to staff, and track approval status."
               headerAction={addAction} />}
@@ -505,11 +642,10 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
 
   const CONFIRM = {
     assign:  { t: "Assign Job Title", m: "assign this job title", l: "Yes, Assign", i: "user-add-line", c: "Cancel" },
-    archive: { t: "Archive Job Title Change", m: "archive this job title change", l: "Yes, Archive", i: "archive-line", c: "No" },
+    deleteDraft: { t: "Delete Draft", m: "delete this draft", l: "Yes, Delete", i: "delete-bin-6-line", c: "No" },
     approve: { t: "Approve Job Title Change", m: "approve this job title change", l: "Yes, Approve", i: "check-line", c: "No" },
     accept:  { t: "Record Employee Acceptance", m: "record that the employee has accepted this job title change", l: "Yes, Record", i: "user-follow-line", c: "No" },
     bulkApprove: { t: "Approve Job Title Changes", m: "approve", l: "Yes, Approve", i: "check-line", c: "No" },
-    bulkReject:  { t: "Reject Job Title Changes", m: "reject", l: "Yes, Reject", i: "close-line", c: "No" },
   };
   const confirmMsg = () => {
     const c = confirm;
@@ -518,14 +654,14 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
       return k > 1 ? `Are you sure you want to assign this job title to ${k} employees? Each assignment will be pending approval.`
         : "Are you sure you want to assign this job title? It will be pending approval.";
     }
-    if (c.kind === "bulkApprove" || c.kind === "bulkReject") {
+    if (c.kind === "bulkApprove") {
       const k = c.ids.length;
       return `Are you sure you want to ${CONFIRM[c.kind].m} ${k} selected job title change${k > 1 ? "s" : ""}?`;
     }
     return `Are you sure you want to ${CONFIRM[c.kind].m}?`;
   };
 
-  const approvalBarVisible = view.name === "list" && segment === "Approvals" && approvalSel.length > 0;
+  const approvalBarVisible = view.name === "list" && segment === "Approvals" && approvalSel.length > 0 && actor.canDecide;
 
   return (
     <React.Fragment>
@@ -533,9 +669,14 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
 
       {/* floating bulk-approval bar (Approvals queue) */}
       <BulkBar count={approvalSel.length} noun="changes selected" visible={approvalBarVisible} onClear={() => setApprovalSel([])}>
-        <Button variant="stroke" icon="close-line" onClick={() => setConfirm({ kind: "bulkReject", ids: approvalSel })}>Reject</Button>
+        <Button variant="stroke" icon="close-line" onClick={() => setBulkRejectIds(approvalSel)} style={{ color: "#DC2626", borderColor: "#F3C2C2" }}>Reject</Button>
         <Button variant="primary" icon="check-line" onClick={() => setConfirm({ kind: "bulkApprove", ids: approvalSel })}>Approve</Button>
       </BulkBar>
+
+      <RejectionReasonModal open={!!bulkRejectIds} onClose={() => setBulkRejectIds(null)}
+        title={`Reject ${(bulkRejectIds || []).length} Job Title Change${(bulkRejectIds || []).length > 1 ? "s" : ""}`} noun="selection"
+        description="Provide one reason for rejecting the selected job title changes. Rejection is final — the initiators will be notified."
+        onConfirm={bulkRejectWithReason} />
 
       {confirm && (() => { const cc = CONFIRM[confirm.kind]; return (
         <ConfirmModal title={cc.t} message={confirmMsg()} confirmLabel={cc.l} confirmIcon={cc.i}

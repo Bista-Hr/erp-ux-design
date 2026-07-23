@@ -17,7 +17,7 @@ const { useState: useTr, useEffect: useTrEffect } = React;
 
 let TR_SEQ = 800;
 const trId = () => ++TR_SEQ;
-const TR_STATUS_VARIANT = { Approved: "approved", Pending: "pending", Declined: "rejected" };
+const TR_STATUS_VARIANT = { Approved: "approved", Pending: "pending", Rejected: "rejected", Returned: "returned", Draft: "draft" };
 const todayTr = () => new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 const TRANSFER_CLASSES = ["Intra-Departmental", "Inter-Departmental"];
 const TR_DOC = (name, ext, size, docType) => ({ name, ext, size, docType });
@@ -30,11 +30,11 @@ const TRANSFER_SEED = [
     effectiveDate: "Jun 01, 2026", dateSubmitted: "May 14, 2026", status: "Approved",
     reason: "Workforce realignment to strengthen the Operations team at the Ridge branch.",
     documents: ["https://files.bistasol.com/transfers/Transfer-Recommendation.pdf", "https://files.bistasol.com/transfers/Handover-Checklist.docx"],
-    approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: "5/16/2026, 2:08:34 PM",
+    approvedBy: "Angela Osei", approverEmail: "aosei@gcb.com.gh", approvedAt: "5/16/2026, 2:08:34 PM",
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
     audit: [
       { id: "tr1-1", action: 0, description: "Inter-Departmental transfer submitted — Finance → Operations, effective Jun 01, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-14T10:20:00Z", justificationReason: "Workforce realignment to strengthen the Operations team at the Ridge branch.", staffId: "EMP-18330" },
-      { id: "tr1-2", action: 3, description: "Transfer approved", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-05-16T14:08:00Z", justificationReason: null, staffId: "EMP-18330" },
+      { id: "tr1-2", action: 3, description: "Transfer approved", actorName: "Angela Osei (Head P&C)", occurredAt: "2026-05-16T14:08:00Z", justificationReason: null, staffId: "EMP-18330" },
     ] },
   { id: 2, employees: ["Abass Abdul Mumin"], staffIds: "EMP-17431", classification: "Intra-Departmental",
     previousLocation: "Central Zones", newLocation: "West Zone", previousDept: "Operations", newDept: "Operations",
@@ -43,11 +43,11 @@ const TRANSFER_SEED = [
     effectiveDate: "May 28, 2026", dateSubmitted: "May 10, 2026", status: "Approved",
     reason: "Relocation to cover staffing gap at the Takoradi branch within the same department.",
     documents: ["https://files.bistasol.com/transfers/Approval-Memo.pdf"],
-    approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: "5/12/2026, 10:22:10 AM",
+    approvedBy: "Angela Osei", approverEmail: "aosei@gcb.com.gh", approvedAt: "5/12/2026, 10:22:10 AM",
     rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
     audit: [
       { id: "tr2-1", action: 0, description: "Intra-Departmental transfer submitted — Operations → Operations, effective May 28, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-05-10T09:00:00Z", justificationReason: "Relocation to cover staffing gap at the Takoradi branch within the same department.", staffId: "EMP-17431" },
-      { id: "tr2-2", action: 3, description: "Transfer approved", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-05-12T10:22:00Z", justificationReason: null, staffId: "EMP-17431" },
+      { id: "tr2-2", action: 3, description: "Transfer approved", actorName: "Angela Osei (Head P&C)", occurredAt: "2026-05-12T10:22:00Z", justificationReason: null, staffId: "EMP-17431" },
     ] },
   { id: 3, employees: ["Aba Odum"], staffIds: "EMP-18389", classification: "Inter-Departmental",
     previousLocation: "Accra West", newLocation: "North Zone", previousDept: "Information Technology", newDept: "Operations",
@@ -73,26 +73,52 @@ const TRANSFER_SEED = [
     previousLocation: "West Zone", newLocation: "Central Zones", previousDept: "Marketing", newDept: "Operations",
     previousUnit: "Sales", currentTitle: "Sales Officer", newTitle: "Retail Officer",
     grade: "Grade 1", zone: "West Zone",
-    effectiveDate: "Apr 30, 2026", dateSubmitted: "Apr 12, 2026", status: "Declined",
+    effectiveDate: "Apr 30, 2026", dateSubmitted: "Apr 12, 2026", status: "Rejected",
     reason: "Proposed move to Retail Operations; deferred pending replacement at current branch.",
     documents: ["https://files.bistasol.com/transfers/Transfer-Proposal.pdf"],
     approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
-    rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM",
+    rejectedBy: "Angela Osei", rejectorEmail: "aosei@gcb.com.gh", rejectedAt: "4/18/2026, 9:14:02 AM",
     rejectionReason: "Deferred until a replacement Sales Officer is confirmed for the Kumasi branch — the branch cannot run below minimum staffing. Revise the effective date once the replacement's start date is known and resubmit.",
     audit: [
       { id: "tr5-1", action: 0, description: "Inter-Departmental transfer submitted — Marketing → Operations, effective Apr 30, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-04-12T10:05:00Z", justificationReason: "Proposed move to Retail Operations to broaden branch-level experience.", staffId: "EMP-11002" },
-      { id: "tr5-2", action: 4, description: "Transfer rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", occurredAt: "2026-04-18T09:14:00Z", justificationReason: "Deferred until a replacement Sales Officer is confirmed for the Kumasi branch — the branch cannot run below minimum staffing. Revise the effective date once the replacement's start date is known and resubmit.", staffId: "EMP-11002" },
+      { id: "tr5-2", action: 4, description: "Transfer rejected — request closed", actorName: "Angela Osei (Head P&C)", occurredAt: "2026-04-18T09:14:00Z", justificationReason: "Deferred until a replacement Sales Officer is confirmed for the Kumasi branch — the branch cannot run below minimum staffing. Revise the effective date once the replacement's start date is known and resubmit.", staffId: "EMP-11002" },
     ] },
+  { id: 6, employees: ["Samuel Asante"], staffIds: "EMP-11233", classification: "Intra-Departmental",
+    previousLocation: "West Zone", newLocation: "South Zone", previousDept: "Finance", newDept: "Finance",
+    previousUnit: "Retail", currentTitle: "Teller", newTitle: "",
+    grade: "Grade 1", zone: "West Zone",
+    effectiveDate: "Jul 15, 2026", dateSubmitted: "Jun 22, 2026", status: "Returned",
+    reason: "Employee requested relocation to Accra for family reasons; a Teller vacancy is confirmed at the Accra branch.",
+    documents: ["https://files.bistasol.com/transfers/Employee-Request-Letter.pdf"],
+    approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    returnedBy: "Angela Osei", returnedAt: "6/24/2026, 10:15:21 AM",
+    returnReason: "The receiving branch's headcount approval is missing — attach the Accra branch manager's confirmation and align the effective date to the start of a pay period.",
+    audit: [
+      { id: "tr6-1", action: 0, description: "Intra-Departmental transfer submitted — Finance → Finance, effective Jul 15, 2026", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-06-22T09:05:00Z", justificationReason: "Employee requested relocation to Accra for family reasons; a Teller vacancy is confirmed at the Accra branch.", staffId: "EMP-11233" },
+      { id: "tr6-2", action: 4, description: "Transfer returned to initiator for correction", actorName: "Angela Osei (Head P&C)", occurredAt: "2026-06-24T10:15:00Z", justificationReason: "The receiving branch's headcount approval is missing — attach the Accra branch manager's confirmation and align the effective date to the start of a pay period.", staffId: "EMP-11233" },
+    ] },
+  { id: 7, employees: ["Emmanuel Ansah"], staffIds: "EMP-10412", classification: "Inter-Departmental",
+    previousLocation: "South Zone", newLocation: "East Zone", previousDept: "Human Resource", newDept: "Operations",
+    previousUnit: "HR Operations", currentTitle: "HR Officer", newTitle: "",
+    grade: "Grade 2", zone: "South Zone",
+    effectiveDate: "—", dateSubmitted: "—", status: "Draft",
+    reason: "Move to Operations to support the Tema expansion; awaiting line-manager confirmation.",
+    documents: [],
+    approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A",
+    rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+    audit: [{ id: "tr7-1", action: 1, description: "Transfer drafted — saved for later completion", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-07-21T16:40:00Z", justificationReason: null, staffId: "EMP-10412" }] },
 ];
 
 /* ---------- requests list (approval queue) ---------- */
-function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
+function TransfersList({ rows, q, setQ, onOpen, onEdit, onDeleteDraft, tab, setTab, segItems, permsOf, canDecide, showDrafts, segment, setSegment, sel, setSel, title, subtitle, headerAction }) {
   const [menu, setMenu] = useTr(null);
   const TR_BLANK = { status: "", newDept: "" };
   const [draft, setDraft] = useTr(TR_BLANK);
   const [applied, setApplied] = useTr(TR_BLANK);
   const optsOf = (key) => [...new Set(rows.map(r => r[key]).filter(Boolean))].sort();
   const shown = rows.filter(r => {
+    if (tab === "All" ? r.status === "Draft" : tab === "Drafts" ? r.status !== "Draft" : r.status !== tab) return false;
     if (q !== "" && !(r.employees.join(" ").toLowerCase().includes(q.toLowerCase()) || r.newLocation.toLowerCase().includes(q.toLowerCase()))) return false;
     if (applied.status && r.status !== applied.status) return false;
     if (applied.newDept && r.newDept !== applied.newDept) return false;
@@ -108,27 +134,43 @@ function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setS
       <PageHeader title={title} subtitle={subtitle} actions={headerAction} />
       <div className="card" style={{ padding: 20 }}>
         <div className="bh-tablebox">
-        <UI.FilterBar left={<Segmented items={["Request", "Approvals"]} active={segment} onChange={setSegment} />}
+        <UI.FilterBar left={<Segmented items={segItems || ["Request", "Approvals"]} active={segment} onChange={setSegment} />}
           search={q} onSearch={setQ} searchPlaceholder="Search transfers…"
           filters={[
-            { label: "Status", node: <Combobox value={draft.status} onChange={v => setDraft(s => ({ ...s, status: v }))} options={["Pending", "Approved", "Declined"]} placeholder="All statuses" /> },
+            { label: "Status", node: <Combobox value={draft.status} onChange={v => setDraft(s => ({ ...s, status: v }))} options={["Pending", "Approved", "Rejected", "Returned"]} placeholder="All statuses" /> },
             { label: "Department", node: <Combobox value={draft.newDept} onChange={v => setDraft(s => ({ ...s, newDept: v }))} options={optsOf("newDept")} placeholder="All departments" /> },
           ]}
           onReset={() => { setDraft(TR_BLANK); setApplied(TR_BLANK); }}
           onApply={() => setApplied(draft)} activeCount={Object.values(applied).filter(Boolean).length} />
+        <div style={{ display: "flex", gap: 2, padding: "0 16px", borderBottom: "1px solid var(--divider)" }}>
+          {["All", "Pending", "Returned", ...(showDrafts ? ["Drafts"] : [])].map(t => {
+            const n = t === "Returned" ? rows.filter(r => r.status === "Returned").length : t === "Drafts" ? rows.filter(r => r.status === "Draft").length : 0;
+            const on = tab === t;
+            return (
+              <button key={t} type="button" onClick={() => setTab(t)}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6, border: 0, background: "none", cursor: "pointer", padding: "11px 12px",
+                  fontFamily: "var(--font-control)", fontSize: 14, fontWeight: on ? 600 : 500, color: on ? "var(--gray-900)" : "var(--gray-400)",
+                  boxShadow: on ? "inset 0 -2px 0 var(--brand-yellow)" : "none" }}>
+                {t}
+                {n > 0 && <span style={{ background: t === "Returned" ? "#FFF7ED" : "var(--gray-100)", border: t === "Returned" ? "1px solid #FED7AA" : "1px solid var(--gray-200)", color: t === "Returned" ? "#B45309" : "var(--gray-500)", borderRadius: 999, padding: "1px 7px", fontSize: 11.5, fontWeight: 600, fontFamily: "var(--font-ui)" }}>{n}</span>}
+              </button>
+            );
+          })}
+        </div>
         {rows.length === 0
           ? <EmptyState title="No transfers yet" subtitle="Select staff from the Transfer tab to raise a transfer." />
           : <table className="bh">
               <thead><tr>
-                <th style={{ width: 44 }}><Checkbox checked={allPendingSel} onChange={toggleAll} /></th>
+                <th style={{ width: 44 }}>{canDecide ? <Checkbox checked={allPendingSel} onChange={toggleAll} /> : null}</th>
                 <th>Employee Name</th><th>Department</th><th>Classification</th><th>Effective Date</th><th>Status</th><th>Approved By</th><th style={{ width: 48 }}></th>
               </tr></thead>
               <tbody>
                 {pg.pageItems.map(r => {
-                  const canSelect = r.status === "Pending";
+                  const P = permsOf ? permsOf(r) : { canEdit: true, canDecide: true };
+                  const canSelect = r.status === "Pending" && canDecide;
                   const on = sel.includes(r.id);
                   return (
-                  <tr key={r.id} style={{ cursor: "pointer", background: on ? "#FFFBEB" : undefined }} onClick={() => onOpen(r)}>
+                  <tr key={r.id} style={{ cursor: "pointer", background: on ? "#FFFBEB" : undefined }} onClick={() => r.status === "Draft" ? onEdit(r) : onOpen(r)}>
                     <td onClick={ev => ev.stopPropagation()}>{canSelect ? <Checkbox checked={on} onChange={() => toggle(r.id)} /> : null}</td>
                     <td>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
@@ -148,13 +190,26 @@ function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setS
                     </td>
                     <td><span style={{ fontSize: 13, color: "var(--gray-700)" }}>{r.classification}</span></td>
                     <td>{r.effectiveDate}</td>
-                    <td><StatusBadge variant={TR_STATUS_VARIANT[r.status]} text={r.status} size="sm" /></td>
+                    <td>
+                      <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                          <StatusBadge variant={TR_STATUS_VARIANT[r.status]} text={r.status} size="sm" />
+                          {r.status === "Pending" && r.hasBeenCorrected && <span title="Corrected and resubmitted after a return" style={{ background: "#FFF7ED", border: "1px solid #FED7AA", color: "#B45309", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 600, fontFamily: "var(--font-ui)" }}>Corrected</span>}
+                        </span>
+                        {r.status === "Returned" && <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "#B45309", textDecoration: "underline", textUnderlineOffset: 2 }}>View return reason</span>}
+                      </span>
+                    </td>
                     <td>{r.approvedBy && r.approvedBy !== "N/A" ? r.approvedBy : "—"}</td>
                     <td style={{ textAlign: "right" }} onClick={e => e.stopPropagation()}>
-                      <UI.RowActions forceMenu actions={r.status !== "Approved" ? [
+                      <UI.RowActions actions={r.status === "Draft" ? [
+                        { label: "Continue Editing", short: "Continue", icon: "edit-2-line", onClick: () => onEdit(r) },
+                        { label: "Delete Draft", short: "Delete", icon: "delete-bin-6-line", danger: true, onClick: () => onDeleteDraft(r) },
+                      ] : r.status === "Pending" && P.canEdit ? [
                         { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
                         { label: "Edit Transfer", short: "Edit", icon: "edit-2-line", onClick: () => onEdit(r) },
-                        { label: "Archive Transfer", short: "Archive", icon: "archive-line", danger: true, onClick: () => onArchive(r) },
+                      ] : r.status === "Returned" && P.canEdit ? [
+                        { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
+                        { label: "Review & Update", short: "Review", icon: "edit-2-line", onClick: () => onEdit(r) },
                       ] : [
                         { label: "View Details", short: "View", icon: "eye-line", onClick: () => onOpen(r) },
                       ]} />
@@ -162,7 +217,7 @@ function TransfersList({ rows, q, setQ, onOpen, onEdit, onArchive, segment, setS
                   </tr>
                   );
                 })}
-                {shown.length === 0 && <tr><td colSpan={8} style={{ padding: 0 }}><EmptyState compact title="No results found" subtitle="No transfer matches your search." /></td></tr>}
+                {shown.length === 0 && <tr><td colSpan={8} style={{ padding: 0 }}><EmptyState compact title={tab === "Drafts" ? "No drafts" : tab === "Returned" ? "No returned requests" : "No results found"} subtitle={tab === "Drafts" ? "Save a transfer as a draft to continue it later." : tab === "Returned" ? "Requests returned for correction will appear here." : "No transfer matches your search."} /></td></tr>}
               </tbody>
             </table>}
         {rows.length > 0 && shown.length > 0 && <div style={{ borderTop: "1px solid var(--divider)" }}><Pagination page={pg.page} pages={pg.pages} onPrev={pg.prev} onNext={pg.next} /></div>}
@@ -194,11 +249,13 @@ function TransferRoster({ q, setQ, segment, setSegment, onCreate, title, subtitl
 }
 
 /* ---------- create form (full page) ---------- */
-function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubmit }) {
+function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubmit, onSaveDraft }) {
   const LK = lookups || window.LOOKUPS;
   const byId = window.EMP_BY_ID;
   const EMP = window.EMPLOYEE_LIST;
   const isEdit = !!initialData;
+  const isReturned = initialData?.status === "Returned";
+  const isDraft = initialData?.status === "Draft";
   const isAssignMode = !initialData && (initialEmployees || []).length > 0;
   const initIds = initialData ? (initialData.employees || []).map(window.firstIdForName).filter(Boolean) : (initialEmployees || []);
   const [employees, setEmployees] = useTr(initIds);
@@ -233,9 +290,23 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <PageHeader title={isAssignMode ? "Assign Transfer" : isEdit ? "Edit Transfer" : "Create Transfer"}
-        subtitle={isAssignMode ? "Review the selected employees, then fill in the transfer details."
+      <PageHeader title={isReturned ? "Review & Update Transfer" : isDraft ? "Continue Draft Transfer" : isAssignMode ? "Assign Transfer" : isEdit ? "Edit Transfer" : "Create Transfer"}
+        subtitle={isReturned ? "Address the return reason below, update the request and resubmit for approval."
+          : isDraft ? "Pick up where you left off, then submit for approval."
+          : isAssignMode ? "Review the selected employees, then fill in the transfer details."
           : isEdit ? "Update the transfer details." : "Select staff, set the new posting and route for approval."} />
+
+      {isReturned && initialData?.returnReason && (
+        <div className="card" style={{ padding: 0, border: "1px solid #FED7AA", background: "#FFFBEB" }}>
+          <div style={{ display: "flex", gap: 12, padding: "16px 20px" }}>
+            <Icon name="arrow-go-back-line" size={20} color="#D97706" style={{ flexShrink: 0, marginTop: 2 }} />
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <span style={{ fontFamily: "var(--font-control)", fontWeight: 600, fontSize: 14, color: "var(--gray-900)" }}>Returned for correction{initialData.returnedBy ? ` by ${initialData.returnedBy}` : ""}{initialData.returnedAt && initialData.returnedAt !== "N/A" ? ` · ${initialData.returnedAt}` : ""}</span>
+              <span style={{ fontFamily: "var(--font-ui)", fontSize: 13.5, lineHeight: "21px", color: "var(--gray-800)" }}>{initialData.returnReason}</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <FormCard title="Employee Information">
         <Field label="Employee(s)"><EmployeeAddSelect value={employees} onChange={setEmployees} employees={EMP} disabled={isEdit} /></Field>
@@ -276,16 +347,19 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
         <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" icon="exchange-line" disabled={!valid} onClick={() => valid && onSubmit({ employees: employees.map(id => (byId[id] || {}).name || id), employeeIds: employees, primary, staffIds, ...form, docs, notifyIds })}>{isAssignMode ? `Assign Transfer${employees.length !== 1 ? "s" : ""}` : isEdit ? "Save Changes" : "Create Transfer"}</Button>
+        {onSaveDraft && !isReturned && <Button variant="stroke" icon="draft-line" disabled={employees.length === 0} onClick={() => onSaveDraft({ employees: employees.map(id => (byId[id] || {}).name || id), employeeIds: employees, primary, staffIds, ...form, docs, notifyIds })}>Save as Draft</Button>}
+        <Button variant="primary" icon={isReturned ? "send-plane-line" : "exchange-line"} disabled={!valid} onClick={() => valid && onSubmit({ employees: employees.map(id => (byId[id] || {}).name || id), employeeIds: employees, primary, staffIds, ...form, docs, notifyIds })}>{isReturned ? "Resubmit for Approval" : isDraft ? "Submit Request" : isAssignMode ? `Assign Transfer${employees.length !== 1 ? "s" : ""}` : isEdit ? "Save Changes" : "Create Transfer"}</Button>
       </div>
     </div>
   );
 }
 
 /* ---------- details — "Transfer Approval" ---------- */
-function TransferDetails({ transfer, onApprove, onReject, onEdit, onAccept, onUpdate, onToast }) {
+function TransferDetails({ transfer, perms, onApprove, onReject, onReturn, onEdit, onAccept, onUpdate, onToast }) {
   const t = transfer;
+  const P = perms || { canEdit: true, canDecide: true, isSubject: false };
   const [rejectOpen, setRejectOpen] = useTr(false);
+  const [returnOpen, setReturnOpen] = useTr(false);
   const [trailOpen, setTrailOpen] = useTr(false);
   const info = [
     { label: "Employee Name", value: t.employees.join(", ") },
@@ -312,15 +386,18 @@ function TransferDetails({ transfer, onApprove, onReject, onEdit, onAccept, onUp
         actions={
           <React.Fragment>
             <StatusBadge variant={TR_STATUS_VARIANT[t.status]} text={t.status} />
+            {t.status === "Pending" && t.hasBeenCorrected && <span title="This request was corrected and resubmitted after a return" style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#FFF7ED", border: "1px solid #FED7AA", color: "#B45309", borderRadius: 999, padding: "3px 10px", fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 12 }}><Icon name="refresh-line" size={13} color="#B45309" />Corrected & Resubmitted</span>}
+            <PncViewOnlyChip perms={P} />
             <Button variant="stroke" icon="history-line" onClick={() => setTrailOpen(true)}>Audit Trail</Button>
-            {pending && (
+            {pending && P.canDecide && (
               <React.Fragment>
+                <Button variant="stroke" icon="arrow-go-back-line" onClick={() => setReturnOpen(true)} style={{ color: "#B45309", borderColor: "#FED7AA" }}>Return for Correction</Button>
                 <Button variant="stroke" icon="close-line" onClick={() => setRejectOpen(true)} style={{ color: "#DC2626", borderColor: "#F3C2C2" }}>Reject</Button>
                 <Button variant="primary" icon="check-line" onClick={() => onApprove(t)}>Approve</Button>
               </React.Fragment>
             )}
-            {t.status === "Declined" && <Button variant="primary" icon="edit-2-line" onClick={() => onEdit(t)}>Review & Edit</Button>}
-            {t.status === "Approved" && !t.accepted && <Button variant="primary" icon="user-follow-line" onClick={() => onAccept(t)}>Record Employee Acceptance</Button>}
+            {t.status === "Returned" && P.canEdit && <Button variant="primary" icon="edit-2-line" onClick={() => onEdit(t)}>Review & Update</Button>}
+            {t.status === "Approved" && !t.accepted && P.canEdit && <Button variant="primary" icon="user-follow-line" onClick={() => onAccept(t)}>Record Employee Acceptance</Button>}
           </React.Fragment>
         } />
 
@@ -359,10 +436,24 @@ function TransferDetails({ transfer, onApprove, onReject, onEdit, onAccept, onUp
         <DetailCard icon="shield-check-line" title="Approval Information"><DetailPanel items={approvalInfo} tint="gray" cols={3} /></DetailCard>
       </div>
 
-      {t.rejectionReason && (
+      {t.status === "Returned" && t.returnReason && (
+        <div className="card" style={{ padding: 0 }}>
+          <DetailCard icon="arrow-go-back-line" title="Reason For Return">
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ background: "#FFFBEB", border: "1px solid #FED7AA", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }}>{t.returnReason}</div>
+              <span style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>Returned by {t.returnedBy || "—"}{t.returnedAt && t.returnedAt !== "N/A" ? ` · ${t.returnedAt}` : ""} — review the reason, update the request and resubmit for approval.</span>
+            </div>
+          </DetailCard>
+        </div>
+      )}
+
+      {t.status === "Rejected" && t.rejectionReason && (
         <div className="card" style={{ padding: 0 }}>
           <DetailCard icon="error-warning-line" title="Reason For Rejection">
-            <div style={{ background: "#FEF2F2", border: "1px solid #FBD9D9", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }}>{t.rejectionReason}</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ background: "#FEF2F2", border: "1px solid #FBD9D9", borderRadius: 8, padding: "14px 16px", fontFamily: "var(--font-ui)", fontSize: 14, lineHeight: "22px", color: "var(--gray-800)" }}>{t.rejectionReason}</div>
+              <span style={{ fontFamily: "var(--font-ui)", fontSize: 12.5, color: "var(--gray-400)" }}>Rejected by {t.rejectedBy || "—"}{t.rejectedAt && t.rejectedAt !== "N/A" ? ` · ${t.rejectedAt}` : ""} — a rejection is final; this request is closed.</span>
+            </div>
           </DetailCard>
         </div>
       )}
@@ -370,6 +461,10 @@ function TransferDetails({ transfer, onApprove, onReject, onEdit, onAccept, onUp
       <RejectionReasonModal open={rejectOpen} onClose={() => setRejectOpen(false)}
         title="Reject Transfer" noun="transfer"
         onConfirm={(reason) => { setRejectOpen(false); onReject(t, reason); }} />
+
+      <RejectionReasonModal open={returnOpen} onClose={() => setReturnOpen(false)}
+        title="Return for Correction" noun="transfer" tone="warning"
+        onConfirm={(reason) => { setReturnOpen(false); onReturn(t, reason); }} />
 
       <AuditTrailDrawer open={trailOpen} onClose={() => setTrailOpen(false)} name={t.employees[0]}
         sub={`${t.staffIds} · ${t.classification}`} badge={<StatusBadge variant={TR_STATUS_VARIANT[t.status]} text={t.status} />}
@@ -382,18 +477,22 @@ function TransferDetails({ transfer, onApprove, onReject, onEdit, onAccept, onUp
 function TransfersScreen({ onToast, onSubPage, lookups }) {
   const DIR = window.EMPLOYEE_DIRECTORY;
   const [transfers, setTransfers] = useTr(TRANSFER_SEED);
+  const actor = usePncActor();
+  const permsOf = (r) => pncPermsFor(actor, r);
   const [segment, setSegment] = useTr("Request");   // Request (roster) | Approvals
   const [rosterQ, setRosterQ] = useTr("");
   const [selected, setSelected] = useTr([]);
   const [approvalSel, setApprovalSel] = useTr([]);   // selected pending rows in Approvals queue
   const [lastCount, setLastCount] = useTr(0);
   const [q, setQ] = useTr("");
+  const [tab, setTab] = useTr("All");
+  const [bulkRejectIds, setBulkRejectIds] = useTr(null);
   const [view, setView] = useTr({ name: "list" });   // list | add | details
   const [confirm, setConfirm] = useTr(null);
 
   useTrEffect(() => {
     if (!onSubPage) return;
-    if (view.name === "add") onSubPage({ trail: [{ label: "Transfers", onClick: () => setView({ name: "list" }) }, { label: "Create Transfer" }] });
+    if (view.name === "add") onSubPage({ trail: [{ label: "Transfers", onClick: () => setView({ name: "list" }) }, { label: view.initialData ? (view.initialData.status === "Returned" ? "Review & Update" : view.initialData.status === "Draft" ? "Continue Draft" : "Edit Transfer") : "Create Transfer" }] });
     else if (view.name === "details") onSubPage({ trail: [{ label: "Transfers", onClick: () => setView({ name: "list" }) }, { label: "Transfer Approval" }] });
     else onSubPage(null);
     return () => onSubPage(null);
@@ -418,7 +517,7 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
       const f = c.form, p = f.primary || {};
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/transfers/");
       setTransfers(ts => [{
-        id: trId(), employees: f.employees, staffIds: f.staffIds || "—", classification: f.classification,
+        id: trId(), employees: f.employees, staffIds: f.staffIds || "—", createdBy: actor.name, classification: f.classification,
         previousLocation: p.zone || "—", newLocation: f.newLocation,
         previousDept: p.dept || "—", newDept: f.newDepartment || p.dept || "—",
         previousUnit: p.unit || "—", newUnit: f.newUnit || "", currentTitle: p.title || "—", newTitle: f.newJobTitle || "",
@@ -435,23 +534,27 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
     } else if (c.kind === "edit") {
       const f = c.form;
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/transfers/");
-      const wasDeclined = (transfers.find(t => t.id === c.id) || {}).status === "Declined";
+      const prevStatus = (transfers.find(t => t.id === c.id) || {}).status;
+      const wasReturned = prevStatus === "Returned";
+      const wasDraft = prevStatus === "Draft";
       setTransfers(ts => ts.map(t => t.id === c.id ? { ...t, employees: f.employees, classification: f.classification,
         newLocation: f.newLocation, newDept: f.newDepartment || t.newDept, newUnit: f.newUnit, newTitle: f.newJobTitle || "",
         grade: f.newGrade || t.grade,
         lineManagerId: f.lineManager || t.lineManagerId || "", lineManager: (window.EMP_BY_ID[f.lineManager] || {}).name || t.lineManager || "—",
         notifyIds: f.notifyIds || t.notifyIds || [],
         effectiveDate: f.effectiveDate, reason: f.reason, documents: allDocs, approvers: f.approvers || [],
-        ...(wasDeclined ? { status: "Pending", wfStatus: "Pending", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A", rejectionReason: "", accepted: false } : {}),
-        audit: [...(t.audit || []), pncEntry({ action: wasDeclined ? 6 : 1, description: wasDeclined ? "Request revised and resubmitted for approval after rejection review" : "Request details updated", justificationReason: f.reason, staffId: t.staffIds })] } : t));
-      onToast(wasDeclined ? "Transfer Resubmitted" : "Transfer Updated", { tone: "success" });
+        ...(wasReturned ? { status: "Pending", wfStatus: "Pending", hasBeenCorrected: true, returnedBy: "N/A", returnedAt: "N/A", returnReason: "", dateSubmitted: todayTr(), accepted: false } : {}),
+        ...(wasDraft ? { status: "Pending", wfStatus: "Pending", dateSubmitted: todayTr() } : {}),
+        audit: [...(t.audit || []), pncEntry({ action: wasReturned ? 6 : wasDraft ? 0 : 1, description: wasReturned ? "Request corrected and resubmitted for approval after return" : wasDraft ? `Draft submitted for approval — ${f.classification} transfer` : "Request details updated", justificationReason: f.reason, staffId: t.staffIds })] } : t));
+      onToast(wasReturned ? "Corrected & Resubmitted for Approval" : wasDraft ? "Transfer Submitted" : "Transfer Updated", { tone: "success" });
+      if (wasReturned || wasDraft) setTab("All");
       setView({ name: "list" });
     } else if (c.kind === "bulk") {
       const f = c.form;
       const recs = f.names.map(n => {
         const p = DIR[n] || {};
         return {
-          id: trId(), employees: [n], staffIds: p.staffId || "—", classification: f.classification,
+          id: trId(), employees: [n], staffIds: p.staffId || "—", createdBy: actor.name, classification: f.classification,
           previousLocation: p.zone || "—", newLocation: f.location,
           previousDept: p.dept || "—", newDept: f.department || p.dept || "—",
           previousUnit: p.unit || "—", currentTitle: p.title || "—", newTitle: "",
@@ -464,14 +567,13 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
       setTransfers(ts => [...recs, ...ts]);
       onToast(f.names.length > 1 ? `Transfer Raised for ${f.names.length} Employees` : "Transfer Raised", { tone: "success" });
       setSelected([]); setView({ name: "list" }); setSegment("Approvals");
-    } else if (c.kind === "archive") {
+    } else if (c.kind === "deleteDraft") {
       setTransfers(ts => ts.filter(t => t.id !== c.row.id));
-      onToast("Transfer Archived", { tone: "error" });
-      setView({ name: "list" });
+      onToast("Draft Deleted", { tone: "error" });
     } else if (c.kind === "approve") {
       const now = new Date().toLocaleString("en-US");
-      setTransfers(ts => ts.map(t => t.id === c.row.id ? { ...t, status: "Approved", wfStatus: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
-        audit: [...(t.audit || []), pncEntry({ action: 3, description: "Transfer approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: t.staffIds })] } : t));
+      setTransfers(ts => ts.map(t => t.id === c.row.id ? { ...t, status: "Approved", wfStatus: "Approved", approvedBy: actor.name, approverEmail: actor.email, approvedAt: now,
+        audit: [...(t.audit || []), pncEntry({ action: 3, description: "Transfer approved", actorName: `${actor.name} (${actor.role})`, staffId: t.staffIds })] } : t));
       onToast("Transfer Approved", { tone: "success" });
     } else if (c.kind === "accept") {
       setTransfers(ts => ts.map(t => t.id === c.row.id ? { ...t, accepted: true,
@@ -480,65 +582,109 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
     } else if (c.kind === "bulkApprove") {
       const now = new Date().toLocaleString("en-US");
       const ids = c.ids;
-      setTransfers(ts => ts.map(t => ids.includes(t.id) ? { ...t, status: "Approved", approvedBy: "Peter Bosrotsi", approverEmail: "pybosrotsi@gcb.com.gh", approvedAt: now,
-        audit: [...(t.audit || []), pncEntry({ action: 3, description: "Transfer approved", actorName: "Peter Bosrotsi (Head P&C)", staffId: t.staffIds })] } : t));
+      setTransfers(ts => ts.map(t => ids.includes(t.id) ? { ...t, status: "Approved", approvedBy: actor.name, approverEmail: actor.email, approvedAt: now,
+        audit: [...(t.audit || []), pncEntry({ action: 3, description: "Transfer approved", actorName: `${actor.name} (${actor.role})`, staffId: t.staffIds })] } : t));
       onToast(`${ids.length} Transfer${ids.length > 1 ? "s" : ""} Approved`, { tone: "success" });
-      setApprovalSel([]);
-    } else if (c.kind === "bulkReject") {
-      const now = new Date().toLocaleString("en-US");
-      const ids = c.ids;
-      setTransfers(ts => ts.map(t => ids.includes(t.id) ? { ...t, status: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now,
-        audit: [...(t.audit || []), pncEntry({ action: 4, description: "Transfer rejected", actorName: "Peter Bosrotsi (Head P&C)", staffId: t.staffIds })] } : t));
-      onToast(`${ids.length} Transfer${ids.length > 1 ? "s" : ""} Rejected`, { tone: "error" });
       setApprovalSel([]);
     }
     setConfirm(null);
   };
 
-  // reject from the detail page with a captured reason — commits immediately + logs the trail
+  // reject from the detail page — TERMINAL: the request is closed with a captured reason
   const rejectWithReason = (row, reason) => {
     const now = new Date().toLocaleString("en-US");
-    setTransfers(ts => ts.map(t => t.id === row.id ? { ...t, status: "Declined", wfStatus: "Declined", rejectedBy: "Peter Bosrotsi", rejectorEmail: "pybosrotsi@gcb.com.gh", rejectedAt: now, rejectionReason: reason,
-      audit: [...(t.audit || []), pncEntry({ action: 4, description: "Transfer rejected — returned to initiator for review", actorName: "Peter Bosrotsi (Head P&C)", justificationReason: reason, staffId: t.staffIds })] } : t));
+    setTransfers(ts => ts.map(t => t.id === row.id ? { ...t, status: "Rejected", wfStatus: "Rejected", rejectedBy: actor.name, rejectorEmail: actor.email, rejectedAt: now, rejectionReason: reason,
+      audit: [...(t.audit || []), pncEntry({ action: 4, description: "Transfer rejected — request closed", actorName: `${actor.name} (${actor.role})`, justificationReason: reason, staffId: t.staffIds })] } : t));
     onToast("Transfer Rejected", { tone: "error" });
   };
 
+  // return from the detail page — sends the request BACK to the initiator for correction + resubmit
+  const returnWithReason = (row, reason) => {
+    const now = new Date().toLocaleString("en-US");
+    setTransfers(ts => ts.map(t => t.id === row.id ? { ...t, status: "Returned", returnedBy: actor.name, returnedAt: now, returnReason: reason,
+      audit: [...(t.audit || []), pncEntry({ action: 4, description: "Transfer returned to initiator for correction", actorName: `${actor.name} (${actor.role})`, justificationReason: reason, staffId: t.staffIds })] } : t));
+    onToast("Returned to Initiator for Correction");
+  };
+
+  // bulk reject — captures ONE reason applied to the whole selection
+  const bulkRejectWithReason = (reason) => {
+    const now = new Date().toLocaleString("en-US");
+    const ids = bulkRejectIds || [];
+    setTransfers(ts => ts.map(t => ids.includes(t.id) ? { ...t, status: "Rejected", rejectedBy: actor.name, rejectorEmail: actor.email, rejectedAt: now, rejectionReason: reason,
+      audit: [...(t.audit || []), pncEntry({ action: 4, description: "Transfer rejected — request closed", actorName: `${actor.name} (${actor.role})`, justificationReason: reason, staffId: t.staffIds })] } : t));
+    onToast(`${ids.length} Transfer${ids.length > 1 ? "s" : ""} Rejected`, { tone: "error" });
+    setApprovalSel([]); setBulkRejectIds(null);
+  };
+
+  // save-as-draft — ≥1 employee, no other validation; drafts live in the Drafts tab
+  const saveDraft = (f) => {
+    const p = f.primary || {};
+    const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/transfers/");
+    const editingDraft = view.initialData && view.initialData.status === "Draft" ? view.initialData : null;
+    if (editingDraft) {
+      setTransfers(ts => ts.map(t => t.id === editingDraft.id ? { ...t, employees: f.employees, staffIds: f.staffIds || "—", classification: f.classification || "—",
+        newLocation: f.newLocation || "—", newDept: f.newDepartment || t.newDept, newUnit: f.newUnit || "", newTitle: f.newJobTitle || "",
+        grade: f.newGrade || t.grade,
+        lineManagerId: f.lineManager || "", lineManager: (window.EMP_BY_ID[f.lineManager] || {}).name || "—",
+        notifyIds: f.notifyIds || [], effectiveDate: f.effectiveDate || "—", reason: f.reason, documents: allDocs } : t));
+    } else {
+      setTransfers(ts => [{
+        id: trId(), employees: f.employees, staffIds: f.staffIds || "—", createdBy: actor.name, classification: f.classification || "—",
+        previousLocation: p.zone || "—", newLocation: f.newLocation || "—",
+        previousDept: p.dept || "—", newDept: f.newDepartment || p.dept || "—",
+        previousUnit: p.unit || "—", newUnit: f.newUnit || "", currentTitle: p.title || "—", newTitle: f.newJobTitle || "",
+        grade: f.newGrade || p.grade || "—", zone: p.zone || "—",
+        lineManagerId: f.lineManager || "", lineManager: (window.EMP_BY_ID[f.lineManager] || {}).name || "—",
+        notifyIds: f.notifyIds || [],
+        effectiveDate: f.effectiveDate || "—", dateSubmitted: "—", status: "Draft",
+        reason: f.reason, documents: allDocs,
+        approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
+        audit: [pncEntry({ action: 1, description: "Transfer drafted — saved for later completion", staffId: f.staffIds })],
+      }, ...ts]);
+    }
+    onToast("Draft Saved", { tone: "success" });
+    setView({ name: "list" }); setSegment("Approvals"); setTab("Drafts");
+  };
+
   let body;
-  if (view.name === "add") body = <TransferForm lookups={lookups} initialEmployees={view.initialEmployees} initialData={view.initialData} onCancel={() => setView({ name: "list" })} onSubmit={submitTransfer} />;
-  else if (view.name === "details" && current) body = <TransferDetails transfer={current}
-    onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={rejectWithReason}
+  if (view.name === "add") body = <TransferForm lookups={lookups} initialEmployees={view.initialEmployees} initialData={view.initialData} onCancel={() => setView({ name: "list" })} onSubmit={submitTransfer} onSaveDraft={!view.initialData || view.initialData.status === "Draft" ? saveDraft : null} />;
+  else if (view.name === "details" && current) body = <TransferDetails transfer={current} perms={permsOf(current)}
+    onApprove={(r) => setConfirm({ kind: "approve", row: r })} onReject={rejectWithReason} onReturn={returnWithReason}
     onEdit={(r) => setView({ name: "add", initialData: r })} onAccept={(r) => setConfirm({ kind: "accept", row: r })}
     onUpdate={(partial) => setTransfers(ts => ts.map(t => t.id === current.id ? { ...t, ...partial } : t))} onToast={onToast} />;
-  else body = (
-    <React.Fragment>
-      {segment === "Request"
-        ? <TransferRoster q={rosterQ} setQ={setRosterQ} segment={segment} setSegment={setSegment}
-            onCreate={(ids) => setView({ name: "add", initialEmployees: ids })}
-            title="Transfers" subtitle="Transfer or bulk-transfer staff, and track approval status."
-            headerAction={<React.Fragment>
-              <Button variant="stroke" icon="download-2-line" onClick={() => onToast("Import Transfers — coming soon")}>Import Transfers</Button>
-              <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add" })}>Add Transfer</Button>
-            </React.Fragment>} />
-        : <TransfersList rows={transfers} q={q} setQ={setQ}
-            onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => setView({ name: "add", initialData: r })} onArchive={(r) => setConfirm({ kind: "archive", row: r })}
-            segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel}
-            title="Transfers" subtitle="Transfer or bulk-transfer staff, and track approval status."
-            headerAction={<React.Fragment>
-              <Button variant="stroke" icon="download-2-line" onClick={() => onToast("Import Transfers — coming soon")}>Import Transfers</Button>
-              <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add" })}>Add Transfer</Button>
-            </React.Fragment>} />}
-    </React.Fragment>
-  );
+  else {
+    const trHeaderAction = (
+      <React.Fragment>
+        <PncActorSwitch />
+        {actor.canCreate && (
+          <React.Fragment>
+            <Button variant="stroke" icon="download-2-line" onClick={() => onToast("Import Transfers — coming soon")}>Import Transfers</Button>
+            <Button variant="primary" icon="add-line" onClick={() => setView({ name: "add" })}>Add Transfer</Button>
+          </React.Fragment>
+        )}
+      </React.Fragment>
+    );
+    body = (segment === "Request" && actor.canCreate)
+      ? <TransferRoster q={rosterQ} setQ={setRosterQ} segment={segment} setSegment={setSegment}
+          onCreate={(ids) => setView({ name: "add", initialEmployees: ids })}
+          title="Transfers" subtitle="Transfer or bulk-transfer staff, and track approval status."
+          headerAction={trHeaderAction} />
+      : <TransfersList rows={transfers.filter(t => t.status !== "Draft" || permsOf(t).canEdit)} q={q} setQ={setQ}
+          onOpen={(r) => setView({ name: "details", id: r.id })} onEdit={(r) => setView({ name: "add", initialData: r })} onDeleteDraft={(r) => setConfirm({ kind: "deleteDraft", row: r })}
+          tab={tab} setTab={setTab} permsOf={permsOf} canDecide={actor.canDecide} showDrafts={actor.canCreate} segItems={actor.canCreate ? ["Request", "Approvals"] : ["Approvals"]}
+          segment={segment} setSegment={setSegment} sel={approvalSel} setSel={setApprovalSel}
+          title="Transfers" subtitle="Transfer or bulk-transfer staff, and track approval status."
+          headerAction={trHeaderAction} />;
+  }
 
   const CONFIRM = {
     add:     { t: "Submit Transfer", m: "submit this transfer", l: "Yes, Submit", i: "check-line", c: "Cancel" },
     edit:    { t: "Save Changes", m: "save these changes", l: "Yes, Save", i: "check-line", c: "Cancel" },
     bulk:    { t: "Raise Transfer", m: "raise this transfer", l: "Yes, Transfer", i: "exchange-line", c: "Cancel" },
-    archive: { t: "Archive Transfer", m: "archive this transfer", l: "Yes, Archive", i: "archive-line", c: "No" },
+    deleteDraft: { t: "Delete Draft", m: "delete this draft", l: "Yes, Delete", i: "delete-bin-6-line", c: "No" },
     approve: { t: "Approve Transfer", m: "approve this transfer", l: "Yes, Approve", i: "check-line", c: "No" },
     accept:  { t: "Record Employee Acceptance", m: "record that the employee has accepted this transfer", l: "Yes, Record", i: "user-follow-line", c: "No" },
     bulkApprove: { t: "Approve Transfers", m: "approve", l: "Yes, Approve", i: "check-line", c: "No" },
-    bulkReject:  { t: "Reject Transfers", m: "reject", l: "Yes, Reject", i: "close-line", c: "No" },
   };
   const confirmMsg = () => {
     const c = confirm;
@@ -547,14 +693,14 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
       return k > 1 ? `Are you sure you want to raise this transfer for ${k} employees? Each will be pending approval.`
         : "Are you sure you want to raise this transfer? It will be pending approval.";
     }
-    if (c.kind === "bulkApprove" || c.kind === "bulkReject") {
+    if (c.kind === "bulkApprove") {
       const k = c.ids.length;
       return `Are you sure you want to ${CONFIRM[c.kind].m} ${k} selected transfer${k > 1 ? "s" : ""}?`;
     }
     return `Are you sure you want to ${CONFIRM[c.kind].m}?`;
   };
 
-  const approvalBarVisible = view.name === "list" && segment === "Approvals" && approvalSel.length > 0;
+  const approvalBarVisible = view.name === "list" && segment === "Approvals" && approvalSel.length > 0 && actor.canDecide;
 
   return (
     <React.Fragment>
@@ -562,9 +708,14 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
 
       {/* floating bulk-approval bar (Approvals queue) */}
       <BulkBar count={approvalSel.length} noun="transfers selected" visible={approvalBarVisible} onClear={() => setApprovalSel([])}>
-        <Button variant="stroke" icon="close-line" onClick={() => setConfirm({ kind: "bulkReject", ids: approvalSel })}>Reject</Button>
+        <Button variant="stroke" icon="close-line" onClick={() => setBulkRejectIds(approvalSel)} style={{ color: "#DC2626", borderColor: "#F3C2C2" }}>Reject</Button>
         <Button variant="primary" icon="check-line" onClick={() => setConfirm({ kind: "bulkApprove", ids: approvalSel })}>Approve</Button>
       </BulkBar>
+
+      <RejectionReasonModal open={!!bulkRejectIds} onClose={() => setBulkRejectIds(null)}
+        title={`Reject ${(bulkRejectIds || []).length} Transfer${(bulkRejectIds || []).length > 1 ? "s" : ""}`} noun="selection"
+        description="Provide one reason for rejecting the selected transfers. Rejection is final — the initiators will be notified."
+        onConfirm={bulkRejectWithReason} />
 
       {confirm && (() => { const cc = CONFIRM[confirm.kind]; return (
         <ConfirmModal title={cc.t} message={confirmMsg()} confirmLabel={cc.l} confirmIcon={cc.i}

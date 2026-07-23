@@ -241,10 +241,14 @@ This is the **Supporting Documents** field on the Promotion form — do NOT fall
 lists, but the gallery dropzone above is the standard for promotion/transfer supporting documents.
 
 ## RejectionReasonModal (global, `src/overlays/RejectionReasonModal.jsx`)
-Reason-capture modal for rejecting a People & Culture request. A required "Reason for rejection"
-textarea + Cancel / **Confirm Reject** (destructive red). Use on every detail page where a rejection
-needs a reason (Promotion / Transfer / …) instead of a bare ConfirmModal.
-Props: `open`, `onClose`, `onConfirm(reason)`, `loading`, `error`, `title`, `noun`.
+Reason-capture modal for a People & Culture request decision. Two tones:
+- `tone="danger"` (default) — **Reject**: destructive red, TERMINAL ("rejection is final; request closed").
+- `tone="warning"` — **Return for Correction**: amber, sends the request back to the initiator who
+  reviews the reason, corrects the request and resubmits it for approval.
+Use on every detail page where a rejection/return needs a reason (Promotion / Transfer / …) instead
+of a bare ConfirmModal. Bulk reject also uses it (one reason applied to the whole selection).
+Props: `open`, `onClose`, `onConfirm(reason)`, `loading`, `error`, `title`, `noun`, `tone`,
+`description`, `fieldLabel`, `placeholder`, `confirmLabel`, `confirmIcon` (all copy overridable).
 
 ## StatusFilter (global, `src/forms/StatusFilter.jsx`)
 Filter button + popover with multi-select checkboxes (`filter-3-line` trigger + count badge → "Filter by
@@ -331,4 +335,12 @@ Action enum: 0 Submitted · 1 Updated · 2 Interview Completed · 3 Approved · 
 - `PncAuditTrail({ entries })` — timeline: dot (action tone), **actorName · staffId**, right-aligned date, description, and a wrapping "Comment" panel for `justificationReason` (HTML is stripped).
 - `AuditTrailDrawer({ open, onClose, name, sub, badge, entries })` — right-side Drawer with an employee header card (Avatar + name + sub + status badge) above the trail. Opened from an "Audit Trail" stroke button in the detail PageHeader — never render the trail as an in-page card.
 - `pncEntry({ action, description, justificationReason?, staffId?, actorName? })` — builds a backend-shaped entry (auto id + ISO occurredAt).
-Interactive cycle convention: reject captures a reason (RejectionReasonModal) and logs action 4; a Declined request offers "Review & Edit" (list row + detail header) — resubmitting flips it back to Pending, clears rejection fields and logs action 6; an Approved request offers "Record Employee Acceptance" logging action 7.
+Interactive cycle convention (implemented uniformly in Promotions, Transfers and Job Title): requests are never archived — an approver either **Rejects** (RejectionReasonModal, action 4, TERMINAL: red reason card "a rejection is final; this request is closed", no further actions) or **Returns for Correction** (same modal `tone="warning"`, action 4, status `Returned` — `returned` badge variant): the initiator sees a "View return reason" hint on the row + an amber "Reason For Return" card and banner, clicks **Review & Update**, corrects and resubmits — status flips back to Pending with `hasBeenCorrected: true` (amber "Corrected" chip beside the badge, "Corrected & Resubmitted" chip on the detail header), return fields clear and action 6 is logged. The approval list carries status sub-tabs **All · Pending · Returned · Drafts** (count pills on Returned/Drafts) under the FilterBar. **Save as Draft** (form footer, ≥1 employee) parks a request in the Drafts tab (`draft` badge; row actions Continue / Delete Draft; row click continues editing); submitting a draft flips it to Pending. An Approved request offers "Record Employee Acceptance" logging action 7.
+
+## PncPermissions (shared/PncPermissions.jsx)
+Request-level permission checks for the P&C cycles, mirroring production: the INITIATOR (`createdBy`) can edit/correct/resubmit/draft but never approve/reject/return; the APPROVER can approve/reject/return but never edit; the SUBJECT (employee the request is about) can do none of those. Demo actors: Peter Bosrotsi (P&CBP, initiator), Angela Osei (Head P&C, approver), Bright Manu (Employee, subject).
+- `usePncActor()` — reactive current actor (`window.HRStores.pncActor`).
+- `pncPermsFor(actor, record)` → `{ canEdit, canDecide, isSubject, isInitiator }` — drive row actions, detail header buttons, bulk-select checkboxes and the BulkBar from these.
+- `<PncActorSwitch/>` — "Acting as" combobox rendered in every P&C PageHeader actions row (demo chrome; replace with the signed-in user in production).
+- `<PncViewOnlyChip perms={P}/>` — gray "View only" chip when the actor can neither edit nor decide.
+Gating conventions: create/import buttons + the Request roster segment show only for `actor.canCreate`; drafts are private (filtered to the initiator, Drafts tab hidden otherwise); pending-row checkboxes and the bulk Approve/Reject bar require `canDecide`.

@@ -10,6 +10,7 @@ function StatusGlyph({ shape, size }) {
     clock: <g {...common}><circle cx="12" cy="12" r="6" /><polyline points="12,8.5 12,12 14.5,13.5" /></g>,
     ban:   <g {...common}><circle cx="12" cy="12" r="6.5" /><line x1="7.4" y1="7.4" x2="16.6" y2="16.6" /></g>,
     alert: <g {...common}><line x1="12" y1="7" x2="12" y2="13" /><line x1="12" y1="16.5" x2="12" y2="16.6" /></g>,
+    back:  <g {...common}><line x1="18" y1="12" x2="7.5" y2="12" /><polyline points="12,7 7,12 12,17" /></g>,
   };
   return <svg width={size} height={size} viewBox="0 0 24 24" style={{ display: "block" }}>{paths[shape] || paths.minus}</svg>;
 }
@@ -28,6 +29,7 @@ const STATUS_CONFIG = {
   current:   { shape: "check", bg: "#10B981", text: "Current" },
   past:      { shape: "minus", bg: "#64748B", text: "Past" },
   draft:     { shape: "clock", bg: "#3B82F6", text: "Draft" },
+  returned:  { shape: "back",  bg: "#F97316", text: "Returned" },
   open:        { shape: "check", bg: "#38C793", text: "Open" },
   shortlisted: { shape: "check", bg: "#38C793", text: "Shortlisted" },
   closed:    { shape: "x",     bg: "#EF4444", text: "Closed" },
