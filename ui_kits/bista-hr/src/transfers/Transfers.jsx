@@ -283,6 +283,8 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
   const trPayroll = window.fetchPayroll(form.newGrade, (form.newNotch || "").split(" — ")[0]);
   const trSalary = trPayroll ? trPayroll.salary : "";
   const staffIds = employees.join(", ");
+  // One payload builder shared by Save-as-Draft and Submit (was duplicated inline on both buttons).
+  const payload = () => ({ employees: employees.map(id => (byId[id] || {}).name || id), employeeIds: employees, primary, staffIds, ...form, docs, notifyIds });
 
   const hasDocs = (docs.keptUrls || []).length + (docs.newFiles || []).length > 0;
   const valid = employees.length > 0 && form.classification && form.newLocation && form.newUnit && form.lineManager && form.effectiveDate
@@ -296,17 +298,7 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
           : isAssignMode ? "Review the selected employees, then fill in the transfer details."
           : isEdit ? "Update the transfer details." : "Select staff, set the new posting and route for approval."} />
 
-      {isReturned && initialData?.returnReason && (
-        <div className="card" style={{ padding: 0, border: "1px solid #FED7AA", background: "#FFFBEB" }}>
-          <div style={{ display: "flex", gap: 12, padding: "16px 20px" }}>
-            <Icon name="arrow-go-back-line" size={20} color="#D97706" style={{ flexShrink: 0, marginTop: 2 }} />
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <span style={{ fontFamily: "var(--font-control)", fontWeight: 600, fontSize: 14, color: "var(--gray-900)" }}>Returned for correction{initialData.returnedBy ? ` by ${initialData.returnedBy}` : ""}{initialData.returnedAt && initialData.returnedAt !== "N/A" ? ` · ${initialData.returnedAt}` : ""}</span>
-              <span style={{ fontFamily: "var(--font-ui)", fontSize: 13.5, lineHeight: "21px", color: "var(--gray-800)" }}>{initialData.returnReason}</span>
-            </div>
-          </div>
-        </div>
-      )}
+      <PncReturnedBanner record={initialData} />
 
       <FormCard title="Employee Information">
         <Field label="Employee(s)"><EmployeeAddSelect value={employees} onChange={setEmployees} employees={EMP} disabled={isEdit} /></Field>
@@ -321,12 +313,7 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
           <Field label="New Job Title" optional><DesignationCombobox value={form.newJobTitle} onChange={selectTitle} /></Field>
           <Field label="New Job Grade"><Combobox value={form.newGrade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
           <Field label="Notch"><Combobox value={form.newNotch} onChange={v => set("newNotch", v)} options={notchOptions} icon="stack-line" placeholder={form.newGrade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
-          <Field label="Salary">
-            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
-              <Icon name="money-dollar-circle-line" size={18} style={{ color: "var(--icon-default)" }} />
-              <input value={trSalary ? `${trSalary} / month` : ""} readOnly placeholder="Auto from grade & notch" style={{ color: trSalary ? "var(--gray-900)" : "var(--gray-400)" }} />
-            </div>
-          </Field>
+          <PncSalaryField salary={trSalary} />
           <Field label="New Line Manager"><LineManagerField value={form.lineManager} onChange={v => set("lineManager", v)} employees={EMP} /></Field>
           <Field label="Proposed Effective Transfer Date"><UI.DatePicker weekendRule value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
         </div>
@@ -334,22 +321,17 @@ function TransferForm({ lookups, initialEmployees, initialData, onCancel, onSubm
 
       <FormCard title="Comments & Documents">
         <Field label="Comments"><UI.RichText value={form.reason} onChange={v => set("reason", v)} placeholder="Add comments for this transfer…" /></Field>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Supporting Documents</label>
-          <SupportingDocuments existingUrls={initialData?.documents || []} isEditMode={isEdit} onChange={setDocs} maxFiles={8} maxSizeMB={8} />
-          {!hasDocs && <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>At least one supporting document is required before this transfer can be submitted.</span>}
-        </div>
+        <PncDocsField existingUrls={initialData?.documents || []} isEditMode={isEdit} onChange={setDocs} hasDocs={hasDocs} noun="transfer" />
       </FormCard>
 
       <FormCard title="Notification">
         <NotifyPeopleField value={notifyIds} onChange={setNotifyIds} employees={EMP} />
       </FormCard>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
-        <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        {onSaveDraft && !isReturned && <Button variant="stroke" icon="draft-line" disabled={employees.length === 0} onClick={() => onSaveDraft({ employees: employees.map(id => (byId[id] || {}).name || id), employeeIds: employees, primary, staffIds, ...form, docs, notifyIds })}>Save as Draft</Button>}
-        <Button variant="primary" icon={isReturned ? "send-plane-line" : "exchange-line"} disabled={!valid} onClick={() => valid && onSubmit({ employees: employees.map(id => (byId[id] || {}).name || id), employeeIds: employees, primary, staffIds, ...form, docs, notifyIds })}>{isReturned ? "Resubmit for Approval" : isDraft ? "Submit Request" : isAssignMode ? `Assign Transfer${employees.length !== 1 ? "s" : ""}` : isEdit ? "Save Changes" : "Create Transfer"}</Button>
-      </div>
+      <PncFormFooter onCancel={onCancel} isReturned={isReturned} isDraft={isDraft} valid={valid}
+        onSaveDraft={onSaveDraft ? () => onSaveDraft(payload()) : null} draftDisabled={employees.length === 0}
+        onSubmit={() => valid && onSubmit(payload())} submitIcon="exchange-line"
+        submitLabel={isAssignMode ? `Assign Transfer${employees.length !== 1 ? "s" : ""}` : isEdit ? "Save Changes" : "Create Transfer"} />
     </div>
   );
 }
@@ -516,6 +498,7 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
     if (c.kind === "add") {
       const f = c.form, p = f.primary || {};
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/transfers/");
+      PncApi.create("transfer", { ...f, documents: allDocs });   // POST /transfers — the non-draft upload endpoint
       setTransfers(ts => [{
         id: trId(), employees: f.employees, staffIds: f.staffIds || "—", createdBy: actor.name, classification: f.classification,
         previousLocation: p.zone || "—", newLocation: f.newLocation,
@@ -534,20 +517,18 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
     } else if (c.kind === "edit") {
       const f = c.form;
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/transfers/");
-      const prevStatus = (transfers.find(t => t.id === c.id) || {}).status;
-      const wasReturned = prevStatus === "Returned";
-      const wasDraft = prevStatus === "Draft";
+      // Drafts being finally submitted go to POST /transfers/{id}/submit; everything else PUTs.
+      const tr = pncEditTransition({ kind: "transfer", id: c.id, prevStatus: (transfers.find(t => t.id === c.id) || {}).status,
+        payload: { ...f, documents: allDocs }, today: todayTr(), draftLabel: `${f.classification} transfer`, reason: f.reason, staffId: f.staffIds });
       setTransfers(ts => ts.map(t => t.id === c.id ? { ...t, employees: f.employees, classification: f.classification,
         newLocation: f.newLocation, newDept: f.newDepartment || t.newDept, newUnit: f.newUnit, newTitle: f.newJobTitle || "",
         grade: f.newGrade || t.grade,
         lineManagerId: f.lineManager || t.lineManagerId || "", lineManager: (window.EMP_BY_ID[f.lineManager] || {}).name || t.lineManager || "—",
         notifyIds: f.notifyIds || t.notifyIds || [],
         effectiveDate: f.effectiveDate, reason: f.reason, documents: allDocs, approvers: f.approvers || [],
-        ...(wasReturned ? { status: "Pending", wfStatus: "Pending", hasBeenCorrected: true, returnedBy: "N/A", returnedAt: "N/A", returnReason: "", dateSubmitted: todayTr(), accepted: false } : {}),
-        ...(wasDraft ? { status: "Pending", wfStatus: "Pending", dateSubmitted: todayTr() } : {}),
-        audit: [...(t.audit || []), pncEntry({ action: wasReturned ? 6 : wasDraft ? 0 : 1, description: wasReturned ? "Request corrected and resubmitted for approval after return" : wasDraft ? `Draft submitted for approval — ${f.classification} transfer` : "Request details updated", justificationReason: f.reason, staffId: t.staffIds })] } : t));
-      onToast(wasReturned ? "Corrected & Resubmitted for Approval" : wasDraft ? "Transfer Submitted" : "Transfer Updated", { tone: "success" });
-      if (wasReturned || wasDraft) setTab("All");
+        ...tr.patch, audit: [...(t.audit || []), tr.entry] } : t));
+      onToast(tr.wasReturned ? "Corrected & Resubmitted for Approval" : tr.wasDraft ? "Transfer Submitted" : "Transfer Updated", { tone: "success" });
+      if (tr.wasReturned || tr.wasDraft) setTab("All");
       setView({ name: "list" });
     } else if (c.kind === "bulk") {
       const f = c.form;
@@ -622,12 +603,14 @@ function TransfersScreen({ onToast, onSubPage, lookups }) {
     const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/transfers/");
     const editingDraft = view.initialData && view.initialData.status === "Draft" ? view.initialData : null;
     if (editingDraft) {
+      PncApi.updateDraft("transfer", editingDraft.id, f);   // drafts persist via the draft endpoints — never /submit
       setTransfers(ts => ts.map(t => t.id === editingDraft.id ? { ...t, employees: f.employees, staffIds: f.staffIds || "—", classification: f.classification || "—",
         newLocation: f.newLocation || "—", newDept: f.newDepartment || t.newDept, newUnit: f.newUnit || "", newTitle: f.newJobTitle || "",
         grade: f.newGrade || t.grade,
         lineManagerId: f.lineManager || "", lineManager: (window.EMP_BY_ID[f.lineManager] || {}).name || "—",
         notifyIds: f.notifyIds || [], effectiveDate: f.effectiveDate || "—", reason: f.reason, documents: allDocs } : t));
     } else {
+      PncApi.saveDraft("transfer", f);
       setTransfers(ts => [{
         id: trId(), employees: f.employees, staffIds: f.staffIds || "—", createdBy: actor.name, classification: f.classification || "—",
         previousLocation: p.zone || "—", newLocation: f.newLocation || "—",

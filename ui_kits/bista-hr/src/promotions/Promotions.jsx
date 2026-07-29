@@ -169,24 +169,7 @@ function PromotionsList({ rows, q, setQ, onOpen, onEdit, onDeleteDraft, tab, set
   );
 }
 
-/* ---------- reusable section helpers (form) ---------- */
-function FormCard({ title, badge, children }) {
-  return (
-    <div className="card" style={{ padding: "var(--card-pad, 24px)", overflow: "visible" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-        <div className="bh-h2" style={{ fontSize: 20 }}>{title}</div>
-        {badge}
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>{children}</div>
-    </div>
-  );
-}
-// "Auto-populated" pill — marks the card that groups system-resolved values (grade, notch, benefits).
-const AutoBadge = () => (
-  <span style={{ display: "inline-flex", alignItems: "center", gap: 5, whiteSpace: "nowrap", background: "var(--brand-yellow-tint)", border: "1px solid var(--brand-yellow)", color: "var(--gray-800)", borderRadius: 999, padding: "3px 9px", fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 11.5 }}>
-    <Icon name="sparkling-2-line" size={12} color="var(--brand-yellow-dark)" />Auto-populated
-  </span>
-);
+/* FormCard + AutoBadge now live in src/shared/PncRequestKit.jsx (shared across Promotions / Transfers / Job Title). */
 // Shared "Resolved Salary" card — salary is fetched from grade + notch by Payroll (read-only).
 // Job grade and job title are picked independently in the form; allowances are not shown here.
 // Used identically by Promotions, Job Title and Transfers.
@@ -278,17 +261,7 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
       <PageHeader title={isReturned ? "Review & Update Promotion" : isDraft ? "Continue Draft Promotion" : isEdit ? "Edit Promotion" : "Create Promotion"}
         subtitle={isReturned ? "Address the return reason below, update the request and resubmit for approval." : isDraft ? "Pick up where you left off, then submit for approval." : isEdit ? "Update the promotion details before approval." : "Select staff, set the new role and route for approval."} />
 
-      {isReturned && initialData?.returnReason && (
-        <div className="card" style={{ padding: 0, border: "1px solid #FED7AA", background: "#FFFBEB" }}>
-          <div style={{ display: "flex", gap: 12, padding: "16px 20px" }}>
-            <Icon name="arrow-go-back-line" size={20} color="#D97706" style={{ flexShrink: 0, marginTop: 2 }} />
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <span style={{ fontFamily: "var(--font-control)", fontWeight: 600, fontSize: 14, color: "var(--gray-900)" }}>Returned for correction{initialData.returnedBy ? ` by ${initialData.returnedBy}` : ""}{initialData.returnedAt && initialData.returnedAt !== "N/A" ? ` · ${initialData.returnedAt}` : ""}</span>
-              <span style={{ fontFamily: "var(--font-ui)", fontSize: 13.5, lineHeight: "21px", color: "var(--gray-800)" }}>{initialData.returnReason}</span>
-            </div>
-          </div>
-        </div>
-      )}
+      <PncReturnedBanner record={initialData} />
 
       <FormCard title="Employee Information">
         <Field label="Employee Name(s)">
@@ -302,12 +275,7 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
           <Field label="New Job Title"><DesignationCombobox value={form.newJobTitle} onChange={selectTitle} /></Field>
           <Field label="Job Grade"><Combobox value={form.grade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
           <Field label="Notch"><Combobox value={form.notch} onChange={v => set("notch", v)} options={notchOptions} icon="stack-line" placeholder={form.grade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
-          <Field label="Salary">
-            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
-              <Icon name="money-dollar-circle-line" size={18} style={{ color: "var(--icon-default)" }} />
-              <input value={salary ? `${salary} / month` : ""} readOnly placeholder="Auto from grade & notch" style={{ color: salary ? "var(--gray-900)" : "var(--gray-400)" }} />
-            </div>
-          </Field>
+          <PncSalaryField salary={salary} />
           <Field label="Zones"><Combobox value={form.zone} onChange={selectZone} options={LK.zones} placeholder="Select zone" noDataText="No zone found" /></Field>
           <Field label="New Organizational Unit/Branch"><UnitBranchCombobox value={form.unitBranch} onChange={v => set("unitBranch", v)} zone={form.zone} onZoneChange={selectZone} zones={LK.zones} /></Field>
           <Field label="Effective Date"><UI.DatePicker weekendRule value={form.effectiveDate} onSelect={d => set("effectiveDate", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
@@ -317,22 +285,17 @@ function PromotionForm({ lookups, initialData, initialEmployees, onCancel, onSub
       <FormCard title="Comments & Documents">
         <Field label="Comments"><UI.RichText value={form.justification} onChange={v => set("justification", v)} placeholder="Add comments about this promotion…" /></Field>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Supporting Documents</label>
-          <SupportingDocuments existingUrls={initialData?.docUrls || []} isEditMode={isEdit} onChange={setDocs} maxFiles={8} maxSizeMB={8} />
-          {!hasDocs && <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>At least one supporting document is required before this promotion can be submitted.</span>}
-        </div>
+        <PncDocsField existingUrls={initialData?.docUrls || []} isEditMode={isEdit} onChange={setDocs} hasDocs={hasDocs} noun="promotion" />
       </FormCard>
 
       <FormCard title="Notification">
         <NotifyPeopleField value={notifyIds} onChange={setNotifyIds} employees={EMP} />
       </FormCard>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
-        <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        {onSaveDraft && !isReturned && <Button variant="stroke" icon="draft-line" disabled={employees.length === 0} onClick={() => onSaveDraft({ employees, ...form, salary, allowances, docs, notifyIds })}>Save as Draft</Button>}
-        <Button variant="primary" icon={isReturned ? "send-plane-line" : isEdit && !isDraft ? "check-line" : "user-add-line"} disabled={!valid} onClick={submit}>{isReturned ? "Resubmit for Approval" : isDraft ? "Submit Request" : isEdit ? "Update Promotion" : (employees.length > 1 ? `Promote ${employees.length}` : "Submit Request")}</Button>
-      </div>
+      <PncFormFooter onCancel={onCancel} isReturned={isReturned} isDraft={isDraft} valid={valid} onSubmit={submit}
+        onSaveDraft={onSaveDraft ? () => onSaveDraft({ employees, ...form, salary, allowances, docs, notifyIds }) : null} draftDisabled={employees.length === 0}
+        submitIcon={isEdit && !isDraft ? "check-line" : "user-add-line"}
+        submitLabel={isEdit ? "Update Promotion" : (employees.length > 1 ? `Promote ${employees.length}` : "Submit Request")} />
     </div>
   );
 }
@@ -477,6 +440,7 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
       const ids = f.employees;
       const primary = ids[0] ? (byId[ids[0]] || {}) : {};
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/promotions/");
+      PncApi.create("promotion", { ...f, docUrls: allDocs });   // POST /promotions — the non-draft upload endpoint
       setPromos(ps => [{
         id: promoId(), employees: ids.map(id => (byId[id] || {}).name || id), staffIds: ids.join(", ") || "—", createdBy: actor.name,
         previousRole: primary.title || "—", newRole: f.newJobTitle, previousGrade: primary.grade || "—", grade: f.grade, notch: f.notch,
@@ -497,9 +461,9 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
     } else if (c.kind === "edit") {
       const f = c.form;
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/promotions/");
-      const prevStatus = (promos.find(p => p.id === c.id) || {}).status;
-      const wasReturned = prevStatus === "Returned";
-      const wasDraft = prevStatus === "Draft";
+      // Drafts being finally submitted go to POST /promotions/{id}/submit; everything else PUTs.
+      const tr = pncEditTransition({ kind: "promotion", id: c.id, prevStatus: (promos.find(p => p.id === c.id) || {}).status,
+        payload: { ...f, docUrls: allDocs }, today: todayPromo(), draftLabel: f.newJobTitle, reason: f.justification, staffId: f.employees.join(", ") });
       setPromos(ps => ps.map(p => p.id === c.id ? {
         ...p, employees: f.employees.map(id => (window.EMP_BY_ID[id] || {}).name || id), staffIds: f.employees.join(", "),
         newRole: f.newJobTitle, grade: f.grade, notch: f.notch, salary: f.salary, allowances: f.allowances || [],
@@ -507,12 +471,11 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
         effectiveDate: f.effectiveDate,
         justification: f.justification, docUrls: allDocs,
         notifyIds: f.notifyIds || [], notifyPeople: (f.notifyIds || []).map(id => (window.EMP_BY_ID[id] || {}).name || id),
-        ...(wasReturned ? { status: "Pending", hasBeenCorrected: true, returnedBy: "N/A", returnedAt: "N/A", returnReason: "", dateSubmitted: todayPromo(), accepted: false } : {}),
-        ...(wasDraft ? { status: "Pending", dateSubmitted: todayPromo() } : {}),
-        audit: [...(p.audit || []), pncEntry({ action: wasReturned ? 6 : wasDraft ? 0 : 1, description: wasReturned ? "Request corrected and resubmitted for approval after return" : wasDraft ? `Draft submitted for approval — ${f.newJobTitle}` : "Request details updated", justificationReason: f.justification, staffId: f.employees.join(", ") })],
+        ...tr.patch,
+        audit: [...(p.audit || []), tr.entry],
       } : p));
-      onToast(wasReturned ? "Corrected & Resubmitted for Approval" : wasDraft ? "Promotion Submitted" : "Promotion Updated", { tone: "success" });
-      if (wasReturned || wasDraft) setTab("All");
+      onToast(tr.wasReturned ? "Corrected & Resubmitted for Approval" : tr.wasDraft ? "Promotion Submitted" : "Promotion Updated", { tone: "success" });
+      if (tr.wasReturned || tr.wasDraft) setTab("All");
       setView({ name: "list" });
     } else if (c.kind === "deleteDraft") {
       setPromos(ps => ps.filter(p => p.id !== c.row.id));
@@ -570,11 +533,13 @@ function PromotionsScreen({ onToast, onSubPage, lookups }) {
     const primary = ids[0] ? (byId[ids[0]] || {}) : {};
     const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/promotions/");
     if (view.name === "edit" && editing && editing.status === "Draft") {
+      PncApi.updateDraft("promotion", editing.id, f);   // drafts persist via the draft endpoints — never /submit
       setPromos(ps => ps.map(p => p.id === editing.id ? { ...p, employees: ids.map(id => (byId[id] || {}).name || id), staffIds: ids.join(", ") || "—",
         newRole: f.newJobTitle || "—", grade: f.grade || "—", notch: f.notch, salary: f.salary || "—",
         department: f.department || p.department, zone: f.zone || p.zone, branch: f.unitBranch || p.branch,
         effectiveDate: f.effectiveDate || "—", justification: f.justification, docUrls: allDocs, notifyIds: f.notifyIds || [] } : p));
     } else {
+      PncApi.saveDraft("promotion", f);
       setPromos(ps => [{
         id: promoId(), employees: ids.map(id => (byId[id] || {}).name || id), staffIds: ids.join(", ") || "—", createdBy: actor.name,
         previousRole: primary.title || "—", newRole: f.newJobTitle || "—", previousGrade: primary.grade || "—", grade: f.grade || "—", notch: f.notch,

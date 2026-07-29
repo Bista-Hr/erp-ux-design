@@ -67,17 +67,11 @@ function UpdatedDetailsModal({ req, onClose, onApprove, onReject }) {
           <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 14, color: "var(--gray-900)", marginBottom: 10 }}>Updated Details</div>
           <DetailPanel items={toItems(req.updated, changed)} tint={st.tint} cols={4} accent={st.accent} changeBg={st.change} />
         </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", border: "1px solid var(--border)", borderRadius: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ width: 34, height: 34, borderRadius: 8, background: "var(--error-tint, #FEF3F2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Icon name="file-pdf-2-line" size={20} color="var(--error)" />
-            </span>
-            <div>
-              <div style={{ fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 14, color: "var(--gray-900)" }}>{req.affidavit.name}</div>
-              <div className="bh-caption">{req.affidavit.size}</div>
-            </div>
-          </div>
-          <button className="btn btn-icon btn-ghost" style={{ width: 34, height: 34, padding: 0 }}><Icon name="download-2-line" size={18} color="var(--gray-500)" /></button>
+        <div>
+          <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 14, color: "var(--gray-900)", marginBottom: 10 }}>Supporting Documents</div>
+          <SupportingDocumentsList urls={(req.docs && req.docs.length ? req.docs : [req.affidavit && req.affidavit.name].filter(Boolean))
+            .map(n => /^https?:|^blob:/.test(n) ? n : `https://files.bistasol.com/approvals/${encodeURIComponent(n)}`)}
+            emptyTitle="No documents" emptySubtitle="No supporting documents were attached to this request." />
         </div>
       </div>
 

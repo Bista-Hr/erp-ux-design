@@ -96,24 +96,9 @@ const JOBTITLE_SEED = [
     audit: [{ id: "jt6-1", action: 1, description: "Job title change drafted — saved for later completion", actorName: "Peter Bosrotsi (P&C)", occurredAt: "2026-07-21T14:20:00Z", justificationReason: null, staffId: "EMP-11002" }] },
 ];
 
-/* ---------- form section card (matches the Promotions full-page form) ---------- */
-function JtFormCard({ title, badge, children }) {
-  return (
-    <div className="card" style={{ padding: "var(--card-pad, 24px)", overflow: "visible" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-        <div className="bh-h2" style={{ fontSize: 20 }}>{title}</div>
-        {badge}
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>{children}</div>
-    </div>
-  );
-}
-// "Auto-populated" pill — marks the card grouping system-resolved values (job grade).
-const JtAutoBadge = () => (
-  <span style={{ display: "inline-flex", alignItems: "center", gap: 5, whiteSpace: "nowrap", background: "var(--brand-yellow-tint)", border: "1px solid var(--brand-yellow)", color: "var(--gray-800)", borderRadius: 999, padding: "3px 9px", fontFamily: "var(--font-ui)", fontWeight: 600, fontSize: 11.5 }}>
-    <Icon name="sparkling-2-line" size={12} color="var(--brand-yellow-dark)" />Auto-populated
-  </span>
-);
+/* JtFormCard / JtAutoBadge → shared FormCard / AutoBadge (src/shared/PncRequestKit.jsx). */
+const JtFormCard = FormCard;
+const JtAutoBadge = AutoBadge;
 
 /* ---------- assign / edit (FULL PAGE — mirrors the Promotion form for consistency) ---------- */
 // Department narrows the Job Title list; picking a Job Title auto-resolves its Grade (read-only).
@@ -154,6 +139,8 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
   const valid = people.length > 0 && form.department && form.newTitle && form.grade && (notchOptions.length === 0 || form.notch)
     && form.zone && form.unitBranch && form.date && form.reason.trim() && hasDocs;
   const multi = people.length > 1;
+  // One payload builder shared by Save-as-Draft and Submit (was duplicated inline on both buttons).
+  const payload = () => ({ names: people, department: form.department, title: form.newTitle, grade: form.grade, notch: form.notch, zone: form.zone, unitBranch: form.unitBranch, notifyIds, date: form.date, reason: form.reason, docs, editId: initialData?.id });
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -163,17 +150,7 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
           : isEdit ? "Update this job title change request before approval."
           : "Select staff, choose the new job title and route the change for approval."} />
 
-      {isReturned && initialData?.returnReason && (
-        <div className="card" style={{ padding: 0, border: "1px solid #FED7AA", background: "#FFFBEB" }}>
-          <div style={{ display: "flex", gap: 12, padding: "16px 20px" }}>
-            <Icon name="arrow-go-back-line" size={20} color="#D97706" style={{ flexShrink: 0, marginTop: 2 }} />
-            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-              <span style={{ fontFamily: "var(--font-control)", fontWeight: 600, fontSize: 14, color: "var(--gray-900)" }}>Returned for correction{initialData.returnedBy ? ` by ${initialData.returnedBy}` : ""}{initialData.returnedAt && initialData.returnedAt !== "N/A" ? ` · ${initialData.returnedAt}` : ""}</span>
-              <span style={{ fontFamily: "var(--font-ui)", fontSize: 13.5, lineHeight: "21px", color: "var(--gray-800)" }}>{initialData.returnReason}</span>
-            </div>
-          </div>
-        </div>
-      )}
+      <PncReturnedBanner record={initialData} />
 
       <JtFormCard title="Employee Information">
         <Field label="Employee(s)">
@@ -187,12 +164,7 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
           <Field label="New Job Title"><DesignationCombobox value={form.newTitle} onChange={selectTitle} /></Field>
           <Field label="Job Grade"><Combobox value={form.grade} onChange={selectGrade} options={LK.jobGrades} icon="bar-chart-grouped-line" placeholder="Select job grade" /></Field>
           <Field label="Notch"><Combobox value={form.notch} onChange={v => set("notch", v)} options={notchOptions} icon="stack-line" placeholder={form.grade ? "Select notch" : "Select job grade first"} noDataText="Select a job grade first." /></Field>
-          <Field label="Salary">
-            <div className="input-wrap" style={{ background: "var(--gray-50)" }}>
-              <Icon name="money-dollar-circle-line" size={18} style={{ color: "var(--icon-default)" }} />
-              <input value={jtSalary ? `${jtSalary} / month` : ""} readOnly placeholder="Auto from grade & notch" style={{ color: jtSalary ? "var(--gray-900)" : "var(--gray-400)" }} />
-            </div>
-          </Field>
+          <PncSalaryField salary={jtSalary} />
           <Field label="Zones"><Combobox value={form.zone} onChange={selectZone} options={LK.zones} placeholder="Select zone" noDataText="No zone found" /></Field>
           <Field label="New Organizational Unit/Branch"><UnitBranchCombobox value={form.unitBranch} onChange={v => set("unitBranch", v)} zone={form.zone} onZoneChange={selectZone} zones={LK.zones} /></Field>
           <Field label="Effective Date"><UI.DatePicker weekendRule value={form.date} onSelect={d => set("date", d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }))} placeholder="Pick a date" /></Field>
@@ -201,25 +173,18 @@ function JobTitleForm({ lookups, initialData, initialEmployees, onCancel, onSubm
 
       <JtFormCard title="Comments & Documents">
         <Field label="Comments"><UI.RichText value={form.reason} onChange={v => set("reason", v)} placeholder="Add comments for this change of job title…" /></Field>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <label style={{ fontFamily: "var(--font-control)", fontWeight: 500, fontSize: 14, color: "var(--gray-900)" }}>Supporting Documents</label>
-          <SupportingDocuments existingUrls={initialData?.documents || []} isEditMode={isEdit} onChange={setDocs} maxFiles={8} maxSizeMB={8} />
-          {!hasDocs && <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--gray-400)" }}>At least one supporting document is required before this request can be submitted.</span>}
-        </div>
+        <PncDocsField existingUrls={initialData?.documents || []} isEditMode={isEdit} onChange={setDocs} hasDocs={hasDocs} noun="request" />
       </JtFormCard>
 
       <JtFormCard title="Notification">
         <NotifyPeopleField value={notifyIds} onChange={setNotifyIds} employees={EMP} />
       </JtFormCard>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12 }}>
-        <Button variant="stroke" onClick={onCancel}>Cancel</Button>
-        {onSaveDraft && !isReturned && <Button variant="stroke" icon="draft-line" disabled={people.length === 0} onClick={() => onSaveDraft({ names: people, department: form.department, title: form.newTitle, grade: form.grade, notch: form.notch, zone: form.zone, unitBranch: form.unitBranch, notifyIds, date: form.date, reason: form.reason, docs, editId: initialData?.id })}>Save as Draft</Button>}
-        <Button variant="primary" icon={isReturned ? "send-plane-line" : isEdit && !isDraft ? "check-line" : "user-add-line"} disabled={!valid}
-          onClick={() => valid && onSubmit({ names: people, department: form.department, title: form.newTitle, grade: form.grade, notch: form.notch, zone: form.zone, unitBranch: form.unitBranch, notifyIds, date: form.date, reason: form.reason, docs, editId: initialData?.id })}>
-          {isReturned ? "Resubmit for Approval" : isDraft ? "Submit Request" : isEdit ? "Update Request" : (multi ? `Assign Job Title to ${people.length}` : "Assign Job Title")}
-        </Button>
-      </div>
+      <PncFormFooter onCancel={onCancel} isReturned={isReturned} isDraft={isDraft} valid={valid}
+        onSaveDraft={onSaveDraft ? () => onSaveDraft(payload()) : null} draftDisabled={people.length === 0}
+        onSubmit={() => valid && onSubmit(payload())}
+        submitIcon={isEdit && !isDraft ? "check-line" : "user-add-line"}
+        submitLabel={isEdit ? "Update Request" : (multi ? `Assign Job Title to ${people.length}` : "Assign Job Title")} />
     </div>
   );
 }
@@ -504,17 +469,15 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
       const f = c.form;
       const allDocs = SupportingDocuments.resolve(f.docs, "https://files.bistasol.com/jobtitle/");
       if (f.editId) {
-        const prevStatus = (records.find(r => r.id === f.editId) || {}).status;
-        const wasReturned = prevStatus === "Returned";
-        const wasDraft = prevStatus === "Draft";
+        // Drafts being finally submitted go to POST /job-title-change-requests/{id}/submit; everything else PUTs.
+        const tr = pncEditTransition({ kind: "jobTitle", id: f.editId, prevStatus: (records.find(r => r.id === f.editId) || {}).status,
+          payload: { ...f, documents: allDocs }, today: todayJt(), draftLabel: f.title, reason: f.reason, staffId: f.names.join(", ") });
         setRecords(rs => rs.map(r => r.id === f.editId ? { ...r, employees: f.names.map(id => (window.EMP_BY_ID[id] || {}).name || id), staffIds: f.names.join(", "), newTitle: f.title, grade: f.grade || r.grade, notch: f.notch || r.notch, zone: f.zone || r.zone, branch: f.unitBranch || r.branch,
           notifyIds: f.notifyIds || r.notifyIds || [],
           effectiveDate: fmtJtDate(f.date), reason: f.reason || "", approvers: f.approvers || [], documents: allDocs,
-          ...(wasReturned ? { status: "Pending", wfStatus: "Pending", hasBeenCorrected: true, returnedBy: "N/A", returnedAt: "N/A", returnReason: "", dateSubmitted: todayJt(), accepted: false } : {}),
-          ...(wasDraft ? { status: "Pending", wfStatus: "Pending", dateSubmitted: todayJt() } : {}),
-          audit: [...(r.audit || []), pncEntry({ action: wasReturned ? 6 : wasDraft ? 0 : 1, description: wasReturned ? "Request corrected and resubmitted for approval after return" : wasDraft ? `Draft submitted for approval — ${f.title}` : "Request details updated", justificationReason: f.reason, staffId: r.staffIds })] } : r));
-        onToast(wasReturned ? "Corrected & Resubmitted for Approval" : wasDraft ? "Job Title Change Submitted" : "Job Title Change Updated", { tone: "success" });
-        if (wasReturned || wasDraft) setTab("All");
+          ...tr.patch, audit: [...(r.audit || []), tr.entry] } : r));
+        onToast(tr.wasReturned ? "Corrected & Resubmitted for Approval" : tr.wasDraft ? "Job Title Change Submitted" : "Job Title Change Updated", { tone: "success" });
+        if (tr.wasReturned || tr.wasDraft) setTab("All");
         setView({ name: "list" });
         setConfirm(null); return;
       }
@@ -529,6 +492,7 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
           approvedBy: "N/A", approverEmail: "N/A", approvedAt: "N/A", rejectedBy: "N/A", rejectorEmail: "N/A", rejectedAt: "N/A",
           audit: [pncEntry({ action: 0, description: `Job title change submitted — ${e.title || "—"} → ${f.title}`, justificationReason: f.reason, staffId: e.staffId || id })] };
       });
+      PncApi.create("jobTitle", { ...f, documents: allDocs });   // POST /job-title-change-requests — the non-draft upload endpoint
       setRecords(rs => [...recs, ...rs]);
       onToast(f.names.length > 1 ? `Job Title Assigned to ${f.names.length} Employees` : "Job Title Assigned", { tone: "success" });
       setView({ name: "list" }); setSegment("Approvals");
@@ -588,10 +552,12 @@ function JobTitleScreen({ onToast, onSubPage, lookups }) {
     const first = window.EMP_BY_ID[f.names[0]] || {};
     const editingDraft = f.editId && (records.find(r => r.id === f.editId) || {}).status === "Draft";
     if (editingDraft) {
+      PncApi.updateDraft("jobTitle", f.editId, f);   // drafts persist via the draft endpoints — never /submit
       setRecords(rs => rs.map(r => r.id === f.editId ? { ...r, employees: names, staffIds: f.names.join(", ") || "—", newTitle: f.title || "—", grade: f.grade || r.grade, notch: f.notch || "",
         department: f.department || r.department, zone: f.zone || r.zone, branch: f.unitBranch || r.branch,
         notifyIds: f.notifyIds || [], effectiveDate: f.date ? fmtJtDate(f.date) : "—", reason: f.reason || "", documents: allDocs } : r));
     } else {
+      PncApi.saveDraft("jobTitle", f);
       setRecords(rs => [{ id: jtId(), employees: names, staffIds: f.names.join(", ") || "—", createdBy: actor.name,
         previousTitle: first.title || "—", newTitle: f.title || "—", grade: f.grade || first.grade || "—", notch: f.notch || "",
         department: f.department || first.dept || "—", unit: first.unit || "—", zone: f.zone || first.zone || "—", branch: f.unitBranch || first.branch || "—",

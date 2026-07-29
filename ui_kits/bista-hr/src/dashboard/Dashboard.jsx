@@ -107,7 +107,7 @@ function CareersScreen({ onToast }) {
   );
 }
 
-function DashboardArea({ tab, requests, onAddRequest, onResolve, onToast, announce, onViewAnnouncements, onOpenAnnouncement, onCloseAnnouncements, onSubPage }) {
+function DashboardArea({ tab, requests, onAddRequest, onResolve, onToast, announce, onViewAnnouncements, onOpenAnnouncement, onCloseAnnouncements, onSubPage, onGoTab }) {
   // Announcements full-page / detail (reached from any rail's View All / Read More).
   if (announce) {
     return (
@@ -118,7 +118,8 @@ function DashboardArea({ tab, requests, onAddRequest, onResolve, onToast, announ
       </div>
     );
   }
-  if (tab === "Overview") return <Overview onViewAnnouncements={onViewAnnouncements} onOpenAnnouncement={onOpenAnnouncement} />;
+  if (tab === "Overview") return <Overview onViewAnnouncements={onViewAnnouncements} onOpenAnnouncement={onOpenAnnouncement}
+    onGoMyInfo={(sec) => { window.__myInfoFocus = sec || null; onGoTab && onGoTab("My Info"); }} />;
   if (tab === "My Info") {
     return (
       <div style={{ display: "flex", gap: 24, height: "100%", padding: "0 0 0 32px", boxSizing: "border-box" }}>

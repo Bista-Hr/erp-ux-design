@@ -92,7 +92,7 @@ function EventRow({ icon, title, meta, tint }) {
   );
 }
 
-function Overview({ onViewAnnouncements, onOpenAnnouncement }) {
+function Overview({ onViewAnnouncements, onOpenAnnouncement, onGoMyInfo }) {
   const leave = [
     { label: "Today", people: ["Kofi Owusu", "Ama Serwaa", "Yaw Boateng"] },
     { label: "Tomorrow", people: ["Akua Mensah", "Kojo Asante", "Esi Darko", "Nana Adjei", "Abena Sika", "Kwame Tetteh", "Adwoa Owusu", "Yaa Asantewaa", "Kofi Mensah", "Ama Owusu"] },

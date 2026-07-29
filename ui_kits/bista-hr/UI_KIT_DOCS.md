@@ -344,3 +344,25 @@ Request-level permission checks for the P&C cycles, mirroring production: the IN
 - `<PncActorSwitch/>` — "Acting as" combobox rendered in every P&C PageHeader actions row (demo chrome; replace with the signed-in user in production).
 - `<PncViewOnlyChip perms={P}/>` — gray "View only" chip when the actor can neither edit nor decide.
 Gating conventions: create/import buttons + the Request roster segment show only for `actor.canCreate`; drafts are private (filtered to the initiator, Drafts tab hidden otherwise); pending-row checkboxes and the bulk Approve/Reject bar require `canDecide`.
+
+## PncRequestKit (shared/PncRequestKit.jsx)
+Shared plumbing for the P&C request cycles (Promotions · Transfers · Job Title) — the API layer,
+the draft/returned submit transition, and the form chrome every request form repeats.
+Endpoint contract (mock `PncApi`, console-logged; swap `pncRequest` for fetch in production):
+- `PncApi.create(kind, body)` → `POST /{resource}` — the NON-DRAFT upload endpoint.
+- `PncApi.update(kind, id, body)` → `PUT /{resource}/{id}` — edits + returned-resubmits.
+- `PncApi.saveDraft(kind, body)` / `updateDraft(kind, id, body)` — draft persistence (`isDraft: true`).
+- `PncApi.submitDraft(kind, id, body)` → `POST /{resource}/{id}/submit` — **finally submitting a
+  DRAFT goes here, never the plain upload endpoint.**
+`kind` ∈ `promotion | transfer | jobTitle` → `/promotions` · `/transfers` · `/job-title-change-requests` (`PNC_RESOURCE`).
+- `pncEditTransition({ kind, id, prevStatus, payload, today, draftLabel, reason, staffId })` — THE
+  save-an-edited-request rule: routes a Draft to `submitDraft` (everything else to `update`) and
+  returns `{ wasDraft, wasReturned, patch, entry }` — the status patch (Draft/Returned → Pending,
+  `hasBeenCorrected`, `dateSubmitted`) + the `pncEntry` audit row. All three screens' edit branches use it.
+Form chrome (use these instead of re-rolling per screen):
+- `FormCard({ title, badge })` + `AutoBadge` — the section card + "Auto-populated" pill (moved here from Promotions).
+- `PncReturnedBanner({ record })` — amber returned-for-correction banner (renders only when `status === "Returned"`).
+- `PncSalaryField({ salary })` — read-only payroll-resolved Salary field.
+- `PncDocsField({ existingUrls, isEditMode, onChange, hasDocs, noun })` — Supporting Documents block + required hint.
+- `PncFormFooter({ onCancel, onSaveDraft, draftDisabled, onSubmit, valid, isReturned, isDraft, submitLabel, submitIcon })` —
+  Cancel · Save as Draft · Submit row; resolves the Returned ("Resubmit for Approval") and Draft ("Submit Request") labels itself.

@@ -76,11 +76,15 @@ function AnnouncementGridCard({ a, onOpen }) {
 
 // Self-scrolling rail inside a white panel: the header (Announcements + View All) stays
 // static while only the cards below scroll. Fills the height of its parent (which bounds it).
-function AnnouncementsRail({ items = ANNOUNCEMENTS, width = 360, onViewAll, onOpen }) {
+function AnnouncementsRail({ items = ANNOUNCEMENTS, width = 360, onViewAll, onOpen, top }) {
+  // the profile-completion card rides the rail on EVERY page unless a caller overrides `top`
+  const topNode = top !== undefined ? top
+    : (window.ProfileCompletionCard ? <ProfileCompletionCard onGo={(sec) => window.__goMyInfo && window.__goMyInfo(sec)} /> : null);
   return (
     <React.Fragment>
     <aside className="ann-rail" style={{ width, flexShrink: 0, height: "100%", minHeight: 0, display: "flex", flexDirection: "column",
       background: "#fff", borderTop: 0, borderRadius: "0 0 16px 16px", overflow: "hidden" }}>
+      {topNode && <div style={{ flexShrink: 0, padding: "16px 16px 14px", borderBottom: "1px solid var(--divider)" }}>{topNode}</div>}
       <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 20px 16px", borderBottom: "1px solid var(--divider)" }}>
         <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 18, color: "var(--gray-900)" }}>Announcements</div>
         <button onClick={onViewAll} style={{ ...yellowLink, gap: 2 }}>

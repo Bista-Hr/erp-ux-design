@@ -1,17 +1,18 @@
-// BISTA HR · employee/data — employees list + full per-employee detail (matches Figma).
-// The list rows come from the Figma "All Employees" table. Clicking a row opens the
-// detail page; the clicked row's identity is merged onto the rich sample profile so the
-// header reflects who you clicked while the cards show the comprehensive data set.
+// BISTA HR · employee/data — employees list + full per-employee detail.
+// Field sets per section mirror the production codebase (components/employees/details/*):
+// PersonalDisplay, AddressDisplay, IdentificationDisplay, SpouseDisplay, ChildrenDisplay,
+// EducationDisplay, ContactDisplay, EmergencyContactDisplay, EmploymentInformationCard,
+// EmploymentHistoryCard, ReportingManagerTable, CompensationSummary, IdFinancialCard.
 
 const EMPLOYEES = [
-  { id: 1,  name: "Leslie Alexandre", code: "EMP1", email: "leslie@starret.com",  role: "HR Manager",    dept: "Human Resource", branch: "Kumasi", dateEmployed: "25/09/2025", active: true  },
-  { id: 2,  name: "Olivia Bennett",   code: "EMP2", email: "olivia@starret.com",  role: "Accountant",    dept: "Finance", branch: "Accra",  dateEmployed: "25/09/2025", active: true  },
-  { id: 3,  name: "Phoenix Carter",   code: "EMP3", email: "phoenix@starret.com", role: "Accountant",    dept: "Finance", branch: "Tamale", dateEmployed: "25/09/2025", active: true  },
-  { id: 4,  name: "Lana Mensah",      code: "EMP4", email: "lana@starret.com",    role: "Sales Officer", dept: "Marketing",      branch: "Accra",  dateEmployed: "25/09/2025", active: true  },
-  { id: 5,  name: "Demi Owusu",       code: "EMP5", email: "demi@starret.com",    role: "Sales Officer", dept: "Marketing",      branch: "Kumasi", dateEmployed: "25/09/2025", active: true  },
-  { id: 6,  name: "Natalie Adjei",    code: "EMP6", email: "natali@starret.com",  role: "Teller",        dept: "Finance", branch: "Kumasi", dateEmployed: "25/09/2025", active: true  },
-  { id: 7,  name: "Drew Asante",      code: "EMP7", email: "drew@starret.com",    role: "Teller",        dept: "Finance", branch: "Accra",  dateEmployed: "25/09/2025", active: false },
-  { id: 8,  name: "Orlando Boateng",  code: "EMP8", email: "orlando@starret.com", role: "Sales Officer", dept: "Marketing",      branch: "Accra",  dateEmployed: "25/09/2025", active: false },
+  { id: 1,  name: "Leslie Alexandre", code: "EMP1", email: "leslie@starret.com",  role: "HR Manager",    dept: "Human Resource", branch: "Kumasi", dateEmployed: "25/09/2025", active: true,  gender: "Female", phone: "0501234561" },
+  { id: 2,  name: "Olivia Bennett",   code: "EMP2", email: "olivia@starret.com",  role: "Accountant",    dept: "Finance", branch: "Accra",  dateEmployed: "25/09/2025", active: true,  gender: "Female", phone: "0501234562" },
+  { id: 3,  name: "Phoenix Carter",   code: "EMP3", email: "phoenix@starret.com", role: "Accountant",    dept: "Finance", branch: "Tamale", dateEmployed: "25/09/2025", active: true,  gender: "Male",   phone: "0501234563" },
+  { id: 4,  name: "Lana Mensah",      code: "EMP4", email: "lana@starret.com",    role: "Sales Officer", dept: "Marketing",      branch: "Accra",  dateEmployed: "25/09/2025", active: true,  gender: "Female", phone: "0501234564" },
+  { id: 5,  name: "Demi Owusu",       code: "EMP5", email: "demi@starret.com",    role: "Sales Officer", dept: "Marketing",      branch: "Kumasi", dateEmployed: "25/09/2025", active: true,  gender: "Female", phone: "0501234565" },
+  { id: 6,  name: "Natalie Adjei",    code: "EMP6", email: "natali@starret.com",  role: "Teller",        dept: "Finance", branch: "Kumasi", dateEmployed: "25/09/2025", active: true,  gender: "Female", phone: "0501234566" },
+  { id: 7,  name: "Drew Asante",      code: "EMP7", email: "drew@starret.com",    role: "Teller",        dept: "Finance", branch: "Accra",  dateEmployed: "25/09/2025", active: false, gender: "Male",   phone: "0501234567" },
+  { id: 8,  name: "Orlando Boateng",  code: "EMP8", email: "orlando@starret.com", role: "Sales Officer", dept: "Marketing",      branch: "Accra",  dateEmployed: "25/09/2025", active: false, gender: "Male",   phone: "0501234568" },
 ];
 
 // Rich detail for the profile. Built per-employee by merging identity over the sample.
@@ -22,81 +23,108 @@ function buildEmployeeDetail(emp) {
     ...emp,
     title: emp.role,
     personal: {
+      // Personal Information — exact set from PersonalDisplay.tsx
       basic: [
+        { label: "Employee ID", value: emp.code },
+        { label: "Title", value: "Mr." },
         { label: "First Name", value: first },
         { label: "Last Name", value: last },
+        { label: "Other Name", value: "-" },
+        { label: "Preferred Name", value: first },
         { label: "Gender", value: "Male" },
+        { label: "Nationality", value: "Ghana" },
+        { label: "HomeTown", value: "Kumasi" },
         { label: "Date of Birth", value: "06 June, 1990" },
-        { label: "Age", value: "35" },
         { label: "Marital Status", value: "Married" },
-        { label: "Nationality", value: "Ghanaian" },
-        { label: "Religion", value: "Christianity" },
       ],
+      // Address Information — exact set from AddressDisplay.tsx
       address: [
         { label: "Country", value: "Ghana" },
         { label: "Province/Region", value: "Greater Accra" },
         { label: "City", value: "Accra" },
-        { label: "Ghana Post Number", value: "GA-123-4567" },
         { label: "Street Name", value: "Obetsebi Lamptey St., Osu" },
-        { label: "Hometown", value: "Kumasi" },
+        { label: "House Number", value: "Hse No. 1232" },
+        { label: "Postal Address", value: "P.O. Box 123, Accra" },
+        { label: "GPS Code", value: "5.60371, -0.18700" },
       ],
+      // Identification Information — exact set from IdentificationDisplay.tsx
       identification: [
         { label: "ID Type", value: "Ghana Card" },
         { label: "ID Number", value: "GHA-123456789-00" },
         { label: "Created On", value: "06 June, 2015" },
         { label: "Expiry Date", value: "06 June, 2030" },
       ],
-      education: [
-        { course: "Accounting", institution: "University of Ghana", qualification: "Bsc. Accounting", startDate: "06 June, 2015",
-          endDate: "10 July, 2019", majorField: "Accounting", gpa: "3.2", verificationStatus: "Verified",
-          verificationDate: "28 Nov, 2024", status: "Completed" },
-      ],
+      // Spouse Details — exact set from SpouseDisplay.tsx
       spouse: [
-        { course: "Accounting", institution: "University of Ghana", qualification: "Bsc. Accounting", startDate: "06 June, 2015",
-          endDate: "10 July, 2019", majorField: "Accounting", gpa: "3.2", verificationStatus: "Verified",
-          verificationDate: "28 Nov, 2024", status: "Completed" },
+        { label: "Full Name", value: "Edith " + last },
+        { label: "Gender", value: "Female" },
+        { label: "Date of Birth", value: "14 Feb, 1992" },
+        { label: "Date of Marriage", value: "20 Dec, 2014" },
+        { label: "Phone Number", value: "0244123456" },
+        { label: "Email", value: "edith1234@gmail.com" },
+        { label: "SSNIT Number", value: "C009876543210" },
+        { label: "Ghana Card Number", value: "GHA-987654321-0" },
       ],
+      // Children Details — per child: Gender · Date of Birth · Age (ChildrenDisplay.tsx)
       children: [
         { name: "James Alexandre", gender: "Male", dob: "06 June, 2010", age: "15" },
         { name: "Joana Alexandre", gender: "Female", dob: "14 Sept, 2012", age: "13" },
       ],
+      // Education Details — per record: Degree · Qualification · Field of Study ·
+      // Start Date · End Date · Status (EducationDisplay.tsx)
+      education: [
+        { institution: "University of Ghana", degree: "Bachelor's Degree", qualification: "Bsc. Accounting", fieldOfStudy: "Accounting",
+          startDate: "06 June, 2015", endDate: "10 July, 2019", status: "Completed" },
+        { institution: "GIMPA", degree: "Master's Degree", qualification: "MBA Finance", fieldOfStudy: "Finance",
+          startDate: "10 Jan, 2021", endDate: "Ongoing", status: "Ongoing" },
+      ],
     },
     contact: {
+      // Contact Information — exact set from ContactDisplay.tsx
       personal: [
         { label: "Home Phone", value: "-" },
         { label: "Mobile Phone", value: "0201234567" },
         { label: "Work Phone", value: "030201234567" },
-        { label: "Work Mail", value: "jamesbrown@starret.com" },
         { label: "Personal Email", value: "jbrown1234@gmail.com" },
+        { label: "Work Email", value: emp.email },
+        { label: "Postal Address", value: "P.O. Box 123, Accra" },
+        { label: "Residential Address", value: "Hse No. 1232, Obetsebi Lamptey St., Osu" },
       ],
+      // Emergency Contact — per contact: Relationship · Gender · Primary Phone · Home
+      // Phone · Work Phone · Email · Address · Priority Order (EmergencyContactDisplay.tsx)
       emergency: [
-        { name: "Isaac Brown", phone: "0501234567", email: "ibsbrown@gmail.com", address: "Hse No. 1232, Obetsebi Lamptey St., Osu" },
-        { name: "Edith Brown", phone: "0241234567", email: "edthbrown@gmail.com", address: "Hse No. 1232, Obetsebi Lamptey St., Osu" },
-      ],
-      nextOfKin: [
-        { label: "Name", value: "Isaac Brown" },
-        { label: "Relationship", value: "Brother" },
-        { label: "Mobile Phone", value: "0501234567" },
-        { label: "Email", value: "ibsbrown@gmail.com" },
+        { name: "Isaac Brown", relationship: "Sibling", gender: "Male", phone: "0501234567", homePhone: "-", workPhone: "0302765432",
+          email: "ibsbrown@gmail.com", address: "Hse No. 1232, Obetsebi Lamptey St., Osu", priority: "1" },
+        { name: "Edith Brown", relationship: "Spouse", gender: "Female", phone: "0241234567", homePhone: "-", workPhone: "-",
+          email: "edthbrown@gmail.com", address: "Hse No. 1232, Obetsebi Lamptey St., Osu", priority: "2" },
       ],
     },
     employment: {
+      // Employment Information — Zone precedes Branch/ Unit (zone filters units) and
+      // Department precedes Job Title (department filters titles); no separate Branch row.
       info: [
         { label: "Employee Status", value: emp.active ? "Active" : "Inactive" },
-        { label: "Employment Type", value: "Full-time" },
-        { label: "Date Employed", value: "06 June, 2015" },
+        { label: "Employee Type", value: "Full-time" },
+        { label: "Zone", value: "South Zone" },
+        { label: "Branch/ Unit", value: "Accra Main" },
+        { label: "Department", value: emp.dept },
         { label: "Job Title", value: emp.role },
         { label: "Job Grade", value: "Grade 1" },
-        { label: "Department", value: emp.dept },
-        { label: "Branch", value: emp.branch + " Branch" },
-        { label: "Contract Expiry Date", value: "06 June, 2016" },
-        { label: "Reporting Manager", value: "Samuel Asante" },
+        { label: "Notch", value: "3" },
+        { label: "Annual Salary", value: "GHS 96,000.00" },
+        { label: "Date Employed", value: "06 June, 2015" },
+        { label: "Date Confirmed", value: "06 Dec, 2015" },
         { label: "Date of Termination/Resignation", value: "-" },
-        { label: "Reason for Termination", value: "-" },
       ],
+      // Employment History — Date Assigned · Name (employment type) · Note · Status
       history: [
-        { date: "06 June, 2010", role: "UX Designer", position: "Permanent", note: "Recommended by supervisor", status: "current" },
-        { date: "06 June, 2010", role: "UX Designer", position: "Probation", note: "Recommended by supervisor", status: "past" },
+        { date: "06 Dec, 2015", type: "Permanent", note: "Confirmed after probation", status: "current" },
+        { date: "06 June, 2015", type: "Probation", note: "Initial engagement", status: "past" },
+      ],
+      // Employment status timeline (EmploymentStatusTimeline)
+      statusTimeline: [
+        { date: "06 Dec, 2015", title: "Active", note: "Confirmed permanent staff", status: "current" },
+        { date: "06 June, 2015", title: "Probation", note: "6-month probation period", status: "past" },
       ],
       jobTitles: [
         { date: "06 June, 2010", title: "HR Manager",      reportsTo: "Ethel Ama Amponsah Sedzro", status: "current" },
@@ -110,29 +138,41 @@ function buildEmployeeDetail(emp) {
         { date: "06 June, 2010", title: "Accra Branch",  note: "Relocating from Kumasi",      status: "past" },
         { date: "12 Jan, 2008",  title: "Tamale Branch", note: "Initial posting",             status: "past" },
       ],
+      // Reporting Manager — Effective Date · Date Assigned · Manager · Note · Status
       reportingManagers: [
-        { date: "06 June, 2010", name: "John Frimpong", jobTitle: "HR Manager",        jobCode: "06 June, 2010", note: "Changed Departments",        status: "current" },
-        { date: "06 June, 2010", name: "John Frimpong", jobTitle: "Senior Accountant", jobCode: "06 June, 2010", note: "Recommended by supervisor",  status: "past" },
-        { date: "12 Jan, 2008",  name: "Abena Sarpong", jobTitle: "Branch Manager",    jobCode: "12 Jan, 2008",  note: "Initial posting",            status: "past" },
+        { effectiveDate: "06 June, 2015", date: "06 June, 2015", name: "John Frimpong", note: "Changed Departments",       status: "current" },
+        { effectiveDate: "06 June, 2012", date: "06 June, 2012", name: "John Frimpong", note: "Recommended by supervisor", status: "past" },
+        { effectiveDate: "12 Jan, 2008",  date: "12 Jan, 2008",  name: "Abena Sarpong", note: "Initial posting",           status: "past" },
       ],
+      // Job Grade entries carry grade + notch + effective date (JobGradeHistoryDetails)
       jobGrades: [
-        { date: "06 June, 2010", title: "Grade 1", note: "Recommended by supervisor", status: "current" },
-        { date: "06 June, 2010", title: "Grade 2", note: "Recommended by supervisor", status: "past" },
-        { date: "12 Jan, 2008",  title: "Grade 3", note: "Initial appointment",       status: "past" },
+        { date: "06 June, 2015", title: "Grade 1", note: "Notch 3 · Effective 06 June, 2015", status: "current" },
+        { date: "06 June, 2012", title: "Grade 2", note: "Notch 1 · Effective 06 June, 2012", status: "past" },
+        { date: "12 Jan, 2008",  title: "Grade 3", note: "Notch 1 · Effective 12 Jan, 2008",  status: "past" },
       ],
       departments: [
-        { date: "06 June, 2010", title: "HR Manager",      note: "Kumasi Branch", status: "current" },
-        { date: "06 June, 2010", title: "Finance Manager", note: "Accra Branch",  status: "past" },
-        { date: "06 June, 2010", title: "Accountant",      note: "Accra Branch",  status: "past" },
-        { date: "12 Jan, 2008",  title: "Junior Officer",  note: "Tamale Branch", status: "past" },
+        { date: "06 June, 2015", title: "Human Resource", note: "Kumasi Branch", status: "current" },
+        { date: "06 June, 2012", title: "Finance",        note: "Accra Branch",  status: "past" },
+        { date: "12 Jan, 2008",  title: "Operations",     note: "Tamale Branch", status: "past" },
       ],
+      // Compensation — Current Salary (CompensationSummary.tsx)
+      compensation: [
+        { label: "Job Grade", value: "Grade 1" },
+        { label: "Notch", value: "3" },
+        { label: "Amount", value: "GHS 96,000.00" },
+        { label: "Pay Frequency", value: "Monthly" },
+        { label: "Payment Type", value: "Bank Transfer" },
+        { label: "Structure Created", value: "06 June, 2015, 10:24 AM" },
+        { label: "Effective Date", value: "06 June, 2015" },
+      ],
+      // National Identification and Financial Information (IdFinancialCard.tsx)
       finance: [
-        { label: "SSNIT Number", value: "1234567" },
-        { label: "TIN (Tax Identification Number)", value: "1234567" },
-        { label: "Bank Name", value: "Access Bank" },
-        { label: "Bank Account Number", value: "001234455677654" },
-        { label: "Bank Account Type", value: "Savings Account" },
-        { label: "SSNIT Code Act", value: "247/766" },
+        { label: "SSNIT Number", value: "C001234567890" },
+        { label: "Tin Number", value: "P0001234567" },
+        { label: "Account Number", value: "001234455677654" },
+        { label: "Account Name", value: emp.name },
+        { label: "Account Type", value: "Savings Account" },
+        { label: "Currency", value: "GHS" },
       ],
     },
     documents: [

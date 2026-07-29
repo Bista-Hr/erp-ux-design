@@ -64,10 +64,10 @@ function ViewDetailsButton({ label = "View Details", icon, onClick, style }) {
 }
 
 /* ---- Field / Input ---- */
-function Field({ label, optional, hint, children, style }) {
+function Field({ label, optional, required, hint, children, style }) {
   return (
     <div className="field" style={style}>
-      {label && <label>{label}{optional && <span className="opt"> (Optional)</span>}</label>}
+      {label && <label>{label}{required && <span style={{ color: "var(--error)", marginLeft: 3 }}>*</span>}</label>}
       {children}
       {hint && <span className="hint">{hint}</span>}
     </div>

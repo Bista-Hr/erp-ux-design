@@ -24,9 +24,9 @@ function CardActionLink({ label, icon = "edit-2-line", color = "var(--brand-yell
   );
 }
 
-function DetailCard({ icon, title, action, children }) {
+function DetailCard({ icon, title, action, children, id }) {
   return (
-    <div style={{ background: "#fff", borderRadius: 12,
+    <div id={id} style={{ background: "#fff", borderRadius: 12,
       overflow: "hidden" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 24px" }}>
         {icon && <Icon name={icon} size={22} color="var(--gray-900)" />}
@@ -39,12 +39,14 @@ function DetailCard({ icon, title, action, children }) {
   );
 }
 
-function DetailItem({ label, value, highlight, accent, changeBg }) {
+function DetailItem({ label, value, highlight, accent, changeBg, flag }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0, padding: "8px 12px",
-      ...(highlight ? { borderLeft: `3px solid ${accent || "var(--brand-yellow-dark)"}`, background: changeBg || "transparent" } : {}) }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, padding: "8px 12px" }}>
       <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, lineHeight: "16px", color: "var(--gray-400)" }}>{label}</span>
-      <span style={{ fontFamily: "var(--font-ui)", fontWeight: 500, fontSize: 14, lineHeight: "20px", color: "var(--gray-900)", wordBreak: "break-word" }}>{value || "-"}</span>
+      <span style={{ fontFamily: "var(--font-ui)", fontWeight: 400, fontSize: 14, lineHeight: "20px", color: "#000", wordBreak: "break-word",
+        ...(flag ? { display: "inline-flex", alignItems: "center", gap: 7 } : {}),
+        ...(highlight ? { borderRight: `2px solid ${accent || "var(--brand-yellow)"}`, background: changeBg || "transparent", padding: "4px 8px", borderRadius: 2, alignSelf: "stretch" } : {}) }}>
+        {flag && <img src={flag} alt="" style={{ width: 17, height: 17, borderRadius: "50%", flex: "none" }} />}{value || "-"}</span>
     </div>
   );
 }
@@ -53,7 +55,7 @@ function DetailPanel({ items, tint = "gray", cols = 4, accent, changeBg }) {
   return (
     <div className="ed-panel-wrap">
       <div className={`ed-panel cols-${cols}`} style={{ background: PANEL_TINT[tint], borderRadius: 8, padding: 4 }}>
-        {items.map((it, i) => <DetailItem key={i} label={it.label} value={it.value} highlight={it.changed} accent={accent} changeBg={changeBg} />)}
+        {items.map((it, i) => <DetailItem key={i} label={it.label} value={it.value} flag={it.flag} highlight={it.changed} accent={accent} changeBg={changeBg} />)}
       </div>
     </div>
   );

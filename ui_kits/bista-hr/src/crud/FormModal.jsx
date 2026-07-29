@@ -65,6 +65,9 @@ function FormModal({ config, initial, onClose, onSubmit, lookups, rows }) {
   const initialsOf = (str) => String(str || "").trim().split(/\s+/).map(w => (w.match(/[A-Za-z0-9]/) || [""])[0].toUpperCase()).join("");
   const set = (k, v) => setForm(s => {
     const next = { ...s, [k]: v };
+    // autofill: a field may derive other values from its pick (e.g. Work Colleague → contact info)
+    const src = config.fields.find(f => f.key === k);
+    if (src && src.autofill) Object.assign(next, src.autofill(v, next) || {});
     // cascade: an auto-filled target may itself have a fillTarget (Grade → Name → Code)
     const applyFill = (key, val, prevVal) => {
       const fl = config.fields.find(f => f.key === key);
@@ -86,6 +89,13 @@ function FormModal({ config, initial, onClose, onSubmit, lookups, rows }) {
   const [touched, setTouched] = React.useState({});
   const markTouched = k => setTouched(t => t[k] ? t : ({ ...t, [k]: true }));
   const requiredKeys = config.fields.filter(fl => !fl.optional).map(fl => fl.key);
+  // conditional fields (showIf) render + validate only when their condition holds
+  const visibleFields = config.fields.filter(fl => !fl.showIf || fl.showIf(form));
+  const hasVal = (fl) => {
+    const v = form[fl.key];
+    if (fl.type === "docs") return !!v && (((v.newFiles || []).length + (v.keptUrls || []).length) > 0);
+    return String(v ?? "").trim() !== "";
+  };
   // unique fields: an already-existing value (excluding the row being edited) raises an inline error
   const dupErrors = {};
   config.fields.forEach(fl => {
@@ -101,7 +111,7 @@ function FormModal({ config, initial, onClose, onSubmit, lookups, rows }) {
     const v = String(form[fl.key] ?? "").trim();
     if (v !== "" && !(new RegExp(fl.pattern)).test(v)) dupErrors[fl.key] = fl.patternError || `Invalid ${fl.label.toLowerCase()}.`;
   });
-  const valid = requiredKeys.every(k => String(form[k] || "").trim() !== "") && Object.keys(dupErrors).length === 0;
+  const valid = visibleFields.filter(fl => !fl.optional && !fl.disabled && fl.type !== "notches").every(hasVal) && Object.keys(dupErrors).length === 0;
   const verb = config.verb || "Create";
   const createTitle = config.addTitle || `${verb} ${config.noun}`;
 
@@ -122,9 +132,9 @@ function FormModal({ config, initial, onClose, onSubmit, lookups, rows }) {
   });
 
   return (
-    <Modal onClose={onClose} width={config.modalWidth || 770}>
-      {/* header */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "24px 24px 0" }}>
+    <Modal onClose={onClose} width={config.modalWidth || 770} flexBody>
+      {/* header (fixed) */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", padding: "24px 24px 16px", flex: "none" }}>
         <div>
           <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 20, lineHeight: "28px", color: "var(--gray-900)" }}>
             {editing ? `Edit ${config.noun}` : createTitle}
@@ -138,15 +148,30 @@ function FormModal({ config, initial, onClose, onSubmit, lookups, rows }) {
         </button>
       </div>
 
-      {/* fields — two-column grid, full-width rows for textareas */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, padding: 24 }}>
-        {config.fields.map(fl => {
-          const opts = fl.lookup ? (LK[fl.lookup] || []) : fl.options;
+      {/* fields — two-column grid, scrolls between the fixed header and footer */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, padding: "8px 24px 24px", overflowY: "auto", flex: "1 1 auto", minHeight: 0 }}>
+        {visibleFields.map(fl => {
+          const opts = fl.optionsFor ? fl.optionsFor(form) : (fl.lookup ? (LK[fl.lookup] || []) : fl.options);
           const isUser = fl.lookup === "employees" || fl.avatar;
-          const fieldError = dupErrors[fl.key] || (touched[fl.key] && !fl.optional && fl.type !== "notches" && String(form[fl.key] ?? "").trim() === "" ? `${fl.label} is required` : "");
+          const asGhanaCard = fl.type === "ghanaCard" || (fl.ghanaCardIf && form[fl.ghanaCardIf] === "Ghana Card");
+          const fieldError = dupErrors[fl.key] || (touched[fl.key] && !fl.optional && fl.type !== "notches" && !hasVal(fl) ? `${fl.label} is required` : "");
           return (
-            <Field key={fl.key} label={fl.label} optional={fl.optional} style={{ gridColumn: fl.full ? "1 / -1" : "auto" }}>
-              {fl.type === "select"
+            <Field key={fl.key} label={fl.label} required={!fl.optional && !fl.disabled} style={{ gridColumn: (fl.full || fl.type === "docs") ? "1 / -1" : "auto" }}>
+              {fl.disabled
+                ? <Input value={form[fl.key]} disabled />
+                : fl.type === "docs"
+                ? <SupportingDocuments existingUrls={fl.existingUrls || []} isEditMode={!!(fl.existingUrls && fl.existingUrls.length)} onChange={v => set(fl.key, v)} />
+                : asGhanaCard
+                ? <GhanaCardInput value={form[fl.key]} onChange={v => set(fl.key, v)} />
+                : fl.type === "gps"
+                ? <GpsInput value={form[fl.key]} onChange={v => set(fl.key, v)} />
+                : fl.type === "unitBranch"
+                ? <UnitBranchCombobox value={form[fl.key]} onChange={v => set(fl.key, v)}
+                    zone={form[fl.zoneKey] || ""} onZoneChange={fl.zoneKey ? (v => set(fl.zoneKey, v)) : undefined} zones={LK.zones} />
+                : fl.type === "designation"
+                ? <DesignationCombobox value={form[fl.key]} onChange={v => set(fl.key, v)}
+                    department={form[fl.deptKey] || ""} onDepartmentChange={fl.deptKey ? (v => set(fl.deptKey, v)) : undefined} departments={LK.departments} />
+                : fl.type === "select"
                 ? <Combobox value={form[fl.key]} onChange={v => set(fl.key, v)} options={opts} placeholder={fl.placeholder} icon={fl.icon} avatar={isUser} />
                 : fl.type === "multiselect"
                   ? <MultiSelectCombobox value={form[fl.key] || []} onChange={v => set(fl.key, v)} options={opts} placeholder={fl.placeholder} avatar={isUser} />
@@ -179,8 +204,8 @@ function FormModal({ config, initial, onClose, onSubmit, lookups, rows }) {
         )}
       </div>
 
-      {/* footer */}
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, padding: "0 24px 24px" }}>
+      {/* footer (fixed) */}
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, padding: "16px 24px 24px", flex: "none", borderTop: "1px solid var(--border)" }}>
         <Button variant="stroke" onClick={onClose}>Cancel</Button>
         <Button variant="primary" disabled={!valid} onClick={() => valid && onSubmit(form)}>
           {editing ? `Update ${config.noun}` : `${verb} ${config.noun}`}

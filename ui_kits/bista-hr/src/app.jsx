@@ -235,6 +235,14 @@ function App() {
 
   // self-service profile-update requests (created from My Info, actioned on Requests)
   const addRequest = (r) => { const id = ++seq.current; setRequests(rs => [{ id, employee: ME.name, type: "Profile Update", date: "Today", status: "pending", ...r }, ...rs]); };
+  // profile-completion card (announcements rail, any page) → jump to My Info at a section
+  window.__goMyInfo = (sec) => {
+    window.__myInfoFocus = sec || null;
+    const dash = NAV_MAIN[0];
+    setNav({ node: dash, parent: dash.name, tab: "My Info" });
+    setEmployee(null); setAnnounce(null); setSubPage(null); setNotifs(false);
+    window.dispatchEvent(new CustomEvent("myinfo-focus"));
+  };
   const resolveRequest = (id, status) => {
     setRequests(rs => rs.map(r => r.id === id ? { ...r, status } : r));
     pushToast(status === "approved" ? "Request Accepted" : "Request Rejected", { tone: status === "approved" ? "success" : "error" });
@@ -286,7 +294,7 @@ function App() {
               : !isList
               ? (kind === "dashboard"
                   ? <DashboardArea tab={pageName} requests={requests} onAddRequest={addRequest} onResolve={resolveRequest} onToast={pushToast}
-                      announce={announce}
+                      announce={announce} onGoTab={setTab}
                       onViewAnnouncements={() => setAnnounce({ view: "list" })}
                       onOpenAnnouncement={(a) => setAnnounce({ view: "detail", a })}
                       onCloseAnnouncements={() => setAnnounce(null)}

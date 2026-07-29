@@ -22,6 +22,7 @@ const LOOKUPS = {
   performanceRatings: ["Outstanding", "Very Good", "Good", "Above Average", "Below Average"],
   employees:   ["Franklin Brobbey", "Emmanuel Ansah", "Bright Manu", "Samuel Boateng", "Samuel Asante"],
   maritalStatus: ["Single", "Married", "Divorced", "Widowed"],
+  titles:      ["Mr", "Mrs", "Ms", "Dr", "Prof"],
   genders:     ["Male", "Female"],
   idTypes:     ["Ghana Card", "Passport", "Driver's License", "Voter ID"],
   // countries carry flag images so the Combobox renders a circular flag per option
